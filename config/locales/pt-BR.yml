@@ -1,0 +1,472 @@
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+---
+pt-br:
+  language_name: "Português"
+  flag_icon: flag-icon-br
+  pundit:
+    default: 'Você não pode fazer essa ação.'
+    entity_policy:
+      update?: 'You cannot edit this post!'
+      create?: 'You cannot create posts!'
+      show?: 'Você não pode ver entidades!'
+  date:
+    abbr_day_names:
+    - Dom
+    - Seg
+    - Ter
+    - Qua
+    - Qui
+    - Sex
+    - Sáb
+    abbr_month_names:
+    - Jan
+    - Fev
+    - Mar
+    - Abr
+    - Mai
+    - Jun
+    - Jul
+    - Ago
+    - Set
+    - Out
+    - Nov
+    - Dez
+    day_names:
+    - Domingo
+    - Segunda-feira
+    - Terça-feira
+    - Quarta-feira
+    - Quinta-feira
+    - Sexta-feira
+    - Sábado
+    formats:
+      default: "%d/%m/%Y"
+      long: "%d de %{month_name} de %Y"
+      longw: "%{week_name}, %d de %{month_name} de %Y"
+      short: "%d de %{month_name}"
+    month_names:
+    - 
+    - Janeiro
+    - Fevereiro
+    - Março
+    - Abril
+    - Maio
+    - Junho
+    - Julho
+    - Agosto
+    - Setembro
+    - Outubro
+    - Novembro
+    - Dezembro
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: aproximadamente 1 hora
+        other: aproximadamente %{count} horas
+      about_x_months:
+        one: aproximadamente 1 mês
+        other: aproximadamente %{count} meses
+      about_x_years:
+        one: aproximadamente 1 ano
+        other: aproximadamente %{count} anos
+      almost_x_years:
+        one: quase 1 ano
+        other: quase %{count} anos
+      half_a_minute: meio minuto
+      less_than_x_minutes:
+        one: menos de um minuto
+        other: menos de %{count} minutos
+      less_than_x_seconds:
+        one: menos de 1 segundo
+        other: menos de %{count} segundos
+      over_x_years:
+        one: mais de 1 ano
+        other: mais de %{count} anos
+      x_days:
+        one: 1 dia
+        other: "%{count} dias"
+      x_minutes:
+        one: 1 minuto
+        other: "%{count} minutos"
+      x_months:
+        one: 1 mês
+        other: "%{count} meses"
+      x_seconds:
+        one: 1 segundo
+        other: "%{count} segundos"
+    prompts:
+      day: Dia
+      hour: Hora
+      minute: Minuto
+      month: Mês
+      second: Segundo
+      year: Ano
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: deve ser aceito
+      blank: não pode ficar em branco
+      present: deve ficar em branco
+      confirmation: não é igual a %{attribute}
+      empty: não pode ficar vazio
+      equal_to: deve ser igual a %{count}
+      even: deve ser par
+      exclusion: não está disponível
+      greater_than: deve ser maior que %{count}
+      greater_than_or_equal_to: deve ser maior ou igual a %{count}
+      inclusion: não está incluído na lista
+      invalid: não é válido
+      less_than: deve ser menor que %{count}
+      less_than_or_equal_to: deve ser menor ou igual a %{count}
+      not_a_number: não é um número
+      not_an_integer: não é um número inteiro
+      odd: deve ser ímpar
+      record_invalid: 'A validação falhou: %{errors}'
+      taken: já está em uso
+      too_long: 'é muito longo (máximo: %{count} caracteres)'
+      too_short: 'é muito curto (mínimo: %{count} caracteres)'
+      wrong_length: não possui o tamanho esperado (%{count} caracteres)
+      other_than: deve ser diferente de %{count}
+    template:
+      body: 'Por favor, verifique o(s) seguinte(s) campo(s):'
+      header:
+        one: 'Não foi possível gravar %{model}: 1 erro'
+        other: 'Não foi possível gravar %{model}: %{count} erros.'
+  helpers:
+    select:
+      prompt: Por favor selecione
+    submit:
+      create: Criar %{model}
+      submit: Salvar %{model}
+      update: Atualizar %{model}
+  number:
+    currency:
+      format:
+        delimiter: "."
+        format: "%u %n"
+        precision: 2
+        separator: ","
+        significant: false
+        strip_insignificant_zeros: false
+        unit: R$
+    format:
+      delimiter: "."
+      precision: 3
+      separator: ","
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion:
+            one: bilhão
+            other: bilhões
+          million:
+            one: milhão
+            other: milhões
+          quadrillion:
+            one: quatrilhão
+            other: quatrilhões
+          thousand: mil
+          trillion:
+            one: trilhão
+            other: trilhões
+          unit: ''
+      format:
+        delimiter: "."
+        precision: 2
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: Byte
+            other: Bytes
+          gb: GB
+          kb: KB
+          mb: MB
+          tb: TB
+    percentage:
+      format:
+        delimiter: "."
+        format: "%n%"
+    precision:
+      format:
+        delimiter: "."
+  support:
+    array:
+      last_word_connector: " e "
+      two_words_connector: " e "
+      words_connector: ", "
+  time:
+    am: ''
+    hour_format: "%H:%M"
+    formats:
+      dt_default: "%{date} %{time}"
+      dt_at: "%{date} às %{time}"
+    pm: ''
+  activerecord:
+    errors:
+      models:
+        group:
+          attributes:
+            tenant: 
+              required: "não pode ficar em branco"
+        user:
+          attributes:
+            tenant: 
+              required: "não pode ficar em branco"
+            email:
+              not_found: "E-mail não cadastrado"
+        meet:
+          attributes:
+            group: 
+              required: "não pode ficar em branco"
+            tenant: 
+              required: "não pode ficar em branco"
+            host: 
+              required: "não pode ficar em branco"
+        topic:
+          attributes:
+            tenant: 
+              required: "não pode ficar em branco"
+      messages:
+        record_invalid: 'A validação falhou: %{errors}'
+        restrict_dependent_destroy:
+          has_one: Não é possível excluir o registro pois existe um %{record} dependente
+          has_many: Não é possível excluir o registro pois existem %{record} dependentes
+    models:
+      user: Usuário
+      entity: 'Módulo'
+      permission: 'Permissão'
+      role: 'Perfil'
+      entity_category: 'Categoria de Módulos'
+      dog: 
+        one: 'Cachorro'
+        other: 'Cachorros'
+    attributes:
+      user:
+        name: "Nome"
+        email: "E-mail"
+        email_address: "Endereço de e-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação da Senha"
+        role: "Perfil"
+        last_sign_in_at: "Último login"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      dog:
+        name: "Nome"
+        age: "Idade"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      role:
+        name: "Nome"
+      permission: 
+        entity_id: "Módulo"
+        action_name: "Nome da Ação"
+        action: "Ação"
+      entity_category:
+        name: "Nome"
+        icon: "Ícone"
+      entity:
+        name: "Nome"
+        slug: "Slug"
+        controller: "Controlador"
+        is_dev: "Módulo de Desenvolvedor"
+        visible: "Visivel no Menu"
+      group:
+        name: "Nome"
+        image: "Imagem"
+      tenant:
+        name: "Nome"
+        slug: "Slug"
+        created_at: "Criado em"
+        updated_at: "atualizado em"
+  en:
+    activerecord:
+      attributes:
+        meet:
+          statuses:
+            created: "Criada"
+            finished: "Finalizada"
+  controllers:
+    generic:
+      create:
+        success: '%{controller_name} foi criado com sucesso.'
+      update:
+        success: '%{controller_name} foi atualizado com sucesso.'
+      destroy:
+        success: '%{controller_name} foi removido com sucesso.'
+        danger: "Erro ao deletar %{controller_name}"
+    admin:
+      tenants:
+        change_current_tenant:
+          success: "Tenant mudado com sucesso."
+          danger: "Erro ao mudar tenant"
+        disable_current_tenant:
+          success: "Tenant mudado com sucesso."
+          danger: "Erro ao mudar tenant"
+      users:
+        update_password:
+          success: "Senha alterada com sucesso"
+          danger: "Erro ao editar senha"
+        update_all_passwords:
+          success: "Senha alterada com sucesso"
+          danger: "Erro ao editar senha"
+  views:
+    application:
+      shared:
+        save: "Salvar"
+        show: "Visualizar"
+        back: "Voltar"
+        add: "Adicionar %{model_name}"
+        new_title: 'Novo %{model_name}'
+        edit: "Editar"
+        search_placeholder: 'Pesquisar %{model_name}'
+        remove: "Remover"
+        remove_title: "Remover %{model_name}"
+        click_here: "Clique aqui"
+        cancel: Cancelar
+        invite: "Convidar"
+        copy: 'Copiar'
+        actions: 'Ações'
+        results: 'resultados'
+        prev: 'Anterior'
+        next: 'Próximo'
+        yes_display: 'Sim'
+        no_display: 'Não'
+        date_begin_placeholder: 'Data inicial'
+        date_end_placeholder: 'Data final'
+        add_file: 'Adicionar Arquivo'
+        pre_show: 'Pré-visualizar'
+        enter: 'Entrar'
+        submit: 'Enviar'
+        email_placeholder: "Digite o e-mail"
+        password_placeholder: "Digite a senha"
+        email: "E-mail"
+        password: "Senha"
+        user_profile:
+          account_menu: "Menu da conta"
+          signed_as: "Conectado como"
+          edit_profile: "Editar perfil"
+          change_password: "Alterar senha"
+          exit: "Sair"
+        sidebar_menu:
+          home: 'Início'
+        modal_invite:
+          title: 'Convite para %{name}'
+          subtitle: 'Convidar %{name} para o Prozital?'
+        state_placeholder: 'Selecione um estado'
+      actions:
+        index:
+          no_instances: Ainda não existem %{model_name} registrados
+          new_instance: Clique abaixo para criar um novo %{model_name}
+          new_button: "Criar %{model_name}"
+          description: "Crie %{model_name}, edite, baixe e muito mais."
+          no_results_search: "Nenhum registro de %{model_name} foi encontrado com essa busca."
+        destroy:
+          title_modal: "Remover %{model_name}"
+          subtitle_modal: Deseja realmente remover o(a) %{model_name}?
+    admin:
+      users:
+        shared:
+          change_password_modal:
+            title: 'Editar senha'
+            current_password: 'Senha atual'
+            new_password: 'Nova senha'
+            confirm_new_password: 'Redigite a nova senha'
+        actions:
+          new:
+            tenant_placeholder: 'Selecione o tenant do Usuário'
+            role_placeholder: 'Selecione o Perfil do Usuário'
+          edit:
+            password_hint: 'Preencha os dois campos apenas se quiser alterar a senha'
+            password_placeholder: 'Digite a nova senha'
+            password_confirmation_placeholder: 'Confirme a nova senha'
+    pages:
+      actions:
+        home:
+          title: "Bem-vindo ao Rails Base versão %{app_version}."
+          go_to_administration: "Administração"
+          go_further: "Ir para o admin"
+  emails:
+    reset_password_instructions:
+      title: "Olá %{email}!"
+      change_password_solicited: "Uma alteração de senha foi requisitada . Você pode fazer isso pelo link abaixo."
+      change_password_link: "Alterar a senha"
+      ignore: "Se você não fez esse pedido, por favor ignore esse email."
+      password_not_change: "Sua senha não mudará enquanto voĉe não acessar o link a cima e criar uma nova senha."
+    unlock_instructions:
+      title: "Olá %{email}"
+      unsucessfully_sign_ups: "Sua conta foi bloqueada devido ao excessivo número de tentativas de login"
+      link_below: "Clique no link abaixo para desbloquear sua conta:"
+      link: "Desbloquear minha conta"
+    confirmation_instructions:
+      title: "Bem-vindo %{email}"
+      can_confirm: "Você pode confirmar sua conta através do link abaixo"
+      link: "Confirmar minha conta"
+  entities:
+    single: 'Módulo'
+    plural: 'Módulos'
+  entity_categories:
+    single: 'Categoria de Módulo'
+    plural: 'Categorias de Módulos'
+  permissions:
+    single: 'Permissão'
+    plural: 'Permissões'
+  roles:
+    single: 'Perfil'
+    plural: 'Perfis'
+  users:
+    single: 'Usuário'
+    plural: 'Usuários'
+  groups:
+    single: 'Grupo'
+    plural: 'Grupos'
+  meets:
+    single: 'Encontro'
+    plural: 'Encontros'
+  tenants:
+    single: 'Tenant'
+    plural: 'Tenants'
+  users_admin:
+    single: 'Administrador'
+    plural: 'Administradores'
+  dogs:
+    single: 'Cachorro'
+    plural: 'Cachorros'

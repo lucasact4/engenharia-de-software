@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%= render 'layouts/admin/head' %>
+
+  <body class="bg-slate-100">
+    <div id="admin-shell" v-cloak class="min-h-dvh bg-slate-100">
+      <%= render 'layouts/admin/navbar' %>
+      <%= render 'layouts/admin/sidebar', menu: @menu %>
+
+      <div class="admin-main-content w-full transition-all duration-300">
+        <div class="min-h-[calc(100dvh-3.75rem)] p-4 sm:p-6">
+          <%= render 'layouts/admin/messages' %>
+
+          <main class="space-y-4 pt-1">
+            <%= yield %>
+            <%= render 'layouts/admin/footer' %>
+          </main>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <% console if Rails.env.development? %>
+</html>

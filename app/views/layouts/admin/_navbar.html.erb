@@ -1,0 +1,30 @@
+<header class="admin-main-header sticky inset-x-0 top-0 z-40 flex w-full flex-wrap border-b border-slate-200 bg-white text-sm transition-all duration-300">
+  <nav class="flex basis-full items-center gap-2 px-3 py-2.5 sm:px-6">
+    <div class="me-1 lg:hidden">
+      <button type="button"
+              class="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              aria-controls="hs-application-sidebar"
+              aria-label="Toggle navigation"
+              data-sidebar-mobile-toggle="true">
+        <span class="sr-only">Toggle Navigation</span>
+        <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+          <path d="M15 3v18"></path>
+          <path d="m8 9 3 3-3 3"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="min-w-0 flex-1 lg:hidden">
+      <p class="truncate text-sm font-semibold text-slate-900"><%= mobile_navbar_title %></p>
+    </div>
+
+    <div class="ms-auto flex items-center gap-1.5">
+      <%= render partial: 'layouts/admin/language_select' %>
+
+      <%= render 'layouts/admin/user_profile' %>
+    </div>
+  </nav>
+</header>
