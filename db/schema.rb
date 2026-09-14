@@ -10,25 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_000000) do
-  create_table "birds", force: :cascade do |t|
-    t.integer "age"
-    t.datetime "created_at", null: false
-    t.datetime "deleted_at"
-    t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["deleted_at"], name: "index_birds_on_deleted_at"
-  end
-
-  create_table "cats", force: :cascade do |t|
-    t.integer "age"
-    t.datetime "created_at", null: false
-    t.datetime "deleted_at"
-    t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["deleted_at"], name: "index_cats_on_deleted_at"
-  end
-
+ActiveRecord::Schema[8.1].define(version: 2026_09_14_150000) do
   create_table "dogs", force: :cascade do |t|
     t.integer "age"
     t.datetime "created_at", null: false

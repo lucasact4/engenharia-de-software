@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   mount RailsIcons::Engine, at: "/rails_icons"
-  resource :session
+  resource :session, only: %i[create destroy], path: "entrar"
+  get "entrar", to: "sessions#new", as: :new_session
   resources :passwords, param: :token
-  root "admin/dashboard#index"
+  root "home#index"
   namespace :admin do
     resources :users
     resources :dogs

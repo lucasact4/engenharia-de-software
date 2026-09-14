@@ -17,7 +17,7 @@ RSpec.describe "Sessions", type: :request do
         post session_path, params: { email_address: user.email_address, password: "123" }
       end.to change(Session, :count).by(1)
 
-      expect(response).to redirect_to(root_path(locale: I18n.locale))
+      expect(response).to redirect_to(admin_path(locale: I18n.locale))
       expect(Session.last.user).to eq(user)
     end
 

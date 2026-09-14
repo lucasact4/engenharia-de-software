@@ -16,7 +16,7 @@ RSpec.describe "Users", type: :request do
 
       expect(response).to have_http_status(200)
       expect(response.body).to include("Logout")
-      expect(response.body).to include("/session?locale=en")
+      expect(response.body).to include("/entrar?locale=en")
     end
 
     it "falls back to default locale when locale is invalid" do
@@ -24,7 +24,7 @@ RSpec.describe "Users", type: :request do
 
       expect(response).to have_http_status(200)
       expect(response.body).to include("Sair")
-      expect(response.body).to include("/session?locale=pt-br")
+      expect(response.body).to include("/entrar?locale=pt-br")
     end
   end
 

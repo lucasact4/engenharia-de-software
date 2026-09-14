@@ -1,0 +1,214 @@
+<% content_for :title, "SIS UFRPE - Comunicação e alertas do campus" %>
+
+<% access_path = authenticated? ? admin_path : new_session_path(locale: nil) %>
+<% access_label = authenticated? ? "Abrir painel" : "Entrar" %>
+
+<div class="min-h-dvh bg-[#f4f7f5] text-slate-900">
+  <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+      <%= link_to root_path(locale: nil), class: "group flex items-center gap-3 text-slate-900", aria: { label: "Página inicial do SIS UFRPE" } do %>
+        <span class="grid size-10 place-items-center rounded-2xl bg-[#153c36] text-white shadow-sm transition group-hover:bg-[#0f2f2a]">
+          <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s7-4.7 7-12a7 7 0 1 0-14 0c0 7.3 7 12 7 12Z"/>
+            <circle cx="12" cy="10" r="2.5"/>
+          </svg>
+        </span>
+        <span>
+          <span class="block text-lg font-bold leading-none tracking-tight">SIS UFRPE</span>
+          <span class="mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-slate-500">Campus em conexão</span>
+        </span>
+      <% end %>
+
+      <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex" aria-label="Navegação principal">
+        <a href="#alertas" class="!text-slate-600 transition hover:!text-[#153c36]">Alertas públicos</a>
+        <a href="#como-funciona" class="!text-slate-600 transition hover:!text-[#153c36]">Como funciona</a>
+        <a href="#sobre" class="!text-slate-600 transition hover:!text-[#153c36]">Sobre o SIS</a>
+      </nav>
+
+      <%= link_to access_path,
+        class: "inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#153c36] px-5 text-sm font-bold !text-white shadow-sm transition hover:bg-[#0f2f2a] hover:!text-white focus:outline-none focus:ring-2 focus:ring-[#153c36]/30" do %>
+        <%= access_label %>
+        <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      <% end %>
+    </div>
+  </header>
+
+  <main>
+    <section class="relative isolate overflow-hidden bg-[#f4f7f5]">
+      <div class="absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_80%_15%,rgba(36,136,120,0.18),transparent_34%),radial-gradient(circle_at_10%_80%,rgba(232,176,72,0.16),transparent_30%)]"></div>
+      <div class="mx-auto grid max-w-7xl gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-28">
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-2 rounded-full border border-[#9fc8be] bg-white/70 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#153c36] shadow-sm">
+            <span class="size-2 rounded-full bg-[#e0a331]"></span>
+            Informação que cuida do campus
+          </div>
+
+          <h1 class="mt-6 text-4xl font-bold leading-[1.08] tracking-[-0.04em] text-slate-950 sm:text-5xl lg:text-6xl">
+            Uma UFRPE mais segura começa com informação compartilhada.
+          </h1>
+
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            Acompanhe alertas públicos, comunique problemas de infraestrutura e ajude a construir um campus mais seguro, acessível e sustentável.
+          </p>
+
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="#alertas" class="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#153c36] px-6 text-sm font-bold !text-white shadow-lg shadow-[#153c36]/15 transition hover:-translate-y-0.5 hover:bg-[#0f2f2a] hover:!text-white">
+              Ver alertas do campus
+              <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <%= link_to "Entrar na plataforma", new_session_path(locale: nil), class: "inline-flex h-12 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-bold !text-slate-700 transition hover:border-[#153c36] hover:!text-[#153c36]" %>
+          </div>
+
+          <div class="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-slate-600">
+            <span class="inline-flex items-center gap-2"><span class="grid size-5 place-items-center rounded-full bg-emerald-100 text-emerald-700">✓</span> Acesso público aos alertas</span>
+            <span class="inline-flex items-center gap-2"><span class="grid size-5 place-items-center rounded-full bg-emerald-100 text-emerald-700">✓</span> Acompanhamento transparente</span>
+          </div>
+        </div>
+
+        <div class="relative mx-auto w-full max-w-lg lg:mx-0 lg:justify-self-end">
+          <div class="absolute -inset-5 -z-10 rounded-[2.5rem] bg-[#153c36]/10 blur-2xl"></div>
+          <div class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-2xl shadow-slate-900/10">
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#277d6e]">Visão pública</p>
+                <h2 class="mt-1 text-lg font-bold text-slate-900">Situação do campus</h2>
+              </div>
+              <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
+                <span class="size-2 animate-pulse rounded-full bg-emerald-500"></span> Atualizado
+              </span>
+            </div>
+
+            <div class="space-y-3 p-4 sm:p-6">
+              <article class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+                <div class="flex items-start gap-3">
+                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700">
+                    <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M8.5 14.5A6 6 0 1 1 15.5 14.5L14 16H10l-1.5-1.5Z"/></svg>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <h3 class="font-bold text-slate-900">Iluminação</h3>
+                      <span class="rounded-full bg-amber-200/70 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wide text-amber-800">Em análise</span>
+                    </div>
+                    <p class="mt-1 text-sm leading-6 text-slate-600">Verificação preventiva em área de circulação noturna.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="rounded-2xl border border-sky-200 bg-sky-50/70 p-4">
+                <div class="flex items-start gap-3">
+                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-700">
+                    <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="M9 22v-5l-2-3 2-4 3 2 3-2 2 3M12 12v5l3 5M12 17l-3 5"/></svg>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <h3 class="font-bold text-slate-900">Acessibilidade</h3>
+                      <span class="rounded-full bg-sky-200/70 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wide text-sky-800">Recebido</span>
+                    </div>
+                    <p class="mt-1 text-sm leading-6 text-slate-600">Solicitação de avaliação em rota acessível do campus.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                <div class="flex items-start gap-3">
+                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"/><path d="m9 12 2 2 4-4"/></svg>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <h3 class="font-bold text-slate-900">Segurança</h3>
+                      <span class="rounded-full bg-emerald-200/70 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wide text-emerald-800">Resolvido</span>
+                    </div>
+                    <p class="mt-1 text-sm leading-6 text-slate-600">Atualização concluída pela equipe responsável.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <p class="border-t border-slate-100 bg-slate-50 px-6 py-3 text-center text-xs text-slate-500">Conteúdo demonstrativo da futura área de alertas públicos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="alertas" class="border-y border-slate-200 bg-white py-20 sm:py-24">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div class="max-w-2xl">
+          <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#277d6e]">Alertas públicos</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Informação útil, aberta para toda a comunidade.</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">O portal público será o ponto de encontro para avisos, atualizações e orientações que impactam a rotina no campus.</p>
+        </div>
+
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          <% [
+            ["Infraestrutura", "Iluminação, calçadas, vazamentos e condições dos prédios em um só fluxo de acompanhamento.", "#fff7e6", "#9a5b00"],
+            ["Mobilidade e acesso", "Informações que ajudam a comunidade a circular pelo campus com mais autonomia e segurança.", "#eaf6f3", "#176355"],
+            ["Segurança do campus", "Comunicados preventivos e orientações claras para situações que exigem atenção da comunidade.", "#eef3fa", "#315984"]
+          ].each_with_index do |(title, description, background, color), index| %>
+            <article class="rounded-3xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/5">
+              <span class="grid size-11 place-items-center rounded-2xl text-sm font-extrabold" style="background-color: <%= background %>; color: <%= color %>"><%= index + 1 %></span>
+              <h3 class="mt-5 text-xl font-bold text-slate-900"><%= title %></h3>
+              <p class="mt-3 leading-7 text-slate-600"><%= description %></p>
+            </article>
+          <% end %>
+        </div>
+      </div>
+    </section>
+
+    <section id="como-funciona" class="py-20 sm:py-24">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div class="lg:sticky lg:top-28">
+            <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#277d6e]">Como funciona</p>
+            <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Da observação à solução, com transparência.</h2>
+            <p class="mt-4 text-lg leading-8 text-slate-600">O SIS aproxima a comunidade acadêmica das equipes responsáveis pelo cuidado do campus.</p>
+          </div>
+
+          <ol class="space-y-4">
+            <% [
+              ["01", "Comunique", "Usuários identificados registram uma ocorrência com categoria, foto e localização aproximada."],
+              ["02", "Acompanhe", "Cada demanda apresenta um status claro: recebida, em análise ou resolvida."],
+              ["03", "Compartilhe", "Atualizações de interesse coletivo ficam disponíveis no portal público para toda a comunidade."]
+            ].each do |number, title, description| %>
+              <li class="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-[4rem_1fr] sm:items-start">
+                <span class="text-2xl font-black tracking-tight text-[#d69827]"><%= number %></span>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900"><%= title %></h3>
+                  <p class="mt-2 leading-7 text-slate-600"><%= description %></p>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="sobre" class="bg-[#153c36] py-20 text-white sm:py-24">
+      <div class="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
+        <div class="max-w-3xl">
+          <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#f2bd57]">Sobre o projeto</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tecnologia a serviço da cidadania acadêmica.</h2>
+          <p class="mt-5 text-lg leading-8 text-emerald-50/80">O SIS é uma proposta de gestão urbana colaborativa para conectar estudantes, professores, funcionários, equipes de segurança e visitantes no cuidado diário com a UFRPE.</p>
+        </div>
+        <%= link_to "Acessar o SIS", access_path, class: "inline-flex h-12 items-center justify-center rounded-full bg-[#f2bd57] px-7 text-sm font-bold !text-[#153c36] transition hover:bg-[#ffd47c] hover:!text-[#153c36]" %>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#0d2925] text-emerald-50/75">
+    <div class="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">
+      <div class="flex items-center gap-3">
+        <span class="grid size-9 place-items-center rounded-xl bg-white/10 text-white">
+          <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-4.7 7-12a7 7 0 1 0-14 0c0 7.3 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        </span>
+        <div>
+          <p class="font-bold text-white">SIS UFRPE</p>
+          <p class="text-xs">Sistema de Comunicação e Alertas</p>
+        </div>
+      </div>
+      <p class="text-sm">Projeto acadêmico de Engenharia de Software - UFRPE</p>
+    </div>
+  </footer>
+</div>
