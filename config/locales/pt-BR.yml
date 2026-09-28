@@ -276,8 +276,8 @@ pt-br:
       role: 'Perfil'
       entity_category: 'Categoria de Módulos'
       dog: 
-        one: 'Cachorro'
-        other: 'Cachorros'
+        one: 'Aviso'
+        other: 'Avisos'
     attributes:
       user:
         name: "Nome"
@@ -468,5 +468,5 @@ pt-br:
     single: 'Administrador'
     plural: 'Administradores'
   dogs:
-    single: 'Cachorro'
-    plural: 'Cachorros'
+    single: 'Aviso'
+    plural: 'Avisos'

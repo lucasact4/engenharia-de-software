@@ -1,4 +1,4 @@
-<% content_for :title, "SIS UFRPE - Comunicação e alertas do campus" %>
+<% content_for :title, "SGU UFRPE - Comunicação e alertas do campus" %>
 
 <% access_path = authenticated? ? admin_path : new_session_path(locale: nil) %>
 <% access_label = authenticated? ? "Abrir painel" : "Entrar" %>
@@ -6,7 +6,7 @@
 <div class="min-h-dvh bg-[#f4f7f5] text-slate-900">
   <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur">
     <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-      <%= link_to root_path(locale: nil), class: "group flex items-center gap-3 text-slate-900", aria: { label: "Página inicial do SIS UFRPE" } do %>
+      <%= link_to root_path(locale: nil), class: "group flex items-center gap-3 text-slate-900", aria: { label: "Página inicial do SGU UFRPE" } do %>
         <span class="grid size-10 place-items-center rounded-2xl bg-[#153c36] text-white shadow-sm transition group-hover:bg-[#0f2f2a]">
           <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s7-4.7 7-12a7 7 0 1 0-14 0c0 7.3 7 12 7 12Z"/>
@@ -14,7 +14,7 @@
           </svg>
         </span>
         <span>
-          <span class="block text-lg font-bold leading-none tracking-tight">SIS UFRPE</span>
+          <span class="block text-lg font-bold leading-none tracking-tight">SGU UFRPE</span>
           <span class="mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-slate-500">Campus em conexão</span>
         </span>
       <% end %>
@@ -22,7 +22,7 @@
       <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex" aria-label="Navegação principal">
         <a href="#alertas" class="!text-slate-600 transition hover:!text-[#153c36]">Alertas públicos</a>
         <a href="#como-funciona" class="!text-slate-600 transition hover:!text-[#153c36]">Como funciona</a>
-        <a href="#sobre" class="!text-slate-600 transition hover:!text-[#153c36]">Sobre o SIS</a>
+        <a href="#sobre" class="!text-slate-600 transition hover:!text-[#153c36]">Sobre o SGU</a>
       </nav>
 
       <%= link_to access_path,
@@ -163,7 +163,7 @@
           <div class="lg:sticky lg:top-28">
             <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#277d6e]">Como funciona</p>
             <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Da observação à solução, com transparência.</h2>
-            <p class="mt-4 text-lg leading-8 text-slate-600">O SIS aproxima a comunidade acadêmica das equipes responsáveis pelo cuidado do campus.</p>
+            <p class="mt-4 text-lg leading-8 text-slate-600">O SGU aproxima a comunidade acadêmica das equipes responsáveis pelo cuidado do campus.</p>
           </div>
 
           <ol class="space-y-4">
@@ -190,9 +190,9 @@
         <div class="max-w-3xl">
           <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#f2bd57]">Sobre o projeto</p>
           <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tecnologia a serviço da cidadania acadêmica.</h2>
-          <p class="mt-5 text-lg leading-8 text-emerald-50/80">O SIS é uma proposta de gestão urbana colaborativa para conectar estudantes, professores, funcionários, equipes de segurança e visitantes no cuidado diário com a UFRPE.</p>
+          <p class="mt-5 text-lg leading-8 text-emerald-50/80">O SGU é uma proposta de gestão urbana colaborativa para conectar estudantes, professores, funcionários, equipes de segurança e visitantes no cuidado diário com a UFRPE.</p>
         </div>
-        <%= link_to "Acessar o SIS", access_path, class: "inline-flex h-12 items-center justify-center rounded-full bg-[#f2bd57] px-7 text-sm font-bold !text-[#153c36] transition hover:bg-[#ffd47c] hover:!text-[#153c36]" %>
+        <%= link_to "Acessar o SGU", access_path, class: "inline-flex h-12 items-center justify-center rounded-full bg-[#f2bd57] px-7 text-sm font-bold !text-[#153c36] transition hover:bg-[#ffd47c] hover:!text-[#153c36]" %>
       </div>
     </section>
   </main>
@@ -204,7 +204,7 @@
           <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-4.7 7-12a7 7 0 1 0-14 0c0 7.3 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
         </span>
         <div>
-          <p class="font-bold text-white">SIS UFRPE</p>
+          <p class="font-bold text-white">SGU UFRPE</p>
           <p class="text-xs">Sistema de Comunicação e Alertas</p>
         </div>
       </div>

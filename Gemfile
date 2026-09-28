@@ -77,6 +77,11 @@ group :development do
   # Rails default GEMS
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # # Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails in any Rack app as Rack middleware.
+  gem "better_errors"
+  # # Provides the Binding#of_caller method. Using binding_of_caller we can grab bindings from higher up the call stack and evaluate code in that context. Allows access to bindings arbitrarily far up the call stack, not limited to just the immediate caller. Recommended for use only in debugging situations. Do not use this in production apps.
+  gem "binding_of_caller"
 end
 
 group :test do

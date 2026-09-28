@@ -15,6 +15,24 @@ Rails.application.configure do
   # Enable server timing.
   config.server_timing = true
 
+  # BetterErrors config
+  # allow docker ip to run better Erros
+  BetterErrors::Middleware.allow_ip! "172.0.0.0/8"
+  # opne file on vscode and host path to file
+
+  if defined?(BetterErrors)
+    # 'C:/Users/diogo/ruby/rails_base'
+    if ENV['PROJECT_HOST_PATH']
+      BetterErrors.editor = proc { |full_path, line|
+        full_path = full_path.sub(Rails.root.to_s, ENV['PROJECT_HOST_PATH'])
+        # for sublime
+        # "subl://open?url=file://#{full_path}&line=#{line}"
+        # for vscode
+        "vscode://file///#{full_path}:#{line}"
+      }
+    end
+  end
+
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
   # Run rails dev:cache to toggle Action Controller caching.
   if Rails.root.join("tmp/caching-dev.txt").exist?
