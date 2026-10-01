@@ -1,0 +1,51 @@
+# Capturas reais das telas existentes e paleta do SGU.
+#
+# imagem: caminho relativo a app/assets/images (arquivos em app/assets/images/presentation/)
+# estado: estado da tela capturada (não da captura)
+# demonstrativo: true quando a tela mostra dados de exemplo, não dados reais.
+#
+# Para regenerar as capturas, siga config/presentation/LEIAME.md.
+
+capturado_em: 2026-09-30
+commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
+
+capturas:
+  - id: landing
+    titulo: "Landing pública"
+    rota: "/"
+    imagem: "presentation/landing-desktop.png"
+    imagem_ampliada: "presentation/landing-completa.png"
+    alt: "Página inicial pública do SGU UFRPE com o título “Uma UFRPE mais segura começa com informação compartilhada” e um painel de alertas de exemplo."
+    estado: implementado
+    demonstrativo: true
+    nota: "Os alertas do painel são exemplos estáticos."
+  - id: entrar
+    titulo: "Login em /entrar"
+    rota: "/entrar"
+    imagem: "presentation/entrar-desktop.png"
+    alt: "Tela de login do SGU UFRPE com campos de e-mail e senha e painel verde com a frase “Cuidar do campus é uma construção coletiva”."
+    estado: implementado
+    demonstrativo: false
+    nota: "O aviso de credenciais do ambiente de desenvolvimento foi ocultado na captura."
+  - id: landing-mobile
+    titulo: "Landing no celular"
+    rota: "/"
+    imagem: "presentation/landing-mobile.png"
+    alt: "Página inicial do SGU em largura de celular, com o título e os botões empilhados."
+    estado: implementado
+    demonstrativo: true
+    nota: "Largura de 390 px."
+
+paleta:
+  - nome: "Verde SGU"
+    hex: "#153C36"
+    uso: "Marca, botões e fundos de destaque"
+  - nome: "Verde-água"
+    hex: "#277D6E"
+    uso: "Rótulos e realces"
+  - nome: "Dourado"
+    hex: "#F2BD57"
+    uso: "Detalhes e chamadas"
+  - nome: "Névoa"
+    hex: "#F4F7F5"
+    uso: "Fundo das páginas"

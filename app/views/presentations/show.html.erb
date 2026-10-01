@@ -1,0 +1,133 @@
+<% entrega = @presentation.entrega %>
+<% content_for :title, "SGU — #{entrega[:entrega]}" %>
+<% content_for :description, "Apresentação do SGU (Sistema de Gerenciamento Urbano) para a disciplina de #{entrega[:disciplina]} da UFRPE." %>
+
+<div class="apr"
+     data-controller="presentation"
+     data-action="click->presentation#followSlideLink">
+  <a class="apr-skip" href="#apr-deck">Pular para os slides</a>
+
+  <header class="apr-bar">
+    <%= link_to root_path(locale: nil), class: "apr-brand", aria: { label: "Abrir a página inicial do SGU" } do %>
+      <span class="apr-brand__mark" aria-hidden="true"><%= render "presentations/shared/pin_icon" %></span>
+      <span class="apr-brand__text">
+        <strong>SGU</strong>
+        <span>2ª entrega · Engenharia de Software</span>
+      </span>
+    <% end %>
+
+    <nav class="apr-bar__actions" aria-label="Ações da apresentação">
+      <button type="button" class="apr-btn" hidden
+              data-presentation-target="enhanced"
+              data-action="presentation#openIndex"
+              aria-haspopup="dialog">
+        <%= render "presentations/shared/icon", name: "list" %><span>Índice</span>
+      </button>
+      <button type="button" class="apr-btn" hidden
+              data-presentation-target="enhanced modeButton"
+              data-action="presentation#toggleMode">
+        <%= render "presentations/shared/icon", name: "book" %><span data-presentation-target="modeLabel">Modo leitura</span>
+      </button>
+      <button type="button" class="apr-btn" hidden
+              data-presentation-target="fullscreenButton"
+              data-action="presentation#toggleFullscreen"
+              aria-pressed="false">
+        <%= render "presentations/shared/icon", name: "expand" %><span>Tela cheia</span>
+      </button>
+      <button type="button" class="apr-btn" hidden
+              data-presentation-target="enhanced"
+              data-action="presentation#print">
+        <%= render "presentations/shared/icon", name: "printer" %><span>Imprimir / salvar PDF</span>
+      </button>
+      <%= link_to root_path(locale: nil), class: "apr-btn apr-btn--primary apr-local-only" do %>
+        <span>Abrir o SGU</span><%= render "presentations/shared/icon", name: "arrow" %>
+      <% end %>
+    </nav>
+  </header>
+
+  <main id="apr-deck" class="apr-deck" tabindex="-1"
+        data-action="touchstart->presentation#touchStart:passive touchend->presentation#touchEnd:passive">
+    <nav class="apr-toc" aria-labelledby="apr-toc-titulo">
+      <h2 id="apr-toc-titulo" class="apr-toc__title">Sumário</h2>
+      <%= render "presentations/shared/slide_list", presentation: @presentation %>
+    </nav>
+
+    <% @presentation.slides.each do |slide| %>
+      <section id="<%= slide.dom_id %>"
+               class="apr-slide <%= slide.dark ? 'apr-slide--dark' : 'apr-slide--light' %> apr-slide--<%= slide.id %>"
+               aria-labelledby="<%= slide.heading_id %>"
+               tabindex="-1"
+               data-presentation-target="slide"
+               data-appendix="<%= slide.appendix %>"
+               data-label="<%= slide.label %>"
+               data-title="<%= slide.title %>">
+        <div class="apr-slide__inner">
+          <%= render slide.partial, presentation: @presentation, slide: slide %>
+        </div>
+        <p class="apr-slide__folio" aria-hidden="true">
+          <span>SGU · <%= entrega[:entrega] %></span>
+          <span><%= slide.appendix ? "Apêndice #{slide.label}" : "#{slide.label} / #{format('%02d', @presentation.main_slides.size)}" %></span>
+        </p>
+      </section>
+    <% end %>
+  </main>
+
+  <footer class="apr-nav" hidden data-presentation-target="enhanced">
+    <button type="button" class="apr-nav__btn"
+            data-presentation-target="prevButton"
+            data-action="presentation#previous"
+            aria-label="Slide anterior">
+      <%= render "presentations/shared/icon", name: "chevron-left" %>
+    </button>
+    <p class="apr-nav__counter" data-presentation-target="counter">1 / <%= @presentation.main_slides.size %></p>
+    <button type="button" class="apr-nav__btn"
+            data-presentation-target="nextButton"
+            data-action="presentation#next"
+            aria-label="Próximo slide">
+      <%= render "presentations/shared/icon", name: "chevron-right" %>
+    </button>
+    <p class="apr-nav__title" data-presentation-target="currentTitle"></p>
+    <div class="apr-nav__progress" aria-hidden="true"><span data-presentation-target="progress"></span></div>
+  </footer>
+
+  <p class="apr-sr-only" aria-live="polite" aria-atomic="true" data-presentation-target="announcer"></p>
+
+  <dialog class="apr-dialog apr-index" aria-labelledby="apr-index-titulo"
+          data-presentation-target="indexDialog"
+          data-action="click->presentation#closeOnBackdrop">
+    <div class="apr-dialog__head">
+      <h2 id="apr-index-titulo">Índice</h2>
+      <button type="button" class="apr-icon-btn" data-action="presentation#closeIndex" aria-label="Fechar índice">
+        <%= render "presentations/shared/icon", name: "x" %>
+      </button>
+    </div>
+    <%= render "presentations/shared/slide_list", presentation: @presentation, linked: true %>
+    <div class="apr-index__foot">
+      <dl class="apr-shortcuts">
+        <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>slide anterior / próximo</dd></div>
+        <div><dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd>primeiro / último</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>tela cheia</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>fecha janelas</dd></div>
+      </dl>
+      <p class="apr-index__links">
+        <%= presentation_link("GitHub", entrega.dig(:links, :github), class: "apr-btn apr-btn--ghost") %>
+        <%= presentation_link("Trello", entrega.dig(:links, :trello), class: "apr-btn apr-btn--ghost") %>
+      </p>
+    </div>
+  </dialog>
+
+  <dialog class="apr-dialog apr-lightbox" aria-labelledby="apr-lightbox-legenda"
+          data-presentation-target="lightbox"
+          data-action="click->presentation#closeOnBackdrop close->presentation#clearLightbox">
+    <div class="apr-lightbox__bar">
+      <p id="apr-lightbox-legenda" class="apr-lightbox__caption" data-presentation-target="lightboxCaption"></p>
+      <button type="button" class="apr-btn apr-btn--ghost" data-action="presentation#toggleActualSize" aria-pressed="false" data-presentation-target="actualSizeButton">
+        Tamanho real
+      </button>
+      <button type="button" class="apr-icon-btn" data-action="presentation#closeLightbox" aria-label="Fechar imagem ampliada">
+        <%= render "presentations/shared/icon", name: "x" %>
+      </button>
+    </div>
+    <div class="apr-lightbox__media" data-presentation-target="lightboxMedia" tabindex="0" aria-label="Área da imagem ampliada; use as setas para rolar"></div>
+  </dialog>
+</div>

@@ -1,0 +1,87 @@
+# Dados gerais da entrega exibidos na capa, no encerramento e no checklist.
+# Guia de manutenção: config/presentation/LEIAME.md
+#
+# Estados válidos em todos os arquivos desta pasta:
+#   implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
+
+projeto:
+  sigla: "SGU"
+  nome: "Sistema de Gerenciamento Urbano"
+  recorte: "Comunicação e acompanhamento de ocorrências no campus da UFRPE"
+  aviso: "Projeto acadêmico da disciplina. Não é um serviço oficial da UFRPE."
+
+instituicao: "Universidade Federal Rural de Pernambuco — UFRPE"
+disciplina: "Engenharia de Software"
+professora: "Suzana Sampaio"
+entrega: "Segunda Entrega de Projeto — Status Report 2"
+prazo: "19 de outubro de 2026, às 18h"
+duracao_maxima: "7 minutos"
+# Preencha quando a data da apresentação em sala for confirmada (ex.: "20 de outubro de 2026").
+data_apresentacao:
+
+equipe:
+  - "Lucas Vitor"
+  - "Guilherme Santiago"
+  - "Jose de Lemos"
+  - "Victor Novais"
+  - "Alisson Cerqueira"
+
+# Links públicos. Nunca use caminhos locais (C:\, \\wsl, /mnt, /home).
+links:
+  github: "https://github.com/lucasact4/engenharia-de-software"
+  trello: "https://trello.com/b/1cLXCnNU/sgu-sistema-de-gerenciamento-urbano"
+
+# Itens exigidos pela professora na segunda entrega.
+# "estado" é a avaliação técnica atual; "confirmado_pela_equipe" deve virar true
+# somente depois que a equipe revisar o item.
+checklist:
+  - item: "Protótipo com o conceito visual do projeto"
+    estado: parcial
+    onde: conceito-visual
+    observacao: "Landing e login implementados no Rails; alertas da landing são demonstrativos."
+    confirmado_pela_equipe: false
+  - item: "GitHub criado e estruturado"
+    estado: implementado
+    onde: gestao
+    observacao: "Repositório com CI (RSpec, RuboCop, Brakeman, auditoria do Importmap) e Dependabot."
+    confirmado_pela_equipe: false
+  - item: "Código contemplando duas funcionalidades completas"
+    estado: aguardando_decisao
+    onde: funcionalidades
+    observacao: "A equipe ainda precisa escolher e validar as duas funcionalidades."
+    confirmado_pela_equipe: false
+  - item: "Imagem de uma retrospectiva"
+    estado: aguardando_evidencia
+    onde: retrospectiva
+    observacao: "Adicionar a imagem real da retrospectiva."
+    confirmado_pela_equipe: false
+  - item: "Modelo conceitual"
+    estado: aguardando_evidencia
+    onde: diagramas
+    observacao: "Não confundir com o fluxograma (#5) nem com o diagrama de casos de uso (#14)."
+    confirmado_pela_equipe: false
+  - item: "Evidência de reuniões de monitoramento"
+    estado: aguardando_evidencia
+    onde: gestao
+    observacao: "Registrar data, participantes e pauta de cada reunião."
+    confirmado_pela_equipe: false
+  - item: "O que foi feito desde a última entrega"
+    estado: parcial
+    onde: evolucao
+    observacao: "Linha do tempo baseada nos commits; falta confirmar o marco da primeira entrega."
+    confirmado_pela_equipe: false
+  - item: "O que será feito até a próxima entrega"
+    estado: parcial
+    onde: proximos-passos
+    observacao: "Próximos passos listados; o marco demonstrável aguarda decisão."
+    confirmado_pela_equipe: false
+  - item: "O que a equipe aprendeu no período"
+    estado: aguardando_evidencia
+    onde: retrospectiva
+    observacao: "Depende do registro da retrospectiva."
+    confirmado_pela_equipe: false
+  - item: "Apresentação de no máximo 7 minutos"
+    estado: parcial
+    onde: roteiro
+    observacao: "Roteiro estimado dentro do limite (ver apêndice); ensaio cronometrado pendente."
+    confirmado_pela_equipe: false

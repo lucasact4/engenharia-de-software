@@ -1,0 +1,37 @@
+# As duas funcionalidades completas exigidas na segunda entrega.
+# A escolha é da equipe. Landing e login NÃO foram selecionados automaticamente.
+#
+# Para cada funcionalidade, preencha quando houver evidência:
+#   nome:        nome curto da funcionalidade
+#   estado:      implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
+#   requisitos:  ["RF001", ...] vindos do card #13
+#   jornada:     passos que a pessoa usuária executa, do início ao fim
+#   codigo:      caminhos no repositório (ex.: "app/controllers/occurrences_controller.rb")
+#   testes:      specs que validam a funcionalidade (ex.: "spec/requests/occurrences_spec.rb")
+#   captura:     imagem em app/assets/images/presentation/ (ex.: "presentation/ocorrencia.png")
+#   validacao:   como a equipe validou (teste manual, revisão, demonstração)
+
+criterios:
+  - "Jornada completa na interface, do início ao resultado"
+  - "Dados persistidos com validações e regras do SGU"
+  - "Controle de acesso adequado ao perfil"
+  - "Testes automatizados da funcionalidade"
+  - "Evidência: captura ou demonstração"
+
+itens:
+  - nome:
+    estado: aguardando_decisao
+    requisitos: []
+    jornada: []
+    codigo: []
+    testes: []
+    captura:
+    validacao:
+  - nome:
+    estado: aguardando_decisao
+    requisitos: []
+    jornada: []
+    codigo: []
+    testes: []
+    captura:
+    validacao:

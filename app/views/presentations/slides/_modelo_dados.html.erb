@@ -1,0 +1,45 @@
+<%# Espelha db/schema.rb. O spec da apresentação falha se uma tabela nova não aparecer aqui. %>
+<% tables = [
+  { name: "users", x: 10, columns: [ [ "id", "PK" ], [ "email_address", "único" ], [ "password_digest", "" ], [ "admin", "boolean" ], [ "deleted_at", "exclusão lógica" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "sessions", x: 290, columns: [ [ "id", "PK" ], [ "user_id", "FK" ], [ "ip_address", "" ], [ "user_agent", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "dogs", x: 560, example: true, columns: [ [ "id", "PK" ], [ "name", "" ], [ "age", "" ], [ "deleted_at", "exclusão lógica" ], [ "created_at", "" ], [ "updated_at", "" ] ] }
+] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "banco de dados",
+      title: "Modelo de dados atual (db/schema.rb)",
+      lead: "Registro do que existe hoje. Não é o modelo conceitual do SGU: ainda não há tabela de ocorrências." %>
+
+<figure class="apr-figure apr-figure--svg apr-figure--wide">
+  <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: modelo de dados atual">
+    <svg class="apr-er" viewBox="0 0 760 214" role="img" aria-labelledby="apr-er-title apr-er-desc">
+      <title id="apr-er-title">Modelo de dados atual</title>
+      <desc id="apr-er-desc">Tabela users com relação um para muitos com sessions por meio de user_id. Tabela dogs isolada, usada como exemplo do template.</desc>
+      <path class="apr-er__rel" d="M230 52 H260 V74 H290"/>
+      <text x="236" y="46" class="apr-er__card">1</text>
+      <text x="276" y="68" class="apr-er__card">N</text>
+      <% tables.each do |table| %>
+        <% height = 34 + table[:columns].size * 22 + 6 %>
+        <g class="apr-er__table <%= 'apr-er__table--example' if table[:example] %>">
+          <rect x="<%= table[:x] %>" y="4" width="<%= table[:example] ? 190 : 220 %>" height="<%= height %>" rx="10"/>
+          <path d="M<%= table[:x] %> 36 H<%= table[:x] + (table[:example] ? 190 : 220) %>" class="apr-er__sep"/>
+          <text x="<%= table[:x] + 14 %>" y="26" class="apr-er__name"><%= table[:name] %><%= " · exemplo" if table[:example] %></text>
+          <% table[:columns].each_with_index do |(column, note), index| %>
+            <text x="<%= table[:x] + 14 %>" y="<%= 56 + index * 22 %>" class="apr-er__col"><%= column %></text>
+            <% if note.present? %>
+              <text x="<%= table[:x] + (table[:example] ? 176 : 206) %>" y="<%= 56 + index * 22 %>" class="apr-er__note" text-anchor="end"><%= note %></text>
+            <% end %>
+          <% end %>
+        </g>
+      <% end %>
+    </svg>
+    <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
+  </button>
+  <figcaption class="apr-figure__caption">
+    <span class="apr-figure__title">Tabelas: <%= tables.map { |t| t[:name] }.to_sentence(last_word_connector: " e ") %></span>
+  </figcaption>
+</figure>
+
+<ul class="apr-footnotes" role="list">
+  <li><code>users</code> e <code>sessions</code> sustentam o login atual (herdado da base Rails).</li>
+  <li><code>dogs</code> é o CRUD de exemplo do template e deve ser removido quando a ocorrência for modelada.</li>
+</ul>

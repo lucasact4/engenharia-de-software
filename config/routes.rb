@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get "entrar", to: "sessions#new", as: :new_session
   resources :passwords, param: :token
   root "home#index"
+  get "apresentacao", to: "presentations#show", as: :presentation
   namespace :admin do
     resources :users
     resources :dogs

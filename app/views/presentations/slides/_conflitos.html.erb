@@ -1,0 +1,44 @@
+<% r = presentation.requisitos %>
+<% doc = r[:documento] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "requisitos",
+      title: "Requisitos em conflito",
+      lead: "Propostas posteriores ainda não aprovadas. Nenhuma delas foi tratada como decisão nesta apresentação." %>
+
+<div class="apr-table-wrap">
+  <table class="apr-table">
+    <caption class="apr-sr-only">Conflitos entre versões dos requisitos do SGU</caption>
+    <thead>
+      <tr>
+        <th scope="col">Referência</th>
+        <th scope="col">Tema</th>
+        <th scope="col">Versão anterior</th>
+        <th scope="col">Proposta posterior</th>
+        <th scope="col">Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% r[:conflitos].each do |conflito| %>
+        <tr>
+          <th scope="row"><%= conflito[:id] %></th>
+          <td><%= conflito[:tema] %></td>
+          <td><%= conflito[:anterior] %></td>
+          <td><%= conflito[:proposta] %></td>
+          <td><%= presentation_state(conflito[:estado], short: true) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<p class="apr-doc-ref">
+  <span class="apr-label">Documento de requisitos</span>
+  <% if doc[:titulo].present? %>
+    <%= presentation_link([ doc[:titulo], doc[:versao] && "versão #{doc[:versao]}" ].compact.join(" · "), doc[:url]) %>
+    <% if doc[:origem].present? %><span class="apr-source"><%= doc[:origem] %></span><% end %>
+  <% else %>
+    <%= presentation_state(:aguardando_evidencia) %>
+    <%= presentation_link("Card ##{r.dig(:card_refinamento, :numero)} — #{r.dig(:card_refinamento, :titulo)}", r.dig(:card_refinamento, :url), class: "apr-card-link") %>
+  <% end %>
+</p>
+<%= presentation_update_note("requisitos.yml", "conflitos e documento (título, versão, origem).") %>

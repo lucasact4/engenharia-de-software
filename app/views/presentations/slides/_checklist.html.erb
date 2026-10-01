@@ -1,0 +1,36 @@
+<% itens = presentation.entrega[:checklist] %>
+<% confirmados = itens.count { |i| i[:confirmado_pela_equipe] } %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "checklist",
+      title: "Atendimento aos itens da segunda entrega",
+      lead: "Avaliação técnica do estado atual. #{confirmados} de #{itens.size} itens confirmados pela equipe." %>
+
+<div class="apr-table-wrap">
+  <table class="apr-table">
+    <caption class="apr-sr-only">Itens exigidos na segunda entrega, estado e onde estão na apresentação</caption>
+    <thead>
+      <tr>
+        <th scope="col">Item exigido</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Observação</th>
+        <th scope="col">Slide</th>
+        <th scope="col">Equipe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% itens.each do |item| %>
+        <% alvo = presentation.slide(item[:onde]) %>
+        <tr>
+          <th scope="row"><%= item[:item] %></th>
+          <td><%= presentation_state(item[:estado], short: true) %></td>
+          <td><%= item[:observacao] %></td>
+          <td>
+            <% if alvo %><a class="apr-more" href="#<%= alvo.dom_id %>"><%= alvo.appendix ? "Apêndice #{alvo.label}" : alvo.label %></a><% end %>
+          </td>
+          <td><%= item[:confirmado_pela_equipe] ? "Confirmado" : "Pendente" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<%= presentation_update_note("entrega.yml", "checklist (estado e confirmado_pela_equipe).") %>

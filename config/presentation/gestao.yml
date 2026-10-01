@@ -1,0 +1,38 @@
+# Gestão do projeto: ferramentas, cards e reuniões de monitoramento.
+
+cards:
+  - numero: 11
+    titulo: "Apresentação da segunda entrega"
+    url:
+    estado: parcial
+  - numero: 13
+    titulo: "Refinar RFs e RNFs do SGU"
+    url: "https://trello.com/c/NAOYejRl/13-requisitos-refinar-rfs-e-rnfs-do-sgu"
+    estado: aguardando_evidencia
+  - numero: 5
+    titulo: "Revisar fluxo de ocorrências e emergências"
+    url: "https://trello.com/c/B5FgQnRl/5-diagrama-revisar-fluxo-de-ocorr%C3%AAncias-e-emerg%C3%AAncias"
+    estado: aguardando_evidencia
+  - numero: 14
+    titulo: "Criar diagrama de casos de uso do SGU"
+    url: "https://trello.com/c/YdQk4x6A/14-uml-criar-diagrama-de-casos-de-uso-do-sgu"
+    estado: aguardando_evidencia
+
+praticas:
+  - titulo: "Branch por card"
+    texto: "Trabalho do card #11 isolado na branch card-11."
+  - titulo: "Integração contínua"
+    texto: "RSpec, RuboCop, Brakeman e auditoria do Importmap a cada pull request."
+  - titulo: "Dependências monitoradas"
+    texto: "Dependabot abre atualizações semanais de gems e actions."
+
+# Reuniões de monitoramento. Registre somente reuniões que aconteceram e têm evidência.
+# Formato:
+#   - data: 2026-10-06
+#     tipo: "Monitoramento semanal"
+#     participantes: ["Lucas Vitor", "..."]
+#     pauta: ["...", "..."]
+#     decisoes: ["..."]
+#     evidencia_imagem: "presentation/reunioes/2026-10-06.png"   # opcional
+#     evidencia_url:                                              # opcional, link público
+reunioes: []

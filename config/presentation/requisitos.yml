@@ -1,0 +1,103 @@
+# Problema, proposta, escopo e regras. A consolidação depende do card #13.
+# Não marque propostas como aprovadas sem evidência (ata, card concluído ou documento versionado).
+
+card_refinamento:
+  numero: 13
+  titulo: "Refinar RFs e RNFs do SGU"
+  url: "https://trello.com/c/NAOYejRl/13-requisitos-refinar-rfs-e-rnfs-do-sgu"
+
+# Documento oficial de requisitos (preencher quando o card #13 for concluído).
+documento:
+  titulo:
+  versao:
+  origem:     # ex.: "Google Docs — versão exportada em 15/10/2026" ou URL pública
+  url:
+
+problema:
+  frase: "Situações de infraestrutura, acessibilidade e segurança no campus precisam chegar a quem pode agir — e a comunidade precisa acompanhar o que acontece depois."
+  dores:
+    - titulo: "Registro disperso"
+      texto: "Sem um canal único, o relato tende a depender de conversas, grupos e contatos pessoais."
+    - titulo: "Retorno invisível"
+      texto: "Quem comunica um problema precisa saber se ele foi recebido, analisado ou resolvido."
+    - titulo: "Alertas sem alcance"
+      texto: "Avisos de interesse coletivo precisam chegar de forma organizada a toda a comunidade."
+  fonte: "Premissas que orientam o projeto — revisar com o documento de requisitos (#13)."
+
+publico:
+  - "Estudantes"
+  - "Professores"
+  - "Funcionários"
+  - "Equipes de segurança"
+  - "Visitantes"
+
+# Fluxo de valor apresentado na landing (app/views/home/index.html.erb).
+fluxo_valor:
+  - titulo: "Comunique"
+    texto: "Registro com categoria, foto e localização aproximada."
+  - titulo: "Acompanhe"
+    texto: "Status claro para quem registrou."
+  - titulo: "Compartilhe"
+    texto: "Atualizações coletivas no portal público."
+
+# Dimensões independentes de uma ocorrência.
+dimensoes:
+  - nome: "Categoria"
+    pergunta: "Sobre o quê?"
+    exemplos: ["Infraestrutura", "Mobilidade e acesso", "Segurança"]
+    estado: planejado
+    nota: "Exemplos usados na landing."
+  - nome: "Severidade"
+    pergunta: "Qual a gravidade/impacto?"
+    exemplos: ["Leve", "Comum", "Moderado", "Grave"]
+    estado: aguardando_decisao
+    nota: "Escala proposta pelo responsável; falta consolidar os critérios com a equipe. Não confundir com prioridade de atendimento."
+  - nome: "Status"
+    pergunta: "Em que etapa?"
+    exemplos: ["Recebida", "Em análise", "Resolvida"]
+    estado: planejado
+    nota: "Etapas usadas na landing."
+  - nome: "Visibilidade"
+    pergunta: "Quem pode ver?"
+    exemplos: ["Público", "Interno", "Privado"]
+    estado: aguardando_decisao
+    nota: "Proposta: interno para autenticados; privado para administração; público só após aprovação administrativa. Falta validar com a equipe."
+
+regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgente pode ser privada, e uma ocorrência resolvida pode continuar pública."
+
+# Requisitos selecionados para o MVP (preencher a partir do documento do card #13).
+# Formato: { id: "RF001", titulo: "...", estado: planejado }
+requisitos_selecionados: []
+
+# Conflitos conhecidos entre versões dos requisitos.
+conflitos:
+  - id: "RF005"
+    tema: "Postagem e autenticação"
+    anterior: "Permite postagem sem login."
+    proposta: "Exigir autenticação para registrar ocorrências."
+    estado: aguardando_decisao
+  - id: "RF007"
+    tema: "Foto da ocorrência"
+    anterior: "Foto opcional."
+    proposta: "Foto obrigatória."
+    estado: aguardando_decisao
+  - id: "RF009"
+    tema: "Localização"
+    anterior: "Localização opcional."
+    proposta: "Localização obrigatória no registro comum; definir precisão e exceções para emergência."
+    estado: aguardando_decisao
+  - id: "RF012"
+    tema: "Localização em tempo real"
+    anterior: "Localização em tempo real."
+    proposta: "Tratar separadamente do botão de pânico: não são sinônimos."
+    estado: aguardando_decisao
+  - id: "Visibilidade"
+    tema: "Público, interno e privado"
+    anterior: "Níveis citados sem regras de acesso."
+    proposta: "Aprovar quem vê cada nível e quem pode alterá-lo."
+    estado: aguardando_decisao
+  - id: "Cadastro"
+    tema: "Cadastro e verificação institucional"
+    anterior: "Regras não consolidadas."
+    proposta: "Estudante valida e-mail ufrpe.br; funcionários, segurança e visitantes dependem da aprovação administrativa."
+    estado: aguardando_decisao
