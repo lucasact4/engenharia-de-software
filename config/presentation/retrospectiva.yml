@@ -1,0 +1,13 @@
+# Retrospectiva do período. Registre somente o que foi discutido de fato.
+#
+# imagem: foto ou print real da retrospectiva, em app/assets/images/presentation/
+#         (ex.: "presentation/retrospectiva.jpg")
+
+data:
+formato:          # ex.: "Manter / Melhorar / Experimentar"
+imagem:
+imagem_descricao: # texto alternativo da imagem
+
+pontos: []        # ex.: ["Divisão de tarefas por card funcionou", "..."]
+acoes: []         # ex.: [{ acao: "...", responsavel: "...", prazo: "..." }]
+licoes: []        # o que a equipe aprendeu no período

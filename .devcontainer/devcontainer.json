@@ -29,7 +29,17 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 3100],
+  "portsAttributes": {
+    "3000": {
+      "label": "SGU development",
+      "onAutoForward": "notify"
+    },
+    "3100": {
+      "label": "SGU presentation",
+      "onAutoForward": "notify"
+    }
+  },
 
   // Configure tool-specific properties.
   // "customizations": {},

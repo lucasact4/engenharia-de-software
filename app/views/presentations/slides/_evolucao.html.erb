@@ -1,0 +1,52 @@
+<% ev = presentation.evolucao %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "o que foi feito no período",
+      title: "Da base Rails às primeiras telas do SGU" %>
+
+<ol class="apr-timeline" role="list">
+  <% ev[:marcos].each do |marco| %>
+    <li class="apr-timeline__item <%= 'apr-timeline__item--open' if marco[:commit].blank? %>">
+      <p class="apr-timeline__date"><time datetime="<%= marco[:data] %>"><%= presentation_date(marco[:data]) %></time></p>
+      <p class="apr-timeline__title"><%= marco[:titulo] %></p>
+      <p class="apr-timeline__text"><%= marco[:texto] %></p>
+      <p class="apr-timeline__ref">
+        <% if marco[:commit].present? %>
+          <%= presentation_commit_link(marco[:commit]) %>
+        <% else %>
+          <span class="apr-code">não publicado</span>
+        <% end %>
+      </p>
+    </li>
+  <% end %>
+</ol>
+
+<% columns = [
+  [ "Pronto", %w[implementado] ],
+  [ "Em parte", %w[parcial] ],
+  [ "A fazer ou decidir", %w[planejado aguardando_decisao aguardando_evidencia] ]
+] %>
+<div class="apr-board">
+  <% columns.each do |titulo, estados| %>
+    <% itens = ev[:capacidades].select { |c| estados.include?(c[:estado]) } %>
+    <section class="apr-board__col apr-board__col--<%= estados.first.dasherize %>" aria-label="<%= titulo %>">
+      <h3 class="apr-board__title"><%= titulo %> <span class="apr-board__count"><%= itens.size %></span></h3>
+      <ul class="apr-board__list" role="list">
+        <% itens.each do |item| %>
+          <li class="apr-board__item">
+            <p class="apr-board__name">
+              <%= item[:nome] %>
+              <span class="apr-origin apr-origin--<%= item[:origem] %>"><%= item[:origem] == "base" ? "herdado da base" : "SGU" %></span>
+              <% if estados.size > 1 %><%= presentation_state(item[:estado], short: true) %><% end %>
+            </p>
+            <p class="apr-board__note"><%= item[:nota] %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>
+
+<p class="apr-source"><%= ev[:observacoes].join(" ") %></p>
+<% if ev[:data_primeira_entrega].blank? %>
+  <%= presentation_update_note("evolucao.yml", "informar data_primeira_entrega para delimitar o período.") %>
+<% end %>

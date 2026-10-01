@@ -1,0 +1,22 @@
+<%#
+  Figura ampliável. Com JavaScript, o botão abre o lightbox; sem JavaScript, aparece o link
+  "Abrir imagem" (oculto na impressão, para o PDF não levar links para o servidor local).
+  locals: image, alt, caption, zoom_image (opcional), state (opcional), tag_text (opcional), modifier (opcional)
+%>
+<% zoom_url = image_path(local_assigns[:zoom_image].presence || image) %>
+<figure class="apr-figure <%= local_assigns[:modifier] %>">
+  <button type="button"
+          class="apr-figure__zoom"
+          data-action="presentation#zoom"
+          data-zoom-src="<%= zoom_url %>"
+          aria-label="Ampliar imagem: <%= caption %>">
+    <%= image_tag image, alt: alt, class: "apr-figure__img", decoding: "async" %>
+    <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
+  </button>
+  <figcaption class="apr-figure__caption">
+    <span class="apr-figure__title"><%= caption %></span>
+    <% if local_assigns[:state].present? %><%= presentation_state(state) %><% end %>
+    <% if local_assigns[:tag_text].present? %><span class="apr-tag apr-tag--warn"><%= tag_text %></span><% end %>
+    <a class="apr-figure__open apr-more" href="<%= zoom_url %>">Abrir imagem</a>
+  </figcaption>
+</figure>

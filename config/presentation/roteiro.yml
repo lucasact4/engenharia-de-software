@@ -1,0 +1,73 @@
+# Ordem dos slides. Cada "id" corresponde à partial
+# app/views/presentations/slides/_<id com "_" no lugar de "-">.html.erb
+#
+# tempo: segundos estimados de fala (somente slides principais contam para os 7 minutos).
+# apendice: true => fica fora da sequência das setas; acessível pelo índice,
+#                   pelo modo leitura e sempre incluído na impressão/PDF.
+# responsavel: quem apresenta o slide (preencher após o ensaio).
+# tema: escuro => fundo verde profundo (capa e slides de impacto); padrão é claro.
+
+slides:
+  - id: capa
+    tema: escuro
+    titulo: "Capa"
+    tempo: 15
+    responsavel:
+  - id: problema
+    tema: escuro
+    titulo: "Problema e proposta"
+    tempo: 35
+    responsavel:
+  - id: escopo
+    titulo: "Escopo do MVP e regras"
+    tempo: 45
+    responsavel:
+  - id: evolucao
+    titulo: "Evolução no período"
+    tempo: 40
+    responsavel:
+  - id: conceito-visual
+    titulo: "Conceito visual"
+    tempo: 35
+    responsavel:
+  - id: funcionalidades
+    titulo: "Duas funcionalidades completas"
+    tempo: 55
+    responsavel:
+  - id: diagramas
+    titulo: "Modelo conceitual e diagramas"
+    tempo: 40
+    responsavel:
+  - id: arquitetura
+    titulo: "Arquitetura e tecnologias"
+    tempo: 40
+    responsavel:
+  - id: gestao
+    titulo: "Gestão e evidências"
+    tempo: 25
+    responsavel:
+  - id: retrospectiva
+    titulo: "Retrospectiva e lições"
+    tempo: 35
+    responsavel:
+  - id: proximos-passos
+    tema: escuro
+    titulo: "Próximos passos"
+    tempo: 30
+    responsavel:
+
+  - id: checklist
+    titulo: "Checklist da segunda entrega"
+    apendice: true
+  - id: conflitos
+    titulo: "Requisitos em conflito"
+    apendice: true
+  - id: modelo-dados
+    titulo: "Modelo de dados atual"
+    apendice: true
+  - id: evidencias
+    titulo: "Evidências no repositório"
+    apendice: true
+  - id: roteiro
+    titulo: "Roteiro e tempo"
+    apendice: true

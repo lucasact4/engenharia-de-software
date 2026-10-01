@@ -1,0 +1,51 @@
+<% e = presentation.entrega %>
+<div class="apr-cover">
+  <svg class="apr-cover__map" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
+    <g fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M40 470 C140 440 170 360 260 350 S420 300 470 200 S540 90 580 60" stroke-dasharray="4 7"/>
+      <path d="M20 250 H180 V120 H330 V40"/>
+      <path d="M180 250 V400 H400 V520"/>
+      <path d="M330 120 H520 V330 H400"/>
+      <circle cx="180" cy="250" r="5"/><circle cx="330" cy="120" r="5"/><circle cx="400" cy="400" r="5"/>
+      <circle cx="520" cy="330" r="5"/><circle cx="260" cy="350" r="4"/>
+    </g>
+    <g class="apr-cover__pins">
+      <circle cx="470" cy="200" r="11"/><circle cx="470" cy="200" r="28" fill="none" stroke-width="1.2"/>
+      <circle cx="260" cy="350" r="7"/>
+    </g>
+    <text x="196" y="236" class="apr-cover__code">&lt;ocorrencia status="recebida" /&gt;</text>
+  </svg>
+
+  <div class="apr-cover__main">
+    <p class="apr-cover__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e[:disciplina] %> · <%= e[:entrega] %></p>
+    <h1 id="<%= slide.heading_id %>" class="apr-cover__title">
+      <span class="apr-cover__sigla"><%= e.dig(:projeto, :sigla) %></span>
+      <span class="apr-cover__name"><%= e.dig(:projeto, :nome) %></span>
+    </h1>
+    <p class="apr-cover__lead"><%= e.dig(:projeto, :recorte) %></p>
+  </div>
+
+  <dl class="apr-cover__meta">
+    <div><dt>Instituição</dt><dd><%= e[:instituicao] %></dd></div>
+    <div><dt>Professora</dt><dd><%= e[:professora] %></dd></div>
+    <div><dt>Prazo da entrega</dt><dd><%= e[:prazo] %></dd></div>
+    <div>
+      <dt>Apresentação</dt>
+      <dd><%= e[:data_apresentacao].presence || "Data a confirmar" %> · até <%= e[:duracao_maxima] %></dd>
+    </div>
+  </dl>
+
+  <div class="apr-cover__team">
+    <p class="apr-cover__team-label">Equipe</p>
+    <ul class="apr-cover__names" role="list">
+      <% e[:equipe].each do |name| %>
+        <li><%= name %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <p class="apr-cover__note"><%= e.dig(:projeto, :aviso) %></p>
+  <% if e[:data_apresentacao].blank? %>
+    <%= presentation_update_note("entrega.yml", "preencher data_apresentacao.") %>
+  <% end %>
+</div>

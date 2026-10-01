@@ -1,0 +1,58 @@
+<% plan = presentation.planejamento %>
+<% e = presentation.entrega %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "até a próxima entrega",
+      title: "Próximos passos" %>
+
+<div class="apr-next">
+  <div class="apr-next__plan">
+    <div class="apr-milestone">
+      <p class="apr-label">Marco demonstrável</p>
+      <% if plan.dig(:marco, :titulo).present? %>
+        <p class="apr-milestone__title"><%= plan.dig(:marco, :titulo) %></p>
+        <p class="apr-milestone__text"><%= plan.dig(:marco, :descricao) %></p>
+      <% else %>
+        <p class="apr-milestone__title apr-milestone__title--empty">A definir com a equipe</p>
+      <% end %>
+      <%= presentation_state(plan.dig(:marco, :estado)) %>
+    </div>
+
+    <ol class="apr-steps" role="list">
+      <% plan[:proximos_passos].each_with_index do |passo, index| %>
+        <li>
+          <span class="apr-steps__num" aria-hidden="true"><%= index + 1 %></span>
+          <div>
+            <p class="apr-steps__title"><%= passo[:titulo] %><% if passo[:card] %> <span class="apr-tag">#<%= passo[:card] %></span><% end %></p>
+            <p class="apr-steps__text"><%= passo[:texto] %></p>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+
+  <div class="apr-next__side">
+    <p class="apr-label">Riscos</p>
+    <ul class="apr-risks" role="list">
+      <% plan[:riscos].each do |risco| %>
+        <li><strong><%= risco[:titulo] %>.</strong> <%= risco[:texto] %></li>
+      <% end %>
+    </ul>
+    <p class="apr-label">Dependências</p>
+    <ul class="apr-chips" role="list">
+      <% plan[:dependencias].each do |dep| %>
+        <li class="apr-chip"><%= dep %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<div class="apr-closing">
+  <p class="apr-closing__thanks">Obrigado! <span>Perguntas?</span></p>
+  <p class="apr-closing__team"><%= e[:equipe].to_sentence(last_word_connector: " e ") %></p>
+  <p class="apr-closing__links">
+    <%= link_to "Abrir o SGU", root_path(locale: nil), class: "apr-btn apr-btn--gold apr-local-only" %>
+    <%= presentation_link("GitHub", e.dig(:links, :github), class: "apr-btn apr-btn--outline") %>
+    <%= presentation_link("Trello", e.dig(:links, :trello), class: "apr-btn apr-btn--outline") %>
+  </p>
+</div>
+<%= presentation_update_note("planejamento.yml", "marco, passos, riscos e dependências.") %>

@@ -1,0 +1,45 @@
+# Diagramas exigidos. Cada um tem título próprio: um não substitui o outro.
+#
+# Para publicar um diagrama:
+#   1. salve a imagem (PNG ou SVG) em app/assets/images/presentation/diagramas/
+#   2. preencha "imagem" com o caminho relativo a app/assets/images
+#      (ex.: "presentation/diagramas/casos-de-uso-v1.png")
+#   3. informe versao, origem e data; ajuste o estado.
+
+itens:
+  - id: modelo-conceitual
+    titulo: "Modelo conceitual"
+    descricao: "Conceitos do domínio (ocorrência, categoria, status, pessoa usuária…) e suas relações."
+    exigido_na_entrega: true
+    card:
+    estado: aguardando_evidencia
+    imagem:
+    versao:
+    origem:
+    data:
+  - id: casos-de-uso
+    titulo: "Diagrama de casos de uso"
+    descricao: "Atores do SGU e o que cada um pode fazer no sistema."
+    exigido_na_entrega: false
+    card:
+      numero: 14
+      titulo: "Criar diagrama de casos de uso do SGU"
+      url: "https://trello.com/c/YdQk4x6A/14-uml-criar-diagrama-de-casos-de-uso-do-sgu"
+    estado: aguardando_evidencia
+    imagem:
+    versao:
+    origem:
+    data:
+  - id: fluxo-ocorrencias
+    titulo: "Fluxo de ocorrências e emergências (revisado)"
+    descricao: "Caminho de uma ocorrência comum e de uma emergência, do registro ao encerramento."
+    exigido_na_entrega: false
+    card:
+      numero: 5
+      titulo: "Revisar fluxo de ocorrências e emergências"
+      url: "https://trello.com/c/B5FgQnRl/5-diagrama-revisar-fluxo-de-ocorr%C3%AAncias-e-emerg%C3%AAncias"
+    estado: aguardando_evidencia
+    imagem:
+    versao:
+    origem:
+    data:

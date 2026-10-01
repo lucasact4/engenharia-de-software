@@ -1,0 +1,84 @@
+# Stack comprovada no repositório.
+# "gem": a versão é lida automaticamente do Gemfile.lock; "versao" é usada quando não há gem.
+# "evidencia": arquivo do repositório que comprova o uso.
+
+stack:
+  - grupo: "Linguagem e framework"
+    itens:
+      - nome: "Ruby"
+        versao_ruby: true
+        evidencia: ".ruby-version"
+      - nome: "Rails"
+        gem: "rails"
+        evidencia: "Gemfile.lock"
+  - grupo: "Interface"
+    itens:
+      - nome: "Turbo Rails"
+        gem: "turbo-rails"
+        evidencia: "config/importmap.rb"
+      - nome: "Stimulus Rails"
+        gem: "stimulus-rails"
+        evidencia: "app/javascript/controllers"
+      - nome: "Importmap Rails"
+        gem: "importmap-rails"
+        evidencia: "config/importmap.rb"
+      - nome: "Tailwind Rails"
+        gem: "tailwindcss-rails"
+        evidencia: "app/assets/tailwind/application.css"
+  - grupo: "Dados e acesso"
+    itens:
+      - nome: "sqlite3 (gem)"
+        gem: "sqlite3"
+        evidencia: "config/database.yml"
+      - nome: "bcrypt (senhas)"
+        gem: "bcrypt"
+        evidencia: "app/models/user.rb"
+      - nome: "Pundit"
+        gem: "pundit"
+        evidencia: "app/policies"
+  - grupo: "Qualidade e ambiente"
+    itens:
+      - nome: "RSpec Rails"
+        gem: "rspec-rails"
+        evidencia: "spec/"
+      - nome: "RuboCop Omakase"
+        gem: "rubocop-rails-omakase"
+        evidencia: ".rubocop.yml"
+      - nome: "Brakeman"
+        gem: "brakeman"
+        evidencia: ".github/workflows/ci.yml"
+      - nome: "GitHub Actions"
+        evidencia: ".github/workflows/ci.yml"
+      - nome: "Dev Container"
+        evidencia: ".devcontainer/devcontainer.json"
+
+# Mudanças em relação às tecnologias anunciadas na primeira entrega.
+# "justificativa": preencha com o motivo que a equipe sustenta (deixe vazio até decidir).
+mudancas:
+  - camada: "Interface"
+    anunciado: "Vue"
+    adotado: "Hotwire (Turbo + Stimulus) e ERB"
+    evidencia: "config/importmap.rb"
+    justificativa:
+  - camada: "Estilos"
+    anunciado: "Sass + Bootstrap"
+    adotado: "Tailwind CSS e CSS próprio"
+    evidencia: "app/assets/tailwind/application.css"
+    justificativa:
+  - camada: "Banco de dados"
+    anunciado: "PostgreSQL"
+    adotado: "SQLite (migração para PostgreSQL documentada)"
+    evidencia: "docs/sqlite-to-postgresql.md"
+    justificativa:
+  - camada: "Autenticação"
+    anunciado: "Devise"
+    adotado: "Autenticação nativa do Rails"
+    evidencia: "app/models/session.rb"
+    justificativa:
+
+origem_das_mudancas: "Escolhas herdadas da base Rails reutilizada no início do projeto."
+origem_commit: "d4a61c75c58f4908808975023617446fc5574602"
+
+deploy:
+  estado: aguardando_evidencia
+  nota: "A base inclui Kamal e Dockerfile; não há registro de deploy do SGU."

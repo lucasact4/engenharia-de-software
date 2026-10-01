@@ -1,0 +1,90 @@
+# Evolução do produto no período. Cada afirmação precisa de evidência verificável
+# (commit publicado, arquivo do repositório ou captura).
+#
+# commit: SHA completo de um commit publicado em origin/main (gera link para o GitHub).
+#         Deixe vazio para trabalho ainda não publicado.
+
+# Data da primeira entrega, para delimitar "desde a última entrega" (preencher).
+data_primeira_entrega:
+
+marcos:
+  - data: 2026-08-19
+    titulo: "Base Rails implantada"
+    texto: "Autenticação, área administrativa, autorização, testes e CI herdados de uma base Rails reutilizada."
+    commit: "d4a61c75c58f4908808975023617446fc5574602"
+  - data: 2026-09-14
+    titulo: "Landing pública e /entrar"
+    texto: "Página inicial pública, tela de login em português e rota /entrar."
+    commit: "3e2735de87dbed43bfa9f8d414414184279ad01a"
+  - data: 2026-09-27
+    titulo: "Identidade SGU UFRPE"
+    texto: "Textos, cores e traduções da landing e do login alinhados ao SGU."
+    commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
+  - data: 2026-09-30
+    titulo: "Apresentação da 2ª entrega"
+    texto: "Card #11 em andamento na branch card-11 (ainda não publicado)."
+    commit:
+
+# Situação das capacidades do produto.
+# origem: "sgu" (feito para o SGU) ou "base" (herdado da base Rails).
+capacidades:
+  - nome: "Landing pública"
+    estado: implementado
+    origem: sgu
+    nota: "Os alertas exibidos são exemplos estáticos."
+    evidencia: "app/views/home/index.html.erb"
+  - nome: "Login em /entrar"
+    estado: implementado
+    origem: sgu
+    nota: "Tela nova; sessão herdada da base."
+    evidencia: "app/views/sessions/new.html.erb"
+  - nome: "Sessão, logout e senha"
+    estado: implementado
+    origem: base
+    nota: "Autenticação nativa do Rails 8."
+    evidencia: "app/controllers/concerns/authentication.rb"
+  - nome: "Admin de usuários e perfis"
+    estado: implementado
+    origem: base
+    nota: "Administrador e usuário comum (Pundit)."
+    evidencia: "app/policies/user_policy.rb"
+  - nome: "Identidade visual do SGU"
+    estado: parcial
+    origem: sgu
+    nota: "Área administrativa ainda com a marca da base."
+    evidencia: "app/views/layouts/admin/_sidebar.html.erb"
+  - nome: "Alertas públicos"
+    estado: parcial
+    origem: sgu
+    nota: "Só a vitrine visual, sem dados reais."
+    evidencia: "app/views/home/index.html.erb"
+  - nome: "Registro de ocorrência"
+    estado: planejado
+    origem: sgu
+    nota: "Sem modelo nem tabela no schema."
+    evidencia: "db/schema.rb"
+  - nome: "Feed público real"
+    estado: planejado
+    origem: sgu
+    nota: "Depende da ocorrência e da visibilidade."
+    evidencia:
+  - nome: "Mapa e localização"
+    estado: planejado
+    origem: sgu
+    nota: "Mapa de ocorrências separado do rastreamento em tempo real; depende das regras de localização e acesso."
+    evidencia:
+  - nome: "Emergência / pânico"
+    estado: planejado
+    origem: sgu
+    nota: "Fluxo em revisão (#5)."
+    evidencia:
+  - nome: "Cadastro institucional"
+    estado: aguardando_decisao
+    origem: sgu
+    nota: "Verificação do vínculo sem regra definida."
+    evidencia:
+
+# Itens herdados que não pertencem ao domínio do SGU.
+observacoes:
+  - "Dog é uma entidade de exemplo do template (CRUD administrativo), não uma ocorrência do SGU."
+  - "Os testes existentes cobrem principalmente o que foi herdado da base; eles não comprovam funcionalidades do SGU."

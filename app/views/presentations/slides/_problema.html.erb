@@ -1,0 +1,41 @@
+<% r = presentation.requisitos %>
+<%= render "presentations/shared/heading", slide: slide, kicker: "problema e proposta", title: "Quem observa precisa alcançar quem resolve" %>
+
+<div class="apr-problem">
+  <div class="apr-problem__left">
+    <p class="apr-statement"><%= r.dig(:problema, :frase) %></p>
+    <ol class="apr-pains" role="list">
+      <% r.dig(:problema, :dores).each_with_index do |dor, index| %>
+        <li>
+          <span class="apr-pains__num" aria-hidden="true"><%= format("%02d", index + 1) %></span>
+          <div>
+            <p class="apr-pains__title"><%= dor[:titulo] %></p>
+            <p class="apr-pains__text"><%= dor[:texto] %></p>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+
+  <div class="apr-problem__right">
+    <p class="apr-label">Para quem</p>
+    <ul class="apr-chips" role="list">
+      <% r[:publico].each do |publico| %>
+        <li class="apr-chip"><%= publico %></li>
+      <% end %>
+    </ul>
+
+    <p class="apr-label">Proposta de valor</p>
+    <ol class="apr-flow" role="list">
+      <% r[:fluxo_valor].each do |passo| %>
+        <li class="apr-flow__step">
+          <p class="apr-flow__title"><%= passo[:titulo] %></p>
+          <p class="apr-flow__text"><%= passo[:texto] %></p>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+</div>
+
+<p class="apr-source"><%= r.dig(:problema, :fonte) %></p>
+<%= presentation_update_note("requisitos.yml", "problema, público e fluxo de valor.") %>

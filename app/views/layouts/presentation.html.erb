@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title><%= content_for(:title) || "SGU UFRPE" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for(:description) %>">
+    <meta name="turbo-cache-control" content="no-cache">
+    <meta name="color-scheme" content="light">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <%= stylesheet_link_tag "presentation", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="apr-body">
+    <%= yield %>
+  </body>
+</html>

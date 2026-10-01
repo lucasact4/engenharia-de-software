@@ -1,0 +1,37 @@
+# O que será feito até a próxima entrega.
+
+# Marco demonstrável da próxima entrega (definir com a equipe).
+marco:
+  titulo:
+  descricao:
+  estado: aguardando_decisao
+
+proximos_passos:
+  - titulo: "Consolidar requisitos"
+    texto: "Resolver os conflitos de RF005, RF007, RF009, RF012, visibilidade e cadastro."
+    card: 13
+  - titulo: "Fechar os diagramas"
+    texto: "Modelo conceitual, casos de uso (#14) e fluxo revisado (#5)."
+    card: 14
+  - titulo: "Implementar a ocorrência"
+    texto: "Modelo, registro e acompanhamento de status com testes."
+    card:
+  - titulo: "Concluir duas funcionalidades"
+    texto: "Escolher, implementar e validar ponta a ponta."
+    card:
+  - titulo: "Limpar herança do template"
+    texto: "Remover o exemplo Dog e a marca da base na área administrativa."
+    card:
+
+riscos:
+  - titulo: "Requisitos em aberto"
+    texto: "Sem as decisões do #13, a modelagem da ocorrência pode precisar ser refeita."
+  - titulo: "Dependência em cadeia"
+    texto: "Requisitos, diagramas e implementação dependem uns dos outros: um atraso se propaga."
+  - titulo: "Escopo de emergência"
+    texto: "Pânico e localização em tempo real exigem regras e testes próprios."
+
+dependencias:
+  - "#13 — Refinar RFs e RNFs"
+  - "#5 — Revisar fluxo de ocorrências e emergências"
+  - "#14 — Diagrama de casos de uso"

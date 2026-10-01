@@ -1,0 +1,54 @@
+<% r = presentation.requisitos %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "escopo do MVP e regras",
+      title: "Uma ocorrência, quatro dimensões independentes",
+      lead: r[:regra_dimensoes] %>
+
+<div class="apr-dimensions" role="list">
+  <% r[:dimensoes].each do |dimensao| %>
+    <article class="apr-dimension" role="listitem">
+      <p class="apr-dimension__q"><%= dimensao[:pergunta] %></p>
+      <h3 class="apr-dimension__name"><%= dimensao[:nome] %></h3>
+      <% if dimensao[:exemplos].present? %>
+        <ul class="apr-dimension__values" role="list" aria-label="Valores de exemplo">
+          <% dimensao[:exemplos].each do |exemplo| %>
+            <li><%= exemplo %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="apr-dimension__empty">Valores a definir</p>
+      <% end %>
+      <%= presentation_state(dimensao[:estado]) %>
+      <p class="apr-dimension__note"><%= dimensao[:nota] %></p>
+    </article>
+  <% end %>
+</div>
+
+<div class="apr-conflicts">
+  <div class="apr-conflicts__head">
+    <h3 class="apr-conflicts__title">Conflitos em aberto</h3>
+    <%= presentation_state(:aguardando_decisao) %>
+    <%= presentation_link("Card ##{r.dig(:card_refinamento, :numero)}", r.dig(:card_refinamento, :url), class: "apr-card-link") %>
+    <a class="apr-more" href="#s-conflitos">Detalhes no apêndice</a>
+  </div>
+  <ul class="apr-conflicts__list" role="list">
+    <% r[:conflitos].each do |conflito| %>
+      <li><strong><%= conflito[:id] %></strong> <span><%= conflito[:tema] %></span></li>
+    <% end %>
+  </ul>
+</div>
+
+<% if r[:requisitos_selecionados].blank? %>
+  <p class="apr-inline-pending">
+    <span>Requisitos selecionados para o MVP</span>
+    <%= presentation_state(:aguardando_evidencia) %>
+    <span>dependem da consolidação do card #<%= r.dig(:card_refinamento, :numero) %>.</span>
+  </p>
+<% else %>
+  <ul class="apr-chips apr-chips--req" role="list" aria-label="Requisitos selecionados para o MVP">
+    <% r[:requisitos_selecionados].each do |req| %>
+      <li class="apr-chip"><strong><%= req[:id] %></strong> <%= req[:titulo] %></li>
+    <% end %>
+  </ul>
+<% end %>
+<%= presentation_update_note("requisitos.yml", "dimensões, conflitos e requisitos_selecionados.") %>

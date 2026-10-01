@@ -1,0 +1,35 @@
+<% total = presentation.total_seconds %>
+<% limit = 7 * 60 %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "ensaio",
+      title: "Roteiro e tempo",
+      lead: "Estimativa: #{presentation_duration(total)} para #{presentation.main_slides.size} slides, dentro do limite de #{presentation_duration(limit)}. Ensaio cronometrado pendente." %>
+
+<div class="apr-table-wrap">
+  <table class="apr-table apr-table--compact">
+    <caption class="apr-sr-only">Tempo estimado e responsável por slide</caption>
+    <thead>
+      <tr>
+        <th scope="col">Slide</th>
+        <th scope="col">Título</th>
+        <th scope="col">Tempo</th>
+        <th scope="col">Acumulado</th>
+        <th scope="col">Quem apresenta</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% elapsed = 0 %>
+      <% presentation.main_slides.each do |item| %>
+        <% elapsed += item.seconds %>
+        <tr>
+          <td><%= item.label %></td>
+          <th scope="row"><%= item.title %></th>
+          <td><%= presentation_duration(item.seconds) %></td>
+          <td><%= presentation_duration(elapsed) %></td>
+          <td><%= item.presenter || "A definir" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<%= presentation_update_note("roteiro.yml", "tempo e responsavel de cada slide.") %>

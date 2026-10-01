@@ -1,0 +1,56 @@
+<% r = presentation.retrospectiva %>
+<% registered = r[:pontos].present? || r[:acoes].present? || r[:licoes].present? %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "retrospectiva",
+      title: "Retrospectiva e lições aprendidas",
+      lead: [ presentation_date(r[:data]), r[:formato] ].compact_blank.join(" · ").presence %>
+
+<div class="apr-retro">
+  <div class="apr-retro__photo">
+    <% if r[:imagem].present? %>
+      <%= render "presentations/shared/figure",
+            image: r[:imagem], alt: r[:imagem_descricao].presence || "Registro da retrospectiva da equipe",
+            caption: "Retrospectiva#{" de #{presentation_date(r[:data])}" if r[:data].present?}" %>
+    <% else %>
+      <%= render "presentations/shared/pending",
+            title: "Imagem da retrospectiva",
+            state: :aguardando_evidencia,
+            text: "Exigida na 2ª entrega. Use uma foto ou captura real do quadro da retrospectiva.",
+            file: "retrospectiva.yml",
+            frame: true %>
+    <% end %>
+  </div>
+
+  <div class="apr-retro__notes">
+    <% blocks = [
+      [ "Pontos discutidos", r[:pontos] ],
+      [ "Ações combinadas", r[:acoes] ],
+      [ "O que aprendemos", r[:licoes] ]
+    ] %>
+    <% blocks.each do |titulo, itens| %>
+      <section class="apr-retro__block <%= 'apr-retro__block--empty' if itens.blank? %>" aria-label="<%= titulo %>">
+        <h3 class="apr-retro__title"><%= titulo %></h3>
+        <% if itens.present? %>
+          <ul class="apr-retro__list" role="list">
+            <% itens.each do |item| %>
+              <li>
+                <% if item.is_a?(Hash) %>
+                  <%= item[:acao] %><% if item[:responsavel].present? || item[:prazo].present? %>
+                    <span class="apr-retro__who"><%= [ item[:responsavel], item[:prazo] ].compact_blank.join(" · ") %></span>
+                  <% end %>
+                <% else %>
+                  <%= item %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="apr-retro__empty"><%= presentation_state(:aguardando_evidencia) %></p>
+        <% end %>
+      </section>
+    <% end %>
+    <% unless registered %>
+      <p class="apr-source">Nada neste slide foi preenchido por suposição: os itens aparecem quando a equipe registrar a retrospectiva.</p>
+    <% end %>
+  </div>
+</div>

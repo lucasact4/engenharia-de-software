@@ -1,0 +1,33 @@
+<%#
+  Espaço reservado para conteúdo que ainda depende de decisão ou evidência.
+  locals: title, state, text, needs (opcional), card (opcional), file (opcional), frame (opcional: true desenha área de imagem)
+%>
+<div class="apr-pending <%= 'apr-pending--frame' if local_assigns[:frame] %>">
+  <% if local_assigns[:frame] %>
+    <div class="apr-pending__frame" aria-hidden="true">
+      <%= render "presentations/shared/icon", name: "image" %>
+    </div>
+  <% end %>
+  <div class="apr-pending__body">
+    <p class="apr-pending__title"><%= title %></p>
+    <%= presentation_state(state) %>
+    <% if local_assigns[:text].present? %>
+      <p class="apr-pending__text"><%= text %></p>
+    <% end %>
+    <% if local_assigns[:needs].present? %>
+      <ul class="apr-pending__needs" aria-label="O que falta">
+        <% needs.each do |need| %>
+          <li><%= need %></li>
+        <% end %>
+      </ul>
+    <% end %>
+    <% if local_assigns[:card].present? %>
+      <p class="apr-pending__card">
+        <%= presentation_link("Card ##{card[:numero]} — #{card[:titulo]}", card[:url], class: "apr-card-link") %>
+      </p>
+    <% end %>
+    <% if local_assigns[:file].present? %>
+      <%= presentation_update_note(file) %>
+    <% end %>
+  </div>
+</div>

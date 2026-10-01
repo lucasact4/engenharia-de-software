@@ -1,0 +1,64 @@
+<% f = presentation.funcionalidades %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "exigência da 2ª entrega",
+      title: "Duas funcionalidades completas",
+      lead: "A escolha é da equipe. Landing e login existem, mas não foram adotados automaticamente como as duas funcionalidades." %>
+
+<div class="apr-features">
+  <aside class="apr-criteria" aria-labelledby="<%= slide.dom_id %>-criterios">
+    <h3 id="<%= slide.dom_id %>-criterios" class="apr-criteria__title">O que conta como “completa”</h3>
+    <ul class="apr-criteria__list" role="list">
+      <% f[:criterios].each do |criterio| %>
+        <li><%= criterio %></li>
+      <% end %>
+    </ul>
+  </aside>
+
+  <% f[:itens].each_with_index do |item, index| %>
+    <% number = index + 1 %>
+    <% if item[:nome].blank? %>
+      <div class="apr-feature apr-feature--empty">
+        <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
+        <%= render "presentations/shared/pending",
+              title: "Funcionalidade #{number}",
+              state: item[:estado],
+              text: "Ainda não escolhida pela equipe.",
+              needs: [ "Requisitos atendidos", "Jornada ponta a ponta", "Código e testes", "Captura ou demonstração" ],
+              file: "funcionalidades.yml" %>
+      </div>
+    <% else %>
+      <article class="apr-feature" aria-labelledby="<%= slide.dom_id %>-f<%= number %>">
+        <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
+        <h3 id="<%= slide.dom_id %>-f<%= number %>" class="apr-feature__name"><%= item[:nome] %></h3>
+        <%= presentation_state(item[:estado]) %>
+        <% if item[:requisitos].present? %>
+          <p class="apr-feature__reqs"><% item[:requisitos].each do |req| %><span class="apr-tag"><%= req %></span> <% end %></p>
+        <% end %>
+        <% if item[:jornada].present? %>
+          <ol class="apr-feature__journey" role="list" aria-label="Jornada">
+            <% item[:jornada].each do |passo| %><li><%= passo %></li><% end %>
+          </ol>
+        <% end %>
+        <% if item[:captura].present? %>
+          <%= render "presentations/shared/figure", image: item[:captura], alt: "Captura da funcionalidade #{item[:nome]}", caption: item[:nome] %>
+        <% end %>
+        <dl class="apr-feature__evidence">
+          <% if item[:codigo].present? %>
+            <div><dt>Código</dt><dd><% item[:codigo].each do |path| %><%= presentation_path(path) %> <% end %></dd></div>
+          <% end %>
+          <div>
+            <dt>Testes</dt>
+            <dd>
+              <% if item[:testes].present? %>
+                <% item[:testes].each do |path| %><%= presentation_path(path) %> <% end %>
+              <% else %>
+                <%= presentation_state(:aguardando_evidencia) %>
+              <% end %>
+            </dd>
+          </div>
+          <div><dt>Validação</dt><dd><%= item[:validacao].presence || presentation_state(:aguardando_evidencia) %></dd></div>
+        </dl>
+      </article>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,127 @@
+<% t = presentation.tecnologias %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "arquitetura e tecnologias",
+      title: "Um monólito Rails no padrão MVC" %>
+
+<div class="apr-arch">
+  <figure class="apr-figure apr-figure--svg">
+    <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: arquitetura atual da aplicação">
+      <svg class="apr-arch__svg" viewBox="0 0 600 416" role="img" aria-labelledby="apr-arch-title apr-arch-desc">
+        <title id="apr-arch-title">Arquitetura atual da aplicação SGU</title>
+        <desc id="apr-arch-desc">O navegador envia requisições às rotas do Rails; os controllers usam políticas do Pundit, consultam os models Active Record, que persistem em SQLite, e renderizam views ERB devolvidas como HTML. O conteúdo desta apresentação vem de arquivos YAML.</desc>
+        <defs>
+          <marker id="apr-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="apr-arch__head"/>
+          </marker>
+        </defs>
+
+        <g class="apr-arch__links">
+          <path d="M300 60 V92" marker-end="url(#apr-arrow)"/>
+          <path d="M300 146 V178" marker-end="url(#apr-arrow)"/>
+          <path d="M230 238 L160 276" marker-end="url(#apr-arrow)"/>
+          <path d="M370 238 L440 276" marker-end="url(#apr-arrow)"/>
+          <path d="M77 336 V362" marker-end="url(#apr-arrow)"/>
+          <path d="M222 336 V362" marker-end="url(#apr-arrow)"/>
+          <path d="M560 278 V34 H412" marker-end="url(#apr-arrow)"/>
+          <path d="M160 209 H142" class="apr-arch__dashed" marker-end="url(#apr-arrow)"/>
+        </g>
+        <text x="310" y="82" class="apr-arch__label">requisição HTTP</text>
+        <text x="468" y="26" class="apr-arch__label">resposta HTML</text>
+
+        <g class="apr-arch__box">
+          <rect x="190" y="8" width="220" height="52" rx="10"/>
+          <text x="300" y="31" class="apr-arch__name">Navegador</text>
+          <text x="300" y="49" class="apr-arch__sub">HTML · Turbo · Stimulus</text>
+        </g>
+        <g class="apr-arch__box">
+          <rect x="190" y="94" width="220" height="52" rx="10"/>
+          <text x="300" y="117" class="apr-arch__name">Rotas</text>
+          <text x="300" y="135" class="apr-arch__sub">/ · /entrar · /admin · /apresentacao</text>
+        </g>
+        <g class="apr-arch__box apr-arch__box--key">
+          <rect x="160" y="180" width="280" height="58" rx="10"/>
+          <text x="300" y="205" class="apr-arch__name">Controllers</text>
+          <text x="300" y="225" class="apr-arch__sub">Home · Sessions · Passwords · Admin::*</text>
+        </g>
+        <g class="apr-arch__box apr-arch__box--soft">
+          <rect x="10" y="184" width="130" height="50" rx="10"/>
+          <text x="75" y="206" class="apr-arch__name">Pundit</text>
+          <text x="75" y="223" class="apr-arch__sub">políticas de acesso</text>
+        </g>
+        <g class="apr-arch__box">
+          <rect x="10" y="278" width="280" height="58" rx="10"/>
+          <text x="150" y="302" class="apr-arch__name">Models</text>
+          <text x="150" y="321" class="apr-arch__sub">Active Record · Presentation (PORO)</text>
+        </g>
+        <g class="apr-arch__box">
+          <rect x="310" y="278" width="280" height="58" rx="10"/>
+          <text x="450" y="302" class="apr-arch__name">Views ERB</text>
+          <text x="450" y="321" class="apr-arch__sub">Tailwind · Stimulus · Importmap</text>
+        </g>
+        <g class="apr-arch__box apr-arch__box--data">
+          <rect x="10" y="364" width="135" height="46" rx="10"/>
+          <text x="77" y="384" class="apr-arch__name">SQLite</text>
+          <text x="77" y="400" class="apr-arch__sub">users · sessions · dogs</text>
+        </g>
+        <g class="apr-arch__box apr-arch__box--soft">
+          <rect x="155" y="364" width="135" height="46" rx="10"/>
+          <text x="222" y="384" class="apr-arch__name">YAML</text>
+          <text x="222" y="400" class="apr-arch__sub">conteúdo deste deck</text>
+        </g>
+      </svg>
+      <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
+    </button>
+    <figcaption class="apr-figure__caption">
+      <span class="apr-figure__title">Arquitetura atual, desenhada a partir do código</span>
+    </figcaption>
+  </figure>
+
+  <div class="apr-arch__side">
+    <div class="apr-stack">
+      <% t[:stack].each do |grupo| %>
+        <section class="apr-stack__group" aria-label="<%= grupo[:grupo] %>">
+          <h3 class="apr-stack__title"><%= grupo[:grupo] %></h3>
+          <ul class="apr-stack__list" role="list">
+            <% grupo[:itens].each do |item| %>
+              <% version = presentation.version_for(item) %>
+              <li title="Evidência: <%= item[:evidencia] %>">
+                <span><%= item[:nome] %></span>
+                <% if version %><code class="apr-stack__v"><%= version %></code><% end %>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    </div>
+
+    <div class="apr-changes">
+      <h3 class="apr-changes__title">Mudanças em relação ao anunciado na 1ª entrega</h3>
+      <ul class="apr-changes__list" role="list">
+        <% t[:mudancas].each do |mudanca| %>
+          <li class="apr-change">
+            <span class="apr-change__layer"><%= mudanca[:camada] %></span>
+            <span class="apr-change__from" aria-hidden="true"><s><%= mudanca[:anunciado] %></s></span>
+            <span class="apr-change__arrow" aria-hidden="true">→</span>
+            <span class="apr-change__to" aria-hidden="true"><%= mudanca[:adotado] %></span>
+            <span class="apr-sr-only">anunciado: <%= mudanca[:anunciado] %>; adotado: <%= mudanca[:adotado] %>.</span>
+          </li>
+        <% end %>
+      </ul>
+      <p class="apr-changes__why">
+        <span><%= t[:origem_das_mudancas] %> <%= presentation_commit_link(t[:origem_commit]) %></span>
+        <% if t[:mudancas].any? { |m| m[:justificativa].blank? } %>
+          <span class="apr-changes__pending">Justificativa da equipe: <%= presentation_state(:aguardando_decisao) %></span>
+        <% end %>
+      </p>
+      <% justificadas = t[:mudancas].select { |m| m[:justificativa].present? } %>
+      <% if justificadas.any? %>
+        <ul class="apr-footnotes" role="list">
+          <% justificadas.each do |mudanca| %>
+            <li><strong><%= mudanca[:camada] %>:</strong> <%= mudanca[:justificativa] %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</div>
+<%= presentation_update_note("tecnologias.yml", "stack, mudanças e justificativa (versões vêm do Gemfile.lock).") %>
