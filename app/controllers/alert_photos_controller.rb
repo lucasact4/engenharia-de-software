@@ -1,3 +1,4 @@
+# Entrega fotos privadas após conferir o acesso ao alerta e ao anexo.
 class AlertPhotosController < ApplicationController
   include Pundit::Authorization
 
