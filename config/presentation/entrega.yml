@@ -1,4 +1,4 @@
-# Dados gerais da entrega exibidos na capa, no encerramento e no checklist.
+# Dados gerais do projeto e de cada entrega acadêmica.
 # Guia de manutenção: config/presentation/LEIAME.md
 #
 # Estados válidos em todos os arquivos desta pasta:
@@ -13,11 +13,6 @@ projeto:
 instituicao: "Universidade Federal Rural de Pernambuco — UFRPE"
 disciplina: "Engenharia de Software"
 professora: "Suzana Sampaio"
-entrega: "Segunda Entrega de Projeto — Status Report 2"
-prazo: "19 de outubro de 2026, às 18h"
-duracao_maxima: "7 minutos"
-# Preencha quando a data da apresentação em sala for confirmada (ex.: "20 de outubro de 2026").
-data_apresentacao:
 
 equipe:
   - "Lucas Vitor"
@@ -31,57 +26,141 @@ links:
   github: "https://github.com/lucasact4/engenharia-de-software"
   trello: "https://trello.com/b/1cLXCnNU/sgu-sistema-de-gerenciamento-urbano"
 
-# Itens exigidos pela professora na segunda entrega.
-# "estado" é a avaliação técnica atual; "confirmado_pela_equipe" deve virar true
-# somente depois que a equipe revisar o item.
-checklist:
-  - item: "Protótipo com o conceito visual do projeto"
-    estado: parcial
-    onde: conceito-visual
-    observacao: "Landing e login implementados no Rails; alertas da landing são demonstrativos."
-    confirmado_pela_equipe: false
-  - item: "GitHub criado e estruturado"
-    estado: implementado
-    onde: gestao
-    observacao: "Repositório com CI (RSpec, RuboCop, Brakeman, auditoria do Importmap) e Dependabot."
-    confirmado_pela_equipe: false
-  - item: "Código contemplando duas funcionalidades completas"
-    estado: aguardando_decisao
-    onde: funcionalidades
-    observacao: "A equipe ainda precisa escolher e validar as duas funcionalidades."
-    confirmado_pela_equipe: false
-  - item: "Imagem de uma retrospectiva"
-    estado: aguardando_evidencia
-    onde: retrospectiva
-    observacao: "Adicionar a imagem real da retrospectiva."
-    confirmado_pela_equipe: false
-  - item: "Modelo conceitual"
-    estado: parcial
-    onde: diagramas
-    observacao: "Modelo conceitual e DER do card #6 com premissas provisórias; aguarda revisão da equipe. Não substitui o fluxo (#5) nem os casos de uso (#14)."
-    confirmado_pela_equipe: false
-  - item: "Evidência de reuniões de monitoramento"
-    estado: aguardando_evidencia
-    onde: gestao
-    observacao: "Registrar data, participantes e pauta de cada reunião."
-    confirmado_pela_equipe: false
-  - item: "O que foi feito desde a última entrega"
-    estado: parcial
-    onde: evolucao
-    observacao: "Linha do tempo baseada nos commits; falta confirmar o marco da primeira entrega."
-    confirmado_pela_equipe: false
-  - item: "O que será feito até a próxima entrega"
-    estado: parcial
-    onde: proximos-passos
-    observacao: "Próximos passos listados; o marco demonstrável aguarda decisão."
-    confirmado_pela_equipe: false
-  - item: "O que a equipe aprendeu no período"
-    estado: aguardando_evidencia
-    onde: retrospectiva
-    observacao: "Depende do registro da retrospectiva."
-    confirmado_pela_equipe: false
-  - item: "Apresentação de no máximo 7 minutos"
-    estado: parcial
-    onde: roteiro
-    observacao: "Roteiro estimado dentro do limite (ver apêndice); ensaio cronometrado pendente."
-    confirmado_pela_equipe: false
+# Entrega usada quando nenhum perfil da apresentação estiver ativo.
+entrega_padrao: segunda
+
+# Cada perfil do admin escolhe uma destas entregas. Ela define capa, rodapé, títulos dos slides,
+# identificação das exigências, checklist (apêndice) e limite de tempo da estimativa.
+#
+# id:                       identificador estável salvo no perfil (não renomeie depois de usar).
+# titulo / rotulo:          nome completo (capa) e curto (barra superior e selos "2ª entrega · Item 1").
+# prazo, data_apresentacao: texto livre exibido na capa.
+# duracao_maxima_minutos:   limite da apresentação em minutos; deixe vazio quando não houver.
+#
+# exigencias: FONTE CENTRAL dos nomes dos slides. Use o texto do enunciado da professora.
+#   numero:  número do item no enunciado (vazio para status report e condições).
+#   grupo:   item | status_report | condicao.
+#   texto:   enunciado exato; vira o título do slide nesta entrega (sem o ponto final).
+#   slides:  ids do roteiro.yml que apresentam a exigência. Quando ela é dividida em mais de um
+#            slide, cada um pode ter "titulo" com a parte que apresenta.
+#   estado, observacao: avaliação técnica atual. confirmado_pela_equipe: true só após a revisão
+#            da equipe. Marcar o slide no perfil NÃO significa que a exigência foi cumprida.
+#   Um slide sem exigência nesta entrega aparece como "Complementar" e usa o "titulo" do roteiro.yml.
+entregas:
+  - id: primeira
+    titulo: "Primeira Entrega dos Projetos"
+    rotulo: "1ª entrega"
+    prazo: "23 de setembro de 2026, às 19h30"
+    data_apresentacao: "23 de setembro de 2026"
+    duracao_maxima_minutos:
+    exigencias:
+      - numero: 1
+        grupo: item
+        texto: "Lista de requisitos refinada."
+        slides: [ { id: requisitos } ]
+        estado: aguardando_evidencia
+        observacao: "Depende da consolidação do card #13; há conflitos de requisitos em aberto."
+        confirmado_pela_equipe: false
+      - numero: 2
+        grupo: item
+        texto: "Lista de ferramentas e tecnologias escolhidas."
+        slides: [ { id: arquitetura } ]
+        estado: implementado
+        observacao: "Stack comprovada no repositório; versões lidas do Gemfile.lock e de .ruby-version."
+        confirmado_pela_equipe: false
+      - numero: 3
+        grupo: item
+        texto: "Diagrama de casos de uso do sistema/App proposto."
+        slides: [ { id: casos-de-uso } ]
+        estado: aguardando_evidencia
+        observacao: "Card #14 em aberto; nenhuma imagem do diagrama no repositório."
+        confirmado_pela_equipe: false
+      - numero: 4
+        grupo: item
+        texto: "Ferramenta de monitoramento dos projetos ativa com os requisitos e links para ambientes — Trello."
+        slides: [ { id: gestao } ]
+        estado: parcial
+        observacao: "Quadro e cards existem; não há ambiente publicado para linkar além do GitHub."
+        confirmado_pela_equipe: false
+      - numero: 5
+        grupo: item
+        texto: "Planejamento dos próximos passos do projeto."
+        slides: [ { id: proximos-passos } ]
+        estado: parcial
+        observacao: "Próximos passos listados; o marco demonstrável aguarda decisão."
+        confirmado_pela_equipe: false
+      - numero: 6
+        grupo: item
+        texto: "Reflexão sobre o período (Lições aprendidas)."
+        slides: [ { id: retrospectiva } ]
+        estado: aguardando_evidencia
+        observacao: "Depende do registro real da retrospectiva."
+        confirmado_pela_equipe: false
+
+  - id: segunda
+    titulo: "Segunda Entrega de Projeto — Status Report 2"
+    rotulo: "2ª entrega"
+    prazo: "19 de outubro de 2026, às 18h"
+    # Preencha quando a data da apresentação em sala for confirmada (ex.: "20 de outubro de 2026").
+    data_apresentacao:
+    duracao_maxima_minutos: 7
+    exigencias:
+      - numero: 1
+        grupo: item
+        texto: "Protótipo com o conceito visual do projeto."
+        slides: [ { id: conceito-visual } ]
+        estado: parcial
+        observacao: "Landing e login implementados no Rails; alertas da landing são demonstrativos. Protótipo separado não anexado."
+        confirmado_pela_equipe: false
+      - numero: 2
+        grupo: item
+        texto: "GitHub criado e estruturado com código fonte total ou parcial, contemplando as 2 funcionalidades do sistema proposto (Completas)."
+        slides: [ { id: funcionalidades } ]
+        estado: parcial
+        observacao: "Repositório com CI e backend do card #6; as duas funcionalidades completas ainda não foram escolhidas nem validadas."
+        confirmado_pela_equipe: false
+      - numero: 3
+        grupo: item
+        texto: "Imagem de uma retrospectiva."
+        slides: [ { id: retrospectiva } ]
+        estado: aguardando_evidencia
+        observacao: "Adicionar a imagem real da retrospectiva."
+        confirmado_pela_equipe: false
+      - numero: 4
+        grupo: item
+        texto: "Modelo conceitual."
+        slides: [ { id: modelo-conceitual } ]
+        estado: parcial
+        observacao: "Diagrama produzido no card #6 (HTML/CSS) com premissas provisórias; aguarda revisão da equipe. Não substitui o fluxo (#5) nem os casos de uso (#14)."
+        confirmado_pela_equipe: false
+      - numero: 5
+        grupo: item
+        texto: "Evidência de reuniões de monitoramento do projeto."
+        slides: [ { id: reunioes } ]
+        estado: aguardando_evidencia
+        observacao: "Registrar data, participantes, pauta e decisões de cada reunião."
+        confirmado_pela_equipe: false
+      - grupo: status_report
+        texto: "O que foi feito desde a última entrega."
+        slides: [ { id: evolucao } ]
+        estado: parcial
+        observacao: "Linha do tempo baseada nos commits."
+        confirmado_pela_equipe: false
+      - grupo: status_report
+        texto: "O que será feito até a próxima entrega."
+        slides: [ { id: proximos-passos } ]
+        estado: parcial
+        observacao: "Próximos passos listados; o marco demonstrável aguarda decisão."
+        confirmado_pela_equipe: false
+      - grupo: status_report
+        texto: "O que aprendemos nesse sprint (Imagem de uma retrospectiva)."
+        slides: [ { id: status-report } ]
+        estado: aguardando_evidencia
+        observacao: "Depende do registro da retrospectiva."
+        confirmado_pela_equipe: false
+      - grupo: condicao
+        texto: "Apresentação de no máximo 7 minutos."
+        slides: [ { id: roteiro } ]
+        estado: parcial
+        observacao: "Estimativa calculada a partir dos slides selecionados; ensaio cronometrado pendente."
+        confirmado_pela_equipe: false

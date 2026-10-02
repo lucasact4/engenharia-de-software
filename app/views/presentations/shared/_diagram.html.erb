@@ -1,0 +1,30 @@
+<%#
+  Um diagrama de config/presentation/diagramas.yml, com imagem ou espaço de pendência.
+  locals: item (entrada de diagramas.yml)
+%>
+<article class="apr-diagram <%= 'apr-diagram--required' if item[:exigido_em].present? %>">
+  <div class="apr-diagram__media">
+    <% if item[:imagem].present? %>
+      <%= render "presentations/shared/figure",
+            image: item[:imagem], alt: "#{item[:titulo]}: #{item[:descricao]}",
+            caption: [ item[:titulo], item[:versao] && "versão #{item[:versao]}" ].compact.join(" · "),
+            state: item[:estado], modifier: "apr-figure--diagram" %>
+    <% else %>
+      <%= render "presentations/shared/pending",
+            title: "Diagrama ainda não anexado",
+            state: item[:estado],
+            file: "diagramas.yml",
+            card: item[:card],
+            frame: true %>
+    <% end %>
+  </div>
+  <div class="apr-diagram__side">
+    <% if item[:exigido_em].present? %><span class="apr-tag apr-tag--gold">Exigido na <%= item[:exigido_em] %></span><% end %>
+    <p class="apr-diagram__text"><%= item[:descricao] %></p>
+    <% meta = [ item[:versao] && "Versão #{item[:versao]}", item[:origem], presentation_date(item[:data]) ].compact_blank %>
+    <% if meta.any? %><p class="apr-diagram__meta"><%= meta.join(" · ") %></p><% end %>
+    <% if item[:imagem].present? && item[:card].present? %>
+      <p><%= presentation_link("Card ##{item.dig(:card, :numero)} — #{item.dig(:card, :titulo)}", item.dig(:card, :url), class: "apr-card-link") %></p>
+    <% end %>
+  </div>
+</article>

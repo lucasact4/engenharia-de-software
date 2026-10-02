@@ -1,9 +1,13 @@
 <% entrega = @presentation.entrega %>
-<% content_for :title, "SGU — #{entrega[:entrega]}" %>
+<% delivery = @selection.delivery %>
+<% content_for :title, "SGU — #{delivery[:titulo]}" %>
 <% content_for :description, "Apresentação do SGU (Sistema de Gerenciamento Urbano) para a disciplina de #{entrega[:disciplina]} da UFRPE." %>
 
 <div class="apr"
      data-controller="presentation"
+     data-presentation-catalog-value="<%= presentation_catalog_data(@presentation, delivery: @selection.delivery).to_json %>"
+     data-presentation-choices-value="<%= @selection.to_h.to_json %>"
+     data-presentation-limit-value="<%= @selection.limit_seconds.to_i %>"
      data-action="click->presentation#followSlideLink">
   <a class="apr-skip" href="#apr-deck">Pular para os slides</a>
 
@@ -12,7 +16,7 @@
       <span class="apr-brand__mark" aria-hidden="true"><%= render "presentations/shared/pin_icon" %></span>
       <span class="apr-brand__text">
         <strong>SGU</strong>
-        <span>2ª entrega · Engenharia de Software</span>
+        <span><%= delivery[:rotulo] %> · <%= entrega[:disciplina] %></span>
       </span>
     <% end %>
 
@@ -22,6 +26,12 @@
               data-action="presentation#openIndex"
               aria-haspopup="dialog">
         <%= render "presentations/shared/icon", name: "list" %><span>Índice</span>
+      </button>
+      <button type="button" class="apr-btn" hidden
+              data-presentation-target="enhanced customButton"
+              data-action="presentation#openCustomize"
+              aria-haspopup="dialog">
+        <%= render "presentations/shared/icon", name: "sliders" %><span>Personalizar apresentação</span>
       </button>
       <button type="button" class="apr-btn" hidden
               data-presentation-target="enhanced modeButton"
@@ -52,21 +62,22 @@
       <%= render "presentations/shared/slide_list", presentation: @presentation %>
     </nav>
 
-    <% @presentation.slides.each do |slide| %>
+    <% @presentation.ordered_slides(delivery).each do |slide| %>
       <section id="<%= slide.dom_id %>"
                class="apr-slide <%= slide.dark ? 'apr-slide--dark' : 'apr-slide--light' %> apr-slide--<%= slide.id %>"
                aria-labelledby="<%= slide.heading_id %>"
                tabindex="-1"
                data-presentation-target="slide"
+               data-slide-id="<%= slide.id %>"
                data-appendix="<%= slide.appendix %>"
-               data-label="<%= slide.label %>"
-               data-title="<%= slide.title %>">
+               data-title="<%= @selection.slide_title(slide) %>"
+               <%= "hidden" unless @selection.slide_visible?(slide) %>>
         <div class="apr-slide__inner">
           <%= render slide.partial, presentation: @presentation, slide: slide %>
         </div>
         <p class="apr-slide__folio" aria-hidden="true">
-          <span>SGU · <%= entrega[:entrega] %></span>
-          <span><%= slide.appendix ? "Apêndice #{slide.label}" : "#{slide.label} / #{format('%02d', @presentation.main_slides.size)}" %></span>
+          <span>SGU · <%= delivery[:titulo] %></span>
+          <span data-apr-folio-for="<%= slide.id %>"><%= slide.appendix ? "Apêndice #{@selection.label(slide)}" : "#{@selection.label(slide)} / #{format('%02d', @selection.visible_main_slides.size)}" %></span>
         </p>
       </section>
     <% end %>
@@ -79,7 +90,7 @@
             aria-label="Slide anterior">
       <%= render "presentations/shared/icon", name: "chevron-left" %>
     </button>
-    <p class="apr-nav__counter" data-presentation-target="counter">1 / <%= @presentation.main_slides.size %></p>
+    <p class="apr-nav__counter" data-presentation-target="counter">1 / <%= @selection.visible_main_slides.size %></p>
     <button type="button" class="apr-nav__btn"
             data-presentation-target="nextButton"
             data-action="presentation#next"
@@ -102,6 +113,7 @@
       </button>
     </div>
     <%= render "presentations/shared/slide_list", presentation: @presentation, linked: true %>
+    <p class="apr-index__estimate" data-presentation-target="estimate"><%= presentation_estimate_text(@selection) %></p>
     <div class="apr-index__foot">
       <dl class="apr-shortcuts">
         <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>slide anterior / próximo</dd></div>
@@ -130,4 +142,6 @@
     </div>
     <div class="apr-lightbox__media" data-presentation-target="lightboxMedia" tabindex="0" aria-label="Área da imagem ampliada; use as setas para rolar"></div>
   </dialog>
+
+  <%= render "presentations/shared/customize", presentation: @presentation, selection: @selection, profile: @profile %>
 </div>

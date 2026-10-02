@@ -1,0 +1,72 @@
+<% r = presentation.requisitos %>
+<% doc = r[:documento] %>
+<% card = r[:card_refinamento] %>
+<% requisitos = Array(r[:requisitos_refinados]) %>
+<% com_criterios = requisitos.count { |req| req[:criterios_aceite].present? } %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "requisitos",
+      title: "Requisitos refinados",
+      lead: "Lista consolidada no card ##{card[:numero]}, com critérios de aceite verificáveis para cada requisito." %>
+
+<div class="apr-reqs apr-fit">
+  <% [ [ "funcionais", "funcional", "Requisitos funcionais", "O que o SGU faz" ], [ "nao-funcionais", "nao_funcional", "Requisitos não funcionais", "Como o SGU precisa se comportar" ] ].each do |item_id, tipo, titulo, subtitulo| %>
+    <% lista = requisitos.select { |req| req[:tipo] == tipo } %>
+    <%= presentation_item slide, item_id, :section, class: "apr-reqs__col", aria: { labelledby: "#{slide.dom_id}-#{item_id}" } do %>
+      <h3 id="<%= slide.dom_id %>-<%= item_id %>" class="apr-reqs__title"><%= titulo %> <span><%= subtitulo %></span></h3>
+      <% if lista.any? %>
+        <ul class="apr-reqs__list" role="list">
+          <% lista.each do |req| %>
+            <li class="apr-req">
+              <p class="apr-req__head">
+                <strong class="apr-req__id"><%= req[:id] %></strong>
+                <span class="apr-req__name"><%= req[:titulo] %></span>
+                <% if req[:mvp] %><span class="apr-tag apr-tag--gold">MVP</span><% end %>
+                <%= presentation_state(req[:estado], short: true) if req[:estado].present? %>
+              </p>
+              <% if req[:descricao].present? %><p class="apr-req__text"><%= req[:descricao] %></p><% end %>
+              <% if req[:criterios_aceite].present? %>
+                <%= presentation_item slide, "criterios", :ul, class: "apr-req__criteria", role: "list", aria: { label: "Critérios de aceite de #{req[:id]}" } do %>
+                  <% req[:criterios_aceite].each do |criterio| %><li><%= criterio %></li><% end %>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <%= render "presentations/shared/pending",
+              title: "#{titulo} ainda não consolidados",
+              state: :aguardando_evidencia,
+              text: "Entram aqui somente os requisitos do documento aprovado pela equipe.",
+              needs: [ "Identificador (#{tipo == 'funcional' ? 'RF001' : 'RNF001'}…)", "Título e descrição", "Critérios de aceite verificáveis" ],
+              card: card %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= presentation_group slide, %w[criterios documento], class: "apr-reqs__foot" do %>
+  <%= presentation_item slide, "criterios", :p, class: "apr-inline-pending" do %>
+    <span class="apr-label">Critérios de aceite</span>
+    <% if requisitos.empty? %>
+      <%= presentation_state(:aguardando_evidencia) %>
+      <span>cada requisito precisa de condições verificáveis (ex.: Dado / Quando / Então).</span>
+    <% else %>
+      <span><%= com_criterios %> de <%= requisitos.size %> requisitos com critérios definidos.</span>
+    <% end %>
+  <% end %>
+
+  <%= presentation_item slide, "documento", :p, class: "apr-doc-ref" do %>
+    <span class="apr-label">Documento de requisitos</span>
+    <% if doc[:titulo].present? %>
+      <%= presentation_link([ doc[:titulo], doc[:versao] && "versão #{doc[:versao]}" ].compact.join(" · "), doc[:url]) %>
+      <% if doc[:origem].present? %><span class="apr-source"><%= doc[:origem] %></span><% end %>
+    <% else %>
+      <%= presentation_state(:aguardando_evidencia) %>
+      <%= presentation_link("Card ##{card[:numero]} — #{card[:titulo]}", card[:url], class: "apr-card-link") %>
+    <% end %>
+    <%= presentation_slide_ref "conflitos" do %>
+      · <%= r[:conflitos].size %> conflitos em aberto — <a class="apr-more" href="#s-conflitos">ver apêndice</a>
+    <% end %>
+  <% end %>
+<% end %>
+<%= presentation_update_note("requisitos.yml", "requisitos_refinados (tipo, critérios de aceite) e documento.") %>

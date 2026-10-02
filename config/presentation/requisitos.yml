@@ -65,9 +65,18 @@ dimensoes:
 
 regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgente pode ser privada, e uma ocorrência resolvida pode continuar pública."
 
-# Requisitos selecionados para o MVP (preencher a partir do documento do card #13).
-# Formato: { id: "RF001", titulo: "...", estado: planejado }
-requisitos_selecionados: []
+# Requisitos refinados (lista oficial consolidada no card #13). Preencha somente com o que
+# estiver no documento aprovado pela equipe; deixe a lista vazia enquanto ele não existir.
+# Formato:
+#   - id: "RF001"                     # identificador do documento
+#     tipo: funcional                 # funcional | nao_funcional
+#     titulo: "Registrar ocorrência"
+#     descricao: "A pessoa autenticada registra uma ocorrência com categoria e local."
+#     mvp: true                       # opcional: entra no MVP
+#     criterios_aceite:               # condições verificáveis (ex.: Dado/Quando/Então)
+#       - "Dado um usuário autenticado, quando enviar categoria e local, então a ocorrência fica com status Recebida."
+#     estado: planejado               # implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
+requisitos_refinados: []
 
 # Conflitos conhecidos entre versões dos requisitos.
 conflitos:

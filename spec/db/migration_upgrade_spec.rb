@@ -54,7 +54,8 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
     expect(query("PRAGMA foreign_key_check")).to be_empty
 
-    rails("db:rollback", "STEP=1", schema: dir.join("before_block_again.rb"))
+    # Volta a uma versão explícita: migrações posteriores (ex.: perfis da apresentação) também são desfeitas.
+    rails("db:migrate", "VERSION=20261001120700", schema: dir.join("before_block_again.rb"))
     expect(query("SELECT count(*) FROM alerts")).to eq([ [ 3 ] ])
     expect(query("SELECT count(*) FROM publications")).to eq([ [ 1 ] ])
     expect(query("SELECT count(*) FROM comments")).to eq([ [ 1 ] ])
@@ -93,9 +94,9 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("PRAGMA foreign_key_check")).to be_empty
     expect(dir.join("after.rb").read).to eq(Rails.root.join("db/schema.rb").read)
 
-    rails("db:rollback", "STEP=9", schema: dir.join("rolled_back.rb"))
+    rails("db:migrate", "VERSION=20260914150000", schema: dir.join("rolled_back.rb"))
     tables = query("SELECT name FROM sqlite_master WHERE type = 'table'").flatten
-    expect(tables).not_to include("alerts", "roles", "active_storage_blobs")
+    expect(tables).not_to include("alerts", "roles", "active_storage_blobs", "presentation_profiles")
     expect(query(snapshot)).to eq(before_users)
     strip_version = ->(text) { text.sub(/define\(version: [\d_]+\)/, "") }
     expect(strip_version.call(dir.join("rolled_back.rb").read)).to eq(strip_version.call(file_fixture("schema_before_card6.txt").read))

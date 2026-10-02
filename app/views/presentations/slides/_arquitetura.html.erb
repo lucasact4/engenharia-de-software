@@ -3,28 +3,62 @@
       kicker: "arquitetura e tecnologias",
       title: "Um monólito Rails no padrão MVC" %>
 
-<div class="apr-arch">
-  <%= render "presentations/shared/er_diagram", key: "architecture" %>
-
-  <div class="apr-arch__side">
-    <div class="apr-stack">
+<div class="apr-arch apr-fit">
+  <%= presentation_item slide, "tecnologias", class: "apr-tech", data: { controller: "tech-versions" } do %>
+    <div class="apr-tech__bar">
+      <p class="apr-tech__hint">Ferramentas comprovadas no repositório.<%= presentation_item slide, "versoes", :span do %> Passe o mouse ou foque um card para ver a versão.<% end %></p>
+      <%= presentation_item slide, "versoes", :button, type: "button", class: "apr-btn apr-btn--ghost apr-tech__toggle apr-js-only",
+            data: { action: "tech-versions#toggle", tech_versions_target: "button" },
+            aria: { expanded: "false", controls: "#{slide.dom_id}-tecnologias" } do %>Mostrar versões<% end %>
+    </div>
+    <div id="<%= slide.dom_id %>-tecnologias" class="apr-tech__groups">
       <% t[:stack].each do |grupo| %>
-        <section class="apr-stack__group" aria-label="<%= grupo[:grupo] %>">
-          <h3 class="apr-stack__title"><%= grupo[:grupo] %></h3>
-          <ul class="apr-stack__list" role="list">
+        <section class="apr-tech__group" aria-label="<%= grupo[:grupo] %>">
+          <h3 class="apr-tech__title"><%= grupo[:grupo] %></h3>
+          <ul class="apr-tech__list" role="list">
             <% grupo[:itens].each do |item| %>
-              <% version = presentation.version_for(item) %>
-              <li title="Evidência: <%= item[:evidencia] %>">
-                <span><%= item[:nome] %></span>
-                <% if version %><code class="apr-stack__v"><%= version %></code><% end %>
+              <% versions_id = "#{slide.dom_id}-v-#{item[:nome].parameterize}" %>
+              <li class="apr-tech__card" title="Evidência: <%= item[:evidencia] %>">
+                <div class="apr-tech__item" tabindex="0" aria-describedby="<%= versions_id %>"
+                     data-action="keydown.esc->tech-versions#dismiss mouseleave->tech-versions#restore focusout->tech-versions#restore">
+                  <span class="apr-tech__logo <%= 'apr-tech__logo--dark' if item.dig(:logo, :fundo) == 'escuro' %>">
+                    <% if item[:logo].present? %>
+                      <%= image_tag item.dig(:logo, :arquivo), alt: "", class: "apr-tech__img", loading: "lazy", decoding: "async" %>
+                    <% else %>
+                      <%= render "presentations/shared/icon", name: item[:simbolo], class: "apr-tech__symbol" %>
+                    <% end %>
+                  </span>
+                  <span class="apr-tech__text">
+                    <span class="apr-tech__name"><%= item[:nome] %></span>
+                    <span class="apr-tech__role"><%= item[:funcao] %></span>
+                  </span>
+                </div>
+                <%= presentation_item slide, "versoes", :span, id: versions_id, class: "apr-tech__versions", role: "tooltip" do %>
+                  <% presentation.versions_for(item).each do |version| %>
+                    <span class="apr-tech__version">
+                      <span class="apr-tech__version-label"><%= version[:label] %></span>
+                      <% if version[:value] %><code><%= version[:value] %></code><% else %><span class="apr-tech__version-text"><%= version[:text] %></span><% end %>
+                    </span>
+                  <% end %>
+                <% end %>
               </li>
             <% end %>
           </ul>
         </section>
       <% end %>
     </div>
+    <p class="apr-source apr-tech__credits">
+      Logos via Simple Icons, guardados no projeto. Ruby © 2006 Yukihiro Matsumoto (CC BY-SA 2.5); RuboCop por Dimiter Petrov (CC BY-NC 4.0);
+      demais marcas pertencem aos titulares e aparecem só para identificar a ferramenta. Símbolos neutros indicam ferramentas sem logo verificável.
+    </p>
+  <% end %>
 
-    <div class="apr-changes">
+  <%= presentation_group slide, %w[diagrama mudancas], class: "apr-arch__side apr-fit" do %>
+    <%= presentation_item slide, "diagrama", class: "apr-arch__diagram" do %>
+      <%= render "presentations/shared/er_diagram", key: "architecture" %>
+    <% end %>
+
+    <%= presentation_item slide, "mudancas", class: "apr-changes" do %>
       <h3 class="apr-changes__title">Mudanças em relação ao anunciado na 1ª entrega</h3>
       <ul class="apr-changes__list" role="list">
         <% t[:mudancas].each do |mudanca| %>
@@ -51,7 +85,7 @@
           <% end %>
         </ul>
       <% end %>
-    </div>
-  </div>
+    <% end %>
+  <% end %>
 </div>
-<%= presentation_update_note("tecnologias.yml", "stack, mudanças e justificativa (versões vêm do Gemfile.lock).") %>
+<%= presentation_update_note("tecnologias.yml", "stack, logos (fonte e licença), mudanças e justificativa; versões vêm do Gemfile.lock, de .ruby-version e da biblioteca SQLite.") %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_070000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -242,6 +242,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_070000) do
     t.check_constraint "length(name) BETWEEN 1 AND 120", name: "locations_name_length"
     t.check_constraint "reference_latitude IS NULL OR (reference_latitude >= -90 AND reference_latitude <= 90)", name: "locations_reference_latitude_range"
     t.check_constraint "reference_longitude IS NULL OR (reference_longitude >= -180 AND reference_longitude <= 180)", name: "locations_reference_longitude_range"
+  end
+
+  create_table "presentation_profiles", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.string "delivery", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.json "selections", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_presentation_profiles_on_single_active", unique: true, where: "active"
+    t.index ["name"], name: "index_presentation_profiles_on_name", unique: true
   end
 
   create_table "publication_bookmarks", force: :cascade do |t|

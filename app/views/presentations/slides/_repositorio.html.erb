@@ -1,0 +1,46 @@
+<%# GitHub: estrutura lida do próprio repositório (pastas e workflow de CI), não digitada. %>
+<% g = presentation.gestao %>
+<% repo = presentation.repository_overview %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "repositório",
+      title: "Código versionado no GitHub, com integração contínua",
+      lead: "Contagens lidas das pastas do projeto nesta versão. Estrutura organizada não comprova, sozinha, funcionalidades completas." %>
+
+<div class="apr-mgmt apr-mgmt--two apr-fit">
+  <%= presentation_item slide, "estrutura", :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-estrutura" } do %>
+    <h3 id="<%= slide.dom_id %>-estrutura" class="apr-mgmt__title">
+      <%= render "presentations/shared/icon", name: "git" %> Estrutura do código
+    </h3>
+    <ul class="apr-repo" role="list">
+      <% repo[:folders].each do |folder| %>
+        <li class="apr-repo__item">
+          <code class="apr-code"><%= folder[:path] %></code>
+          <span class="apr-repo__count"><%= folder[:count] %></span>
+          <span class="apr-repo__label"><%= folder[:label] %></span>
+        </li>
+      <% end %>
+    </ul>
+    <%= presentation_slide_ref "funcionalidades", :p, class: "apr-source" do %>
+      As duas funcionalidades completas são avaliadas no slide <a class="apr-more" href="#s-funcionalidades"><%= presentation_slide_label presentation.slide("funcionalidades") %></a>.
+    <% end %>
+  <% end %>
+
+  <%= presentation_item slide, "praticas", :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-praticas" } do %>
+    <h3 id="<%= slide.dom_id %>-praticas" class="apr-mgmt__title">
+      <%= render "presentations/shared/icon", name: "check" %> Práticas e integração contínua
+    </h3>
+    <ul class="apr-practices" role="list">
+      <% g[:praticas].each do |pratica| %>
+        <li>
+          <p class="apr-practices__title"><%= pratica[:titulo] %></p>
+          <p class="apr-practices__text"><%= pratica[:texto] %></p>
+        </li>
+      <% end %>
+    </ul>
+    <% if repo[:ci_jobs].any? %>
+      <p class="apr-source">Jobs em <code>.github/workflows/ci.yml</code>: <%= repo[:ci_jobs].join(" · ") %>.</p>
+    <% end %>
+    <p><%= presentation_link("Abrir o repositório", presentation.entrega.dig(:links, :github), class: "apr-btn apr-btn--outline") %></p>
+  <% end %>
+</div>
+<%= presentation_update_note("gestao.yml", "praticas; a estrutura é contada a partir das pastas do repositório.") %>

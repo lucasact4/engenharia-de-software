@@ -284,6 +284,8 @@
 
 .apr-deck {
   display: grid;
+  /* minmax(0, 1fr): tabelas largas rolam dentro do slide em vez de alargar a página. */
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1rem, 3vw, 2rem);
   width: min(100% - 2rem, 1280px);
   margin: clamp(1rem, 3vw, 2rem) auto 4rem;
@@ -1839,31 +1841,23 @@
   font-weight: 700;
 }
 
-/* Diagramas --------------------------------------------------------------- */
-
-.apr-diagrams {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.1em;
-}
+/* Diagramas (um por slide) ---------------------------------------------------- */
 
 .apr-diagram {
   display: grid;
-  align-content: start;
-  gap: 0.7em;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.5em;
+  align-items: start;
 }
 
-.apr-diagram__head {
+.apr-diagram__side {
   display: grid;
-  gap: 0.3em;
-  align-content: start;
+  gap: 0.6em;
   justify-items: start;
-  min-height: 2.9em;
 }
 
-.apr-diagram__title {
-  font-size: 1.05em;
-  line-height: 1.25;
+.apr-diagram__text {
+  color: var(--apr-ink-2);
 }
 
 .apr-diagram--required .apr-pending {
@@ -1871,12 +1865,23 @@
 }
 
 .apr-diagram .apr-pending__frame {
-  aspect-ratio: 3 / 1;
+  aspect-ratio: auto;
+  height: min(11em, 28vh);
 }
 
 .apr-diagram__meta {
   color: var(--apr-ink-3);
   font-size: 0.74em;
+}
+
+.apr-model-note {
+  display: grid;
+  gap: 0.35em;
+  padding: 0.8em 1em;
+  border-left: 4px solid var(--apr-gold);
+  border-radius: 0 12px 12px 0;
+  background: var(--apr-g-50);
+  font-size: 0.88em;
 }
 
 /* Arquitetura --------------------------------------------------------------- */
@@ -2323,32 +2328,6 @@
   color: var(--apr-gold);
 }
 
-.apr-closing {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6em 1.5em;
-  padding-top: 1em;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.apr-closing__thanks {
-  font-size: 1.6em;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-.apr-closing__thanks span {
-  color: var(--apr-gold);
-}
-
-.apr-closing__team {
-  flex: 1;
-  min-width: 14em;
-  color: rgba(227, 239, 235, 0.75);
-  font-size: 0.82em;
-}
-
 .apr-closing__links {
   display: flex;
   flex-wrap: wrap;
@@ -2473,6 +2452,861 @@
   font-size: 0.8em;
 }
 
+/* Encerramento ------------------------------------------------------------------ */
+
+.apr-end {
+  display: grid;
+  gap: 1.1em;
+  align-content: center;
+  justify-items: start;
+  min-height: 100%;
+}
+
+.apr-end__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.35em 0.9em;
+  border: 1px solid rgba(159, 200, 190, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apr-end__title {
+  font-size: 3.2em;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.apr-end__title span {
+  color: var(--apr-gold);
+}
+
+.apr-end__lead {
+  max-width: 52ch;
+  color: rgba(227, 239, 235, 0.82);
+  font-size: 1.05em;
+}
+
+.apr-end__team {
+  display: grid;
+  gap: 0.5em;
+  width: 100%;
+  padding-top: 1em;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.apr-end__note {
+  color: rgba(227, 239, 235, 0.6);
+  font-size: 0.72em;
+}
+
+/* Requisitos refinados ------------------------------------------------------------ */
+
+.apr-reqs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2em;
+  align-items: start;
+}
+
+.apr-reqs__col {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+}
+
+.apr-reqs__title {
+  display: grid;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid var(--apr-g-800);
+  font-size: 1.02em;
+}
+
+.apr-reqs__title span {
+  color: var(--apr-ink-3);
+  font-size: 0.78em;
+  font-weight: 600;
+}
+
+.apr-reqs__list {
+  display: grid;
+  gap: 0.55em;
+}
+
+.apr-req {
+  display: grid;
+  gap: 0.3em;
+  padding: 0.6em 0.8em;
+  border: 1px solid var(--apr-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.apr-req__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.6em;
+}
+
+.apr-req__id {
+  color: var(--apr-amber);
+  font-family: var(--apr-mono);
+}
+
+.apr-req__name {
+  font-weight: 700;
+}
+
+.apr-req__text,
+.apr-req__criteria {
+  color: var(--apr-ink-2);
+  font-size: 0.82em;
+}
+
+.apr-req__criteria {
+  display: grid;
+  gap: 0.2em;
+}
+
+.apr-req__criteria li::before {
+  content: "✓ ";
+  color: var(--apr-g-600);
+  font-weight: 800;
+}
+
+.apr-reqs__foot {
+  display: grid;
+  gap: 0.5em;
+}
+
+/* Status report ------------------------------------------------------------------- */
+
+.apr-status {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1em;
+  align-items: stretch;
+}
+
+.apr-status__col {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+  padding: 1em 1.1em;
+  border: 1px solid var(--apr-line);
+  border-top: 4px solid var(--apr-g-600);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.apr-status__col--next {
+  border-top-color: var(--apr-gold);
+}
+
+.apr-status__col--learn {
+  border-top-color: var(--apr-g-800);
+}
+
+.apr-status__title {
+  font-size: 1em;
+}
+
+.apr-status__list {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.86em;
+}
+
+.apr-status__list li {
+  display: grid;
+  gap: 0.1em;
+}
+
+.apr-status__list span {
+  color: var(--apr-ink-3);
+  font-size: 0.9em;
+}
+
+.apr-status__marco,
+.apr-status__more {
+  color: var(--apr-ink-2);
+  font-size: 0.8em;
+}
+
+/* Protótipo e blocos auxiliares ---------------------------------------------------- */
+
+.apr-proto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em 1.2em;
+  padding: 0.6em 0.9em;
+  border: 1px dashed var(--apr-line-strong);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.apr-proto .apr-figure {
+  flex: 0 1 18em;
+}
+
+.apr-proto__body {
+  display: grid;
+  flex: 1 1 18em;
+  gap: 0.3em;
+}
+
+.apr-proto__text {
+  color: var(--apr-ink-2);
+  font-size: 0.86em;
+}
+
+.apr-problem__block,
+.apr-next__block {
+  display: grid;
+  gap: 1em;
+  align-content: start;
+}
+
+.apr-next__block {
+  gap: 0.9em;
+}
+
+.apr-envs {
+  display: grid;
+  gap: 0.4em;
+}
+
+.apr-envs__list {
+  display: grid;
+  gap: 0.35em;
+  font-size: 0.84em;
+}
+
+.apr-envs__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2em 0.5em;
+}
+
+.apr-envs__name {
+  font-weight: 650;
+  text-underline-offset: 0.2em;
+}
+
+.apr-envs__note {
+  flex-basis: 100%;
+  color: var(--apr-ink-3);
+  font-size: 0.9em;
+}
+
+.apr-muted {
+  color: var(--apr-ink-3);
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+.apr-estimate.is-over,
+.apr-custom__estimate.is-over {
+  color: #86341a;
+  font-weight: 700;
+}
+
+.apr-index__estimate {
+  margin: 0.8rem 1.25rem 0 !important;
+  color: var(--apr-ink-2);
+  font-size: 0.85rem;
+}
+
+.apr-index__estimate.is-over {
+  color: #86341a;
+  font-weight: 700;
+}
+
+/* Blocos ocultos: os vizinhos ocupam o espaço em vez de deixar colunas vazias.
+   Especificidade baixa para que as regras responsivas abaixo continuem valendo. */
+.apr-fit:where(:has(> [hidden])) {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+/* Personalizar apresentação (ajustes temporários) ---------------------------------- */
+
+.apr-btn.is-customized {
+  border-color: var(--apr-gold);
+  box-shadow: inset 0 0 0 1px var(--apr-gold);
+}
+
+.apr-custom {
+  width: min(100% - 1.5rem, 46rem);
+  max-height: min(100% - 1.5rem, 52rem);
+  overflow: hidden;
+}
+
+.apr-custom[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* O título recebe o foco ao abrir só para orientar leitores de tela; não é interativo. */
+.apr-custom .apr-dialog__head h2:focus {
+  outline: none;
+}
+
+.apr-custom__intro {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--apr-line);
+  font-size: 0.88rem;
+}
+
+.apr-custom__profile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+}
+
+.apr-custom__profile-note,
+.apr-custom__hint-text {
+  color: var(--apr-ink-3);
+  font-size: 0.8rem;
+}
+
+.apr-custom__note {
+  padding: 0.5rem 0.7rem;
+  border: 1px dashed var(--apr-amber);
+  border-radius: 10px;
+  background: rgba(242, 189, 87, 0.12);
+}
+
+.apr-custom__estimate {
+  font-weight: 600;
+}
+
+.apr-custom__body {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.6rem 1.25rem 1rem;
+  overscroll-behavior: contain;
+}
+
+.apr-custom__group + .apr-custom__group {
+  margin-top: 1rem;
+}
+
+.apr-custom__group-title {
+  margin-bottom: 0.4rem !important;
+  color: var(--apr-g-600);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.apr-custom__slides {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.apr-custom__slide {
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.apr-custom__slide.is-off {
+  background: var(--apr-g-50);
+}
+
+.apr-custom__fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+}
+
+.apr-custom__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+
+/* A legenda flutua para se comportar como bloco comum dentro do fieldset. */
+.apr-custom__fieldset > :not(legend) {
+  clear: both;
+}
+
+.apr-custom__check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 1.9rem;
+  padding: 0.2rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.apr-custom__check input {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--apr-g-600);
+}
+
+.apr-custom__check input:disabled + span {
+  cursor: default;
+}
+
+.apr-custom__check--slide {
+  flex: 1;
+  font-weight: 700;
+}
+
+.apr-custom__time {
+  color: var(--apr-ink-3);
+  font-family: var(--apr-mono);
+  font-size: 0.75rem;
+}
+
+.apr-custom__slide-hint {
+  color: var(--apr-ink-2);
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
+.apr-custom__slide-hint:empty {
+  display: none;
+}
+
+.apr-custom__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0 1rem;
+  margin: 0.15rem 0 0.1rem 1.6rem !important;
+}
+
+.apr-custom__items.is-muted {
+  opacity: 0.6;
+}
+
+.apr-custom__item--child {
+  padding-left: 1.3rem;
+}
+
+.apr-custom__item .apr-custom__check {
+  font-size: 0.84rem;
+}
+
+.apr-custom__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  border-top: 1px solid var(--apr-line);
+  background: var(--apr-g-50);
+}
+
+.apr-custom__status {
+  flex: 1;
+  min-width: 12rem;
+  color: var(--apr-ink-2);
+  font-size: 0.82rem;
+}
+
+/* Títulos por exigência ----------------------------------------------------------- */
+
+.apr-kicker {
+  flex-wrap: wrap;
+}
+
+/* Exigência atendida pelo slide ("2ª entrega · Item 1"), separada do número do slide. */
+.apr-requirement {
+  padding: 0.15em 0.6em;
+  border: 1px solid var(--apr-g-300);
+  border-radius: 999px;
+  background: var(--apr-g-50);
+  color: var(--apr-g-800);
+  font-family: var(--apr-font);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.apr-requirement--extra {
+  border-style: dashed;
+  background: transparent;
+  color: var(--apr-ink-3);
+}
+
+.apr-slide--dark .apr-requirement {
+  border-color: rgba(159, 200, 190, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--apr-g-100);
+}
+
+.apr-title {
+  overflow-wrap: break-word;
+}
+
+.apr-title--long {
+  max-width: 56ch;
+  font-size: 1.6em;
+  line-height: 1.12;
+}
+
+.apr-subtitle {
+  max-width: 70ch;
+  color: var(--apr-g-600);
+  font-size: 1.05em;
+  font-weight: 650;
+  text-wrap: pretty;
+}
+
+.apr-slide--dark .apr-subtitle {
+  color: var(--apr-g-300);
+}
+
+.apr-slide-list__title {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.apr-slide-list__req {
+  display: block;
+  color: var(--apr-ink-3);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.apr-slide-list__link[aria-current="true"] .apr-slide-list__req {
+  color: var(--apr-g-300);
+}
+
+.apr-custom__req {
+  flex-basis: 100%;
+  margin-left: 1.6rem;
+  color: var(--apr-g-600);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.apr-custom__req--extra {
+  color: var(--apr-ink-3);
+  font-weight: 500;
+}
+
+.apr-custom__note {
+  display: grid;
+  gap: 0.25rem;
+  padding-left: 1.6rem !important;
+  list-style: disc !important;
+}
+
+.apr-checklist__part {
+  display: block;
+  color: var(--apr-g-600);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Sem JavaScript, controles que dependem dele não aparecem. */
+.apr:not(.apr--js) .apr-js-only {
+  display: none !important;
+}
+
+/* Repositório, Trello e reuniões ---------------------------------------------------- */
+
+/* Duas colunas só quando nenhuma está oculta (senão vale .apr-fit). */
+.apr-mgmt--two:where(:not(:has(> [hidden]))) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.apr-repo {
+  display: grid;
+  gap: 0.3em;
+}
+
+.apr-repo__item {
+  display: grid;
+  grid-template-columns: minmax(0, 9.5em) 3em minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.6em;
+  padding: 0.28em 0.7em;
+  border: 1px solid var(--apr-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.apr-repo__item .apr-code {
+  justify-self: start;
+}
+
+.apr-repo__count {
+  color: var(--apr-amber);
+  font-family: var(--apr-mono);
+  font-weight: 800;
+  text-align: right;
+}
+
+.apr-repo__label {
+  color: var(--apr-ink-2);
+  font-size: 0.84em;
+}
+
+.apr-meetings--grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18em), 1fr));
+}
+
+/* Modelo conceitual: situação ------------------------------------------------------- */
+
+.apr-model-foot {
+  display: grid;
+}
+
+.apr-model-foot:where(:not(:has(> [hidden]))) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1em;
+  align-items: start;
+}
+
+.apr-model-status {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.86em;
+}
+
+.apr-model-status__row {
+  display: grid;
+  grid-template-columns: minmax(0, 11em) minmax(0, 1fr);
+  gap: 0.6em;
+  align-items: baseline;
+}
+
+.apr-model-status dt {
+  font-weight: 700;
+}
+
+.apr-model-status dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3em 0.6em;
+  color: var(--apr-ink-2);
+}
+
+/* Tecnologias: cards com logo e versões discretas ----------------------------------- */
+
+.apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])) {
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+}
+
+.apr-tech {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+}
+
+.apr-tech__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4em 1em;
+}
+
+.apr-tech__hint {
+  color: var(--apr-ink-3);
+  font-size: 0.78em;
+}
+
+.apr-tech__groups {
+  display: grid;
+  gap: 0.45em;
+}
+
+.apr-tech__title {
+  margin-bottom: 0.2em !important;
+  color: var(--apr-g-600);
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apr-tech__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5em), 1fr));
+  gap: 0.35em;
+}
+
+.apr-tech__card {
+  position: relative;
+}
+
+.apr-tech__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 100%;
+  padding: 0.32em 0.5em;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.apr-tech__item:hover,
+.apr-tech__item:focus-visible {
+  border-color: var(--apr-g-600);
+}
+
+.apr-tech__logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 8px;
+  background: var(--apr-g-50);
+  color: var(--apr-g-700);
+}
+
+.apr-tech__logo--dark {
+  background: var(--apr-g-900);
+}
+
+.apr-tech__img {
+  width: 1.15em;
+  height: 1.15em;
+  object-fit: contain;
+}
+
+.apr-tech__symbol {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.apr-tech__text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.apr-tech__name {
+  font-size: 0.9em;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.apr-tech__role {
+  color: var(--apr-ink-3);
+  font-size: 0.72em;
+}
+
+/* Recolhidas: dica acima do card ao passar o mouse ou focar (sem depender de hover no PDF). */
+.apr-tech__versions {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.35em);
+  z-index: 5;
+  display: grid;
+  gap: 0.15em;
+  width: max-content;
+  max-width: min(22em, 80vw);
+  padding: 0.45em 0.6em;
+  border-radius: 10px;
+  background: var(--apr-g-900);
+  color: #fff;
+  font-size: 0.74em;
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  transition: opacity 0.15s var(--apr-ease);
+}
+
+/* Mantém a dica aberta durante a passagem do cursor entre o card e o texto. */
+.apr-tech__versions::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 0.35em;
+}
+
+.apr-tech__card:hover .apr-tech__versions,
+.apr-tech__card:focus-within .apr-tech__versions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.apr-tech__card.is-dismissed .apr-tech__versions {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.apr-tech__version {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 0.6em;
+}
+
+.apr-tech__version-label {
+  opacity: 0.8;
+}
+
+.apr-tech__version code {
+  font-weight: 700;
+}
+
+.apr-tech__version-text {
+  font-style: italic;
+}
+
+/* Expandidas (botão) ou sem JavaScript: versões abaixo de cada tecnologia. */
+.apr-tech.is-expanded .apr-tech__versions,
+.apr:not(.apr--js) .apr-tech__versions {
+  position: static;
+  width: auto;
+  max-width: none;
+  margin-top: 0.25em;
+  padding: 0.3em 0.5em;
+  border: 1px dashed var(--apr-line-strong);
+  background: var(--apr-g-50);
+  color: var(--apr-ink-2);
+  box-shadow: none;
+  opacity: 1;
+  visibility: visible;
+}
+
+.apr-tech.is-expanded .apr-tech__item,
+.apr:not(.apr--js) .apr-tech__item {
+  height: auto;
+}
+
+.apr-tech__credits {
+  font-size: 0.68em;
+}
+
 /* Responsivo ------------------------------------------------------------------ */
 
 @media screen and (max-width: 1100px) {
@@ -2524,8 +3358,14 @@
   .apr-arch,
   .apr-retro,
   .apr-next,
-  .apr-problem {
+  .apr-problem,
+  .apr-diagram,
+  .apr-status {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-fit:where(:has(> [hidden])) {
+    grid-auto-flow: row;
   }
 
   .apr-features,
@@ -2598,8 +3438,17 @@
   .apr-mgmt,
   .apr-evidence,
   .apr-board,
-  .apr-stack {
+  .apr-stack,
+  .apr-reqs {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-end__title {
+    font-size: 2.3em;
+  }
+
+  .apr-custom__items {
+    margin-left: 0.4rem !important;
   }
 
   .apr-change {
@@ -2854,7 +3703,8 @@
   .apr-slide--dark .apr-steps__text,
   .apr-slide--dark .apr-milestone__text,
   .apr-slide--dark .apr-milestone__title--empty,
-  .apr-slide--dark .apr-closing__team {
+  .apr-slide--dark .apr-end__lead,
+  .apr-slide--dark .apr-end__note {
     color: var(--apr-ink-2) !important;
   }
 
@@ -2867,7 +3717,8 @@
   .apr-slide--dark .apr-cover__team-label,
   .apr-slide--dark .apr-pains__num,
   .apr-slide--dark .apr-risks strong,
-  .apr-slide--dark .apr-closing__thanks span {
+  .apr-slide--dark .apr-end__title span,
+  .apr-slide--dark .apr-end .apr-label {
     color: var(--apr-amber) !important;
   }
 
@@ -2877,6 +3728,7 @@
   }
 
   .apr-cover__eyebrow,
+  .apr-end__eyebrow,
   .apr-chip,
   .apr-flow__step,
   .apr-cover__team,
@@ -2889,7 +3741,7 @@
   }
 
   .apr-cover__meta,
-  .apr-closing {
+  .apr-end__team {
     border-color: var(--apr-line-strong);
   }
 
@@ -3366,5 +4218,176 @@
   .apr-data-relation {
     opacity: 0.65 !important;
   }
+}
 
+/* Com o diagrama de arquitetura visível, os cards ocupam a largura toda e o diagrama ganha uma
+   coluna larga (como no layout original), ao lado das mudanças. */
+.apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])):has(.apr-arch__diagram:not([hidden])) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.apr-arch__side:has(> .apr-arch__diagram:not([hidden])):has(> .apr-changes:not([hidden])) {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+/* Ordem no painel: título, selo de obrigatório, tempo; a exigência fica na linha de baixo. */
+.apr-custom__check--slide { order: 0; }
+.apr-custom__legend .apr-tag { order: 1; }
+.apr-custom__time { order: 2; }
+.apr-custom__req { order: 3; }
+
+/* Títulos, tecnologias e blocos novos: telas estreitas e impressão ------------------- */
+
+@media screen and (max-width: 900px) {
+  .apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])),
+  .apr-arch__side:has(> .apr-arch__diagram:not([hidden])):has(> .apr-changes:not([hidden])),
+  .apr-mgmt--two,
+  .apr-model-foot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .apr-title--long {
+    font-size: 1.35em;
+  }
+
+  .apr-repo__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .apr-repo__label {
+    grid-column: 1 / -1;
+  }
+
+  .apr-model-status__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15em;
+  }
+
+  .apr-tech__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .apr-tech__toggle,
+  .apr-tech__hint {
+    display: none !important;
+  }
+
+  .apr-tech__versions {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-top: 0.15em;
+    padding: 0 0.2em !important;
+    background: none !important;
+    color: var(--apr-ink-2) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 7.5pt;
+  }
+
+  .apr-tech__item {
+    height: auto;
+    padding: 0.3em 0.45em;
+  }
+
+  .apr-tech__list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.5mm;
+  }
+
+  .apr-tech__groups {
+    gap: 1.5mm;
+  }
+
+  .apr-tech {
+    font-size: 8.5pt;
+  }
+
+  .apr-tech__credits {
+    font-size: 6.5pt !important;
+  }
+
+  /* No papel, cards e diagrama de arquitetura ficam lado a lado para caber em uma página. */
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__versions {
+    font-size: 6.5pt;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__role {
+    display: none;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-arch__side {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* O slide principal divide a página com cabeçalho e situação: escala reduzida da main. */
+  .apr-model-diagram:has(~ .apr-model-foot:not([hidden])) .apr-data-canvas,
+  .apr-arch__diagram .apr-data-canvas {
+    font-size: min(12px, var(--diagram-fit-font), var(--diagram-overview-print-font)) !important;
+  }
+
+  .apr-tech__logo--dark {
+    background: var(--apr-g-900) !important;
+  }
+
+  .apr-requirement {
+    border-color: var(--apr-line-strong) !important;
+    background: #fff !important;
+    color: var(--apr-g-800) !important;
+  }
+
+  .apr-slide--dark .apr-subtitle {
+    color: var(--apr-g-600) !important;
+  }
+}
+
+/* Visibilidade ------------------------------------------------------------------- */
+
+/* Slides e blocos desmarcados no perfil ou no ajuste temporário saem da tela e da impressão,
+   mesmo quando um componente define display próprio (inclusive as regras de impressão acima). */
+.apr-body [hidden][hidden] {
+  display: none !important;
+}
+
+/* O repositório e as duas jornadas pertencem ao mesmo item da segunda entrega. */
+.apr-feature-repository {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding: 0.7em 1em;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-g-50);
+}
+.apr-feature-repository > div { flex: 1 1 20em; }
+.apr-feature-repository p { font-size: 0.85em; }
+
+.apr-retro__photo .apr-pending__frame {
+  aspect-ratio: auto;
+  height: min(42vh, 24em);
+}
+.apr-retro__photo .apr-figure__img {
+  max-height: min(50vh, 28em);
+  object-fit: contain;
+}
+@media print {
+  .apr-retro__photo .apr-pending__frame { height: 85mm; }
+  .apr-retro__photo .apr-figure__img { max-height: 110mm; }
 }

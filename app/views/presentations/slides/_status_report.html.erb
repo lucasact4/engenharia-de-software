@@ -1,0 +1,43 @@
+<% r = presentation.retrospectiva %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "primeiro status report",
+      title: "Lições da sprint e ações combinadas",
+      lead: "A imagem da dinâmica fica no item 3. Aqui entram os aprendizados registrados pela equipe." %>
+
+<div class="apr-retro apr-fit">
+  <%= presentation_group slide, %w[aprendizados acoes], class: "apr-retro__notes" do %>
+    <% [ [ "aprendizados", "O que aprendemos", r[:licoes] ], [ "acoes", "O que vamos melhorar", r[:acoes] ] ].each do |id, title, entries| %>
+      <%= presentation_item slide, id, :section, class: "apr-retro__block", aria: { label: title } do %>
+        <h3 class="apr-retro__title"><%= title %></h3>
+        <% if entries.present? %>
+          <ul class="apr-retro__list" role="list">
+            <% entries.each do |entry| %>
+              <li>
+                <% if entry.is_a?(Hash) %>
+                  <%= entry[:acao] %>
+                  <span class="apr-retro__who"><%= [ entry[:responsavel], entry[:prazo] ].compact_blank.join(" · ") %></span>
+                <% else %><%= entry %><% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: realizar a retrospectiva e registrar <%= id == "acoes" ? "as ações combinadas" : "as lições aprendidas" %> em <code>retrospectiva.yml</code>.</p>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= presentation_item slide, "registro", :aside, class: "apr-model-note" do %>
+    <h3 class="apr-label">Evidência da retrospectiva</h3>
+    <% if r[:imagem].present? %>
+      <p>Imagem anexada<%= " · #{presentation_date(r[:data])}" if r[:data].present? %>.</p>
+    <% else %>
+      <p><%= presentation_state(:aguardando_evidencia) %> Pendente: anexar foto ou captura real da dinâmica.</p>
+    <% end %>
+    <%= presentation_slide_ref "retrospectiva", :p do %>
+      <a class="apr-more" href="#s-retrospectiva">Ver imagem da retrospectiva (item 3)</a>
+    <% end %>
+    <p class="apr-source">A evidência é compartilhada pelos dois itens; os aprendizados não são preenchidos por suposição.</p>
+  <% end %>
+</div>
+<%= presentation_update_note("retrospectiva.yml", "licoes, acoes, imagem e data da dinâmica realizada pela equipe.") %>

@@ -27,6 +27,13 @@ module SidebarConcerns
           policy: :dog,
           url: { controller: "dogs", action: "index" },
           active: controller_path == "admin/dogs"
+        },
+        {
+          name: t("presentation_profiles.menu"),
+          icon: "presentation",
+          policy: :presentation_profile,
+          url: { controller: "presentation_profiles", action: "index" },
+          active: controller_path == "admin/presentation_profiles"
         }
       ]
     end

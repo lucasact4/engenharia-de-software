@@ -1,16 +1,17 @@
-<% itens = presentation.entrega[:checklist] %>
-<% confirmados = itens.count { |i| i[:confirmado_pela_equipe] } %>
+<% delivery = @selection.delivery %>
+<% requirements = presentation.requirements(delivery) %>
+<% confirmados = requirements.count(&:confirmed) %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "checklist",
-      title: "Atendimento aos itens da segunda entrega",
-      lead: "Avaliação técnica do estado atual. #{confirmados} de #{itens.size} itens confirmados pela equipe." %>
+      title: "Atendimento aos itens da #{delivery[:rotulo]}",
+      lead: "Avaliação técnica do estado atual. #{confirmados} de #{requirements.size} itens confirmados pela equipe. Exibir um slide não significa que o item foi concluído." %>
 
 <div class="apr-table-wrap">
   <table class="apr-table">
-    <caption class="apr-sr-only">Itens exigidos na segunda entrega, estado e onde estão na apresentação</caption>
+    <caption class="apr-sr-only">Exigências da entrega, estado e slides que as apresentam</caption>
     <thead>
       <tr>
-        <th scope="col">Item exigido</th>
+        <th scope="col">Exigência</th>
         <th scope="col">Estado</th>
         <th scope="col">Observação</th>
         <th scope="col">Slide</th>
@@ -18,19 +19,22 @@
       </tr>
     </thead>
     <tbody>
-      <% itens.each do |item| %>
-        <% alvo = presentation.slide(item[:onde]) %>
+      <% requirements.each do |requirement| %>
         <tr>
-          <th scope="row"><%= item[:item] %></th>
-          <td><%= presentation_state(item[:estado], short: true) %></td>
-          <td><%= item[:observacao] %></td>
+          <th scope="row"><span class="apr-checklist__part"><%= requirement.part %></span> <%= requirement.text %></th>
+          <td><%= presentation_state(requirement.state, short: true) %></td>
+          <td><%= requirement.note %></td>
           <td>
-            <% if alvo %><a class="apr-more" href="#<%= alvo.dom_id %>"><%= alvo.appendix ? "Apêndice #{alvo.label}" : alvo.label %></a><% end %>
+            <% requirement.slide_ids.each do |slide_id| %>
+              <% alvo = presentation.slide(slide_id) %>
+              <%= presentation_slide_ref alvo.id, :a, class: "apr-more", href: "##{alvo.dom_id}" do %><%= presentation_slide_label alvo %><% end %>
+              <%= presentation_slide_ref_off alvo.id, class: "apr-muted" do %>fora desta seleção<% end %>
+            <% end %>
           </td>
-          <td><%= item[:confirmado_pela_equipe] ? "Confirmado" : "Pendente" %></td>
+          <td><%= requirement.confirmed ? "Confirmado" : "Pendente" %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
-<%= presentation_update_note("entrega.yml", "checklist (estado e confirmado_pela_equipe).") %>
+<%= presentation_update_note("entrega.yml", "exigencias da entrega #{delivery[:id]} (estado, observacao e confirmado_pela_equipe).") %>

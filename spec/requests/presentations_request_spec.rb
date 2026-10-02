@@ -61,19 +61,19 @@ RSpec.describe "Presentation", type: :request do
   it "keeps the conceptual model, the physical DER and the flow as distinct artifacts" do
     get presentation_path
 
-    diagrams = document.at_css("#s-diagramas")
-    expect(diagrams.at_css(".apr-data-figure[data-diagram='conceptual']")).to be_present
-    expect(diagrams.text).to include("Fluxo de ocorrências e emergências")
+    expect(document.at_css("#s-modelo-conceitual .apr-data-figure[data-diagram='conceptual']")).to be_present
+    expect(document.at_css("#s-fluxo-ocorrencias").text).to include("Fluxo de ocorrências e emergências")
+    expect(document.at_css("#s-fluxo-ocorrencias .apr-data-figure")).to be_nil
     expect(document.at_css("#s-modelo-dados").text).to include("DER físico", Presentation.schema_version)
     expect(document.at_css("#s-der-infraestrutura").text).to include("dogs", "preservado")
     expect(document.at_css("#s-modelo-dados .apr-data-legend").text).to include("0..1")
   end
 
-  it "uses HTML and CSS for all six diagrams" do
+  it "uses HTML and CSS for every diagram of the catalog" do
     get presentation_path
 
     figures = document.css(".apr-data-figure")
-    expect(figures.size).to eq(7)
+    expect(figures.map { |figure| figure["data-diagram"] }).to match_array(PresentationDiagram.load_all.keys)
     expect(figures.css("svg, canvas, img")).to be_empty
     expect(figures.css(".apr-data-line")).not_to be_empty
   end
@@ -100,6 +100,195 @@ RSpec.describe "Presentation", type: :request do
 
     get presentation_path
 
-    expect(document.at_css("#s-gestao").text).to include("Pauta:", "Revisar os requisitos")
+    expect(document.at_css("#s-reunioes").text).to include("Pauta:", "Revisar os requisitos")
+  end
+
+  describe "slide selection" do
+    let(:presentation) { Presentation.load }
+
+    def visible(selector)
+      document.css(selector).reject { |node| node.has_attribute?("hidden") || node.ancestors.any? { |ancestor| ancestor.respond_to?(:has_attribute?) && ancestor.has_attribute?("hidden") } }
+    end
+
+    it "uses the catalog defaults without a saved profile and creates no records" do
+      expect { get presentation_path }.not_to change(PresentationProfile, :count)
+
+      defaults = presentation.default_selection
+      expect(visible("section.apr-slide").map { |node| node["data-slide-id"] }).to eq(defaults.visible_slides.map(&:id))
+      expect(document.at_css("[data-presentation-target='counter']").text).to eq("1 / #{defaults.visible_main_slides.size}")
+    end
+
+    it "marks every catalog item in the slides and nothing outside the catalog" do
+      get presentation_path
+
+      rendered = document.css("[data-apr-item]").map { |node| node["data-apr-item"] }.uniq
+      expect(rendered).to match_array(presentation.items.map(&:key))
+    end
+
+    it "reflects the active profile and keeps hidden content available to the client" do
+      create(:presentation_profile, :active, delivery: "primeira",
+        selections: { "reunioes.registros" => false, "evolucao" => false, "requisitos" => true })
+
+      get presentation_path
+
+      expect(document.at_css("#s-evolucao").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-requisitos").has_attribute?("hidden")).to be(false)
+      expect(document.at_css("[data-apr-item='reunioes.registros']").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-capa").text).to include("Primeira Entrega dos Projetos")
+      expect(document.css(".apr-toc li[data-apr-slide-ref='evolucao'][hidden]")).to be_present
+    end
+
+    it "previews another saved profile with ?perfil=" do
+      create(:presentation_profile, :active, selections: { "gestao" => true })
+      other = create(:presentation_profile, selections: { "gestao" => false })
+
+      get presentation_path(perfil: other.id)
+
+      expect(document.at_css("#s-gestao").has_attribute?("hidden")).to be(true)
+      expect(document.at_css(".apr-custom__profile strong").text).to eq(other.name)
+    end
+
+    it "always renders the cover and the closing slide" do
+      create(:presentation_profile, :active, selections: (presentation.catalog_keys - Presentation::REQUIRED_SLIDES).index_with(false))
+
+      get presentation_path
+
+      expect(visible("section.apr-slide").map { |node| node["data-slide-id"] }).to eq(Presentation::REQUIRED_SLIDES)
+      expect(document.at_css("[data-presentation-target='counter']").text).to eq("1 / 2")
+    end
+
+    it "renumbers the visible slides in the summary, the headings and the script" do
+      create(:presentation_profile, :active, selections: { "conceito-visual" => false, "escopo" => false })
+
+      get presentation_path
+
+      expect(document.at_css("#s-funcionalidades .apr-kicker__num").text).to eq("02")
+      expect(document.at_css(".apr-toc [data-apr-label-for='funcionalidades']").text).to eq("02")
+      expect(document.at_css("#s-roteiro [data-apr-elapsed-for='problema']").text).to be_empty
+    end
+
+    it "hides empty groups instead of leaving blank columns" do
+      create(:presentation_profile, :active, selections: { "gestao.trello" => false, "gestao.ambientes" => false })
+
+      get presentation_path
+
+      expect(document.at_css("#s-gestao [aria-labelledby='s-gestao-ambientes']").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-gestao .apr-mgmt")["class"]).to include("apr-fit")
+    end
+
+    it "warns when the selected slides exceed the delivery time limit" do
+      create(:presentation_profile, :active, selections: presentation.catalog_keys.excluding(Presentation::REQUIRED_SLIDES).index_with(true))
+
+      get presentation_path
+
+      expect(document.at_css("#s-roteiro .apr-estimate")["class"]).to include("is-over")
+      expect(document.at_css("#s-roteiro .apr-estimate").text).to include("acima do limite de 7min")
+    end
+
+    it "offers the temporary panel without form fields that could be submitted" do
+      get presentation_path
+
+      panel = document.at_css("dialog.apr-custom")
+      expect(panel.text).to include("Ajustes temporários", "Restaurar padrão do perfil")
+      expect(panel.css("form, [name]")).to be_empty
+      expect(panel.css("input[data-apr-toggle]").map { |input| input["data-apr-toggle"] }).to match_array(presentation.catalog_keys)
+      Presentation::REQUIRED_SLIDES.each do |id|
+        expect(panel.at_css("input[data-apr-toggle='#{id}']")["disabled"]).to be_present
+      end
+    end
+  end
+
+  it "shows each second-delivery item once in assignment order without duplicating the report" do
+    get presentation_path
+    expect(document.css("section.apr-slide:not([hidden])").map { |node| node["data-slide-id"] }).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report encerramento])
+    expect(document.css("#s-evolucao .apr-timeline__title").map(&:text)).not_to include("Base Rails implantada", "Landing pública e /entrar")
+    expect(document.at_css("#s-conceito-visual").text).to include("Pendente: a equipe validar estas capturas")
+    expect(document.at_css("#s-funcionalidades [data-apr-item='funcionalidades.repositorio']").text).to include("GitHub criado e estruturado")
+    expect(document.at_css("#s-status-report").text).not_to include("Feito desde a última entrega", "Até a próxima entrega")
+    expect(document.at_css("#s-status-report").text).to include("Pendente: realizar a retrospectiva", "Ver imagem da retrospectiva (item 3)")
+    expect(document.css("#s-retrospectiva [data-apr-item][hidden]").map { |node| node["data-apr-item"] }).to include("retrospectiva.licoes", "retrospectiva.acoes")
+  end
+
+  describe "requirement titles, technologies and conceptual model" do
+    let(:presentation) { Presentation.load }
+
+    it "shows the same title in the heading, counter, summary, index and panel" do
+      %w[primeira segunda].each do |delivery|
+        PresentationProfile.delete_all
+        create(:presentation_profile, :active, delivery: delivery)
+        get presentation_path
+        page = Nokogiri::HTML(response.body)
+        selection = PresentationProfile.last.selection(presentation)
+
+        presentation.main_slides.reject(&:required).each do |slide|
+          title = selection.slide_title(slide)
+          expect(page.at_css("##{slide.dom_id}")["data-title"]).to eq(title)
+          expect(page.at_css("##{slide.heading_id}").text.squish).to eq(title)
+          expect(page.at_css(".apr-toc a[href='##{slide.dom_id}'] .apr-slide-list__title").text).to start_with(title)
+          expect(page.at_css(".apr-index a[href='##{slide.dom_id}'] .apr-slide-list__title").text).to start_with(title)
+          expect(page.at_css(".apr-custom input[data-apr-toggle='#{slide.id}']").parent.text.squish).to eq(title)
+        end
+      end
+    end
+
+    it "names the second delivery slides after the assignment and marks the requirement apart from the slide number" do
+      create(:presentation_profile, :active, delivery: "segunda")
+      get presentation_path
+
+      expect(document.at_css("#s-conceito-visual .apr-title").text).to eq("Protótipo com o conceito visual do projeto")
+      expect(document.at_css("#s-conceito-visual .apr-requirement").text).to eq("2ª entrega · Item 1")
+      expect(document.at_css("#s-conceito-visual .apr-kicker__num").text).to match(/\A\d{2}\z/)
+      expect(document.at_css("#s-reunioes .apr-title").text).to eq("Evidência de reuniões de monitoramento do projeto")
+      expect(document.at_css("#s-gestao .apr-requirement").text).to eq("Complementar")
+      expect(document.at_css("#s-checklist").text).to include("Item 2", "GitHub criado e estruturado com código fonte total ou parcial")
+    end
+
+    it "explains in the panel that a checkbox means display, not completion, and that Concluir does not save" do
+      get presentation_path
+
+      note = document.at_css(".apr-custom__note").text.squish
+      expect(note).to include("Marcado = exibir", "Não significa que a exigência foi concluída", "não são salvos", "Concluir fecha o painel sem salvar")
+    end
+
+    it "renders technology cards with stored logos, neutral symbols and versions from the real sources" do
+      get presentation_path
+
+      cards = document.css("#s-arquitetura .apr-tech__card")
+      expect(cards.size).to eq(presentation.tecnologias[:stack].sum { |group| group[:itens].size })
+      expect(cards.map { |card| card.at_css(".apr-tech__name").text }).to include("Ruby", "Ruby on Rails", "SQLite", "Pundit")
+      expect(document.css("#s-arquitetura .apr-tech__img").map { |img| img["src"] }).to all(start_with("/assets/presentation/logos/"))
+      expect(document.css("#s-arquitetura img[src^='http']")).to be_empty
+      versions = document.css("#s-arquitetura [data-apr-item='arquitetura.versoes'].apr-tech__versions").map(&:text).join(" ")
+      expect(versions).to include(Rails.version, SQLite3::SQLITE_VERSION, "sem versão única")
+      expect(document.at_css("#s-arquitetura .apr-tech__toggle")["aria-expanded"]).to eq("false")
+      document.css("#s-arquitetura .apr-tech__item").each do |trigger|
+        expect(document.at_css("##{trigger['aria-describedby']}")).to be_present
+      end
+    end
+
+    it "hides the version button and numbers when Versões is unchecked" do
+      create(:presentation_profile, :active, selections: { "arquitetura.versoes" => false })
+      get presentation_path
+
+      expect(document.at_css("#s-arquitetura .apr-tech__toggle").has_attribute?("hidden")).to be(true)
+      expect(document.css("#s-arquitetura .apr-tech__versions").map { |node| node.has_attribute?("hidden") }).to all(be(true))
+    end
+
+    it "shows the native conceptual model with separate production, review and assumptions" do
+      get presentation_path
+
+      slide = document.at_css("#s-modelo-conceitual")
+      expect(slide.at_css("[data-apr-item='modelo-conceitual.diagrama'] .apr-data-figure[data-diagram='conceptual']")).to be_present
+      status = slide.at_css("[data-apr-item='modelo-conceitual.situacao']").text.squish
+      expect(status).to include("Diagrama produzido", "Implementado", "Revisão da equipe", "Aguardando evidência", "Premissas de requisitos", "Aguardando decisão")
+      expect(slide.text).not_to include("ainda não há tabela", "não anexado")
+    end
+
+    it "lists presentation_profiles as support in the infrastructure DER, outside the conceptual model" do
+      get presentation_path
+
+      expect(document.at_css("#s-der-infraestrutura [data-table='presentation_profiles']")).to be_present
+      expect(document.at_css("#s-modelo-conceitual").text).not_to include("presentation_profiles")
+    end
   end
 end

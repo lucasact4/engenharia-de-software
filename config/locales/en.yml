@@ -252,6 +252,12 @@ en:
   activerecord:
     errors:
       models:
+        presentation_profile:
+          attributes:
+            selections:
+              unknown_keys: "contains items outside the presentation catalog: %{keys}"
+              not_boolean: "accepts only checked or unchecked values (check: %{keys})"
+              required_slides: "cannot hide required slides: %{slides}"
         group:
           attributes:
             tenant: 
@@ -280,12 +286,21 @@ en:
           has_one: Unable to delete record because there is dependent %{record}
           has_many: Unable to delete record because there are dependent %{record}
     models:
+      presentation_profile:
+        one: "Presentation profile"
+        other: "Presentation profiles"
       user: User
       entity: 'Entity'
       permission: 'Permission'
       role: 'role'
       entity_category: 'Entity Category'
     attributes:
+      presentation_profile:
+        name: "Profile name"
+        description: "Description"
+        delivery: "Delivery"
+        active: "Default profile for the public presentation"
+        selections: "Slide selection"
       user:
         name: "Name"
         email: "E-mail"
@@ -478,6 +493,10 @@ en:
   users_admin:
     single: 'Admin'
     plural: 'Admins'
+  presentation_profiles:
+    single: "Presentation profile"
+    plural: "Presentation profiles"
+    menu: "Presentation"
   dogs:
     single: 'Dog'
     plural: 'Dogs'

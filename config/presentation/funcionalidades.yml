@@ -2,6 +2,7 @@
 # A escolha é da equipe. Landing e login NÃO foram selecionados automaticamente.
 #
 # Para cada funcionalidade, preencha quando houver evidência:
+#   id:          identificador estável usado pelo catálogo (roteiro.yml); não altere
 #   nome:        nome curto da funcionalidade
 #   estado:      implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
 #   requisitos:  ["RF001", ...] vindos do card #13
@@ -19,7 +20,8 @@ criterios:
   - "Evidência: captura ou demonstração"
 
 itens:
-  - nome:
+  - id: funcionalidade-1
+    nome:
     estado: aguardando_decisao
     requisitos: []
     jornada: []
@@ -27,7 +29,8 @@ itens:
     testes: []
     captura:
     validacao:
-  - nome:
+  - id: funcionalidade-2
+    nome:
     estado: aguardando_decisao
     requisitos: []
     jornada: []

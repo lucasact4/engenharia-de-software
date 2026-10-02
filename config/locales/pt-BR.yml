@@ -242,6 +242,12 @@ pt-br:
   activerecord:
     errors:
       models:
+        presentation_profile:
+          attributes:
+            selections:
+              unknown_keys: "contém itens fora do catálogo da apresentação: %{keys}"
+              not_boolean: "aceita somente marcado ou desmarcado (verifique: %{keys})"
+              required_slides: "não pode ocultar slides obrigatórios: %{slides}"
         group:
           attributes:
             tenant: 
@@ -270,6 +276,9 @@ pt-br:
           has_one: Não é possível excluir o registro pois existe um %{record} dependente
           has_many: Não é possível excluir o registro pois existem %{record} dependentes
     models:
+      presentation_profile:
+        one: "Perfil de apresentação"
+        other: "Perfis de apresentação"
       user: Usuário
       entity: 'Módulo'
       permission: 'Permissão'
@@ -279,6 +288,12 @@ pt-br:
         one: 'Aviso'
         other: 'Avisos'
     attributes:
+      presentation_profile:
+        name: "Nome do perfil"
+        description: "Descrição"
+        delivery: "Entrega"
+        active: "Perfil padrão da apresentação pública"
+        selections: "Seleção de slides"
       user:
         name: "Nome"
         email: "E-mail"
@@ -467,6 +482,10 @@ pt-br:
   users_admin:
     single: 'Administrador'
     plural: 'Administradores'
+  presentation_profiles:
+    single: "Perfil de apresentação"
+    plural: "Perfis de apresentação"
+    menu: "Apresentação"
   dogs:
     single: 'Aviso'
     plural: 'Avisos'

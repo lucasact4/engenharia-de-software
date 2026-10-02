@@ -4,8 +4,9 @@
 # commit: SHA completo de um commit publicado em origin/main (gera link para o GitHub).
 #         Deixe vazio para trabalho ainda não publicado.
 
-# Data da primeira entrega, para delimitar "desde a última entrega" (preencher).
-data_primeira_entrega:
+# Data da primeira entrega (prazo do Classroom: 23/09/2026, 19h30). Delimita "desde a última entrega"
+# no status report: entram os marcos posteriores a esta data.
+data_primeira_entrega: 2026-09-23
 
 marcos:
   - data: 2026-08-19
@@ -22,12 +23,12 @@ marcos:
     commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
   - data: 2026-09-30
     titulo: "Apresentação da 2ª entrega"
-    texto: "Card #11 em andamento na branch card-11 (ainda não publicado)."
+    texto: "Card #11 em andamento na branch card-11: perfis de exibição, títulos por exigência e integração com a main (ainda não publicado)."
     commit:
-  - data: 2026-10-01
+  - data: 2026-10-02
     titulo: "Modelo de dados das ocorrências"
-    texto: "Card #6: migrações, regras e testes do backend e DER na apresentação (ainda não publicado)."
-    commit:
+    texto: "Card #6 integrado à main: migrações, regras e testes do backend, modelo conceitual e DER em HTML/CSS. Sem telas do produto."
+    commit: "1f7ad8346e6f78d511b3ce1e7a53d5226819c6fc"
 
 # Situação das capacidades do produto.
 # origem: "sgu" (feito para o SGU) ou "base" (herdado da base Rails).
@@ -91,5 +92,5 @@ capacidades:
 # Itens herdados que não pertencem ao domínio do SGU.
 observacoes:
   - "Dog é uma entidade de exemplo do template (CRUD administrativo), não uma ocorrência do SGU."
-  - "Os testes existentes cobrem principalmente o que foi herdado da base; eles não comprovam funcionalidades do SGU."
+  - "Os testes validam o template e as regras do backend do SGU; não comprovam jornadas completas com telas."
   - "O card #6 entrega backend e DER, sem telas do produto: não conta como funcionalidade completa."

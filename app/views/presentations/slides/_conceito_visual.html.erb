@@ -1,25 +1,51 @@
 <% cv = presentation.conceito_visual %>
 <% capturas = cv[:capturas].index_by { |c| c[:id] } %>
+<% proto = cv[:prototipo] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "conceito visual",
       title: "Telas reais, construídas no próprio Rails",
       lead: "Capturas do ambiente local em #{presentation_date(cv[:capturado_em])}. O que é exemplo está sinalizado." %>
 
-<div class="apr-shots">
-  <% main = capturas.fetch("landing") %>
-  <%= render "presentations/shared/figure",
-        image: main[:imagem], zoom_image: main[:imagem_ampliada], alt: main[:alt],
-        caption: "#{main[:titulo]} · #{main[:rota]}", state: main[:estado],
-        tag_text: ("Alertas demonstrativos" if main[:demonstrativo]),
-        modifier: "apr-figure--hero" %>
-
-  <div class="apr-shots__side">
-    <% login = capturas.fetch("entrar") %>
+<%= presentation_item slide, "prototipo", class: "apr-proto" do %>
+  <% if proto[:imagem].present? %>
     <%= render "presentations/shared/figure",
-          image: login[:imagem], alt: login[:alt],
-          caption: login[:titulo], state: login[:estado] %>
+          image: proto[:imagem], alt: proto[:alt].presence || "Protótipo do SGU",
+          caption: [ "Protótipo", proto[:ferramenta], presentation_date(proto[:data]) ].compact_blank.join(" · "),
+          state: proto[:estado], modifier: "apr-figure--proto" %>
+  <% end %>
+  <div class="apr-proto__body">
+    <p class="apr-label">Protótipo de referência</p>
+    <% if proto[:imagem].present? || proto[:url].present? %>
+      <% if proto[:nota].present? %><p class="apr-proto__text"><%= proto[:nota] %></p><% end %>
+      <% if proto[:url].present? %><p><%= presentation_link("Abrir o protótipo#{" no #{proto[:ferramenta]}" if proto[:ferramenta].present?}", proto[:url], class: "apr-more") %></p><% end %>
+    <% else %>
+      <p class="apr-inline-pending">
+        <%= presentation_state(proto[:estado]) %>
+        <span>Nenhum protótipo separado das telas foi anexado. As capturas abaixo mostram o conceito visual implementado.</span>
+      </p>
+    <% end %>
+  </div>
+<% end %>
 
-    <ul class="apr-palette" role="list" aria-label="Paleta do SGU">
+<%= presentation_group slide, %w[landing login mobile paleta], class: "apr-shots apr-fit" do %>
+  <% main = capturas.fetch("landing") %>
+  <%= presentation_item slide, "landing", class: "apr-shots__hero" do %>
+    <%= render "presentations/shared/figure",
+          image: main[:imagem], zoom_image: main[:imagem_ampliada], alt: main[:alt],
+          caption: "#{main[:titulo]} · #{main[:rota]}", state: main[:estado],
+          tag_text: ("Alertas demonstrativos" if main[:demonstrativo]),
+          modifier: "apr-figure--hero" %>
+  <% end %>
+
+  <%= presentation_group slide, %w[login paleta], class: "apr-shots__side" do %>
+    <% login = capturas.fetch("entrar") %>
+    <%= presentation_item slide, "login" do %>
+      <%= render "presentations/shared/figure",
+            image: login[:imagem], alt: login[:alt],
+            caption: login[:titulo], state: login[:estado] %>
+    <% end %>
+
+    <%= presentation_item slide, "paleta", :ul, class: "apr-palette", role: "list", aria: { label: "Paleta do SGU" } do %>
       <% cv[:paleta].each do |cor| %>
         <li>
           <span class="apr-palette__swatch" style="background: <%= cor[:hex] %>" aria-hidden="true"></span>
@@ -27,16 +53,22 @@
           <code class="apr-palette__hex"><%= cor[:hex] %></code>
         </li>
       <% end %>
-    </ul>
-  </div>
+    <% end %>
+  <% end %>
 
   <% mobile = capturas.fetch("landing-mobile") %>
-  <%= render "presentations/shared/figure",
-        image: mobile[:imagem], alt: mobile[:alt],
-        caption: mobile[:titulo], modifier: "apr-figure--phone" %>
-</div>
+  <%= presentation_item slide, "mobile", class: "apr-shots__phone" do %>
+    <%= render "presentations/shared/figure",
+          image: mobile[:imagem], alt: mobile[:alt],
+          caption: mobile[:titulo], modifier: "apr-figure--phone" %>
+  <% end %>
+<% end %>
 
-<p class="apr-source">
+<%= presentation_item slide, "notas", :p, class: "apr-source" do %>
   <%= safe_join(cv[:capturas].map { |captura| "#{captura[:titulo]}: #{captura[:nota]}" }, " · ") %>
-</p>
-<%= presentation_update_note("conceito_visual.yml", "capturas e paleta.") %>
+<% end %>
+<% requirement = presentation.slide_requirements(slide, @selection.delivery).find { |entry| entry.group == "item" } %>
+<% if requirement && !requirement.confirmed %>
+  <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: a equipe validar estas capturas como evidência do conceito visual. Os alertas da landing são demonstrativos.</p>
+<% end %>
+<%= presentation_update_note("conceito_visual.yml", "protótipo, capturas e paleta.") %>

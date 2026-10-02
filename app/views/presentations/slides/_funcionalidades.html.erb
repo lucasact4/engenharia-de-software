@@ -1,23 +1,33 @@
 <% f = presentation.funcionalidades %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "exigência da 2ª entrega",
-      title: "Duas funcionalidades completas",
+      kicker: "repositório e funcionalidades",
+      title: "Repositório organizado e duas jornadas completas",
       lead: "A escolha é da equipe. Landing e login existem, mas não foram adotados automaticamente como as duas funcionalidades." %>
 
-<div class="apr-features">
-  <aside class="apr-criteria" aria-labelledby="<%= slide.dom_id %>-criterios">
+<div class="apr-features apr-fit">
+  <%= presentation_item slide, "repositorio", :section, class: "apr-feature-repository", aria: { label: "GitHub e estrutura do código" } do %>
+    <% repo = presentation.repository_overview %>
+    <div>
+      <h3 class="apr-mgmt__title">GitHub criado e estruturado</h3>
+      <p>Models, controllers, serviços, policies, views, migrações e testes versionados.
+        <%= repo[:folders].find { |folder| folder[:path] == "spec" }[:count] %> arquivos de teste;
+        CI: <%= repo[:ci_jobs].join(" · ") %>.</p>
+    </div>
+    <%= presentation_link("Abrir GitHub", presentation.entrega.dig(:links, :github), class: "apr-btn apr-btn--ghost") %>
+  <% end %>
+  <%= presentation_item slide, "criterios", :aside, class: "apr-criteria", aria: { labelledby: "#{slide.dom_id}-criterios" } do %>
     <h3 id="<%= slide.dom_id %>-criterios" class="apr-criteria__title">O que conta como “completa”</h3>
     <ul class="apr-criteria__list" role="list">
       <% f[:criterios].each do |criterio| %>
         <li><%= criterio %></li>
       <% end %>
     </ul>
-  </aside>
+  <% end %>
 
   <% f[:itens].each_with_index do |item, index| %>
     <% number = index + 1 %>
     <% if item[:nome].blank? %>
-      <div class="apr-feature apr-feature--empty">
+      <%= presentation_item slide, item[:id], class: "apr-feature apr-feature--empty" do %>
         <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
         <%= render "presentations/shared/pending",
               title: "Funcionalidade #{number}",
@@ -25,9 +35,9 @@
               text: "Ainda não escolhida pela equipe.",
               needs: [ "Requisitos atendidos", "Jornada ponta a ponta", "Código e testes", "Captura ou demonstração" ],
               file: "funcionalidades.yml" %>
-      </div>
+      <% end %>
     <% else %>
-      <article class="apr-feature" aria-labelledby="<%= slide.dom_id %>-f<%= number %>">
+      <%= presentation_item slide, item[:id], :article, class: "apr-feature", aria: { labelledby: "#{slide.dom_id}-f#{number}" } do %>
         <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
         <h3 id="<%= slide.dom_id %>-f<%= number %>" class="apr-feature__name"><%= item[:nome] %></h3>
         <%= presentation_state(item[:estado]) %>
@@ -58,7 +68,7 @@
           </div>
           <div><dt>Validação</dt><dd><%= item[:validacao].presence || presentation_state(:aguardando_evidencia) %></dd></div>
         </dl>
-      </article>
+      <% end %>
     <% end %>
   <% end %>
 </div>

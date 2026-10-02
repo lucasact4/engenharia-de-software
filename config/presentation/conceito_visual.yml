@@ -36,6 +36,24 @@ capturas:
     demonstrativo: true
     nota: "Largura de 390 px."
 
+# Protótipo de referência (Figma, Penpot, Excalidraw, papel fotografado...).
+# Preencha somente com um protótipo que a equipe produziu de fato.
+#   ferramenta: "Figma"
+#   url:        link público de visualização (https://...)
+#   imagem:     captura em app/assets/images/presentation/ (ex.: "presentation/prototipo-v1.png")
+#   alt:        descrição da imagem
+#   data:       2026-10-10
+#   nota:       o que o protótipo cobre e o que difere das telas reais
+#   estado:     aguardando_evidencia até haver protótipo; depois parcial ou implementado
+prototipo:
+  ferramenta:
+  url:
+  imagem:
+  alt:
+  data:
+  nota:
+  estado: aguardando_evidencia
+
 paleta:
   - nome: "Verde SGU"
     hex: "#153C36"

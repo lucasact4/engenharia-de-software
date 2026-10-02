@@ -1,0 +1,8 @@
+<% item = presentation.diagramas[:itens].find { |diagrama| diagrama[:id] == "fluxo-ocorrencias" } %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "modelagem",
+      title: "Fluxo de ocorrências e emergências",
+      lead: "Caminho de uma ocorrência comum e de uma emergência, do registro ao encerramento." %>
+
+<%= render "presentations/shared/diagram", item: item %>
+<%= presentation_update_note("diagramas.yml", "imagem, versao, origem e data de fluxo-ocorrencias.") %>

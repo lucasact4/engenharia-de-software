@@ -430,6 +430,24 @@ tables:
       - ''
     - - updated_at
       - ''
+  presentation_profiles:
+    columns:
+    - - id
+      - PK
+    - - name
+      - UQ
+    - - description
+      - ""
+    - - delivery
+      - ""
+    - - active
+      - UQ*
+    - - selections
+      - ""
+    - - created_at
+      - ""
+    - - updated_at
+      - ""
 foreign_keys:
 - source: active_storage_attachments
   target: active_storage_blobs
@@ -842,9 +860,10 @@ diagrams:
   infrastructure:
     title: Infraestrutura e exemplo do template
     description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
-      Fotos usam vínculo polimórfico com alertas. Dogs permanece isolado.
+      Fotos usam vínculo polimórfico com alertas. Dogs permanece isolado. presentation_profiles
+      guarda só a seleção de slides da apresentação, sem chave estrangeira.
     width: 1080
-    height: 530
+    height: 590
     nodes:
     - table: active_storage_blobs
       x: 30
@@ -876,6 +895,12 @@ diagrams:
       width: 340
       split: 1
       variant: example
+    - table: presentation_profiles
+      x: 30
+      "y": 370
+      width: 260
+      split: 1
+      variant: infra
     - table: users
       reference: true
       x: 760
@@ -1246,7 +1271,7 @@ diagrams:
       width: 225
       lines:
       - Contas · alertas · publicações
-      - Base social e auditoria
+      - Perfis do deck e auditoria
       variant: infra
     - id: content
       title: Conteúdo do deck
@@ -1255,7 +1280,7 @@ diagrams:
       width: 240
       lines:
       - YAML e diagramas declarativos
-      - Sem consulta ao banco
+      - Seleção via PresentationProfile
       variant: reference
     relations:
     - source: browser
