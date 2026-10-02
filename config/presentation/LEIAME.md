@@ -1,6 +1,6 @@
 # Apresentação da segunda entrega — guia de manutenção
 
-A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo está nesta pasta, em YAML; o layout de cada slide está em `app/views/presentations/slides/`. Para atualizar textos e a ordem dos slides, edite o YAML e recarregue a página. Estrutura visual e colunas do DER ficam nos partials ERB.
+A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo está nesta pasta, em YAML; o layout de cada slide está em `app/views/presentations/slides/`. Para atualizar textos e a ordem dos slides, edite o YAML e recarregue a página. As entidades e conexões dos diagramas ficam em `data_diagrams.yml`; os partials ERB e o CSS definem sua apresentação.
 
 ## Onde atualizar cada coisa
 
@@ -12,8 +12,9 @@ A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo est�
 | Linha do tempo (commits) e situação das capacidades do produto | `evolucao.yml` |
 | Capturas de tela e paleta | `conceito_visual.yml` |
 | As duas funcionalidades completas | `funcionalidades.yml` |
-| Modelo conceitual, casos de uso (#14) e fluxo revisado (#5) | `diagramas.yml` |
-| DER físico (apêndices de banco de dados) | `app/views/presentations/slides/_modelo_dados.html.erb` e `_der_*.html.erb` |
+| Títulos, estado, versão e origem do modelo conceitual, casos de uso (#14) e fluxo revisado (#5) | `diagramas.yml` |
+| Tabelas, colunas, chaves estrangeiras e disposição do DER; conceitos e relações; componentes da arquitetura | `data_diagrams.yml` |
+| Renderização dos diagramas e estilo visual | `app/views/presentations/shared/_er_diagram.html.erb` e `app/assets/stylesheets/presentation.css` |
 | Stack, mudanças em relação à 1ª entrega e justificativas | `tecnologias.yml` |
 | Cards, práticas e reuniões de monitoramento | `gestao.yml` |
 | Retrospectiva: imagem, pontos, ações e lições | `retrospectiva.yml` |
@@ -37,7 +38,13 @@ Campos vazios e blocos de pendência são intencionais: indicam conteúdo ainda 
 
 ## Imagens e diagramas
 
-O DER físico não é imagem: é SVG gerado pelos partials `_modelo_dados` (visão resumida) e `_der_operacional`, `_der_social` e `_der_infraestrutura` (todas as colunas), com a versão lida de `db/schema.rb`. Ao criar uma migração, acrescente as colunas novas nesses partials; o spec de requisição aponta o que faltar.
+O DER, o modelo conceitual e a arquitetura são desenhados em HTML/CSS pelo partial `_er_diagram.html.erb`. O catálogo `data_diagrams.yml` reúne tabelas, colunas, chaves estrangeiras e definições de cada diagrama. O modelo `PresentationDiagram` calcula os caminhos das conexões e rejeita entidades sobrepostas ou fora da área definida, sem consultar o banco. O DER mostra a versão lida de `db/schema.rb`.
+
+Ao criar uma migração, atualize `tables` e `foreign_keys` no catálogo; depois ajuste as entidades em `diagrams` quando necessário. A visão resumida seleciona algumas colunas, enquanto os apêndices operacional, social e de infraestrutura devem cobrir todas as colunas. Mantenha `required` e `unique` das chaves estrangeiras alinhados ao banco: esses valores definem as cardinalidades. Vínculos polimórficos ficam em `relations` e aparecem tracejados, pois não são chaves estrangeiras do banco.
+
+Para alterar o modelo conceitual ou a arquitetura, edite suas entidades e relações no mesmo catálogo. As coordenadas e larguras definem a disposição; a altura de cada entidade acompanha a quantidade de campos ou linhas. Ao revisar o modelo conceitual, atualize também estado, versão, origem e data em `diagramas.yml`; sua renderização usa `html_css`, sem caminho de imagem.
+
+Selecione uma entidade para destacar suas conexões e ler os vínculos e cardinalidades na faixa acima do desenho, também disponível ao **Ampliar**. A seção **Relações e cardinalidades** reúne todos os vínculos por escrito. Em telas pequenas, o diagrama permite rolagem interna para preservar o tamanho do texto. Na impressão, o slide principal mostra uma visão resumida do modelo conceitual; o apêndice mantém o modelo completo. A escala é própria para o PDF; confira o resultado após mudar a disposição.
 
 Para imagens e diagramas fornecidos pela equipe:
 
@@ -99,7 +106,7 @@ Após cada alteração de conteúdo ou estilo, gere novamente e abra o PDF: conf
 Execute dentro do Dev Container. Os testes de navegação com JavaScript precisam do serviço Selenium ativo e de `SELENIUM_REMOTE_URL` configurado (o Dev Container já define essa variável). O Capybara inicia seu próprio servidor de testes; não é necessário iniciar o servidor adicional da porta 3100 para esses specs.
 
 ```bash
-bundle exec rspec spec/models/presentation_spec.rb spec/requests/presentations_request_spec.rb spec/helpers/presentations_helper_spec.rb spec/features/presentation_navigation_spec.rb
+bundle exec rspec spec/models/presentation_spec.rb spec/models/presentation_diagram_spec.rb spec/requests/presentations_request_spec.rb spec/helpers/presentations_helper_spec.rb spec/features/presentation_navigation_spec.rb spec/features/presentation_diagrams_spec.rb
 ```
 
 Os specs conferem:
@@ -109,8 +116,10 @@ Os specs conferem:
 - ausência de caminhos locais;
 - links internos válidos;
 - limite de 7 minutos;
-- que os apêndices do DER mostram somente tabelas e colunas existentes no banco e cobrem todas as colunas do banco de teste preparado com as migrações atuais (uma migração nova exige atualizar os diagramas);
-- navegação por teclado sem entrar nos apêndices, recuperação de fragmento inválido na URL, retorno do foco após fechar a ampliação de imagem e modo leitura.
+- correspondência das tabelas, colunas e chaves estrangeiras do catálogo com o banco de teste preparado pelas migrações atuais, incluindo cobertura de todas as colunas nos apêndices;
+- limites e disposição das entidades, caminhos das conexões e cardinalidades dos diagramas;
+- destaque de conexões e ampliação dos diagramas em HTML;
+- navegação por teclado sem entrar nos apêndices, recuperação de fragmento inválido na URL, retorno do foco após fechar a ampliação e modo leitura.
 
 Ao carregar os YAMLs, o modelo também valida algumas chaves obrigatórias, identificadores e tempos do roteiro, estados conhecidos e cores no formato `#RRGGBB`. Isso não é uma validação completa de todos os campos nem uma confirmação das informações apresentadas.
 

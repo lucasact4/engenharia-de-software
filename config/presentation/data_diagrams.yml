@@ -1,0 +1,1330 @@
+---
+tables:
+  users:
+    columns:
+    - - id
+      - PK
+    - - email_address
+      - UQ
+    - - password_digest
+      - ''
+    - - admin
+      - ''
+    - - deleted_at
+      - ''
+    - - display_name
+      - ''
+    - - username
+      - UQ
+    - - bio
+      - ''
+    - - public_profile
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  user_roles:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - role_id
+      - FK roles
+    - - granted_by_id
+      - FK users
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  roles:
+    columns:
+    - - id
+      - PK
+    - - code
+      - UQ
+    - - name
+      - ''
+    - - description
+      - ''
+    - - active
+      - ''
+    - - position
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  audit_events:
+    columns:
+    - - id
+      - PK
+    - - actor_id
+      - FK users
+    - - action
+      - ''
+    - - subject_type
+      - polimórfico
+    - - subject_id
+      - polimórfico
+    - - reason
+      - ''
+    - - changeset
+      - json
+    - - metadata
+      - json
+    - - created_at
+      - ''
+  alerts:
+    columns:
+    - - id
+      - PK
+    - - author_id
+      - FK users
+    - - kind
+      - ''
+    - - protocol
+      - UQ
+    - - title
+      - ''
+    - - description
+      - ''
+    - - category_id
+      - FK categories
+    - - category_other_description
+      - ''
+    - - location_source
+      - ''
+    - - location_id
+      - FK locations
+    - - latitude
+      - ''
+    - - longitude
+      - ''
+    - - location_accuracy_meters
+      - ''
+    - - location_captured_at
+      - ''
+    - - location_unavailable_reason
+      - ''
+    - - requested_visibility
+      - ''
+    - - visibility
+      - ''
+    - - publication_blocked
+      - ''
+    - - reported_severity
+      - ''
+    - - assessed_severity
+      - ''
+    - - priority
+      - ''
+    - - status
+      - ''
+    - - status_changed_at
+      - ''
+    - - assigned_to_id
+      - FK users
+    - - closure_reason
+      - ''
+    - - closure_notes
+      - ''
+    - - duplicate_of_id
+      - FK alerts
+    - - resolved_at
+      - ''
+    - - closed_at
+      - ''
+    - - client_request_id
+      - UQ*
+    - - client_request_digest
+      - ''
+    - - lock_version
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  categories:
+    columns:
+    - - id
+      - PK
+    - - code
+      - UQ
+    - - name
+      - ''
+    - - description
+      - ''
+    - - requires_details
+      - ''
+    - - active
+      - ''
+    - - position
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  locations:
+    columns:
+    - - id
+      - PK
+    - - code
+      - UQ
+    - - name
+      - ''
+    - - description
+      - ''
+    - - active
+      - ''
+    - - position
+      - ''
+    - - reference_latitude
+      - ''
+    - - reference_longitude
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  publications:
+    columns:
+    - - id
+      - PK
+    - - author_id
+      - FK users
+    - - alert_id
+      - FK·UQ alerts
+    - - kind
+      - ''
+    - - title
+      - ''
+    - - body
+      - ''
+    - - visibility
+      - ''
+    - - review_status
+      - ''
+    - - state
+      - ''
+    - - content_version
+      - ''
+    - - reviewed_content_version
+      - ''
+    - - reviewed_by_id
+      - FK users
+    - - reviewed_at
+      - ''
+    - - review_reason
+      - ''
+    - - published_at
+      - ''
+    - - expires_at
+      - ''
+    - - withdrawn_at
+      - ''
+    - - source_changed_at
+      - ''
+    - - comments_enabled
+      - ''
+    - - lock_version
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  comments:
+    columns:
+    - - id
+      - PK
+    - - publication_id
+      - FK publications
+    - - author_id
+      - FK users
+    - - parent_id
+      - FK comments
+    - - body
+      - ''
+    - - edited_at
+      - ''
+    - - deleted_at
+      - ''
+    - - removed_at
+      - ''
+    - - removed_by_id
+      - FK users
+    - - removal_reason
+      - ''
+    - - lock_version
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  content_reports:
+    columns:
+    - - id
+      - PK
+    - - reporter_id
+      - FK users
+    - - publication_id
+      - FK publications
+    - - comment_id
+      - FK comments
+    - - reason
+      - ''
+    - - details
+      - ''
+    - - state
+      - ''
+    - - reviewed_by_id
+      - FK users
+    - - reviewed_at
+      - ''
+    - - resolution_notes
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  publication_likes:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - publication_id
+      - FK publications
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  publication_bookmarks:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - publication_id
+      - FK publications
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  publication_subscriptions:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - publication_id
+      - FK publications
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  comment_likes:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - comment_id
+      - FK comments
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  alert_subscriptions:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - alert_id
+      - FK alerts
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  user_follows:
+    columns:
+    - - id
+      - PK
+    - - follower_id
+      - FK users
+    - - followed_id
+      - FK users
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  active_storage_blobs:
+    columns:
+    - - id
+      - PK
+    - - key
+      - UQ
+    - - filename
+      - ''
+    - - content_type
+      - ''
+    - - metadata
+      - ''
+    - - service_name
+      - ''
+    - - byte_size
+      - ''
+    - - checksum
+      - ''
+    - - created_at
+      - ''
+  active_storage_attachments:
+    columns:
+    - - id
+      - PK
+    - - name
+      - ''
+    - - record_type
+      - polimórfico
+    - - record_id
+      - polimórfico
+    - - blob_id
+      - FK active_storage_blobs
+    - - created_at
+      - ''
+  active_storage_variant_records:
+    columns:
+    - - id
+      - PK
+    - - blob_id
+      - FK active_storage_blobs
+    - - variation_digest
+      - ''
+  sessions:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - ip_address
+      - ''
+    - - user_agent
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  dogs:
+    columns:
+    - - id
+      - PK
+    - - name
+      - ''
+    - - age
+      - ''
+    - - deleted_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+foreign_keys:
+- source: active_storage_attachments
+  target: active_storage_blobs
+  column: blob_id
+  required: true
+  unique: false
+- source: active_storage_variant_records
+  target: active_storage_blobs
+  column: blob_id
+  required: true
+  unique: false
+- source: alert_subscriptions
+  target: alerts
+  column: alert_id
+  required: true
+  unique: false
+- source: alert_subscriptions
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: alerts
+  target: alerts
+  column: duplicate_of_id
+  required: false
+  unique: false
+- source: alerts
+  target: categories
+  column: category_id
+  required: false
+  unique: false
+- source: alerts
+  target: locations
+  column: location_id
+  required: false
+  unique: false
+- source: alerts
+  target: users
+  column: assigned_to_id
+  required: false
+  unique: false
+- source: alerts
+  target: users
+  column: author_id
+  required: true
+  unique: false
+- source: audit_events
+  target: users
+  column: actor_id
+  required: false
+  unique: false
+- source: comment_likes
+  target: comments
+  column: comment_id
+  required: true
+  unique: false
+- source: comment_likes
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: comments
+  target: comments
+  column: parent_id
+  required: false
+  unique: false
+- source: comments
+  target: publications
+  column: publication_id
+  required: true
+  unique: false
+- source: comments
+  target: users
+  column: author_id
+  required: true
+  unique: false
+- source: comments
+  target: users
+  column: removed_by_id
+  required: false
+  unique: false
+- source: content_reports
+  target: comments
+  column: comment_id
+  required: false
+  unique: false
+- source: content_reports
+  target: publications
+  column: publication_id
+  required: false
+  unique: false
+- source: content_reports
+  target: users
+  column: reporter_id
+  required: true
+  unique: false
+- source: content_reports
+  target: users
+  column: reviewed_by_id
+  required: false
+  unique: false
+- source: publication_bookmarks
+  target: publications
+  column: publication_id
+  required: true
+  unique: false
+- source: publication_bookmarks
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: publication_likes
+  target: publications
+  column: publication_id
+  required: true
+  unique: false
+- source: publication_likes
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: publication_subscriptions
+  target: publications
+  column: publication_id
+  required: true
+  unique: false
+- source: publication_subscriptions
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: publications
+  target: alerts
+  column: alert_id
+  required: false
+  unique: true
+- source: publications
+  target: users
+  column: author_id
+  required: true
+  unique: false
+- source: publications
+  target: users
+  column: reviewed_by_id
+  required: false
+  unique: false
+- source: sessions
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: user_follows
+  target: users
+  column: followed_id
+  required: true
+  unique: false
+- source: user_follows
+  target: users
+  column: follower_id
+  required: true
+  unique: false
+- source: user_roles
+  target: roles
+  column: role_id
+  required: true
+  unique: false
+- source: user_roles
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: user_roles
+  target: users
+  column: granted_by_id
+  required: false
+  unique: false
+diagrams:
+  core:
+    title: DER físico — núcleo do SGU
+    description: Autoria, perfis, alertas, publicação e comentários. Cardinalidades
+      distinguem referências opcionais e únicas.
+    width: 1080
+    height: 660
+    nodes:
+    - table: categories
+      x: 30
+      "y": 30
+      width: 200
+      split: 1
+      columns:
+      - id
+      - code
+      - name
+      - requires_details
+      - active
+    - table: locations
+      x: 30
+      "y": 220
+      width: 200
+      split: 1
+      columns:
+      - id
+      - code
+      - name
+      - reference_latitude
+      - active
+    - table: alerts
+      x: 300
+      "y": 30
+      width: 200
+      split: 1
+      columns:
+      - id
+      - author_id
+      - kind
+      - protocol
+      - category_id
+      - location_id
+      - requested_visibility
+      - visibility
+      - publication_blocked
+      - status
+      - priority
+      - assigned_to_id
+      - duplicate_of_id
+      variant: core
+    - table: users
+      x: 570
+      "y": 30
+      width: 200
+      split: 1
+      columns:
+      - id
+      - email_address
+      - admin
+      - deleted_at
+      - username
+      - public_profile
+      variant: core
+    - table: user_roles
+      x: 840
+      "y": 30
+      width: 200
+      split: 1
+      columns:
+      - id
+      - user_id
+      - role_id
+      - granted_by_id
+    - table: roles
+      x: 840
+      "y": 220
+      width: 200
+      split: 1
+      columns:
+      - id
+      - code
+      - name
+      - active
+    - table: publications
+      x: 300
+      "y": 410
+      width: 200
+      split: 1
+      columns:
+      - id
+      - alert_id
+      - author_id
+      - kind
+      - visibility
+      - review_status
+      - state
+      - content_version
+      variant: core
+    - table: comments
+      x: 570
+      "y": 410
+      width: 200
+      split: 1
+      columns:
+      - id
+      - publication_id
+      - author_id
+      - parent_id
+      - body
+      - removed_at
+  operational:
+    title: Perfis, catálogos, alertas e auditoria
+    description: Todas as colunas e chaves estrangeiras operacionais. Alvo polimórfico
+      da auditoria é indicado em tracejado.
+    width: 1080
+    height: 730
+    nodes:
+    - table: users
+      x: 30
+      "y": 30
+      width: 480
+      split: 2
+      variant: core
+    - table: user_roles
+      x: 525
+      "y": 30
+      width: 255
+      split: 1
+    - table: roles
+      x: 790
+      "y": 560
+      width: 260
+      split: 2
+    - table: audit_events
+      x: 795
+      "y": 30
+      width: 255
+      split: 1
+    - table: alerts
+      x: 30
+      "y": 300
+      width: 1020
+      split: 4
+      variant: core
+    - table: categories
+      x: 30
+      "y": 560
+      width: 330
+      split: 2
+    - table: locations
+      x: 375
+      "y": 560
+      width: 400
+      split: 2
+    - id: audit_subject
+      title: Registros auditados
+      x: 30
+      "y": 212
+      width: 480
+      lines:
+      - Alert · Publication · Comment · ContentReport · User
+      variant: reference
+    relations:
+    - source: audit_events
+      target: audit_subject
+      column: subject_id
+      label: Alvo polimórfico
+      source_cardinality: 0..N
+      target_cardinality: '1'
+      kind: polymorphic
+  social:
+    title: Publicações, comentários e base social
+    description: Todas as colunas e relações sociais. Referências a users e alerts
+      não repetem suas colunas.
+    width: 1080
+    height: 820
+    nodes:
+    - table: publications
+      x: 30
+      "y": 130
+      width: 500
+      split: 2
+      variant: core
+    - table: comments
+      x: 545
+      "y": 130
+      width: 250
+      split: 1
+    - table: content_reports
+      x: 810
+      "y": 130
+      width: 240
+      split: 1
+    - table: publication_likes
+      x: 30
+      "y": 430
+      width: 240
+      split: 1
+    - table: publication_bookmarks
+      x: 290
+      "y": 430
+      width: 240
+      split: 1
+    - table: publication_subscriptions
+      x: 550
+      "y": 430
+      width: 240
+      split: 1
+    - table: comment_likes
+      x: 810
+      "y": 430
+      width: 240
+      split: 1
+    - table: alert_subscriptions
+      x: 30
+      "y": 640
+      width: 240
+      split: 1
+    - table: user_follows
+      x: 290
+      "y": 640
+      width: 240
+      split: 1
+    - table: users
+      reference: true
+      x: 30
+      "y": 20
+      width: 480
+    - table: alerts
+      reference: true
+      x: 810
+      "y": 20
+      width: 240
+  infrastructure:
+    title: Infraestrutura e exemplo do template
+    description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
+      Fotos usam vínculo polimórfico com alertas. Dogs permanece isolado.
+    width: 1080
+    height: 530
+    nodes:
+    - table: active_storage_blobs
+      x: 30
+      "y": 120
+      width: 260
+      split: 1
+      variant: infra
+    - table: active_storage_attachments
+      x: 350
+      "y": 120
+      width: 340
+      split: 1
+      variant: infra
+    - table: active_storage_variant_records
+      x: 760
+      "y": 120
+      width: 290
+      split: 1
+      variant: infra
+    - table: sessions
+      x: 760
+      "y": 300
+      width: 290
+      split: 1
+      variant: infra
+    - table: dogs
+      x: 350
+      "y": 340
+      width: 340
+      split: 1
+      variant: example
+    - table: users
+      reference: true
+      x: 760
+      "y": 20
+      width: 290
+    - table: alerts
+      reference: true
+      x: 350
+      "y": 20
+      width: 340
+    relations:
+    - source: active_storage_attachments
+      target: alerts
+      column: record_id
+      label: Foto de alerta · polimórfico
+      source_cardinality: 0..5
+      target_cardinality: '1'
+      kind: polymorphic
+  conceptual:
+    title: Modelo conceitual do SGU
+    description: Conceitos e multiplicidades. Denúncia tem exatamente um alvo; pânico
+      não gera publicação nem interações sociais.
+    width: 1340
+    height: 920
+    nodes:
+    - id: role
+      title: Papel
+      x: 46.0
+      "y": 62.0
+      width: 260.0
+      lines:
+      - Segurança · Coordenação
+      - Professor · Estudante
+      - Funcionário · Visitante
+      - Morador · multiperfil · não é admin
+    - id: person
+      title: Pessoa usuária
+      x: 358.0
+      "y": 62.0
+      width: 286.0
+      lines:
+      - conta por e-mail e senha
+      - 'administração: booleano admin'
+      - perfil público opcional (opt-in)
+      - desativação preserva o histórico
+      variant: core
+    - id: interactions
+      title: Interações sociais
+      x: 700
+      "y": 62.0
+      width: 286.0
+      lines:
+      - curtir · salvar (privado)
+      - acompanhar publicação ou alerta
+      - seguir pessoa com perfil público
+      - nenhuma interação concede acesso
+    - id: audit
+      title: Evento de auditoria
+      x: 1030
+      "y": 62.0
+      width: 260.0
+      lines:
+      - ator · ação · data · motivo
+      - antes/depois (allowlist)
+      - append-only na aplicação
+      - sem GPS, senha ou texto pessoal
+    - id: category
+      title: Categoria
+      x: 46.0
+      "y": 310
+      width: 260.0
+      lines:
+      - assunto (7 categorias propostas)
+      - '"Outro" exige explicação'
+    - id: location
+      title: Local do campus
+      x: 46.0
+      "y": 460
+      width: 260.0
+      lines:
+      - prédio ou área (catálogo)
+      - não é o GPS de quem reporta
+    - id: alert
+      title: Alerta
+      x: 358.0
+      "y": 310
+      width: 286.0
+      lines:
+      - 'tipo: Ocorrência | Pânico'
+      - protocolo opaco do servidor
+      - 'local: GPS · manual · indisponível'
+      - severidade percebida / avaliada
+      - prioridade (somente na triagem)
+      - situação do atendimento
+      - audiência solicitada / efetiva
+      - 'pânico: restrito, sem circuito social'
+      variant: core
+    - id: photo
+      title: Foto (anexo)
+      x: 700
+      "y": 310
+      width: 260.0
+      lines:
+      - PNG ou JPEG, até 5 MiB
+      - privada; entrega autorizada
+      - nunca reaproveitada como pública
+    - id: dimensions
+      title: Dimensões distintas
+      x: 1030
+      "y": 310
+      width: 260.0
+      lines:
+      - categoria = assunto
+      - severidade = impacto
+      - prioridade = triagem
+      - situação = atendimento
+      - audiência = autorização
+      - Premissas provisórias
+      - foto opcional
+      - 'restrita: autor + gestão'
+      - acesso de coordenação e
+      - segurança a validar
+      - identidade pública neutra
+      - sem perfil público
+      - propostas, não aprovação
+      - da equipe
+      variant: note
+    - id: report
+      title: Denúncia
+      x: 46.0
+      "y": 740
+      width: 260.0
+      lines:
+      - motivo · situação da análise
+      - uma por pessoa e alvo
+      - só denunciante e gestão veem
+      - não oculta conteúdo sozinha
+    - id: publication
+      title: Publicação
+      x: 358.0
+      "y": 740
+      width: 286.0
+      lines:
+      - ocorrência · aviso · notícia
+      - texto e audiência próprios
+      - aprovada não é publicada
+      - aviso expira; fonte pode ser nula
+      - Bloqueio da fonte impede divulgação
+      variant: core
+    - id: comment
+      title: Comentário
+      x: 700
+      "y": 740
+      width: 260.0
+      lines:
+      - raiz + 1 nível de respostas
+      - acesso herdado da publicação
+      - remoção preserva respostas
+    relations:
+    - source: role
+      target: person
+      column: perfis
+      label: Possui papéis
+      source_cardinality: 0..N
+      target_cardinality: 0..N
+      kind: conceptual
+    - source: person
+      target: alert
+      column: autoria
+      label: Registra
+      source_cardinality: '1'
+      target_cardinality: 0..N
+      kind: conceptual
+    - source: person
+      target: interactions
+      column: participação
+      label: Interage
+      source_cardinality: '1'
+      target_cardinality: 0..N
+      kind: conceptual
+    - source: audit
+      target: person
+      column: ator
+      label: Ator administrativo
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: alert
+      target: category
+      column: categoria
+      label: Classificação
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: alert
+      target: location
+      column: local
+      label: Local manual
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: photo
+      target: alert
+      column: anexo
+      label: Fotos privadas
+      source_cardinality: 0..5
+      target_cardinality: '1'
+      kind: conceptual
+    - source: alert
+      target: alert
+      column: duplicata
+      label: Ocorrência original
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: publication
+      target: alert
+      column: fonte
+      label: Projeção revisada
+      source_cardinality: 0..1
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: person
+      target: publication
+      column: editoria
+      label: Autoria editorial
+      source_cardinality: '1'
+      target_cardinality: 0..N
+      kind: conceptual
+    - source: person
+      target: comment
+      column: autoria
+      label: Escreve
+      source_cardinality: '1'
+      target_cardinality: 0..N
+      kind: conceptual
+    - source: comment
+      target: publication
+      column: conversa
+      label: Comentários
+      source_cardinality: 0..N
+      target_cardinality: '1'
+      kind: conceptual
+    - source: comment
+      target: comment
+      column: resposta
+      label: Um nível de respostas
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: report
+      target: publication
+      column: alvo_publicação
+      label: Alvo exclusivo (OU)
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: report
+      target: comment
+      column: alvo_comentário
+      label: Alvo exclusivo (OU)
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: report
+      target: person
+      column: denunciante
+      label: Denunciante
+      source_cardinality: 0..N
+      target_cardinality: '1'
+      kind: conceptual
+    - source: interactions
+      target: publication
+      column: publicação
+      label: Curtir, salvar, acompanhar
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: interactions
+      target: comment
+      column: comentário
+      label: Curtir comentário
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: interactions
+      target: alert
+      column: alerta
+      label: Acompanhar ocorrência
+      source_cardinality: 0..N
+      target_cardinality: 0..1
+      kind: conceptual
+    - source: person
+      target: person
+      column: seguir
+      label: Segue perfil público
+      source_cardinality: 0..N
+      target_cardinality: 0..N
+      kind: conceptual
+  architecture:
+    title: Arquitetura atual do SGU
+    description: Controllers autorizam com Pundit, usam serviços e models, persistem
+      em SQLite e renderizam views. O deck lê arquivos declarativos.
+    width: 840
+    height: 800
+    nodes:
+    - id: browser
+      title: Navegador
+      x: 250
+      "y": 30
+      width: 250
+      lines:
+      - HTML · Turbo · Stimulus
+      variant: core
+    - id: routes
+      title: Rotas Rails
+      x: 250
+      "y": 170
+      width: 250
+      lines:
+      - "/ · /entrar · /admin"
+      - "/apresentacao · fotos privadas"
+    - id: controllers
+      title: Controllers
+      x: 250
+      "y": 320
+      width: 250
+      lines:
+      - Autenticação e autorização
+      - Requisições e respostas
+      variant: core
+    - id: policies
+      title: Pundit
+      x: 30
+      "y": 320
+      width: 165
+      lines:
+      - Políticas de acesso
+      variant: note
+    - id: services
+      title: Serviços de domínio
+      x: 30
+      "y": 510
+      width: 245
+      lines:
+      - Alertas · publicação · moderação
+      - Transações e auditoria
+    - id: models
+      title: Models
+      x: 310
+      "y": 510
+      width: 225
+      lines:
+      - Active Record
+      - Validações e associações
+    - id: views
+      title: Views e presenters
+      x: 570
+      "y": 320
+      width: 240
+      lines:
+      - ERB · opções de formulário
+      - Projeções com dados autorizados
+    - id: sqlite
+      title: SQLite
+      x: 310
+      "y": 690
+      width: 225
+      lines:
+      - Contas · alertas · publicações
+      - Base social e auditoria
+      variant: infra
+    - id: content
+      title: Conteúdo do deck
+      x: 570
+      "y": 690
+      width: 240
+      lines:
+      - YAML e diagramas declarativos
+      - Sem consulta ao banco
+      variant: reference
+    relations:
+    - source: browser
+      target: routes
+      column: requisição
+      label: Requisição HTTP
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: routes
+      target: controllers
+      column: encaminhamento
+      label: Encaminha
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: controllers
+      target: policies
+      column: autorização
+      label: Autoriza
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: controllers
+      target: services
+      column: domínio
+      label: Executa ações
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: services
+      target: models
+      column: persistência
+      label: Valida e persiste
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: controllers
+      target: models
+      column: consulta
+      label: Consulta
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: models
+      target: sqlite
+      column: banco
+      label: Active Record
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: controllers
+      target: views
+      column: renderização
+      label: Renderiza
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: views
+      target: browser
+      column: resposta
+      label: Resposta HTML
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture
+    - source: views
+      target: content
+      column: conteúdo
+      label: Apresentação
+      source_cardinality: ''
+      target_cardinality: ''
+      kind: architecture

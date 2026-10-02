@@ -62,11 +62,33 @@ RSpec.describe "Presentation", type: :request do
     get presentation_path
 
     diagrams = document.at_css("#s-diagramas")
-    expect(diagrams.at_css("img[src*='modelo-conceitual']")).to be_present
+    expect(diagrams.at_css(".apr-data-figure[data-diagram='conceptual']")).to be_present
     expect(diagrams.text).to include("Fluxo de ocorrências e emergências")
     expect(document.at_css("#s-modelo-dados").text).to include("DER físico", Presentation.schema_version)
     expect(document.at_css("#s-der-infraestrutura").text).to include("dogs", "preservado")
-    expect(document.at_css("#s-modelo-dados svg desc").text).to include("0..1")
+    expect(document.at_css("#s-modelo-dados .apr-data-legend").text).to include("0..1")
+  end
+
+  it "uses HTML and CSS for all six diagrams" do
+    get presentation_path
+
+    figures = document.css(".apr-data-figure")
+    expect(figures.size).to eq(7)
+    expect(figures.css("svg, canvas, img")).to be_empty
+    expect(figures.css(".apr-data-line")).not_to be_empty
+  end
+
+  it "renders every foreign key in the detailed diagrams" do
+    get presentation_path
+
+    detailed = document.css("#s-der-operacional, #s-der-social, #s-der-infraestrutura")
+    drawn = detailed.css("[data-kind='foreign_key']").map do |edge|
+      [ edge["data-source"], edge["data-column"], edge["data-target"] ]
+    end
+    actual = ActiveRecord::Base.connection.tables.flat_map do |table|
+      ActiveRecord::Base.connection.foreign_keys(table).map { |edge| [ table, edge.column.to_s, edge.to_table ] }
+    end
+    expect(drawn).to match_array(actual)
   end
 
   it "renders meeting agendas when the team supplies them" do

@@ -1,39 +1,78 @@
-<%# DER em SVG; tables define posição, colunas e divisão interna, relations define caminhos e cardinalidades. %>
-<% head_h = 30 %>
-<% row_h = 18 %>
-<figure class="apr-figure apr-figure--svg apr-figure--wide">
-  <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: <%= title %>">
-    <svg class="apr-er apr-er--full" viewBox="0 0 <%= width %> <%= height %>" role="img" aria-labelledby="<%= id %>-title <%= id %>-desc">
-      <title id="<%= id %>-title"><%= title %></title>
-      <desc id="<%= id %>-desc"><%= desc %></desc>
-      <% local_assigns.fetch(:relations, []).each do |relation| %>
-        <path class="apr-er__rel" d="<%= relation[:d] %>"/>
-        <% relation[:labels].each do |x, y, text| %>
-          <text x="<%= x %>" y="<%= y %>" class="apr-er__card"><%= text %></text>
-        <% end %>
-      <% end %>
-      <% tables.each do |table| %>
-        <% split = table.fetch(:split, 1) %>
-        <% rows = (table[:columns].size / split.to_f).ceil %>
-        <% sub_w = table[:w] / split %>
-        <g class="apr-er__table <%= "apr-er__table--#{table[:variant]}" if table[:variant] %>" data-table="<%= table[:name] %>">
-          <rect x="<%= table[:x] %>" y="<%= table[:y] %>" width="<%= table[:w] %>" height="<%= head_h + rows * row_h + 8 %>" rx="10"/>
-          <path d="M<%= table[:x] %> <%= table[:y] + head_h %> H<%= table[:x] + table[:w] %>" class="apr-er__sep"/>
-          <text x="<%= table[:x] + 14 %>" y="<%= table[:y] + 21 %>" class="apr-er__name"><%= table[:name] %><%= " · exemplo do template" if table[:variant] == "example" %></text>
-          <% table[:columns].each_with_index do |(column, note), index| %>
-            <% left = table[:x] + (index / rows) * sub_w %>
-            <% baseline = table[:y] + head_h + (index % rows) * row_h + 14 %>
-            <text x="<%= left + 14 %>" y="<%= baseline %>" class="apr-er__col"><%= column %></text>
-            <% if note.present? %>
-              <text x="<%= left + sub_w - 12 %>" y="<%= baseline %>" class="apr-er__note" text-anchor="end"><%= note %></text>
-            <% end %>
+<% diagram = presentation_diagram(key) %>
+<figure class="apr-figure apr-data-figure" data-diagram="<%= key %>">
+  <div class="apr-data-toolbar">
+    <span class="apr-data-eyebrow"><%= key == "conceptual" ? "Conceitos e multiplicidades" : key == "architecture" ? "Componentes e responsabilidades" : "Tabelas e cardinalidades" %></span>
+    <button type="button" class="apr-data-zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: <%= diagram.title %>">
+      <span aria-hidden="true">↗</span> Ampliar
+    </button>
+  </div>
+  <div class="apr-data-viewport" tabindex="0" aria-label="<%= diagram.title %>; use as setas para rolar"
+       data-controller="diagram" data-action="keydown.esc->diagram#reset"
+       style="--diagram-fit-font: <%= 1200.0 / diagram.width %>cqw; --diagram-print-font: <%= 1392.0 / diagram.height %>mm; --diagram-overview-print-font: <%= 1020.0 / diagram.height %>mm;">
+    <div class="apr-data-selection" role="status" aria-live="polite" data-diagram-target="status" hidden></div>
+    <div class="apr-data-canvas" role="group" aria-label="<%= diagram.title %>"
+         style="width: <%= diagram.em(diagram.width) %>em; height: <%= diagram.em(diagram.height) %>em;">
+      <% diagram.relations.each do |relation| %>
+        <div class="apr-data-relation apr-data-relation--<%= relation["kind"].dasherize %>"
+             data-relation="<%= relation["id"] %>" data-source="<%= relation["source"] %>" data-target="<%= relation["target"] %>"
+             data-column="<%= relation["column"] %>" data-label="<%= relation["label"] %>" data-target-title="<%= diagram.node(relation["target"])["title"] %>" data-source-cardinality="<%= relation["source_cardinality"] %>"
+             data-target-cardinality="<%= relation["target_cardinality"] %>" aria-hidden="true">
+          <% diagram.segments(relation).each do |segment| %>
+            <span class="apr-data-line <%= 'apr-data-line--vertical' if segment[:vertical] %>"
+                  style="left: <%= diagram.em(segment[:x]) %>em; top: <%= diagram.em(segment[:y]) %>em; --length: <%= diagram.em(segment[:length]) %>em;"></span>
           <% end %>
-        </g>
+          <% relation["points"].values_at(0, -1).each do |x, y| %>
+            <span class="apr-data-port" style="left: <%= diagram.em(x) %>em; top: <%= diagram.em(y) %>em;"></span>
+          <% end %>
+        </div>
       <% end %>
-    </svg>
-    <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
-  </button>
-  <figcaption class="apr-figure__caption">
-    <span class="apr-figure__title"><%= caption %></span>
+      <% diagram.nodes.each do |node| %>
+        <article class="apr-data-node <%= 'apr-er__table' if node["table"] && !node["reference"] %> apr-data-node--<%= node.fetch("variant", "default") %>"
+                 data-node="<%= node["id"] %>" data-table="<%= node["table"] unless node["reference"] %>"
+                 data-reference="<%= node["table"] if node["reference"] %>"
+                 style="left: <%= diagram.em(node["x"]) %>em; top: <%= diagram.em(node["y"]) %>em; width: <%= diagram.em(node["width"]) %>em; height: <%= diagram.em(node["height"]) %>em;"
+                 data-action="mouseenter->diagram#preview mouseleave->diagram#clearPreview focusin->diagram#preview focusout->diagram#clearPreview">
+          <h4 class="apr-data-node__heading">
+            <button type="button" class="apr-data-node__select" data-action="diagram#select" aria-pressed="false"
+                    aria-label="Destacar conexões de <%= node["title"] %>">
+              <span><%= node["title"] %></span>
+              <span class="apr-data-node__kind" aria-hidden="true"><%= node["reference"] || node["variant"] == "reference" ? "REF" : node["table"] ? "TABELA" : "CONCEITO" %></span>
+            </button>
+          </h4>
+          <% if node["columns"].any? %>
+            <dl class="apr-data-fields" style="grid-template-rows: repeat(<%= node["rows"] %>, 1.5em); grid-template-columns: repeat(<%= node["split"] %>, minmax(0, 1fr));">
+              <% node["columns"].each do |column, note| %>
+                <div class="apr-data-field" data-field="<%= column %>" title="<%= [ column, note ].compact_blank.join(' · ') %>">
+                  <dt class="apr-er__col"><%= column %></dt>
+                  <dd><% if note.present? %><span class="apr-data-key <%= 'apr-data-key--foreign' if note.include?('FK') %>"><%= note.split(" ").first %></span><% end %></dd>
+                </div>
+              <% end %>
+            </dl>
+          <% else %>
+            <ul class="apr-data-facts" role="list">
+              <% node["lines"].each do |line| %><li><%= line %></li><% end %>
+            </ul>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  </div>
+  <figcaption class="apr-data-caption">
+    <span class="apr-figure__title"><%= diagram.title %></span>
+    <span class="apr-data-guide">Selecione uma entidade para destacar suas conexões.</span>
   </figcaption>
+  <details class="apr-data-details">
+    <summary>Relações e cardinalidades <span><%= diagram.relations.size %></span></summary>
+    <p class="apr-data-description"><%= diagram.description %></p>
+    <ul class="apr-data-relations-list" role="list">
+      <% diagram.relations.each do |relation| %>
+        <li data-relationship="<%= relation["id"] %>" data-source="<%= relation["source"] %>" data-target="<%= relation["target"] %>" data-column="<%= relation["column"] %>" data-kind="<%= relation["kind"] %>">
+          <span><strong><%= diagram.node(relation["source"])["title"] %></strong> → <strong><%= diagram.node(relation["target"])["title"] %></strong></span>
+          <span><%= relation["label"] %></span>
+          <code><%= [ relation["source_cardinality"], relation["target_cardinality"] ].compact_blank.join(" : ") %></code>
+        </li>
+      <% end %>
+    </ul>
+    <p class="apr-data-legend">1 = obrigatório · 0..1 = opcional · 0..N = múltiplos. Tracejado = vínculo polimórfico; REF = entidade detalhada em outro apêndice.</p>
+  </details>
 </figure>

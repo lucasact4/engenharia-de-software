@@ -1,25 +1,9 @@
-<%# DER físico — publicações, comentários e base social (todas as colunas). %>
-<% tables = [
-  { name: "publications", x: 10, y: 10, w: 500, split: 2, columns: [ [ "id", "PK" ], [ "author_id", "FK users" ], [ "alert_id", "FK·UQ alerts" ], [ "kind", "" ], [ "title", "" ], [ "body", "" ], [ "visibility", "" ], [ "review_status", "" ], [ "state", "" ], [ "content_version", "" ], [ "reviewed_content_version", "" ], [ "reviewed_by_id", "FK users" ], [ "reviewed_at", "" ], [ "review_reason", "" ], [ "published_at", "" ], [ "expires_at", "" ], [ "withdrawn_at", "" ], [ "source_changed_at", "" ], [ "comments_enabled", "" ], [ "lock_version", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "comments", x: 525, y: 10, w: 250, columns: [ [ "id", "PK" ], [ "publication_id", "FK publications" ], [ "author_id", "FK users" ], [ "parent_id", "FK comments" ], [ "body", "" ], [ "edited_at", "" ], [ "deleted_at", "" ], [ "removed_at", "" ], [ "removed_by_id", "FK users" ], [ "removal_reason", "" ], [ "lock_version", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "content_reports", x: 790, y: 10, w: 240, columns: [ [ "id", "PK" ], [ "reporter_id", "FK users" ], [ "publication_id", "FK publications" ], [ "comment_id", "FK comments" ], [ "reason", "" ], [ "details", "" ], [ "state", "" ], [ "reviewed_by_id", "FK users" ], [ "reviewed_at", "" ], [ "resolution_notes", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "publication_likes", x: 10, y: 310, w: 240, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "publication_id", "FK publications" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "publication_bookmarks", x: 270, y: 310, w: 240, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "publication_id", "FK publications" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "publication_subscriptions", x: 530, y: 310, w: 240, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "publication_id", "FK publications" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "comment_likes", x: 790, y: 310, w: 240, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "comment_id", "FK comments" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "alert_subscriptions", x: 10, y: 460, w: 240, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "alert_id", "FK alerts" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "user_follows", x: 270, y: 460, w: 240, columns: [ [ "id", "PK" ], [ "follower_id", "FK users" ], [ "followed_id", "FK users" ], [ "created_at", "" ], [ "updated_at", "" ] ] }
-] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "DER físico · apêndice",
       title: "Publicações, comentários e base social",
       lead: "Todas as colunas, conforme db/schema.rb (versão #{presentation.schema_version}). Somente modelos e regras: não há telas de feed, comentários ou moderação." %>
 
-<%= render "presentations/shared/er_diagram", id: "apr-der-social",
-      title: "DER físico — publicações, comentários e base social",
-      desc: "Colunas de publications, comments, content_reports, publication_likes, publication_bookmarks, publication_subscriptions, comment_likes, alert_subscriptions e user_follows, com PK, FK e tabela de destino.",
-      width: 1040, height: 600, tables: tables,
-      caption: "publications · comments · content_reports · curtidas, favoritos, acompanhamentos e seguidores" %>
+<%= render "presentations/shared/er_diagram", key: "social" %>
 
 <ul class="apr-footnotes" role="list">
   <li>Curtidas, favoritos, acompanhamentos e seguidores têm UNIQUE por par no banco; <code>user_follows</code> tem CHECK contra seguir a si mesmo. Nenhuma interação concede acesso.</li>
