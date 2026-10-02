@@ -1,47 +1,35 @@
-# Perfis iniciais da apresentação (/apresentacao). Idempotente: cria só os perfis ausentes e
-# nunca altera um perfil já editado no admin. Cada lista traz as chaves do catálogo
-# (config/presentation/roteiro.yml) que ficam marcadas; as demais ficam desmarcadas.
+# Cria somente os perfis ausentes. Reorganizar perfis existentes é uma ação explícita.
 presentation = Presentation.load
-
 profiles = [
   {
-    name: "Primeira entrega",
-    delivery: "primeira",
-    description: "Requisitos refinados, ferramentas, casos de uso, Trello, próximos passos e lições aprendidas.",
+    name: "Primeira entrega", delivery: "primeira",
+    description: "Seis itens da primeira entrega na ordem do enunciado.",
     enabled: %w[
-      problema problema.dores problema.publico problema.proposta
-      escopo escopo.dimensoes escopo.conflitos
       requisitos requisitos.funcionais requisitos.nao-funcionais requisitos.criterios requisitos.documento
-      arquitetura arquitetura.tecnologias arquitetura.versoes arquitetura.diagrama
+      arquitetura arquitetura.tecnologias arquitetura.versoes arquitetura.diagrama arquitetura.mudancas
       casos-de-uso
       gestao gestao.trello gestao.cards gestao.ambientes
       proximos-passos proximos-passos.marco proximos-passos.passos proximos-passos.riscos proximos-passos.dependencias
-      retrospectiva retrospectiva.pontos retrospectiva.licoes
+      retrospectiva retrospectiva.pontos retrospectiva.acoes retrospectiva.licoes
       encerramento.links
-      checklist conflitos roteiro
     ]
   },
   {
-    name: "Segunda entrega — Status Report 2",
-    delivery: "segunda",
-    description: "Protótipo, GitHub e duas funcionalidades, retrospectiva, modelo conceitual, reuniões e status report (até 7 minutos).",
-    active: true,
+    name: "Segunda entrega — Status Report 2", delivery: "segunda", active: true,
+    description: "Cinco itens da segunda entrega e três itens do status report, na ordem do enunciado.",
     enabled: %w[
-      problema problema.dores problema.proposta
-      evolucao evolucao.linha-do-tempo evolucao.capacidades evolucao.observacoes
-      conceito-visual conceito-visual.prototipo conceito-visual.landing conceito-visual.login conceito-visual.mobile conceito-visual.paleta conceito-visual.notas
-      funcionalidades funcionalidades.criterios funcionalidades.funcionalidade-1 funcionalidades.funcionalidade-2
-      modelo-conceitual modelo-conceitual.diagrama modelo-conceitual.distincao
-      arquitetura arquitetura.tecnologias arquitetura.versoes arquitetura.mudancas
-      gestao gestao.cards gestao.praticas gestao.reunioes gestao.trello
-      retrospectiva retrospectiva.imagem retrospectiva.pontos retrospectiva.acoes retrospectiva.licoes
+      conceito-visual conceito-visual.landing conceito-visual.login conceito-visual.mobile conceito-visual.paleta conceito-visual.notas
+      funcionalidades funcionalidades.repositorio funcionalidades.criterios funcionalidades.funcionalidade-1 funcionalidades.funcionalidade-2
+      retrospectiva retrospectiva.imagem
+      modelo-conceitual modelo-conceitual.diagrama modelo-conceitual.situacao modelo-conceitual.distincao
+      reunioes reunioes.registros
+      evolucao evolucao.linha-do-tempo evolucao.observacoes
       proximos-passos proximos-passos.marco proximos-passos.passos proximos-passos.riscos proximos-passos.dependencias
+      status-report status-report.aprendizados status-report.acoes status-report.registro
       encerramento.links
-      checklist conflitos modelo-dados evidencias evidencias.commits evidencias.arquivos evidencias.testes roteiro
     ]
   }
 ]
-
 profiles.each do |attributes|
   unknown = attributes[:enabled] - presentation.catalog_keys
   raise ArgumentError, "Perfil #{attributes[:name]}: chaves fora do catálogo: #{unknown.join(', ')}" if unknown.any?

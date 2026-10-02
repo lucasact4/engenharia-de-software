@@ -1,6 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "HTML presentation diagrams", type: :feature, js: true do
+  before { create(:presentation_profile, :active, selections: Presentation.load.catalog_keys.excluding(*Presentation::REQUIRED_SLIDES).index_with(true)) }
+  # Restaura o tamanho padrão do driver (spec_helper): sem isso, o teste mobile deixava a janela
+  # em 390 px e os specs seguintes do admin viam a versão mobile da tabela.
+  after { page.current_window.resize_to(1024, 786) }
+
   def capture(name)
     page.driver.browser.execute_async_script("const done = arguments[arguments.length - 1]; Promise.all([...document.getAnimations()].filter(animation => animation.effect.getComputedTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))).then(done)") if ENV["DIAGRAM_SCREENSHOTS"]
     page.save_screenshot(Rails.root.join("tmp/screenshots/diagrams-#{name}.png")) if ENV["DIAGRAM_SCREENSHOTS"]
@@ -56,6 +61,10 @@ RSpec.describe "HTML presentation diagrams", type: :feature, js: true do
           .map(element => element.textContent.trim())
       JS
       expect(clipping).to be_empty, "texto cortado em #{slide}: #{clipping.join(', ')}"
+      if slide == "arquitetura"
+        expect(page.evaluate_script("document.querySelector('#s-arquitetura .apr-arch').scrollWidth <= document.querySelector('#s-arquitetura .apr-arch').clientWidth")).to be(true)
+        expect(page.evaluate_script("document.querySelector('#s-arquitetura .apr-changes').scrollWidth <= document.querySelector('#s-arquitetura .apr-changes').clientWidth")).to be(true)
+      end
       capture(slide)
     end
   end

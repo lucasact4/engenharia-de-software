@@ -2,9 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 import { PresentationSelection, estimateText } from "lib/presentation_selection"
 
 // Formulário do perfil da apresentação (admin → Apresentação).
-// Só atualiza avisos e a estimativa de tempo; quem salva é o envio normal do formulário.
+// Organiza o catálogo conforme a entrega e atualiza avisos e tempo. O envio do formulário salva a seleção.
 export default class extends Controller {
-  static targets = ["slide", "delivery", "estimate", "estimateBox"]
+  static targets = ["slide", "delivery", "estimate", "estimateBox", "group"]
   static values = { catalog: Array, limits: Object }
 
   connect() {
@@ -13,11 +13,14 @@ export default class extends Controller {
 
   refresh() {
     const selection = new PresentationSelection(this.catalogValue, this.currentChoices())
+    const delivery = this.hasDeliveryTarget ? this.deliveryTarget.value : null
 
+    this.orderRows(selection, delivery)
     this.slideTargets.forEach((row) => {
       const id = row.dataset.slideId
       const slide = selection.slides.get(id)
       const chosen = selection.chosen(id)
+      this.syncTitle(row, slide, delivery)
       const hint = row.querySelector("[data-hint]")
       const items = row.querySelector("[data-items]")
       const count = row.querySelector("[data-count]")
@@ -44,6 +47,35 @@ export default class extends Controller {
       this.estimateBoxTarget.classList.toggle("bg-slate-50", !over)
       this.estimateBoxTarget.classList.toggle("text-slate-700", !over)
     }
+  }
+
+  // Título e exigência mudam com a entrega; os textos vêm do catálogo (entrega.yml → exigencias).
+  syncTitle(row, slide, delivery) {
+    if (!delivery || !slide.titles) return
+
+    row.querySelectorAll("[data-slide-title]").forEach((element) => { element.textContent = slide.titles[delivery] })
+    row.querySelector("[data-slide-contents-label]")?.setAttribute("aria-label", `Conteúdos de ${slide.titles[delivery]}`)
+    const label = row.querySelector("[data-slide-label]")
+    if (!label) return
+
+    const text = slide.labels[delivery]
+    const extra = Boolean(text?.endsWith("omplementar"))
+    label.hidden = !text
+    label.textContent = text || ""
+    ;[["border-emerald-200", "bg-emerald-50", "text-emerald-800"], ["border-slate-200", "bg-slate-50", "text-slate-500"]]
+      .forEach((classes, index) => classes.forEach((name) => label.classList.toggle(name, index === 0 ? !extra : extra)))
+  }
+
+  orderRows(selection, delivery) {
+    if (!delivery) return
+    const groups = new Map(this.groupTargets.map((group) => [group.dataset.profileGroup, group]))
+    this.slideTargets.sort((left, right) => selection.slides.get(left.dataset.slideId).orders[delivery] - selection.slides.get(right.dataset.slideId).orders[delivery])
+      .forEach((row) => {
+        const slide = selection.slides.get(row.dataset.slideId)
+        const academic = slide.required || !slide.labels[delivery]?.endsWith("omplementar")
+        const group = slide.appendix ? "apendice" : academic ? "principal" : "complementar"
+        groups.get(group)?.append(row)
+      })
   }
 
   currentChoices() {

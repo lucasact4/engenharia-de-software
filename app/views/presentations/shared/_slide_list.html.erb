@@ -1,6 +1,6 @@
 <%# Lista de slides usada no sumário (modo leitura) e no índice (diálogo). Slides ocultos ficam com hidden. %>
 <% linked = local_assigns.fetch(:linked, false) %>
-<% [ [ "Apresentação", presentation.main_slides, @selection.visible_main_slides ], [ "Apêndices", presentation.appendix_slides, @selection.visible_appendix_slides ] ].each do |group, slides, visible| %>
+<% [ [ "Apresentação", presentation.main_slides(@selection.delivery), @selection.visible_main_slides ], [ "Apêndices", presentation.appendix_slides, @selection.visible_appendix_slides ] ].each do |group, slides, visible| %>
   <div class="apr-slide-list" data-apr-slide-group="<%= slides.first&.appendix ? 'appendix' : 'main' %>" <%= "hidden" if visible.empty? %>>
     <h3 class="apr-slide-list__group"><%= group %></h3>
     <ol class="apr-slide-list__items" role="list">
@@ -8,7 +8,7 @@
         <%= presentation_slide_ref slide.id, :li do %>
           <a href="#<%= slide.dom_id %>" class="apr-slide-list__link" <%= "data-presentation-target=indexLink" if linked %> data-slide-id="<%= slide.dom_id %>">
             <%= presentation_slide_label slide, prefix: "", class: "apr-slide-list__label" %>
-            <span class="apr-slide-list__title"><%= slide.title %></span>
+            <span class="apr-slide-list__title"><%= @selection.slide_title(slide) %><% if (requirement = @selection.requirement_label(slide)) %><span class="apr-slide-list__req"><%= requirement %></span><% end %></span>
             <% if slide.seconds.positive? && !slide.appendix %>
               <span class="apr-slide-list__time"><%= presentation_duration(slide.seconds) %></span>
             <% end %>

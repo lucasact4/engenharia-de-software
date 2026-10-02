@@ -2,7 +2,7 @@
 <% registered = r[:pontos].present? || r[:acoes].present? || r[:licoes].present? %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "retrospectiva",
-      title: "Retrospectiva e lições aprendidas",
+      title: (@selection.delivery[:id] == "primeira" ? "Reflexão da equipe sobre o período" : "Registro visual da retrospectiva da equipe"),
       lead: [ presentation_date(r[:data]), r[:formato] ].compact_blank.join(" · ").presence %>
 
 <div class="apr-retro apr-fit">
@@ -50,7 +50,7 @@
       <% end %>
     <% end %>
     <% unless registered %>
-      <p class="apr-source">Nada neste slide foi preenchido por suposição: os itens aparecem quando a equipe registrar a retrospectiva.</p>
+      <p class="apr-source">Pendente: registrar a retrospectiva e as lições reais da equipe em retrospectiva.yml.</p>
     <% end %>
   <% end %>
 </div>

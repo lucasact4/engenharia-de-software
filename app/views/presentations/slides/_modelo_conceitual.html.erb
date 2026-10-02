@@ -1,23 +1,34 @@
 <% item = presentation.diagramas[:itens].find { |diagrama| diagrama[:id] == "modelo-conceitual" } %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "modelagem",
-      title: "Modelo conceitual",
-      lead: "Conceitos do domínio e multiplicidades, sem detalhes de tabela. Não substitui o fluxo (#5) nem os casos de uso (#14)." %>
+      title: "Conceitos do domínio e suas multiplicidades",
+      lead: "Sem detalhes de tabela. Não substitui o fluxo (#5) nem os casos de uso (#14)." %>
 
 <%= presentation_item slide, "diagrama", class: "apr-model-diagram" do %>
   <%= render "presentations/shared/er_diagram", key: "conceptual" %>
-  <p class="apr-diagram__meta"><%= [ item[:origem], ("versão #{item[:versao]}" if item[:versao].present?), presentation_date(item[:data]) ].compact_blank.join(" · ") %> <%= presentation_state(item[:estado], short: true) %></p>
+  <p class="apr-diagram__meta"><%= [ item[:origem], ("versão #{item[:versao]}" if item[:versao].present?), presentation_date(item[:data]) ].compact_blank.join(" · ") %></p>
 <% end %>
 
-<%= presentation_item slide, "distincao", class: "apr-model-note" do %>
-  <p class="apr-label">Conceitual ≠ físico</p>
-  <ul class="apr-footnotes" role="list">
-    <li>As multiplicidades refletem as restrições do banco (ex.: alerta com 0..1 publicação; comentário com 0..1 comentário pai).</li>
-    <li>Itens marcados como premissas provisórias dependem de decisão da equipe e não representam aprovação de requisito.</li>
-    <li>
-      As tabelas reais de <code>db/schema.rb</code> ficam no DER físico.
-      <%= presentation_slide_ref "modelo-dados" do %><a class="apr-more" href="#s-modelo-dados">Ver o DER físico nos apêndices</a>.<% end %>
-    </li>
-  </ul>
+<%= presentation_group slide, %w[situacao distincao], class: "apr-model-foot apr-fit" do %>
+  <%= presentation_item slide, "situacao", :dl, class: "apr-model-status" do %>
+    <% [ [ "Diagrama produzido", item[:producao] ], [ "Revisão da equipe", item[:revisao_equipe] ], [ "Premissas de requisitos", item[:premissas] ] ].each do |rotulo, info| %>
+      <% next if info.blank? %>
+      <div class="apr-model-status__row">
+        <dt><%= rotulo %></dt>
+        <dd>
+          <%= presentation_state(info[:estado], short: true) %>
+          <span><%= [ info[:nota], presentation_date(info[:data]), Array(info[:responsaveis]).to_sentence.presence ].compact_blank.join(" · ") %></span>
+        </dd>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= presentation_item slide, "distincao", class: "apr-model-note" do %>
+    <p class="apr-label">Conceitual ≠ físico</p>
+    <ul class="apr-footnotes" role="list">
+      <li>As multiplicidades refletem as restrições do banco (ex.: alerta com 0..1 publicação; comentário com 0..1 comentário pai).</li>
+      <li>As tabelas reais de <code>db/schema.rb</code> ficam no DER físico<%= presentation_slide_ref "modelo-dados" do %>: <a class="apr-more" href="#s-modelo-dados">ver apêndices</a><% end %>.</li>
+    </ul>
+  <% end %>
 <% end %>
-<%= presentation_update_note("diagramas.yml", "versao, origem e data; estrutura do modelo em data_diagrams.yml.") %>
+<%= presentation_update_note("diagramas.yml", "producao, revisao_equipe e premissas; estrutura do modelo em data_diagrams.yml.") %>

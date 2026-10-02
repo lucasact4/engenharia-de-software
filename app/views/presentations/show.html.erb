@@ -5,7 +5,7 @@
 
 <div class="apr"
      data-controller="presentation"
-     data-presentation-catalog-value="<%= presentation_catalog_data(@presentation).to_json %>"
+     data-presentation-catalog-value="<%= presentation_catalog_data(@presentation, delivery: @selection.delivery).to_json %>"
      data-presentation-choices-value="<%= @selection.to_h.to_json %>"
      data-presentation-limit-value="<%= @selection.limit_seconds.to_i %>"
      data-action="click->presentation#followSlideLink">
@@ -62,7 +62,7 @@
       <%= render "presentations/shared/slide_list", presentation: @presentation %>
     </nav>
 
-    <% @presentation.slides.each do |slide| %>
+    <% @presentation.ordered_slides(delivery).each do |slide| %>
       <section id="<%= slide.dom_id %>"
                class="apr-slide <%= slide.dark ? 'apr-slide--dark' : 'apr-slide--light' %> apr-slide--<%= slide.id %>"
                aria-labelledby="<%= slide.heading_id %>"
@@ -70,7 +70,7 @@
                data-presentation-target="slide"
                data-slide-id="<%= slide.id %>"
                data-appendix="<%= slide.appendix %>"
-               data-title="<%= slide.title %>"
+               data-title="<%= @selection.slide_title(slide) %>"
                <%= "hidden" unless @selection.slide_visible?(slide) %>>
         <div class="apr-slide__inner">
           <%= render slide.partial, presentation: @presentation, slide: slide %>

@@ -18,12 +18,12 @@
     </thead>
     <tbody>
       <% elapsed = 0 %>
-      <% presentation.main_slides.each do |item| %>
+      <% presentation.main_slides(@selection.delivery).each do |item| %>
         <% visible = @selection.slide_visible?(item) %>
         <% elapsed += item.seconds if visible %>
         <%= presentation_slide_ref item.id, :tr do %>
           <td><%= presentation_slide_label item %></td>
-          <th scope="row"><%= item.title %></th>
+          <th scope="row"><%= @selection.slide_title(item) %></th>
           <td><%= presentation_duration(item.seconds) %></td>
           <td data-apr-elapsed-for="<%= item.id %>"><%= presentation_duration(elapsed) if visible %></td>
           <td><%= item.presenter || "A definir" %></td>

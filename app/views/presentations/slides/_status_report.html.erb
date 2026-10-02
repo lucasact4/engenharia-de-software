@@ -1,57 +1,43 @@
-<%# Resumo do status report. Não tem YAML próprio: reúne evolucao.yml, planejamento.yml e retrospectiva.yml. %>
-<% ev = presentation.evolucao %>
-<% plan = presentation.planejamento %>
-<% retro = presentation.retrospectiva %>
-<% desde = ev[:data_primeira_entrega] %>
-<% feitos = desde.present? ? ev[:marcos].select { |marco| marco[:data] > desde } : ev[:marcos] %>
+<% r = presentation.retrospectiva %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "status report",
-      title: "Onde estamos, para onde vamos",
-      lead: (desde.present? ? "Período desde a primeira entrega (#{presentation_date(desde)})." : nil) %>
+      kicker: "primeiro status report",
+      title: "Lições da sprint e ações combinadas",
+      lead: "A imagem da dinâmica fica no item 3. Aqui entram os aprendizados registrados pela equipe." %>
 
-<div class="apr-status apr-fit">
-  <%= presentation_item slide, "feito", :section, class: "apr-status__col apr-status__col--done", aria: { labelledby: "#{slide.dom_id}-feito" } do %>
-    <h3 id="<%= slide.dom_id %>-feito" class="apr-status__title">Feito desde a última entrega</h3>
-    <% if feitos.any? %>
-      <ul class="apr-status__list" role="list">
-        <% feitos.each do |marco| %>
-          <li>
-            <strong><%= marco[:titulo] %></strong>
-            <span><%= presentation_date(marco[:data]) %> · <%= marco[:commit].present? ? presentation_commit_link(marco[:commit]) : "não publicado" %></span>
-          </li>
+<div class="apr-retro apr-fit">
+  <%= presentation_group slide, %w[aprendizados acoes], class: "apr-retro__notes" do %>
+    <% [ [ "aprendizados", "O que aprendemos", r[:licoes] ], [ "acoes", "O que vamos melhorar", r[:acoes] ] ].each do |id, title, entries| %>
+      <%= presentation_item slide, id, :section, class: "apr-retro__block", aria: { label: title } do %>
+        <h3 class="apr-retro__title"><%= title %></h3>
+        <% if entries.present? %>
+          <ul class="apr-retro__list" role="list">
+            <% entries.each do |entry| %>
+              <li>
+                <% if entry.is_a?(Hash) %>
+                  <%= entry[:acao] %>
+                  <span class="apr-retro__who"><%= [ entry[:responsavel], entry[:prazo] ].compact_blank.join(" · ") %></span>
+                <% else %><%= entry %><% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: realizar a retrospectiva e registrar <%= id == "acoes" ? "as ações combinadas" : "as lições aprendidas" %> em <code>retrospectiva.yml</code>.</p>
         <% end %>
-      </ul>
-    <% else %>
-      <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Nenhum marco registrado depois da primeira entrega.</p>
-    <% end %>
-    <%= presentation_slide_ref "evolucao", :p, class: "apr-status__more" do %><a class="apr-more" href="#s-evolucao">Detalhes da evolução</a><% end %>
-  <% end %>
-
-  <%= presentation_item slide, "proximo", :section, class: "apr-status__col apr-status__col--next", aria: { labelledby: "#{slide.dom_id}-proximo" } do %>
-    <h3 id="<%= slide.dom_id %>-proximo" class="apr-status__title">Até a próxima entrega</h3>
-    <ul class="apr-status__list" role="list">
-      <% plan[:proximos_passos].each do |passo| %>
-        <li><strong><%= passo[:titulo] %></strong><% if passo[:card] %> <span class="apr-tag">#<%= passo[:card] %></span><% end %></li>
       <% end %>
-    </ul>
-    <p class="apr-status__marco">
-      Marco: <%= plan.dig(:marco, :titulo).presence || "a definir com a equipe" %> <%= presentation_state(plan.dig(:marco, :estado), short: true) %>
-    </p>
+    <% end %>
   <% end %>
 
-  <%= presentation_item slide, "aprendizados", :section, class: "apr-status__col apr-status__col--learn", aria: { labelledby: "#{slide.dom_id}-aprendizados" } do %>
-    <h3 id="<%= slide.dom_id %>-aprendizados" class="apr-status__title">O que aprendemos na sprint</h3>
-    <% if retro[:licoes].present? %>
-      <ul class="apr-status__list" role="list">
-        <% retro[:licoes].each do |licao| %><li><%= licao %></li><% end %>
-      </ul>
+  <%= presentation_item slide, "registro", :aside, class: "apr-model-note" do %>
+    <h3 class="apr-label">Evidência da retrospectiva</h3>
+    <% if r[:imagem].present? %>
+      <p>Imagem anexada<%= " · #{presentation_date(r[:data])}" if r[:data].present? %>.</p>
     <% else %>
-      <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Lições entram após a retrospectiva registrada.</p>
+      <p><%= presentation_state(:aguardando_evidencia) %> Pendente: anexar foto ou captura real da dinâmica.</p>
     <% end %>
-    <p class="apr-status__more">
-      Registro da retrospectiva: <%= retro[:imagem].present? ? "imagem anexada" : presentation_state(:aguardando_evidencia, short: true) %>
-      <%= presentation_slide_ref "retrospectiva" do %>· <a class="apr-more" href="#s-retrospectiva">ver retrospectiva</a><% end %>
-    </p>
+    <%= presentation_slide_ref "retrospectiva", :p do %>
+      <a class="apr-more" href="#s-retrospectiva">Ver imagem da retrospectiva (item 3)</a>
+    <% end %>
+    <p class="apr-source">A evidência é compartilhada pelos dois itens; os aprendizados não são preenchidos por suposição.</p>
   <% end %>
 </div>
-<%= presentation_update_note("evolucao.yml", "marcos; os passos vêm de planejamento.yml e as lições de retrospectiva.yml.") %>
+<%= presentation_update_note("retrospectiva.yml", "licoes, acoes, imagem e data da dinâmica realizada pela equipe.") %>

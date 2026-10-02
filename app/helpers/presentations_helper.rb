@@ -110,11 +110,14 @@ module PresentationsHelper
   end
 
   # Catálogo enviado ao JavaScript (página pública e admin). Mesma origem: roteiro.yml.
-  def presentation_catalog_data(presentation)
-    presentation.slides.map do |slide|
+  def presentation_catalog_data(presentation, delivery: presentation.default_delivery)
+    presentation.ordered_slides(delivery).map do |slide|
       {
         id: slide.id, title: slide.title, appendix: slide.appendix, required: slide.required,
         seconds: slide.seconds, default: slide.default,
+        orders: presentation.deliveries.to_h { |delivery| [ delivery[:id], presentation.ordered_slides(delivery).index(slide) ] },
+        titles: presentation.deliveries.to_h { |delivery| [ delivery[:id], presentation.slide_title(slide, delivery) ] },
+        labels: presentation.deliveries.to_h { |delivery| [ delivery[:id], presentation.slide_label(slide, delivery) ] },
         items: slide.items.map { |item| { key: item.key, title: item.title, default: item.default, parent: item.parent_key } }
       }
     end

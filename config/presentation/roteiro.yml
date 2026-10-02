@@ -17,6 +17,10 @@
 # conteudos:   blocos do slide que podem ser ocultados. A chave salva é "<id do slide>.<id do conteúdo>"
 #              (ex.: gestao.reunioes). "dentro_de" indica um bloco que só aparece com o bloco pai.
 #              Cada conteúdo precisa estar marcado na partial com presentation_item.
+# titulo:      nome padrão do slide. Quando o slide atende uma exigência da entrega escolhida,
+#              o título exibido vem de entrega.yml (exigencias) — a fonte central dos nomes.
+# substitui:   chaves antigas cujas escolhas salvas este slide/conteúdo herda (todas precisam estar
+#              marcadas). Mantém perfis salvos coerentes quando um slide é dividido.
 #
 # Capa e encerramento são obrigatórios: sempre aparecem e não têm "padrao".
 # Um slide marcado cujos conteúdos foram todos desmarcados é omitido da sequência.
@@ -32,7 +36,7 @@ slides:
     tema: escuro
     titulo: "Problema e proposta"
     tempo: 35
-    padrao: true
+    padrao: false
     responsavel:
     conteudos:
       - { id: dores, titulo: "Problema e dores", padrao: true }
@@ -42,7 +46,7 @@ slides:
   - id: escopo
     titulo: "Escopo do MVP e regras"
     tempo: 45
-    padrao: true
+    padrao: false
     responsavel:
     conteudos:
       - { id: dimensoes, titulo: "Dimensões da ocorrência", padrao: true }
@@ -60,14 +64,14 @@ slides:
       - { id: documento, titulo: "Documento e card de refinamento", padrao: true }
 
   - id: status-report
-    titulo: "Status report"
-    tempo: 40
-    padrao: false
+    titulo: "O que aprendemos nesse sprint (Imagem de uma retrospectiva)"
+    tempo: 35
+    padrao: true
     responsavel:
     conteudos:
-      - { id: feito, titulo: "O que foi feito desde a última entrega", padrao: true }
-      - { id: proximo, titulo: "O que será feito até a próxima entrega", padrao: true }
-      - { id: aprendizados, titulo: "O que aprendemos na sprint", padrao: true }
+      - { id: aprendizados, titulo: "Lições aprendidas pela equipe", padrao: true }
+      - { id: acoes, titulo: "Ações combinadas para a próxima sprint", padrao: true }
+      - { id: registro, titulo: "Referência à imagem da retrospectiva", padrao: true }
 
   - id: evolucao
     titulo: "Evolução no período"
@@ -76,7 +80,7 @@ slides:
     responsavel:
     conteudos:
       - { id: linha-do-tempo, titulo: "Linha do tempo (commits)", padrao: true }
-      - { id: capacidades, titulo: "Situação das capacidades", padrao: true }
+      - { id: capacidades, titulo: "Situação geral do produto (apoio opcional)", padrao: false }
       - { id: observacoes, titulo: "Observações sobre o template", padrao: true }
 
   - id: conceito-visual
@@ -92,12 +96,23 @@ slides:
       - { id: paleta, titulo: "Paleta de cores", padrao: true }
       - { id: notas, titulo: "Notas sobre as capturas", padrao: true }
 
+  - id: repositorio
+    titulo: "Estrutura detalhada do repositório"
+    apendice: true
+    padrao: false
+    substitui: [ gestao, gestao.praticas ]
+    responsavel:
+    conteudos:
+      - { id: estrutura, titulo: "Estrutura do código no repositório", padrao: true }
+      - { id: praticas, titulo: "Práticas e integração contínua", padrao: true, substitui: [ gestao.praticas ] }
+
   - id: funcionalidades
-    titulo: "Duas funcionalidades completas"
-    tempo: 55
+    titulo: "GitHub e duas funcionalidades completas"
+    tempo: 65
     padrao: true
     responsavel:
     conteudos:
+      - { id: repositorio, titulo: "GitHub e estrutura do código", padrao: true }
       - { id: criterios, titulo: "Critérios de “completa”", padrao: true }
       - { id: funcionalidade-1, titulo: "Funcionalidade 1", padrao: true }
       - { id: funcionalidade-2, titulo: "Funcionalidade 2", padrao: true }
@@ -109,6 +124,7 @@ slides:
     responsavel:
     conteudos:
       - { id: diagrama, titulo: "Diagrama do modelo conceitual", padrao: true }
+      - { id: situacao, titulo: "Produção, revisão da equipe e premissas", padrao: true }
       - { id: distincao, titulo: "Diferença para o modelo físico do banco", padrao: true }
 
   - id: casos-de-uso
@@ -126,7 +142,7 @@ slides:
   - id: arquitetura
     titulo: "Arquitetura e tecnologias"
     tempo: 40
-    padrao: true
+    padrao: false
     responsavel:
     conteudos:
       - { id: tecnologias, titulo: "Tecnologias utilizadas", padrao: true }
@@ -135,16 +151,23 @@ slides:
       - { id: mudancas, titulo: "Mudanças na stack", padrao: true }
 
   - id: gestao
-    titulo: "Gestão e evidências"
-    tempo: 30
-    padrao: true
+    titulo: "Trello: monitoramento do projeto"
+    tempo: 25
+    padrao: false
     responsavel:
     conteudos:
       - { id: trello, titulo: "Quadro do Trello", padrao: true }
-      - { id: cards, titulo: "Cards do projeto", padrao: true }
+      - { id: cards, titulo: "Cards e requisitos do projeto", padrao: true }
       - { id: ambientes, titulo: "Links para ambientes", padrao: true }
-      - { id: praticas, titulo: "GitHub e práticas de acompanhamento", padrao: true }
-      - { id: reunioes, titulo: "Registros das reuniões", padrao: true }
+
+  - id: reunioes
+    titulo: "Reuniões de monitoramento"
+    tempo: 20
+    padrao: true
+    substitui: [ gestao, gestao.reunioes ]
+    responsavel:
+    conteudos:
+      - { id: registros, titulo: "Registros das reuniões", padrao: true, substitui: [ gestao.reunioes ] }
 
   - id: retrospectiva
     titulo: "Retrospectiva e lições"
@@ -153,9 +176,9 @@ slides:
     responsavel:
     conteudos:
       - { id: imagem, titulo: "Imagem da retrospectiva", padrao: true }
-      - { id: pontos, titulo: "Pontos discutidos", padrao: true }
-      - { id: acoes, titulo: "Ações combinadas", padrao: true }
-      - { id: licoes, titulo: "Lições aprendidas", padrao: true }
+      - { id: pontos, titulo: "Pontos discutidos", padrao: false }
+      - { id: acoes, titulo: "Ações combinadas", padrao: false }
+      - { id: licoes, titulo: "Lições aprendidas", padrao: false }
 
   - id: proximos-passos
     tema: escuro
@@ -180,31 +203,31 @@ slides:
   - id: checklist
     titulo: "Checklist da entrega"
     apendice: true
-    padrao: true
+    padrao: false
   - id: conflitos
     titulo: "Requisitos em conflito"
     apendice: true
-    padrao: true
+    padrao: false
   - id: modelo-dados
-    titulo: "DER físico — núcleo"
+    titulo: "DER físico — visão resumida do núcleo"
     apendice: true
-    padrao: true
+    padrao: false
   - id: der-operacional
-    titulo: "DER — perfis, catálogos e alertas"
+    titulo: "DER — perfis, catálogos, alertas e auditoria"
     apendice: true
-    padrao: true
+    padrao: false
   - id: der-social
-    titulo: "DER — publicações e base social"
+    titulo: "DER — publicações, comentários e base social"
     apendice: true
-    padrao: true
+    padrao: false
   - id: der-infraestrutura
-    titulo: "DER — infraestrutura"
+    titulo: "DER — infraestrutura (fora do domínio)"
     apendice: true
-    padrao: true
+    padrao: false
   - id: evidencias
     titulo: "Evidências no repositório"
     apendice: true
-    padrao: true
+    padrao: false
     conteudos:
       - { id: commits, titulo: "Commits publicados", padrao: true }
       - { id: arquivos, titulo: "Onde verificar cada capacidade", padrao: true }
@@ -212,4 +235,4 @@ slides:
   - id: roteiro
     titulo: "Roteiro e tempo"
     apendice: true
-    padrao: true
+    padrao: false

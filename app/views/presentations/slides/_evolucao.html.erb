@@ -1,10 +1,18 @@
 <% ev = presentation.evolucao %>
+<% desde = ev[:data_primeira_entrega] %>
+<% marcos = desde.present? ? ev[:marcos].select { |marco| marco[:data] > desde } : [] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "o que foi feito no período",
-      title: "Da base Rails às primeiras telas do SGU" %>
+      title: "Avanços registrados depois da primeira entrega",
+      lead: ("Período após #{presentation_date(desde)}." if desde.present?) %>
 
 <%= presentation_item slide, "linha-do-tempo", :ol, class: "apr-timeline", role: "list" do %>
-  <% ev[:marcos].each do |marco| %>
+  <% if marcos.empty? %>
+    <li class="apr-timeline__item apr-timeline__item--open">
+      <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: informar a data da última entrega e registrar os avanços posteriores com evidências em <code>evolucao.yml</code>.</p>
+    </li>
+  <% end %>
+  <% marcos.each do |marco| %>
     <li class="apr-timeline__item <%= 'apr-timeline__item--open' if marco[:commit].blank? %>">
       <p class="apr-timeline__date"><time datetime="<%= marco[:data] %>"><%= presentation_date(marco[:data]) %></time></p>
       <p class="apr-timeline__title"><%= marco[:titulo] %></p>

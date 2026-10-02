@@ -1,10 +1,20 @@
-<%# Cabeçalho padrão de slide. locals: slide, kicker, title, lead (opcional) %>
+<%#
+  Cabeçalho padrão de slide. O título vem da fonte central (exigência da entrega em entrega.yml
+  ou titulo do roteiro.yml), o mesmo usado no índice, no contador, no admin e no painel.
+  locals: slide, kicker, title (frase editorial, exibida como subtítulo), lead (opcional)
+%>
+<% heading = @selection.slide_title(slide) %>
+<% requirement = @selection.requirement_label(slide) %>
 <header class="apr-head">
   <p class="apr-kicker">
     <%= presentation_slide_label slide, class: "apr-kicker__num" %>
     <span class="apr-kicker__text"><%= kicker %></span>
+    <% if requirement %><span class="apr-requirement <%= 'apr-requirement--extra' if requirement.end_with?("omplementar") %>"><%= requirement %></span><% end %>
   </p>
-  <h2 id="<%= slide.heading_id %>" class="apr-title"><%= title %></h2>
+  <h2 id="<%= slide.heading_id %>" class="apr-title <%= "apr-title--long" if heading.length > 60 %>"><%= heading %></h2>
+  <% if local_assigns[:title].present? && title != heading %>
+    <p class="apr-subtitle"><%= title %></p>
+  <% end %>
   <% if local_assigns[:lead].present? %>
     <p class="apr-lead"><%= lead %></p>
   <% end %>

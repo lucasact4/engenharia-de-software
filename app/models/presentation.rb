@@ -36,9 +36,21 @@ class Presentation
     "aguardando_evidencia" => "Aguardando evidência"
   }.freeze
 
-  Item = Struct.new(:key, :id, :slide_id, :title, :default, :parent_key, keyword_init: true)
+  REQUIREMENT_GROUPS = { "item" => "Item", "status_report" => "Status report", "condicao" => "Condição" }.freeze
 
-  Slide = Struct.new(:id, :title, :seconds, :presenter, :appendix, :dark, :default, :required, :items, keyword_init: true) do
+  Item = Struct.new(:key, :id, :slide_id, :title, :default, :parent_key, :legacy_keys, keyword_init: true)
+
+  # Exigência acadêmica de uma entrega (entrega.yml → exigencias): fonte central dos nomes.
+  Requirement = Struct.new(:number, :group, :text, :slides, :state, :note, :confirmed, :delivery, keyword_init: true) do
+    def title = text.to_s.sub(/\.\z/, "")
+    def slide_ids = slides.map { |slide| slide[:id] }
+    def title_for(slide_id) = slides.find { |slide| slide[:id] == slide_id }&.dig(:titulo).presence || title
+
+    # "Item 1", "Status report", "Condição".
+    def part = group == "item" ? "Item #{number}" : REQUIREMENT_GROUPS.fetch(group)
+  end
+
+  Slide = Struct.new(:id, :title, :seconds, :presenter, :appendix, :dark, :default, :required, :items, :legacy_keys, keyword_init: true) do
     def partial = "presentations/slides/#{id.tr('-', '_')}"
     def dom_id = "s-#{id}"
     def heading_id = "#{dom_id}-titulo"
@@ -89,6 +101,7 @@ class Presentation
         dark: entry[:tema] == "escuro",
         default: required || entry[:padrao],
         required: required,
+        legacy_keys: Array(entry[:substitui]),
         items: Array(entry[:conteudos]).map do |content|
           Item.new(
             key: "#{entry[:id]}.#{content[:id]}",
@@ -96,15 +109,36 @@ class Presentation
             slide_id: entry[:id],
             title: content[:titulo],
             default: content[:padrao],
-            parent_key: content[:dentro_de].presence && "#{entry[:id]}.#{content[:dentro_de]}"
+            parent_key: content[:dentro_de].presence && "#{entry[:id]}.#{content[:dentro_de]}",
+            legacy_keys: Array(content[:substitui])
           )
         end
       ).freeze
     end
   end
 
-  def main_slides = slides.reject(&:appendix)
+  def main_slides(delivery = default_delivery) = ordered_slides(delivery).reject(&:appendix)
   def appendix_slides = slides.select(&:appendix)
+
+  def academic_slide_ids(delivery)
+    requirements(delivery).flat_map(&:slide_ids).uniq.select { |id| !slide(id).appendix }
+  end
+
+  # A ordem do enunciado vale para a página, seleção, índice, formulário e impressão.
+  def ordered_slides(delivery)
+    academic = academic_slide_ids(delivery)
+    extras = slides.reject { |slide| slide.appendix || slide.required || academic.include?(slide.id) }
+    [ slide("capa"), *academic.map { |id| slide(id) }, *extras, slide("encerramento"), *appendix_slides ]
+  end
+
+  def slide_groups(delivery)
+    academic = academic_slide_ids(delivery)
+    [
+      [ "principal", "Roteiro da entrega (na ordem do enunciado)", [ slide("capa"), *academic.map { |id| slide(id) }, slide("encerramento") ] ],
+      [ "complementar", "Complementares opcionais (fora do roteiro recomendado)", slides.reject { |slide| slide.appendix || slide.required || academic.include?(slide.id) } ],
+      [ "apendice", "Apêndices opcionais (entram no PDF quando marcados)", appendix_slides ]
+    ]
+  end
 
   def slide(id)
     slides.find { |slide| slide.id == id }
@@ -139,6 +173,37 @@ class Presentation
     delivery(entrega[:entrega_padrao])
   end
 
+  # Exigências da entrega, na ordem do enunciado.
+  def requirements(delivery)
+    Array(delivery[:exigencias]).map do |entry|
+      Requirement.new(
+        number: entry[:numero], group: entry[:grupo], text: entry[:texto], slides: Array(entry[:slides]),
+        state: entry[:estado], note: entry[:observacao], confirmed: entry[:confirmado_pela_equipe] == true,
+        delivery: delivery
+      )
+    end
+  end
+
+  def slide_requirements(slide, delivery)
+    requirements(delivery).select { |requirement| requirement.slide_ids.include?(slide.id) }
+  end
+
+  # Título exibido em todos os lugares (cabeçalho, índice, contador, admin e painel): o texto
+  # da exigência que o slide atende nesta entrega; sem exigência, o titulo do roteiro.yml.
+  def slide_title(slide, delivery)
+    slide_requirements(slide, delivery).first&.title_for(slide.id) || slide.title
+  end
+
+  # Identificação discreta, separada do número do slide: "2ª entrega · Item 1",
+  # "2ª entrega · Item 3 · Status report"; slides sem exigência são complementares.
+  def slide_label(slide, delivery)
+    parts = slide_requirements(slide, delivery).map(&:part).uniq
+    return "#{delivery[:rotulo]} · #{parts.join(' · ')}" if parts.any?
+    return if slide.required
+
+    slide.appendix ? "Apêndice · complementar" : "Complementar"
+  end
+
   # Seleção padrão do roteiro (nenhum perfil salvo).
   def default_selection
     Selection.new(self)
@@ -146,11 +211,54 @@ class Presentation
 
   def schema_version = self.class.schema_version
 
+  REPOSITORY_FOLDERS = [
+    [ "app/models", "app/models/**/*.rb", "models e concerns" ],
+    [ "app/controllers", "app/controllers/**/*.rb", "controllers" ],
+    [ "app/services", "app/services/**/*.rb", "serviços do domínio" ],
+    [ "app/policies", "app/policies/*.rb", "políticas de acesso (Pundit)" ],
+    [ "app/views", "app/views/**/*.erb", "templates ERB" ],
+    [ "db/migrate", "db/migrate/*.rb", "migrações" ],
+    [ "spec", "spec/**/*_spec.rb", "arquivos de teste (RSpec)" ]
+  ].freeze
+
+  # Estrutura lida do próprio repositório: contagens de arquivos e jobs do workflow de CI.
+  def repository_overview
+    @repository_overview ||= begin
+      workflow = Rails.root.join(".github/workflows/ci.yml")
+      jobs = workflow.exist? ? (YAML.safe_load_file(workflow, aliases: true) || {}).fetch("jobs", {}).keys : []
+      {
+        folders: REPOSITORY_FOLDERS.map do |path, pattern, label|
+          { path: path, label: label, count: Dir.glob(Rails.root.join(pattern)).size }
+        end,
+        ci_jobs: jobs
+      }
+    end
+  end
+
   def version_for(item)
     return RUBY_VERSION if item[:versao_ruby]
     return item[:versao] if item[:versao].present?
 
     self.class.locked_gem_versions[item[:gem]] if item[:gem].present?
+  end
+
+  VERSION_SOURCES = %w[gem ruby_version_file sqlite_engine texto].freeze
+
+  # Versões de um card de tecnologia, cada uma lida da fonte declarada em tecnologias.yml:
+  # Gemfile.lock, .ruby-version, biblioteca SQLite carregada ou texto honesto (sem número).
+  def versions_for(item)
+    Array(item[:versoes]).map do |entry|
+      value, source = if entry[:gem].present?
+        [ self.class.locked_gem_versions[entry[:gem]], "Gemfile.lock" ]
+      elsif entry[:ruby_version_file]
+        [ Rails.root.join(".ruby-version").read.strip.delete_prefix("ruby-"), ".ruby-version" ]
+      elsif entry[:sqlite_engine]
+        [ SQLite3::SQLITE_VERSION, "biblioteca carregada" ]
+      else
+        [ nil, nil ]
+      end
+      { label: entry[:rotulo], value: value, text: entry[:texto], source: source }
+    end
   end
 
   # Todos os estados usados no conteúdo, para validação e resumo.
@@ -173,6 +281,7 @@ class Presentation
 
       validate_slides!
       validate_deliveries!
+      validate_stack!
 
       unknown = states_in_use - STATES.keys
       raise ArgumentError, "Estados desconhecidos: #{unknown.join(', ')}" if unknown.any?
@@ -255,12 +364,47 @@ class Presentation
           raise ArgumentError, "entrega.yml: a entrega #{delivery[:id]} precisa de título e duracao_maxima_minutos inteiro (ou vazio)."
         end
 
-        unknown = Array(delivery[:checklist]).map { |item| item[:onde] }.compact - slide_ids
-        raise ArgumentError, "entrega.yml: checklist aponta para slides inexistentes: #{unknown.join(', ')}" if unknown.any?
+        validate_requirements!(delivery, slide_ids)
       end
 
       unless ids.include?(entrega[:entrega_padrao])
         raise ArgumentError, "entrega.yml: entrega_padrao deve ser o id de uma das entregas."
+      end
+    end
+
+    def validate_requirements!(delivery, slide_ids)
+      list = delivery[:exigencias]
+      unless list.is_a?(Array) && list.all? { |entry| entry.is_a?(Hash) }
+        raise ArgumentError, "entrega.yml: exigencias da entrega #{delivery[:id]} deve ser uma lista de mapas."
+      end
+
+      list.each do |entry|
+        slides = entry[:slides]
+        valid = entry[:texto].is_a?(String) && entry[:texto].present? &&
+          REQUIREMENT_GROUPS.key?(entry[:grupo]) &&
+          (entry[:grupo] != "item" || (entry[:numero].is_a?(Integer) && entry[:numero].positive?)) &&
+          slides.is_a?(Array) && slides.any? && slides.all? { |slide| slide.is_a?(Hash) && slide[:id].is_a?(String) }
+        raise ArgumentError, "entrega.yml: exigência inválida na entrega #{delivery[:id]}: #{entry[:texto].inspect}" unless valid
+
+        unknown = slides.map { |slide| slide[:id] } - slide_ids
+        raise ArgumentError, "entrega.yml: exigência aponta para slides inexistentes: #{unknown.join(', ')}" if unknown.any?
+      end
+    end
+
+    # Cada tecnologia precisa de nome, logo (com fonte e licença) ou símbolo neutro e versões
+    # com exatamente uma fonte. Número digitado à mão não é aceito: use gem, arquivo ou texto.
+    def validate_stack!
+      tecnologias.fetch(:stack).flat_map { |group| group.fetch(:itens) }.each do |item|
+        logo = item[:logo]
+        visual = logo.is_a?(Hash) ? logo[:arquivo].present? && logo[:fonte].present? && logo[:licenca].present? : item[:simbolo].present?
+        versions = Array(item[:versoes])
+        sources_ok = versions.all? do |entry|
+          entry[:rotulo].present? && VERSION_SOURCES.count { |source| entry[source].present? } == 1
+        end
+        unless item[:nome].present? && visual && versions.any? && sources_ok && !item.key?(:versao)
+          raise ArgumentError, "tecnologias.yml: #{item[:nome].inspect} precisa de logo (arquivo, fonte, licença) " \
+            "ou simbolo e de versoes com rotulo e uma única fonte (gem, ruby_version_file, sqlite_engine ou texto)."
+        end
       end
     end
 

@@ -1,56 +1,115 @@
-# Stack comprovada no repositório.
-# "gem": a versão é lida automaticamente do Gemfile.lock; "versao" é usada quando não há gem.
-# "evidencia": arquivo do repositório que comprova o uso.
-
+# Stack comprovada no repositório, exibida em cards com logo, nome, função e versões.
+#
+# nome / funcao: texto sempre visível (a compreensão não depende do logo).
+# evidencia:     arquivo do repositório que comprova o uso.
+# logo:          SVG em app/assets/images/presentation/logos/ com fonte e licença registradas.
+#                Use somente logos oficiais ou identificáveis; "fundo: escuro" para logos claros.
+# simbolo:       ícone neutro (_icon.html.erb) para ferramentas sem logo próprio verificável.
+#                Não é a marca da ferramenta.
+# versoes:       lista de versões, cada uma com rotulo e UMA fonte real (nunca digite um número
+#                que o projeto já informa):
+#                  gem: nome no Gemfile.lock      ruby_version_file: true  (.ruby-version)
+#                  sqlite_engine: true (biblioteca SQLite carregada pela gem sqlite3)
+#                  texto: indicação honesta quando não há versão única
+#                A versão da gem de integração não é a da tecnologia subjacente: registre as duas
+#                quando existirem (ex.: sqlite3 gem × motor SQLite; tailwindcss-rails × Tailwind CSS).
 stack:
   - grupo: "Linguagem e framework"
     itens:
       - nome: "Ruby"
-        versao_ruby: true
+        funcao: "linguagem"
         evidencia: ".ruby-version"
-      - nome: "Rails"
-        gem: "rails"
+        logo: { arquivo: "presentation/logos/ruby.svg", fonte: "https://www.ruby-lang.org/en/about/logo/ (via Simple Icons)", licenca: "CC BY-SA 2.5 — © 2006 Yukihiro Matsumoto" }
+        versoes:
+          - { rotulo: "Ruby (.ruby-version)", ruby_version_file: true }
+      - nome: "Ruby on Rails"
+        funcao: "framework web (MVC)"
         evidencia: "Gemfile.lock"
+        logo: { arquivo: "presentation/logos/rubyonrails.svg", fonte: "Simple Icons; uso conforme https://rubyonrails.org/trademarks/", licenca: "Marca registrada da Rails Foundation; uso nominativo" }
+        versoes:
+          - { rotulo: "gem rails", gem: "rails" }
   - grupo: "Interface"
     itens:
-      - nome: "Turbo Rails"
-        gem: "turbo-rails"
+      - nome: "Turbo"
+        funcao: "navegação e atualizações (Hotwire)"
         evidencia: "config/importmap.rb"
-      - nome: "Stimulus Rails"
-        gem: "stimulus-rails"
+        logo: { arquivo: "presentation/logos/turbo.svg", fonte: "https://turbo.hotwired.dev (via Simple Icons)", licenca: "Marca do projeto Hotwire; uso nominativo", fundo: escuro }
+        versoes:
+          - { rotulo: "gem turbo-rails (integração)", gem: "turbo-rails" }
+      - nome: "Stimulus"
+        funcao: "comportamento das páginas (Hotwire)"
         evidencia: "app/javascript/controllers"
-      - nome: "Importmap Rails"
-        gem: "importmap-rails"
+        logo: { arquivo: "presentation/logos/stimulus.svg", fonte: "https://stimulus.hotwired.dev (via Simple Icons)", licenca: "Marca do projeto Hotwire; uso nominativo", fundo: escuro }
+        versoes:
+          - { rotulo: "gem stimulus-rails (integração)", gem: "stimulus-rails" }
+      - nome: "Importmap"
+        funcao: "JavaScript sem bundler"
         evidencia: "config/importmap.rb"
-      - nome: "Tailwind Rails"
-        gem: "tailwindcss-rails"
+        simbolo: "package"
+        versoes:
+          - { rotulo: "gem importmap-rails", gem: "importmap-rails" }
+      - nome: "Tailwind CSS"
+        funcao: "estilos utilitários"
         evidencia: "app/assets/tailwind/application.css"
+        logo: { arquivo: "presentation/logos/tailwindcss.svg", fonte: "https://tailwindcss.com/brand (via Simple Icons)", licenca: "Marca da Tailwind Labs; uso nominativo" }
+        versoes:
+          - { rotulo: "gem tailwindcss-rails (integração)", gem: "tailwindcss-rails" }
+          - { rotulo: "gem tailwindcss-ruby (empacota o CLI do Tailwind)", gem: "tailwindcss-ruby" }
   - grupo: "Dados e acesso"
     itens:
-      - nome: "sqlite3 (gem)"
-        gem: "sqlite3"
+      - nome: "SQLite"
+        funcao: "banco de dados"
         evidencia: "config/database.yml"
-      - nome: "bcrypt (senhas)"
-        gem: "bcrypt"
+        logo: { arquivo: "presentation/logos/sqlite.svg", fonte: "https://sqlite.org (via Simple Icons)", licenca: "Logo do projeto SQLite; uso nominativo" }
+        versoes:
+          - { rotulo: "gem sqlite3 (adaptador Ruby)", gem: "sqlite3" }
+          - { rotulo: "motor SQLite carregado pela gem", sqlite_engine: true }
+      - nome: "bcrypt"
+        funcao: "hash de senhas"
         evidencia: "app/models/user.rb"
+        simbolo: "key"
+        versoes:
+          - { rotulo: "gem bcrypt", gem: "bcrypt" }
       - nome: "Pundit"
-        gem: "pundit"
+        funcao: "políticas de acesso"
         evidencia: "app/policies"
+        simbolo: "shield"
+        versoes:
+          - { rotulo: "gem pundit", gem: "pundit" }
   - grupo: "Qualidade e ambiente"
     itens:
-      - nome: "RSpec Rails"
-        gem: "rspec-rails"
+      - nome: "RSpec"
+        funcao: "testes automatizados"
         evidencia: "spec/"
-      - nome: "RuboCop Omakase"
-        gem: "rubocop-rails-omakase"
+        simbolo: "flask"
+        versoes:
+          - { rotulo: "gem rspec-rails (integração)", gem: "rspec-rails" }
+          - { rotulo: "gem rspec-core", gem: "rspec-core" }
+      - nome: "RuboCop"
+        funcao: "padrão de código (Rails Omakase)"
         evidencia: ".rubocop.yml"
+        logo: { arquivo: "presentation/logos/rubocop.svg", fonte: "https://github.com/rubocop/rubocop#logo (via Simple Icons)", licenca: "CC BY-NC 4.0 — Dimiter Petrov" }
+        versoes:
+          - { rotulo: "gem rubocop", gem: "rubocop" }
+          - { rotulo: "gem rubocop-rails-omakase (regras)", gem: "rubocop-rails-omakase" }
       - nome: "Brakeman"
-        gem: "brakeman"
+        funcao: "análise de segurança"
         evidencia: ".github/workflows/ci.yml"
+        simbolo: "scan"
+        versoes:
+          - { rotulo: "gem brakeman", gem: "brakeman" }
       - nome: "GitHub Actions"
+        funcao: "integração contínua"
         evidencia: ".github/workflows/ci.yml"
+        logo: { arquivo: "presentation/logos/githubactions.svg", fonte: "https://github.com/features/actions (via Simple Icons)", licenca: "Marca do GitHub; uso nominativo" }
+        versoes:
+          - { rotulo: "serviço", texto: "sem versão única; ações fixadas em .github/workflows/ci.yml" }
       - nome: "Dev Container"
+        funcao: "ambiente de desenvolvimento"
         evidencia: ".devcontainer/devcontainer.json"
+        simbolo: "container"
+        versoes:
+          - { rotulo: "configuração", texto: "sem versão única; imagem e features em .devcontainer/" }
 
 # Mudanças em relação às tecnologias anunciadas na primeira entrega.
 # "justificativa": preencha com o motivo que a equipe sustenta (deixe vazio até decidir).

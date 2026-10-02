@@ -25,6 +25,18 @@ itens:
     versao: "2"
     origem: "Card #6 — derivado das migrações e do db/schema.rb"
     data: 2026-10-02
+    # Três situações independentes. Não marque a revisão como concluída sem registro da equipe.
+    producao:          # diagrama tecnicamente produzido
+      estado: implementado
+      nota: "Desenhado em HTML/CSS a partir de data_diagrams.yml; cardinalidades conferidas com models e migrações."
+    revisao_equipe:    # leitura e aprovação pela equipe
+      estado: aguardando_evidencia
+      data:
+      responsaveis: []
+      nota: "Registrar quem revisou, quando e o que mudou."
+    premissas:         # regras de requisitos que o modelo assume
+      estado: aguardando_decisao
+      nota: "Foto opcional, visibilidade restrita (autor + gestão) e acesso de coordenação/segurança dependem do card #13."
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."

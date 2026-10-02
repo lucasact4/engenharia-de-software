@@ -34,7 +34,7 @@ RSpec.describe Presentation::Selection do
     saved = selection({ "gestao" => false })
 
     expect(saved.chosen?("gestao")).to be(false)
-    expect(saved.chosen?("gestao.reunioes")).to eq(presentation.item("gestao.reunioes").default)
+    expect(saved.chosen?("gestao.cards")).to eq(presentation.item("gestao.cards").default)
   end
 
   it "ignores unknown keys and non-boolean values instead of choosing partials" do
@@ -67,11 +67,11 @@ RSpec.describe Presentation::Selection do
   end
 
   it "renumbers main slides and appendices over the visible sequence" do
-    trimmed = selection({ "problema" => false, "checklist" => false })
+    trimmed = selection({ "conceito-visual" => false, "checklist" => false, "conflitos" => true })
 
-    expect(trimmed.label(presentation.slide("escopo"))).to eq("02")
+    expect(trimmed.label(presentation.slide("funcionalidades"))).to eq("02")
     expect(trimmed.label(presentation.slide("conflitos"))).to eq("A")
-    expect(trimmed.label(presentation.slide("problema"))).to be_nil
+    expect(trimmed.label(presentation.slide("conceito-visual"))).to be_nil
   end
 
   it "flags estimates above the delivery limit only when the delivery has one" do
@@ -80,5 +80,50 @@ RSpec.describe Presentation::Selection do
     expect(selection(everything).total_seconds).to be > 7 * 60
     expect(selection(everything).over_limit?).to be(true)
     expect(selection(everything, delivery_id: "primeira").over_limit?).to be(false)
+  end
+
+
+  it "orders the six first-delivery items and eight second-delivery items separately" do
+    %w[primeira segunda].each do |delivery_id|
+      delivery = presentation.delivery(delivery_id)
+      academic = presentation.academic_slide_ids(delivery)
+      choices = presentation.catalog_keys.index_with(false).merge(academic.index_with(true))
+      academic.each { |id| presentation.slide(id).items.each { |item| choices[item.key] = true } }
+      selected = selection(choices, delivery_id: delivery_id)
+      expect(selected.visible_main_slides.map(&:id)).to eq([ "capa", *academic, "encerramento" ])
+      expect(academic.size).to eq(delivery_id == "primeira" ? 6 : 8)
+    end
+  end
+
+  describe "profiles saved before Gestão was split" do
+    it "inherits the old GitHub and meeting choices in the new slides" do
+      old = selection({ "gestao" => true, "gestao.praticas" => true, "gestao.reunioes" => false, "gestao.cards" => true })
+
+      expect(old.chosen?("repositorio")).to be(true)
+      expect(old.chosen?("repositorio.praticas")).to be(true)
+      expect(old.chosen?("reunioes")).to be(false)
+      expect(old.chosen?("reunioes.registros")).to be(false)
+      expect(old.chosen?("gestao.cards")).to be(true)
+      expect(old.to_h.keys).not_to include("gestao.praticas", "gestao.reunioes")
+    end
+
+    it "keeps the new slides hidden when the old Gestão slide was hidden" do
+      old = selection({ "gestao" => false, "gestao.praticas" => true, "gestao.reunioes" => true })
+
+      expect(old.slide_visible?(presentation.slide("repositorio"))).to be(false)
+      expect(old.slide_visible?(presentation.slide("reunioes"))).to be(false)
+    end
+
+    it "prefers the new keys once the profile is saved again" do
+      saved = selection({ "gestao" => true, "gestao.reunioes" => true, "reunioes" => false })
+
+      expect(saved.chosen?("reunioes")).to be(false)
+    end
+  end
+
+  it "names slides after the requirement of the profile delivery" do
+    expect(selection(delivery_id: "segunda").slide_title(presentation.slide("conceito-visual"))).to eq("Protótipo com o conceito visual do projeto")
+    expect(selection(delivery_id: "primeira").slide_title(presentation.slide("conceito-visual"))).to eq("Conceito visual")
+    expect(selection(delivery_id: "primeira").requirement_label(presentation.slide("conceito-visual"))).to eq("Complementar")
   end
 end

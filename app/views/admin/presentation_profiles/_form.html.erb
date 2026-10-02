@@ -11,7 +11,7 @@
       novalidate: true,
       data: {
         controller: "presentation-profile-form",
-        presentation_profile_form_catalog_value: presentation_catalog_data(@presentation).to_json,
+        presentation_profile_form_catalog_value: presentation_catalog_data(@presentation, delivery: selection.delivery).to_json,
         presentation_profile_form_limits_value: limits.to_json,
         action: "change->presentation-profile-form#refresh"
       }
@@ -28,7 +28,7 @@
       <%= f.select :delivery,
             @presentation.deliveries.map { |delivery| [ "#{delivery[:titulo]}#{" (até #{delivery[:duracao_maxima_minutos]} min)" if delivery[:duracao_maxima_minutos]}", delivery[:id] ] },
             {}, class: "form-control", data: { presentation_profile_form_target: "delivery" } %>
-      <p class="mt-1 text-xs text-slate-500">Define capa, checklist do apêndice e o limite de tempo usado no aviso.</p>
+      <p class="mt-1 text-xs text-slate-500">Define os nomes dos slides, a capa, as exigências do checklist e o limite de tempo.</p>
     </div>
     <div class="lg:col-span-2">
       <%= f.label :description, "Descrição (opcional)", class: "form-label" %>
@@ -51,17 +51,18 @@
     <p class="mt-1 text-xs">Soma dos tempos do <code>roteiro.yml</code> para os slides principais marcados. É uma estimativa e não garante a duração real.</p>
   </div>
 
-  <% [ [ "Slides principais", @presentation.main_slides ], [ "Apêndices (fora da sequência das setas; entram no índice e na impressão)", @presentation.appendix_slides ] ].each_with_index do |(group, slides), group_index| %>
+  <% @presentation.slide_groups(selection.delivery).each_with_index do |(key, group, slides), group_index| %>
     <section class="mt-6" aria-labelledby="profile-group-<%= group_index %>">
       <h2 id="profile-group-<%= group_index %>" class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600"><%= group %></h2>
-      <ul class="space-y-2" role="list">
+      <ul class="space-y-2" role="list" data-presentation-profile-form-target="group" data-profile-group="<%= key %>">
         <% slides.each do |slide| %>
           <% field = "presentation_profile[selections][#{slide.id}]" %>
           <% input_id = "selection_#{slide.id.underscore}" %>
           <% hint_id = "#{input_id}_hint" %>
           <li class="rounded-xl border border-slate-200 bg-white" data-presentation-profile-form-target="slide" data-slide-id="<%= slide.id %>">
             <fieldset class="px-4 py-3">
-              <legend class="sr-only"><%= slide.title %></legend>
+              <% requirement = selection.requirement_label(slide) %>
+              <legend class="sr-only" data-slide-title><%= selection.slide_title(slide) %></legend>
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <% if slide.required %>
                   <input type="checkbox" id="<%= input_id %>" checked disabled class="size-4 rounded border-slate-300" aria-describedby="<%= hint_id %>">
@@ -69,7 +70,8 @@
                   <%= hidden_field_tag field, "0", id: nil %>
                   <%= check_box_tag field, "1", selection.chosen?(slide.id), id: input_id, class: "size-4 rounded border-slate-300", aria: { describedby: hint_id }, data: { key: slide.id } %>
                 <% end %>
-                <label for="<%= input_id %>" class="text-sm font-semibold text-slate-900"><%= slide.title %></label>
+                <label for="<%= input_id %>" class="min-w-0 break-words text-sm font-semibold text-slate-900" data-slide-title><%= selection.slide_title(slide) %></label>
+                <span class="rounded-full border px-2 py-0.5 text-xs font-medium <%= requirement.to_s.end_with?("omplementar") ? "border-slate-200 bg-slate-50 text-slate-500" : "border-emerald-200 bg-emerald-50 text-emerald-800" %>" data-slide-label <%= "hidden" unless requirement %>><%= requirement %></span>
                 <% if slide.required %>
                   <span class="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Obrigatório</span>
                 <% end %>
@@ -93,7 +95,7 @@
                   <summary class="cursor-pointer text-xs font-medium text-slate-600">
                     Conteúdos do slide (<span data-count><%= slide.items.count { |item| selection.chosen?(item.key) } %></span> de <%= slide.items.size %> marcados)
                   </summary>
-                  <ul class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 ps-6 sm:grid-cols-2 <%= 'opacity-60' unless selection.chosen?(slide.id) %>" role="list" data-items aria-label="Conteúdos de <%= slide.title %>">
+                  <ul class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 ps-6 sm:grid-cols-2 <%= 'opacity-60' unless selection.chosen?(slide.id) %>" role="list" data-items aria-label="Conteúdos de <%= selection.slide_title(slide) %>" data-slide-contents-label>
                     <% slide.items.each do |item| %>
                       <% item_field = "presentation_profile[selections][#{item.key}]" %>
                       <% item_id = "selection_#{item.key.tr('.-', '__')}" %>

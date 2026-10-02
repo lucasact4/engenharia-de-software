@@ -1271,7 +1271,7 @@ diagrams:
       width: 225
       lines:
       - Contas · alertas · publicações
-      - Base social e auditoria
+      - Perfis do deck e auditoria
       variant: infra
     - id: content
       title: Conteúdo do deck
@@ -1280,7 +1280,7 @@ diagrams:
       width: 240
       lines:
       - YAML e diagramas declarativos
-      - Sem consulta ao banco
+      - Seleção via PresentationProfile
       variant: reference
     relations:
     - source: browser

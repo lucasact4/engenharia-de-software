@@ -1,0 +1,41 @@
+<% reunioes = presentation.gestao[:reunioes] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "monitoramento",
+      title: "Reuniões de monitoramento",
+      lead: "Somente reuniões que aconteceram, com data, participantes, pauta, decisões e evidência." %>
+
+<%= presentation_item slide, "registros", class: "apr-meetings-block" do %>
+  <% if reunioes.blank? %>
+    <%= render "presentations/shared/pending",
+          title: "Nenhum registro de reunião anexado",
+          state: :aguardando_evidencia,
+          needs: [ "Data e tipo da reunião", "Participantes", "Pauta e decisões", "Ata, card comentado ou captura como evidência" ],
+          file: "gestao.yml" %>
+  <% else %>
+    <ol class="apr-meetings apr-meetings--grid" role="list">
+      <% reunioes.each do |reuniao| %>
+        <li class="apr-meetings__item">
+          <p class="apr-meetings__date"><%= presentation_date(reuniao[:data]) %> · <%= reuniao[:tipo] %></p>
+          <% if reuniao[:pauta].present? %>
+            <p class="apr-meetings__text"><strong>Pauta:</strong> <%= reuniao[:pauta].to_sentence %></p>
+          <% end %>
+          <% if reuniao[:decisoes].present? %>
+            <p class="apr-meetings__text"><%= reuniao[:decisoes].to_sentence %></p>
+          <% end %>
+          <% if reuniao[:participantes].present? %>
+            <p class="apr-meetings__people"><%= reuniao[:participantes].to_sentence %></p>
+          <% end %>
+          <% if reuniao[:evidencia_imagem].present? %>
+            <%= render "presentations/shared/figure", image: reuniao[:evidencia_imagem],
+                  alt: "Registro da reunião de #{presentation_date(reuniao[:data])}",
+                  caption: "Registro de #{presentation_date(reuniao[:data])}", modifier: "apr-figure--small" %>
+          <% end %>
+          <% if reuniao[:evidencia_url].present? %>
+            <%= presentation_link("Ver registro", reuniao[:evidencia_url], class: "apr-more") %>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+<% end %>
+<%= presentation_update_note("gestao.yml", "reunioes (data, tipo, participantes, pauta, decisões e evidência).") %>

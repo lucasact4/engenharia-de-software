@@ -70,14 +70,14 @@ RSpec.describe "Admin presentation profiles", type: :request do
     it "creates a profile with the submitted selection" do
       expect {
         post admin_presentation_profiles_path, params: {
-          presentation_profile: { name: "Banca", delivery: "primeira", selections: selection_params("gestao.reunioes" => "0") }
+          presentation_profile: { name: "Banca", delivery: "primeira", selections: selection_params("reunioes.registros" => "0") }
         }
       }.to change(PresentationProfile, :count).by(1)
 
       profile = PresentationProfile.find_by!(name: "Banca")
       expect(response).to redirect_to(edit_admin_presentation_profile_path(profile, locale: I18n.default_locale))
       expect(flash[:success]).to be_present
-      expect(profile.selections["gestao.reunioes"]).to be(false)
+      expect(profile.selections["reunioes.registros"]).to be(false)
       expect(profile.selections["gestao"]).to be(true)
     end
 
@@ -86,10 +86,10 @@ RSpec.describe "Admin presentation profiles", type: :request do
       other = create(:presentation_profile, selections: { "gestao" => true })
 
       patch admin_presentation_profile_path(profile), params: {
-        presentation_profile: { selections: selection_params("gestao" => "0", "gestao.reunioes" => "0") }
+        presentation_profile: { selections: selection_params("gestao" => "0", "gestao.ambientes" => "0") }
       }
 
-      expect(profile.reload.selections).to include("gestao" => false, "gestao.reunioes" => false, "gestao.cards" => true)
+      expect(profile.reload.selections).to include("gestao" => false, "gestao.ambientes" => false, "gestao.cards" => true)
       expect(other.reload.selections).to eq("gestao" => true)
     end
 
@@ -139,6 +139,39 @@ RSpec.describe "Admin presentation profiles", type: :request do
 
       expect { delete admin_presentation_profile_path(inactive) }.to change(PresentationProfile, :count).by(-1)
       expect { delete admin_presentation_profile_path(active) }.not_to change(PresentationProfile, :count)
+    end
+  end
+
+  describe "titles and saved profiles from before the split" do
+    before { sign_in(admin) }
+
+    it "shows the requirement of the profile delivery next to each slide" do
+      profile = create(:presentation_profile, delivery: "primeira")
+
+      get edit_admin_presentation_profile_path(profile)
+      document = Nokogiri::HTML(response.body)
+
+      gestao = document.at_css("li[data-slide-id='gestao']")
+      expect(gestao.at_css("label[data-slide-title]").text).to eq("Ferramenta de monitoramento dos projetos ativa com os requisitos e links para ambientes — Trello")
+      expect(gestao.at_css("[data-slide-label]").text).to eq("1ª entrega · Item 4")
+      expect(document.at_css("li[data-slide-id='conceito-visual'] [data-slide-label]").text).to eq("Complementar")
+    end
+
+    it "converts a profile saved with the old Gestão keys when it is edited and saved" do
+      profile = create(:presentation_profile)
+      profile.update_column(:selections, { "gestao" => true, "gestao.praticas" => true, "gestao.reunioes" => false })
+
+      get edit_admin_presentation_profile_path(profile)
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css("#selection_repositorio")["checked"]).to be_present
+      expect(document.at_css("#selection_reunioes")["checked"]).to be_nil
+
+      patch admin_presentation_profile_path(profile), params: {
+        presentation_profile: { selections: selection_params("reunioes" => "0", "reunioes.registros" => "0") }
+      }
+
+      expect(profile.reload.selections).to include("repositorio" => true, "reunioes" => false)
+      expect(profile.selections.keys).not_to include("gestao.praticas", "gestao.reunioes")
     end
   end
 end

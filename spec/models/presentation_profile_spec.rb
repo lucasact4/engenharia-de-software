@@ -4,18 +4,18 @@ RSpec.describe PresentationProfile do
   let(:presentation) { Presentation.load }
 
   it "casts checkbox values and saves the selection" do
-    profile = create(:presentation_profile, selections: { "gestao" => "1", "gestao.reunioes" => "0" })
+    profile = create(:presentation_profile, selections: { "gestao" => "1", "reunioes.registros" => "0" })
 
-    expect(profile.reload.selections).to eq("gestao" => true, "gestao.reunioes" => false)
+    expect(profile.reload.selections).to eq("gestao" => true, "reunioes.registros" => false)
   end
 
   it "keeps each profile's selection isolated" do
-    first = create(:presentation_profile, selections: { "gestao.reunioes" => false })
-    second = create(:presentation_profile, selections: { "gestao.reunioes" => true })
+    first = create(:presentation_profile, selections: { "reunioes.registros" => false })
+    second = create(:presentation_profile, selections: { "reunioes.registros" => true, "arquitetura" => true })
 
-    first.update!(selections: { "gestao.reunioes" => true, "arquitetura" => false })
+    first.update!(selections: { "reunioes.registros" => true, "arquitetura" => false })
 
-    expect(second.reload.selections).to eq("gestao.reunioes" => true)
+    expect(second.reload.selections).to eq("reunioes.registros" => true, "arquitetura" => true)
     expect(first.reload.selection(presentation).slide_visible?(presentation.slide("arquitetura"))).to be(false)
     expect(second.selection(presentation).slide_visible?(presentation.slide("arquitetura"))).to be(true)
   end
@@ -92,8 +92,8 @@ RSpec.describe PresentationProfile do
       second = described_class.find_by!(delivery: "segunda")
 
       expect(second).to be_active
-      expect(first.selection(presentation).visible_slides.map(&:id)).to include("requisitos", "arquitetura", "casos-de-uso", "gestao", "proximos-passos", "retrospectiva")
-      expect(second.selection(presentation).visible_slides.map(&:id)).to include("conceito-visual", "funcionalidades", "retrospectiva", "modelo-conceitual", "gestao", "evolucao", "proximos-passos")
+      expect(first.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa requisitos arquitetura casos-de-uso gestao proximos-passos retrospectiva encerramento])
+      expect(second.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report encerramento])
       expect(second.selection(presentation).over_limit?).to be(false)
     end
 

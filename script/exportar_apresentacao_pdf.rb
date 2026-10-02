@@ -31,6 +31,8 @@ begin
         getComputedStyle(document.documentElement).getPropertyValue("--apr-g-800").trim() !== "";
     JS
   end
+  # A impressão inclui slides fora da área visível; seus logos também precisam carregar.
+  driver.execute_script("document.querySelectorAll('.apr-slide img').forEach(image => { image.loading = 'eager'; })")
   wait.until do
     driver.execute_script(<<~JS)
       return document.fonts.status === "loaded" &&

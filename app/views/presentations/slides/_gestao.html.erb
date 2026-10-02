@@ -1,15 +1,15 @@
 <% g = presentation.gestao %>
 <% links = presentation.entrega[:links] %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "gestão e evidências",
-      title: "Cards no Trello, código versionado no GitHub" %>
+      kicker: "monitoramento",
+      title: "Cards no Trello com requisitos e links para os ambientes" %>
 
-<div class="apr-mgmt apr-fit">
-  <%= presentation_group slide, %w[trello cards ambientes], :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-trello" } do %>
-    <h3 id="<%= slide.dom_id %>-trello" class="apr-mgmt__title">
-      <%= render "presentations/shared/icon", name: "board" %> Trello
+<div class="apr-mgmt apr-mgmt--two apr-fit">
+  <%= presentation_item slide, "cards", :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-cards" } do %>
+    <h3 id="<%= slide.dom_id %>-cards" class="apr-mgmt__title">
+      <%= render "presentations/shared/icon", name: "board" %> Cards e requisitos
     </h3>
-    <%= presentation_item slide, "cards", :ul, class: "apr-cards", role: "list" do %>
+    <ul class="apr-cards" role="list">
       <% g[:cards].each do |card| %>
         <li class="apr-cards__item">
           <span class="apr-cards__num">#<%= card[:numero] %></span>
@@ -17,7 +17,13 @@
           <%= presentation_state(card[:estado], short: true) %>
         </li>
       <% end %>
-    <% end %>
+    </ul>
+  <% end %>
+
+  <%= presentation_group slide, %w[ambientes trello], :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-ambientes" } do %>
+    <h3 id="<%= slide.dom_id %>-ambientes" class="apr-mgmt__title">
+      <%= render "presentations/shared/icon", name: "external" %> Quadro e ambientes
+    </h3>
     <%= presentation_item slide, "ambientes", class: "apr-envs" do %>
       <p class="apr-label">Links para ambientes</p>
       <ul class="apr-envs__list" role="list">
@@ -34,58 +40,5 @@
       <%= presentation_link("Abrir o quadro do SGU", links[:trello], class: "apr-btn apr-btn--outline") %>
     <% end %>
   <% end %>
-
-  <%= presentation_item slide, "praticas", :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-github" } do %>
-    <h3 id="<%= slide.dom_id %>-github" class="apr-mgmt__title">
-      <%= render "presentations/shared/icon", name: "git" %> GitHub
-    </h3>
-    <ul class="apr-practices" role="list">
-      <% g[:praticas].each do |pratica| %>
-        <li>
-          <p class="apr-practices__title"><%= pratica[:titulo] %></p>
-          <p class="apr-practices__text"><%= pratica[:texto] %></p>
-        </li>
-      <% end %>
-    </ul>
-    <p><%= presentation_link("Abrir o repositório", links[:github], class: "apr-btn apr-btn--outline") %></p>
-  <% end %>
-
-  <%= presentation_item slide, "reunioes", :section, class: "apr-mgmt__col apr-mgmt__col--meetings", aria: { labelledby: "#{slide.dom_id}-reunioes" } do %>
-    <h3 id="<%= slide.dom_id %>-reunioes" class="apr-mgmt__title">
-      <%= render "presentations/shared/icon", name: "users" %> Reuniões de monitoramento
-    </h3>
-    <% if g[:reunioes].blank? %>
-      <%= render "presentations/shared/pending",
-            title: "Nenhum registro de reunião anexado",
-            state: :aguardando_evidencia,
-            needs: [ "Data e tipo da reunião", "Participantes", "Pauta e decisões", "Ata ou captura como evidência" ],
-            file: "gestao.yml" %>
-    <% else %>
-      <ol class="apr-meetings" role="list">
-        <% g[:reunioes].each do |reuniao| %>
-          <li class="apr-meetings__item">
-            <p class="apr-meetings__date"><%= presentation_date(reuniao[:data]) %> · <%= reuniao[:tipo] %></p>
-            <% if reuniao[:pauta].present? %>
-              <p class="apr-meetings__text"><strong>Pauta:</strong> <%= reuniao[:pauta].to_sentence %></p>
-            <% end %>
-            <% if reuniao[:decisoes].present? %>
-              <p class="apr-meetings__text"><%= reuniao[:decisoes].to_sentence %></p>
-            <% end %>
-            <% if reuniao[:participantes].present? %>
-              <p class="apr-meetings__people"><%= reuniao[:participantes].to_sentence %></p>
-            <% end %>
-            <% if reuniao[:evidencia_imagem].present? %>
-              <%= render "presentations/shared/figure", image: reuniao[:evidencia_imagem],
-                    alt: "Registro da reunião de #{presentation_date(reuniao[:data])}",
-                    caption: "Registro de #{presentation_date(reuniao[:data])}", modifier: "apr-figure--small" %>
-            <% end %>
-            <% if reuniao[:evidencia_url].present? %>
-              <%= presentation_link("Ver registro", reuniao[:evidencia_url], class: "apr-more") %>
-            <% end %>
-          </li>
-        <% end %>
-      </ol>
-    <% end %>
-  <% end %>
 </div>
-<%= presentation_update_note("gestao.yml", "cards, ambientes, práticas e reuniões.") %>
+<%= presentation_update_note("gestao.yml", "cards e ambientes.") %>

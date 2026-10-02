@@ -67,4 +67,8 @@
 <%= presentation_item slide, "notas", :p, class: "apr-source" do %>
   <%= safe_join(cv[:capturas].map { |captura| "#{captura[:titulo]}: #{captura[:nota]}" }, " · ") %>
 <% end %>
+<% requirement = presentation.slide_requirements(slide, @selection.delivery).find { |entry| entry.group == "item" } %>
+<% if requirement && !requirement.confirmed %>
+  <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: a equipe validar estas capturas como evidência do conceito visual. Os alertas da landing são demonstrativos.</p>
+<% end %>
 <%= presentation_update_note("conceito_visual.yml", "protótipo, capturas e paleta.") %>
