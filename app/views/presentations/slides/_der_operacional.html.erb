@@ -1,0 +1,25 @@
+<%# DER físico — perfis, catálogos, alertas e auditoria (todas as colunas). %>
+<% tables = [
+  { name: "users", x: 10, y: 10, w: 480, split: 2, columns: [ [ "id", "PK" ], [ "email_address", "UQ" ], [ "password_digest", "" ], [ "admin", "" ], [ "deleted_at", "" ], [ "display_name", "" ], [ "username", "UQ" ], [ "bio", "" ], [ "public_profile", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "user_roles", x: 505, y: 10, w: 255, columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "role_id", "FK roles" ], [ "granted_by_id", "FK users" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "roles", x: 770, y: 450, w: 260, split: 2, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "description", "" ], [ "active", "" ], [ "position", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "audit_events", x: 775, y: 10, w: 255, columns: [ [ "id", "PK" ], [ "actor_id", "FK users" ], [ "action", "" ], [ "subject_type", "polimórfico" ], [ "subject_id", "polimórfico" ], [ "reason", "" ], [ "changeset", "json" ], [ "metadata", "json" ], [ "created_at", "" ] ] },
+  { name: "alerts", x: 10, y: 230, w: 1020, split: 4, columns: [ [ "id", "PK" ], [ "author_id", "FK users" ], [ "kind", "" ], [ "protocol", "UQ" ], [ "title", "" ], [ "description", "" ], [ "category_id", "FK categories" ], [ "category_other_description", "" ], [ "location_source", "" ], [ "location_id", "FK locations" ], [ "latitude", "" ], [ "longitude", "" ], [ "location_accuracy_meters", "" ], [ "location_captured_at", "" ], [ "location_unavailable_reason", "" ], [ "requested_visibility", "" ], [ "visibility", "" ], [ "publication_blocked", "" ], [ "reported_severity", "" ], [ "assessed_severity", "" ], [ "priority", "" ], [ "status", "" ], [ "status_changed_at", "" ], [ "assigned_to_id", "FK users" ], [ "closure_reason", "" ], [ "closure_notes", "" ], [ "duplicate_of_id", "FK alerts" ], [ "resolved_at", "" ], [ "closed_at", "" ], [ "client_request_id", "UQ*" ], [ "client_request_digest", "" ], [ "lock_version", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "categories", x: 10, y: 450, w: 330, split: 2, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "description", "" ], [ "requires_details", "" ], [ "active", "" ], [ "position", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
+  { name: "locations", x: 355, y: 450, w: 400, split: 2, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "description", "" ], [ "active", "" ], [ "position", "" ], [ "reference_latitude", "" ], [ "reference_longitude", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] }
+] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "DER físico · apêndice",
+      title: "Perfis, catálogos, alertas e auditoria",
+      lead: "Todas as colunas, conforme db/schema.rb (versão #{presentation.schema_version}). Relações e cardinalidades na visão resumida." %>
+
+<%= render "presentations/shared/er_diagram", id: "apr-der-operacional",
+      title: "DER físico — perfis, catálogos, alertas e auditoria",
+      desc: "Colunas de users, user_roles, roles, audit_events, alerts, categories e locations, com chaves primárias (PK), estrangeiras (FK e tabela de destino) e únicas (UQ).",
+      width: 1040, height: 588, tables: tables,
+      caption: "users · user_roles · roles · audit_events · alerts · categories · locations" %>
+
+<ul class="apr-footnotes" role="list">
+  <li><code>alerts</code> guarda ocorrência e pânico (<code>kind</code>), sem STI. CHECKs condicionais exigem título, descrição, categoria e local na ocorrência e mantêm o pânico restrito.</li>
+  <li>UQ* = único por autor (<code>author_id</code> + <code>client_request_id</code>), apenas quando a chave é informada. <code>audit_events</code> não tem FK para o assunto (polimórfico, tipos limitados no model).</li>
+</ul>
