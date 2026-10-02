@@ -1,13 +1,12 @@
-<% total = presentation.total_seconds %>
-<% limit = 7 * 60 %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "ensaio",
-      title: "Roteiro e tempo",
-      lead: "Estimativa: #{presentation_duration(total)} para #{presentation.main_slides.size} slides, dentro do limite de #{presentation_duration(limit)}. Ensaio cronometrado pendente." %>
+      title: "Roteiro e tempo" %>
+<p class="apr-lead apr-estimate <%= 'is-over' if @selection.over_limit? %>" data-presentation-target="estimate"><%= presentation_estimate_text(@selection) %></p>
+<p class="apr-source">Soma dos tempos definidos no roteiro para os slides principais selecionados. É uma estimativa: o ensaio cronometrado continua necessário.</p>
 
 <div class="apr-table-wrap">
   <table class="apr-table apr-table--compact">
-    <caption class="apr-sr-only">Tempo estimado e responsável por slide</caption>
+    <caption class="apr-sr-only">Tempo estimado e responsável por slide selecionado</caption>
     <thead>
       <tr>
         <th scope="col">Slide</th>
@@ -20,14 +19,15 @@
     <tbody>
       <% elapsed = 0 %>
       <% presentation.main_slides.each do |item| %>
-        <% elapsed += item.seconds %>
-        <tr>
-          <td><%= item.label %></td>
+        <% visible = @selection.slide_visible?(item) %>
+        <% elapsed += item.seconds if visible %>
+        <%= presentation_slide_ref item.id, :tr do %>
+          <td><%= presentation_slide_label item %></td>
           <th scope="row"><%= item.title %></th>
           <td><%= presentation_duration(item.seconds) %></td>
-          <td><%= presentation_duration(elapsed) %></td>
+          <td data-apr-elapsed-for="<%= item.id %>"><%= presentation_duration(elapsed) if visible %></td>
           <td><%= item.presenter || "A definir" %></td>
-        </tr>
+        <% end %>
       <% end %>
     </tbody>
   </table>

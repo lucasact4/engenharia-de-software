@@ -1,4 +1,5 @@
 <% e = presentation.entrega %>
+<% d = @selection.delivery %>
 <div class="apr-cover">
   <svg class="apr-cover__map" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
     <g fill="none" stroke="currentColor" stroke-width="1.2">
@@ -17,7 +18,7 @@
   </svg>
 
   <div class="apr-cover__main">
-    <p class="apr-cover__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e[:disciplina] %> · <%= e[:entrega] %></p>
+    <p class="apr-cover__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e[:disciplina] %> · <%= d[:titulo] %></p>
     <h1 id="<%= slide.heading_id %>" class="apr-cover__title">
       <span class="apr-cover__sigla"><%= e.dig(:projeto, :sigla) %></span>
       <span class="apr-cover__name"><%= e.dig(:projeto, :nome) %></span>
@@ -28,10 +29,10 @@
   <dl class="apr-cover__meta">
     <div><dt>Instituição</dt><dd><%= e[:instituicao] %></dd></div>
     <div><dt>Professora</dt><dd><%= e[:professora] %></dd></div>
-    <div><dt>Prazo da entrega</dt><dd><%= e[:prazo] %></dd></div>
+    <div><dt>Prazo da entrega</dt><dd><%= d[:prazo].presence || "A confirmar" %></dd></div>
     <div>
       <dt>Apresentação</dt>
-      <dd><%= e[:data_apresentacao].presence || "Data a confirmar" %> · até <%= e[:duracao_maxima] %></dd>
+      <dd><%= d[:data_apresentacao].presence || "Data a confirmar" %><% if d[:duracao_maxima_minutos] %> · até <%= d[:duracao_maxima_minutos] %> minutos<% end %></dd>
     </div>
   </dl>
 
@@ -45,7 +46,7 @@
   </div>
 
   <p class="apr-cover__note"><%= e.dig(:projeto, :aviso) %></p>
-  <% if e[:data_apresentacao].blank? %>
-    <%= presentation_update_note("entrega.yml", "preencher data_apresentacao.") %>
+  <% if d[:data_apresentacao].blank? %>
+    <%= presentation_update_note("entrega.yml", "preencher data_apresentacao da entrega #{d[:id]}.") %>
   <% end %>
 </div>

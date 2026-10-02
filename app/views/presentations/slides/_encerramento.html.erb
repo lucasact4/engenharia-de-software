@@ -1,0 +1,24 @@
+<%# Slide final obrigatório: aparece em todos os perfis, mesmo com todos os opcionais desmarcados. %>
+<% e = presentation.entrega %>
+<div class="apr-end">
+  <p class="apr-end__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e.dig(:projeto, :sigla) %> · <%= @selection.delivery[:titulo] %></p>
+  <h2 id="<%= slide.heading_id %>" class="apr-end__title">Obrigado! <span>Perguntas?</span></h2>
+  <p class="apr-end__lead"><%= e.dig(:projeto, :nome) %> — <%= e.dig(:projeto, :recorte) %></p>
+
+  <div class="apr-end__team">
+    <p class="apr-label">Equipe</p>
+    <ul class="apr-cover__names" role="list">
+      <% e[:equipe].each do |name| %>
+        <li><%= name %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <%= presentation_item slide, "links", :p, class: "apr-closing__links" do %>
+    <%= link_to "Abrir o SGU", root_path(locale: nil), class: "apr-btn apr-btn--gold apr-local-only" %>
+    <%= presentation_link("GitHub", e.dig(:links, :github), class: "apr-btn apr-btn--outline") %>
+    <%= presentation_link("Trello", e.dig(:links, :trello), class: "apr-btn apr-btn--outline") %>
+  <% end %>
+
+  <p class="apr-end__note"><%= e.dig(:projeto, :aviso) %></p>
+</div>

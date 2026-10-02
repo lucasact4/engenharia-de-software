@@ -1,8 +1,8 @@
 <% r = presentation.requisitos %>
 <%= render "presentations/shared/heading", slide: slide, kicker: "problema e proposta", title: "Quem observa precisa alcançar quem resolve" %>
 
-<div class="apr-problem">
-  <div class="apr-problem__left">
+<div class="apr-problem apr-fit">
+  <%= presentation_item slide, "dores", class: "apr-problem__left" do %>
     <p class="apr-statement"><%= r.dig(:problema, :frase) %></p>
     <ol class="apr-pains" role="list">
       <% r.dig(:problema, :dores).each_with_index do |dor, index| %>
@@ -15,26 +15,30 @@
         </li>
       <% end %>
     </ol>
-  </div>
+  <% end %>
 
-  <div class="apr-problem__right">
-    <p class="apr-label">Para quem</p>
-    <ul class="apr-chips" role="list">
-      <% r[:publico].each do |publico| %>
-        <li class="apr-chip"><%= publico %></li>
-      <% end %>
-    </ul>
+  <%= presentation_group slide, %w[publico proposta], class: "apr-problem__right" do %>
+    <%= presentation_item slide, "publico", class: "apr-problem__block" do %>
+      <p class="apr-label">Para quem</p>
+      <ul class="apr-chips" role="list">
+        <% r[:publico].each do |publico| %>
+          <li class="apr-chip"><%= publico %></li>
+        <% end %>
+      </ul>
+    <% end %>
 
-    <p class="apr-label">Proposta de valor</p>
-    <ol class="apr-flow" role="list">
-      <% r[:fluxo_valor].each do |passo| %>
-        <li class="apr-flow__step">
-          <p class="apr-flow__title"><%= passo[:titulo] %></p>
-          <p class="apr-flow__text"><%= passo[:texto] %></p>
-        </li>
-      <% end %>
-    </ol>
-  </div>
+    <%= presentation_item slide, "proposta", class: "apr-problem__block" do %>
+      <p class="apr-label">Proposta de valor</p>
+      <ol class="apr-flow" role="list">
+        <% r[:fluxo_valor].each do |passo| %>
+          <li class="apr-flow__step">
+            <p class="apr-flow__title"><%= passo[:titulo] %></p>
+            <p class="apr-flow__text"><%= passo[:texto] %></p>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+  <% end %>
 </div>
 
 <p class="apr-source"><%= r.dig(:problema, :fonte) %></p>

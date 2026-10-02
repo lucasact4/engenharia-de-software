@@ -1,0 +1,99 @@
+<%#
+  Painel "Personalizar apresentação": ajustes temporários, só no navegador.
+  Os checkboxes não têm name nem form: nada é enviado ao servidor. Recarregar a página volta
+  ao perfil salvo. A lista vem do mesmo catálogo usado no admin (config/presentation/roteiro.yml).
+  locals: presentation, selection, profile (pode ser nil)
+%>
+<% profile_note = if profile.nil?
+     "padrão do roteiro — nenhum perfil salvo"
+   elsif profile.active?
+     "perfil padrão da apresentação pública"
+   else
+     "pré-visualização de um perfil salvo"
+   end %>
+<dialog class="apr-dialog apr-custom" aria-labelledby="apr-custom-titulo" aria-describedby="apr-custom-aviso"
+        data-presentation-target="customDialog"
+        data-action="click->presentation#closeOnBackdrop close->presentation#customClosed">
+  <div class="apr-dialog__head">
+    <h2 id="apr-custom-titulo" tabindex="-1" data-presentation-target="customHeading">Personalizar apresentação</h2>
+    <button type="button" class="apr-icon-btn" data-action="presentation#closeCustomize" aria-label="Fechar personalização">
+      <%= render "presentations/shared/icon", name: "x" %>
+    </button>
+  </div>
+
+  <div class="apr-custom__intro">
+    <p class="apr-custom__profile">
+      <span class="apr-label">Perfil</span>
+      <strong><%= profile&.name || "Padrão do roteiro" %></strong>
+      <span class="apr-custom__profile-note"><%= profile_note %> · <%= selection.delivery[:titulo] %></span>
+    </p>
+    <p id="apr-custom-aviso" class="apr-custom__note">
+      <strong>Ajustes temporários.</strong> Valem só nesta página: não são salvos e não alteram o perfil.
+      Recarregar a página volta à seleção salva.
+    </p>
+    <p class="apr-custom__estimate <%= 'is-over' if selection.over_limit? %>" data-presentation-target="estimate" role="status"><%= presentation_estimate_text(selection) %></p>
+    <p class="apr-custom__hint-text">A estimativa soma os tempos do roteiro e não garante a duração real; ensaie com cronômetro.</p>
+  </div>
+
+  <div class="apr-custom__body">
+    <% [ [ "Slides principais", presentation.main_slides ], [ "Apêndices", presentation.appendix_slides ] ].each_with_index do |(group, slides), group_index| %>
+      <section class="apr-custom__group" aria-labelledby="apr-custom-grupo-<%= group_index %>">
+        <h3 id="apr-custom-grupo-<%= group_index %>" class="apr-custom__group-title"><%= group %></h3>
+        <ul class="apr-custom__slides" role="list">
+          <% slides.each do |slide| %>
+            <% hint_id = "apr-custom-#{slide.id}-aviso" %>
+            <li class="apr-custom__slide" data-apr-custom-slide="<%= slide.id %>">
+              <fieldset class="apr-custom__fieldset">
+                <legend class="apr-custom__legend">
+                  <label class="apr-custom__check apr-custom__check--slide">
+                    <input type="checkbox"
+                           data-apr-toggle="<%= slide.id %>"
+                           data-action="change->presentation#toggleChoice"
+                           <%= "checked" if selection.chosen?(slide.id) %>
+                           <%= "disabled" if slide.required %>
+                           aria-describedby="<%= hint_id %>">
+                    <span><%= slide.title %></span>
+                  </label>
+                  <% if slide.required %><span class="apr-tag">Obrigatório</span><% end %>
+                  <% if slide.seconds.positive? && !slide.appendix %><span class="apr-custom__time"><%= presentation_duration(slide.seconds) %></span><% end %>
+                </legend>
+                <p id="<%= hint_id %>" class="apr-custom__slide-hint" data-apr-hint-for="<%= slide.id %>"><%=
+                  if slide.required
+                    "Sempre exibido."
+                  elsif selection.without_content?(slide)
+                    "Nenhum conteúdo marcado: o slide será omitido."
+                  elsif !selection.chosen?(slide.id) && slide.items.any?
+                    "Slide oculto. As escolhas abaixo ficam guardadas."
+                  end
+                %></p>
+                <% if slide.items.any? %>
+                  <ul class="apr-custom__items <%= 'is-muted' unless selection.chosen?(slide.id) %>" role="list" aria-label="Conteúdos de <%= slide.title %>">
+                    <% slide.items.each do |item| %>
+                      <li class="apr-custom__item <%= 'apr-custom__item--child' if item.parent_key %>">
+                        <label class="apr-custom__check">
+                          <input type="checkbox"
+                                 data-apr-toggle="<%= item.key %>"
+                                 data-action="change->presentation#toggleChoice"
+                                 <%= "checked" if selection.chosen?(item.key) %>>
+                          <span><%= item.title %></span>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </fieldset>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  </div>
+
+  <div class="apr-custom__foot">
+    <p class="apr-custom__status" data-presentation-target="customStatus" aria-live="polite">Seleção igual ao perfil.</p>
+    <button type="button" class="apr-btn apr-btn--ghost" data-action="presentation#restoreProfile">
+      <%= render "presentations/shared/icon", name: "rotate" %><span>Restaurar padrão do perfil</span>
+    </button>
+    <button type="button" class="apr-btn apr-btn--gold" data-action="presentation#closeCustomize">Concluir</button>
+  </div>
+</dialog>

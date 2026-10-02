@@ -1,11 +1,25 @@
-# Ordem dos slides. Cada "id" corresponde à partial
+# Ordem dos slides e catálogo do que pode ser exibido ou ocultado.
+# É a fonte única usada pela página, pelo admin (menu "Apresentação") e pelo painel
+# "Personalizar apresentação". Guia completo: config/presentation/LEIAME.md
+#
+# Cada "id" corresponde à partial
 # app/views/presentations/slides/_<id com "_" no lugar de "-">.html.erb
 #
-# tempo: segundos estimados de fala (somente slides principais contam para os 7 minutos).
-# apendice: true => fica fora da sequência das setas; acessível pelo índice,
-#                   pelo modo leitura e sempre incluído na impressão/PDF.
+# id:          identificador estável (não depende do título, da posição nem da numeração).
+#              Ao renomear um id, perfis salvos perdem a escolha daquele slide e voltam ao padrão.
+# padrao:      true/false — se o slide aparece quando o perfil não tem escolha salva para ele
+#              (perfil antigo, slide novo ou nenhum perfil cadastrado). Obrigatório.
+# tempo:       segundos estimados de fala (somente slides principais entram na estimativa).
+# apendice:    true => fica fora da sequência das setas; acessível pelo índice,
+#              pelo modo leitura e incluído na impressão/PDF quando selecionado.
 # responsavel: quem apresenta o slide (preencher após o ensaio).
-# tema: escuro => fundo verde profundo (capa e slides de impacto); padrão é claro.
+# tema:        escuro => fundo verde profundo (capa e slides de impacto); padrão é claro.
+# conteudos:   blocos do slide que podem ser ocultados. A chave salva é "<id do slide>.<id do conteúdo>"
+#              (ex.: gestao.reunioes). "dentro_de" indica um bloco que só aparece com o bloco pai.
+#              Cada conteúdo precisa estar marcado na partial com presentation_item.
+#
+# Capa e encerramento são obrigatórios: sempre aparecem e não têm "padrao".
+# Um slide marcado cujos conteúdos foram todos desmarcados é omitido da sequência.
 
 slides:
   - id: capa
@@ -13,61 +27,177 @@ slides:
     titulo: "Capa"
     tempo: 15
     responsavel:
+
   - id: problema
     tema: escuro
     titulo: "Problema e proposta"
     tempo: 35
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: dores, titulo: "Problema e dores", padrao: true }
+      - { id: publico, titulo: "Público atendido", padrao: true }
+      - { id: proposta, titulo: "Proposta de valor", padrao: true }
+
   - id: escopo
     titulo: "Escopo do MVP e regras"
     tempo: 45
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: dimensoes, titulo: "Dimensões da ocorrência", padrao: true }
+      - { id: conflitos, titulo: "Conflitos de requisitos em aberto", padrao: true }
+
+  - id: requisitos
+    titulo: "Requisitos refinados"
+    tempo: 45
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: funcionais, titulo: "Requisitos funcionais", padrao: true }
+      - { id: nao-funcionais, titulo: "Requisitos não funcionais", padrao: true }
+      - { id: criterios, titulo: "Critérios de aceite", padrao: true }
+      - { id: documento, titulo: "Documento e card de refinamento", padrao: true }
+
+  - id: status-report
+    titulo: "Status report"
+    tempo: 40
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: feito, titulo: "O que foi feito desde a última entrega", padrao: true }
+      - { id: proximo, titulo: "O que será feito até a próxima entrega", padrao: true }
+      - { id: aprendizados, titulo: "O que aprendemos na sprint", padrao: true }
+
   - id: evolucao
     titulo: "Evolução no período"
     tempo: 40
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: linha-do-tempo, titulo: "Linha do tempo (commits)", padrao: true }
+      - { id: capacidades, titulo: "Situação das capacidades", padrao: true }
+      - { id: observacoes, titulo: "Observações sobre o template", padrao: true }
+
   - id: conceito-visual
     titulo: "Conceito visual"
     tempo: 35
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: prototipo, titulo: "Protótipo de referência (Figma ou similar)", padrao: false }
+      - { id: landing, titulo: "Captura da landing", padrao: true }
+      - { id: login, titulo: "Captura do login", padrao: true }
+      - { id: mobile, titulo: "Captura no celular", padrao: true }
+      - { id: paleta, titulo: "Paleta de cores", padrao: true }
+      - { id: notas, titulo: "Notas sobre as capturas", padrao: true }
+
   - id: funcionalidades
     titulo: "Duas funcionalidades completas"
     tempo: 55
+    padrao: true
     responsavel:
-  - id: diagramas
-    titulo: "Modelo conceitual e diagramas"
-    tempo: 40
+    conteudos:
+      - { id: criterios, titulo: "Critérios de “completa”", padrao: true }
+      - { id: funcionalidade-1, titulo: "Funcionalidade 1", padrao: true }
+      - { id: funcionalidade-2, titulo: "Funcionalidade 2", padrao: true }
+
+  - id: modelo-conceitual
+    titulo: "Modelo conceitual"
+    tempo: 35
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: diagrama, titulo: "Diagrama do modelo conceitual", padrao: true }
+      - { id: distincao, titulo: "Diferença para o modelo físico do banco", padrao: true }
+
+  - id: casos-de-uso
+    titulo: "Diagrama de casos de uso"
+    tempo: 35
+    padrao: false
+    responsavel:
+
+  - id: fluxo-ocorrencias
+    titulo: "Fluxo de ocorrências e emergências"
+    tempo: 30
+    padrao: false
+    responsavel:
+
   - id: arquitetura
     titulo: "Arquitetura e tecnologias"
     tempo: 40
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: tecnologias, titulo: "Tecnologias utilizadas", padrao: true }
+      - { id: versoes, titulo: "Versões", padrao: true, dentro_de: tecnologias }
+      - { id: diagrama, titulo: "Explicação da arquitetura", padrao: true }
+      - { id: mudancas, titulo: "Mudanças na stack", padrao: true }
+
   - id: gestao
     titulo: "Gestão e evidências"
-    tempo: 25
+    tempo: 30
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: trello, titulo: "Quadro do Trello", padrao: true }
+      - { id: cards, titulo: "Cards do projeto", padrao: true }
+      - { id: ambientes, titulo: "Links para ambientes", padrao: true }
+      - { id: praticas, titulo: "GitHub e práticas de acompanhamento", padrao: true }
+      - { id: reunioes, titulo: "Registros das reuniões", padrao: true }
+
   - id: retrospectiva
     titulo: "Retrospectiva e lições"
     tempo: 35
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: imagem, titulo: "Imagem da retrospectiva", padrao: true }
+      - { id: pontos, titulo: "Pontos discutidos", padrao: true }
+      - { id: acoes, titulo: "Ações combinadas", padrao: true }
+      - { id: licoes, titulo: "Lições aprendidas", padrao: true }
+
   - id: proximos-passos
     tema: escuro
     titulo: "Próximos passos"
     tempo: 30
+    padrao: true
     responsavel:
+    conteudos:
+      - { id: marco, titulo: "Marco demonstrável", padrao: true }
+      - { id: passos, titulo: "Lista de próximos passos", padrao: true }
+      - { id: riscos, titulo: "Riscos", padrao: true }
+      - { id: dependencias, titulo: "Dependências", padrao: true }
+
+  - id: encerramento
+    tema: escuro
+    titulo: "Encerramento"
+    tempo: 10
+    responsavel:
+    conteudos:
+      - { id: links, titulo: "Links do GitHub e do Trello", padrao: true }
 
   - id: checklist
-    titulo: "Checklist da segunda entrega"
+    titulo: "Checklist da entrega"
     apendice: true
+    padrao: true
   - id: conflitos
     titulo: "Requisitos em conflito"
     apendice: true
+    padrao: true
   - id: modelo-dados
     titulo: "Modelo de dados atual"
     apendice: true
+    padrao: true
   - id: evidencias
     titulo: "Evidências no repositório"
     apendice: true
+    padrao: true
+    conteudos:
+      - { id: commits, titulo: "Commits publicados", padrao: true }
+      - { id: arquivos, titulo: "Onde verificar cada capacidade", padrao: true }
+      - { id: testes, titulo: "Testes e integração contínua", padrao: true }
   - id: roteiro
     titulo: "Roteiro e tempo"
     apendice: true
+    padrao: true

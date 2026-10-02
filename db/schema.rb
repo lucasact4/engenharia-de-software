@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_14_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
   create_table "dogs", force: :cascade do |t|
     t.integer "age"
     t.datetime "created_at", null: false
@@ -18,6 +18,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_150000) do
     t.string "name"
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_dogs_on_deleted_at"
+  end
+
+  create_table "presentation_profiles", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.string "delivery", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.json "selections", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_presentation_profiles_on_single_active", unique: true, where: "active"
+    t.index ["name"], name: "index_presentation_profiles_on_name", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|

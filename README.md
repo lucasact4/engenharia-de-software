@@ -81,7 +81,7 @@ To create, migrate, and seed the development database:
 bin/rails rails_base:db:init
 ```
 
-The development seed creates the users documented below. To apply migrations only, run:
+The development seed creates the users documented below. In every environment, the seed also creates the initial presentation profiles without overwriting profiles edited in the admin; see [config/presentation/LEIAME.md](config/presentation/LEIAME.md). To apply migrations only, run:
 
 ```bash
 bin/rails db:migrate

@@ -3,7 +3,7 @@
       kicker: "o que foi feito no período",
       title: "Da base Rails às primeiras telas do SGU" %>
 
-<ol class="apr-timeline" role="list">
+<%= presentation_item slide, "linha-do-tempo", :ol, class: "apr-timeline", role: "list" do %>
   <% ev[:marcos].each do |marco| %>
     <li class="apr-timeline__item <%= 'apr-timeline__item--open' if marco[:commit].blank? %>">
       <p class="apr-timeline__date"><time datetime="<%= marco[:data] %>"><%= presentation_date(marco[:data]) %></time></p>
@@ -18,14 +18,14 @@
       </p>
     </li>
   <% end %>
-</ol>
+<% end %>
 
 <% columns = [
   [ "Pronto", %w[implementado] ],
   [ "Em parte", %w[parcial] ],
   [ "A fazer ou decidir", %w[planejado aguardando_decisao aguardando_evidencia] ]
 ] %>
-<div class="apr-board">
+<%= presentation_item slide, "capacidades", class: "apr-board" do %>
   <% columns.each do |titulo, estados| %>
     <% itens = ev[:capacidades].select { |c| estados.include?(c[:estado]) } %>
     <section class="apr-board__col apr-board__col--<%= estados.first.dasherize %>" aria-label="<%= titulo %>">
@@ -44,9 +44,9 @@
       </ul>
     </section>
   <% end %>
-</div>
+<% end %>
 
-<p class="apr-source"><%= ev[:observacoes].join(" ") %></p>
+<%= presentation_item slide, "observacoes", :p, class: "apr-source" do %><%= ev[:observacoes].join(" ") %><% end %>
 <% if ev[:data_primeira_entrega].blank? %>
   <%= presentation_update_note("evolucao.yml", "informar data_primeira_entrega para delimitar o período.") %>
 <% end %>

@@ -1,0 +1,130 @@
+<%#
+  Formulário do perfil da apresentação. A hierarquia vem do catálogo (config/presentation/roteiro.yml),
+  o mesmo usado pela página e pelo painel temporário. Cada checkbox envia selections[<chave>] = 0 ou 1.
+  Slides obrigatórios (capa e encerramento) aparecem marcados e desabilitados; o model também os protege.
+%>
+<% selection = Presentation::Selection.new(@presentation, @instance.selections.is_a?(Hash) ? @instance.selections : {}, delivery_id: @instance.delivery) %>
+<% limits = @presentation.deliveries.to_h { |delivery| [ delivery[:id], delivery[:duracao_maxima_minutos].to_i * 60 ] } %>
+<% url = @instance.persisted? ? admin_presentation_profile_path(@instance) : admin_presentation_profiles_path %>
+
+<%= form_with model: @instance, url: url, scope: :presentation_profile, html: {
+      novalidate: true,
+      data: {
+        controller: "presentation-profile-form",
+        presentation_profile_form_catalog_value: presentation_catalog_data(@presentation).to_json,
+        presentation_profile_form_limits_value: limits.to_json,
+        action: "change->presentation-profile-form#refresh"
+      }
+    } do |f| %>
+  <%= render partial: "admin/base/form_errors" %>
+
+  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div>
+      <%= f.label :name, "Nome do perfil", class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", required: true, maxlength: 80, placeholder: "Ex.: Segunda entrega — Status Report 2" %>
+    </div>
+    <div>
+      <%= f.label :delivery, "Entrega", class: "form-label" %>
+      <%= f.select :delivery,
+            @presentation.deliveries.map { |delivery| [ "#{delivery[:titulo]}#{" (até #{delivery[:duracao_maxima_minutos]} min)" if delivery[:duracao_maxima_minutos]}", delivery[:id] ] },
+            {}, class: "form-control", data: { presentation_profile_form_target: "delivery" } %>
+      <p class="mt-1 text-xs text-slate-500">Define capa, checklist do apêndice e o limite de tempo usado no aviso.</p>
+    </div>
+    <div class="lg:col-span-2">
+      <%= f.label :description, "Descrição (opcional)", class: "form-label" %>
+      <%= f.text_area :description, rows: 2, maxlength: 500, class: "form-control", placeholder: "Para quando e por que usar este perfil" %>
+    </div>
+    <div class="lg:col-span-2">
+      <label class="inline-flex items-start gap-2 text-sm text-slate-800">
+        <%= f.check_box :active, class: "mt-0.5 size-4 rounded border-slate-300" %>
+        <span>
+          <strong>Perfil padrão da apresentação pública</strong>
+          <span class="block text-xs text-slate-500">Ao salvar marcado, este perfil passa a ser o usado em /apresentacao e o anterior deixa de ser padrão.</span>
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <div class="mt-6 rounded-xl border px-4 py-3 text-sm <%= selection.over_limit? ? 'border-red-200 bg-red-50 text-red-800' : 'border-slate-200 bg-slate-50 text-slate-700' %>"
+       data-presentation-profile-form-target="estimateBox" role="status" aria-live="polite">
+    <p class="font-semibold" data-presentation-profile-form-target="estimate"><%= presentation_estimate_text(selection) %></p>
+    <p class="mt-1 text-xs">Soma dos tempos do <code>roteiro.yml</code> para os slides principais marcados. É uma estimativa e não garante a duração real.</p>
+  </div>
+
+  <% [ [ "Slides principais", @presentation.main_slides ], [ "Apêndices (fora da sequência das setas; entram no índice e na impressão)", @presentation.appendix_slides ] ].each_with_index do |(group, slides), group_index| %>
+    <section class="mt-6" aria-labelledby="profile-group-<%= group_index %>">
+      <h2 id="profile-group-<%= group_index %>" class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600"><%= group %></h2>
+      <ul class="space-y-2" role="list">
+        <% slides.each do |slide| %>
+          <% field = "presentation_profile[selections][#{slide.id}]" %>
+          <% input_id = "selection_#{slide.id.underscore}" %>
+          <% hint_id = "#{input_id}_hint" %>
+          <li class="rounded-xl border border-slate-200 bg-white" data-presentation-profile-form-target="slide" data-slide-id="<%= slide.id %>">
+            <fieldset class="px-4 py-3">
+              <legend class="sr-only"><%= slide.title %></legend>
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <% if slide.required %>
+                  <input type="checkbox" id="<%= input_id %>" checked disabled class="size-4 rounded border-slate-300" aria-describedby="<%= hint_id %>">
+                <% else %>
+                  <%= hidden_field_tag field, "0", id: nil %>
+                  <%= check_box_tag field, "1", selection.chosen?(slide.id), id: input_id, class: "size-4 rounded border-slate-300", aria: { describedby: hint_id }, data: { key: slide.id } %>
+                <% end %>
+                <label for="<%= input_id %>" class="text-sm font-semibold text-slate-900"><%= slide.title %></label>
+                <% if slide.required %>
+                  <span class="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Obrigatório</span>
+                <% end %>
+                <% if slide.seconds.positive? && !slide.appendix %>
+                  <span class="text-xs text-slate-500"><%= presentation_duration(slide.seconds) %></span>
+                <% end %>
+                <code class="ms-auto text-xs text-slate-400"><%= slide.id %></code>
+              </div>
+              <p id="<%= hint_id %>" class="mt-1 text-xs text-amber-800" data-hint><%=
+                if slide.required
+                  "Sempre exibido; não pode ser ocultado."
+                elsif selection.without_content?(slide)
+                  "Nenhum conteúdo marcado: o slide será omitido."
+                elsif !selection.chosen?(slide.id) && slide.items.any?
+                  "Slide oculto. As escolhas dos conteúdos ficam guardadas para quando ele voltar."
+                end
+              %></p>
+
+              <% if slide.items.any? %>
+                <details class="mt-2" open>
+                  <summary class="cursor-pointer text-xs font-medium text-slate-600">
+                    Conteúdos do slide (<span data-count><%= slide.items.count { |item| selection.chosen?(item.key) } %></span> de <%= slide.items.size %> marcados)
+                  </summary>
+                  <ul class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 ps-6 sm:grid-cols-2 <%= 'opacity-60' unless selection.chosen?(slide.id) %>" role="list" data-items aria-label="Conteúdos de <%= slide.title %>">
+                    <% slide.items.each do |item| %>
+                      <% item_field = "presentation_profile[selections][#{item.key}]" %>
+                      <% item_id = "selection_#{item.key.tr('.-', '__')}" %>
+                      <li class="<%= 'ps-5' if item.parent_key %>">
+                        <%= hidden_field_tag item_field, "0", id: nil %>
+                        <label for="<%= item_id %>" class="inline-flex items-start gap-2 py-0.5 text-sm text-slate-700">
+                          <%= check_box_tag item_field, "1", selection.chosen?(item.key), id: item_id, class: "mt-0.5 size-4 rounded border-slate-300", data: { key: item.key } %>
+                          <span>
+                            <%= item.title %>
+                            <% if item.parent_key %><span class="text-xs text-slate-500">(aparece com “<%= @presentation.item(item.parent_key).title %>”)</span><% end %>
+                          </span>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ul>
+                </details>
+              <% end %>
+            </fieldset>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <div class="sticky bottom-0 mt-6 flex flex-col-reverse gap-2 border-t border-slate-200 bg-white/95 py-3 sm:flex-row sm:justify-end">
+    <%= link_to "Voltar", admin_presentation_profiles_path, class: "btn-secondary w-full sm:w-auto" %>
+    <% if @instance.persisted? %>
+      <%= link_to presentation_path(locale: nil, perfil: @instance.id), class: "btn-secondary w-full sm:w-auto", target: "_blank", rel: "noopener" do %>
+        Visualizar perfil salvo<span class="sr-only"> (abre em nova aba)</span>
+      <% end %>
+    <% end %>
+    <%= f.submit "Salvar configurações", class: "btn-primary w-full sm:w-auto" %>
+  </div>
+<% end %>

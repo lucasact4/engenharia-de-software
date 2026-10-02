@@ -58,15 +58,54 @@ RSpec.describe Presentation do
     expect { described_class.new(data) }.to raise_error(ArgumentError, /Estados desconhecidos: concluido/)
   end
 
-  it "keeps the main sequence within the seven-minute limit" do
-    expect(presentation.main_slides.size).to be_between(9, 11)
-    expect(presentation.total_seconds).to be <= 7 * 60
-  end
+it "requires the cover and the closing slide outside the appendices" do
+  data = content_data
+  data.fetch("roteiro")[:slides].reject! { |slide| slide[:id] == "encerramento" }
 
-  it "labels main slides with numbers and appendices with letters" do
-    expect(presentation.main_slides.map(&:label).first).to eq("01")
-    expect(presentation.appendix_slides.map(&:label)).to eq(("A"..).first(presentation.appendix_slides.size))
+  expect { described_class.new(data) }.to raise_error(ArgumentError, /obrigatório encerramento/)
+end
+
+it "requires an explicit default for every optional slide" do
+  data = content_data
+  data.fetch("roteiro")[:slides].find { |slide| slide[:id] == "gestao" }.delete(:padrao)
+
+  expect { described_class.new(data) }.to raise_error(ArgumentError, /gestao precisa de padrao/)
+end
+
+it "rejects malformed or duplicated contents in the catalog" do
+  [
+    { id: "Reuniões", titulo: "Inválido", padrao: true },
+    { id: "reunioes", titulo: "Duplicado", padrao: true },
+    { id: "extra", titulo: "Sem padrão" },
+    { id: "filho", titulo: "Pai ausente", padrao: true, dentro_de: "inexistente" }
+  ].each do |content|
+    data = content_data
+    data.fetch("roteiro")[:slides].find { |slide| slide[:id] == "gestao" }[:conteudos] << content
+
+    expect { described_class.new(data) }.to raise_error(ArgumentError, /conteúdo inválido no slide gestao/)
   end
+end
+
+it "builds stable item keys from the slide and content ids" do
+  expect(presentation.catalog_keys).to include("gestao", "gestao.reunioes", "retrospectiva.imagem", "arquitetura.versoes")
+  expect(presentation.item("arquitetura.versoes").parent_key).to eq("arquitetura.tecnologias")
+end
+
+it "validates deliveries and checklist targets" do
+  data = content_data
+  data.fetch("entrega")[:entregas].first[:checklist].first[:onde] = "slide-inexistente"
+  expect { described_class.new(data) }.to raise_error(ArgumentError, /slides inexistentes/)
+
+  data = content_data
+  data.fetch("entrega")[:entrega_padrao] = "terceira"
+  expect { described_class.new(data) }.to raise_error(ArgumentError, /entrega_padrao/)
+end
+
+it "covers the subjects of both academic deliveries" do
+  expect(presentation.delivery("primeira")[:checklist].map { |item| item[:onde] }).to all(satisfy { |id| presentation.slide(id) })
+  expect(presentation.delivery("segunda")[:checklist].map { |item| item[:onde] }).to all(satisfy { |id| presentation.slide(id) })
+  expect(presentation.delivery("segunda")[:duracao_maxima_minutos]).to eq(7)
+end
 
   it "has a partial for every slide" do
     presentation.slides.each do |slide|

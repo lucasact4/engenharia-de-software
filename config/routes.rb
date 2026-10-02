@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users
     resources :dogs
+    resources :presentation_profiles, path: "apresentacao", except: :show do
+      patch :activate, on: :member
+    end
     get "/" => "dashboard#index"
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

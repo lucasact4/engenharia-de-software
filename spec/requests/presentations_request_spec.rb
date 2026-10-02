@@ -49,4 +49,99 @@ RSpec.describe "Presentation", type: :request do
 
     expect(document.at_css("#s-gestao").text).to include("Pauta:", "Revisar os requisitos")
   end
+
+  describe "slide selection" do
+    let(:presentation) { Presentation.load }
+
+    def visible(selector)
+      document.css(selector).reject { |node| node.has_attribute?("hidden") || node.ancestors.any? { |ancestor| ancestor.respond_to?(:has_attribute?) && ancestor.has_attribute?("hidden") } }
+    end
+
+    it "uses the catalog defaults without a saved profile and creates no records" do
+      expect { get presentation_path }.not_to change(PresentationProfile, :count)
+
+      defaults = presentation.default_selection
+      expect(visible("section.apr-slide").map { |node| node["data-slide-id"] }).to eq(defaults.visible_slides.map(&:id))
+      expect(document.at_css("[data-presentation-target='counter']").text).to eq("1 / #{defaults.visible_main_slides.size}")
+    end
+
+    it "marks every catalog item in the slides and nothing outside the catalog" do
+      get presentation_path
+
+      rendered = document.css("[data-apr-item]").map { |node| node["data-apr-item"] }.uniq
+      expect(rendered).to match_array(presentation.items.map(&:key))
+    end
+
+    it "reflects the active profile and keeps hidden content available to the client" do
+      create(:presentation_profile, :active, delivery: "primeira",
+        selections: { "gestao.reunioes" => false, "evolucao" => false, "requisitos" => true })
+
+      get presentation_path
+
+      expect(document.at_css("#s-evolucao").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-requisitos").has_attribute?("hidden")).to be(false)
+      expect(document.at_css("[data-apr-item='gestao.reunioes']").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-capa").text).to include("Primeira Entrega dos Projetos")
+      expect(document.css(".apr-toc li[data-apr-slide-ref='evolucao'][hidden]")).to be_present
+    end
+
+    it "previews another saved profile with ?perfil=" do
+      create(:presentation_profile, :active, selections: { "gestao" => true })
+      other = create(:presentation_profile, selections: { "gestao" => false })
+
+      get presentation_path(perfil: other.id)
+
+      expect(document.at_css("#s-gestao").has_attribute?("hidden")).to be(true)
+      expect(document.at_css(".apr-custom__profile strong").text).to eq(other.name)
+    end
+
+    it "always renders the cover and the closing slide" do
+      create(:presentation_profile, :active, selections: (presentation.catalog_keys - Presentation::REQUIRED_SLIDES).index_with(false))
+
+      get presentation_path
+
+      expect(visible("section.apr-slide").map { |node| node["data-slide-id"] }).to eq(Presentation::REQUIRED_SLIDES)
+      expect(document.at_css("[data-presentation-target='counter']").text).to eq("1 / 2")
+    end
+
+    it "renumbers the visible slides in the summary, the headings and the script" do
+      create(:presentation_profile, :active, selections: { "problema" => false, "escopo" => false })
+
+      get presentation_path
+
+      expect(document.at_css("#s-evolucao .apr-kicker__num").text).to eq("02")
+      expect(document.at_css(".apr-toc [data-apr-label-for='evolucao']").text).to eq("02")
+      expect(document.at_css("#s-roteiro [data-apr-elapsed-for='problema']").text).to be_empty
+    end
+
+    it "hides empty groups instead of leaving blank columns" do
+      create(:presentation_profile, :active, selections: { "gestao.trello" => false, "gestao.cards" => false, "gestao.ambientes" => false })
+
+      get presentation_path
+
+      expect(document.at_css("#s-gestao [aria-labelledby='s-gestao-trello']").has_attribute?("hidden")).to be(true)
+      expect(document.at_css("#s-gestao .apr-mgmt")["class"]).to include("apr-fit")
+    end
+
+    it "warns when the selected slides exceed the delivery time limit" do
+      create(:presentation_profile, :active, selections: presentation.catalog_keys.excluding(Presentation::REQUIRED_SLIDES).index_with(true))
+
+      get presentation_path
+
+      expect(document.at_css("#s-roteiro .apr-estimate")["class"]).to include("is-over")
+      expect(document.at_css("#s-roteiro .apr-estimate").text).to include("acima do limite de 7min")
+    end
+
+    it "offers the temporary panel without form fields that could be submitted" do
+      get presentation_path
+
+      panel = document.at_css("dialog.apr-custom")
+      expect(panel.text).to include("Ajustes temporários", "Restaurar padrão do perfil")
+      expect(panel.css("form, [name]")).to be_empty
+      expect(panel.css("input[data-apr-toggle]").map { |input| input["data-apr-toggle"] }).to match_array(presentation.catalog_keys)
+      Presentation::REQUIRED_SLIDES.each do |id|
+        expect(panel.at_css("input[data-apr-toggle='#{id}']")["disabled"]).to be_present
+      end
+    end
+  end
 end

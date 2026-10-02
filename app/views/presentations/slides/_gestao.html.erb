@@ -4,12 +4,12 @@
       kicker: "gestão e evidências",
       title: "Cards no Trello, código versionado no GitHub" %>
 
-<div class="apr-mgmt">
-  <section class="apr-mgmt__col" aria-labelledby="<%= slide.dom_id %>-trello">
+<div class="apr-mgmt apr-fit">
+  <%= presentation_group slide, %w[trello cards ambientes], :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-trello" } do %>
     <h3 id="<%= slide.dom_id %>-trello" class="apr-mgmt__title">
       <%= render "presentations/shared/icon", name: "board" %> Trello
     </h3>
-    <ul class="apr-cards" role="list">
+    <%= presentation_item slide, "cards", :ul, class: "apr-cards", role: "list" do %>
       <% g[:cards].each do |card| %>
         <li class="apr-cards__item">
           <span class="apr-cards__num">#<%= card[:numero] %></span>
@@ -17,11 +17,25 @@
           <%= presentation_state(card[:estado], short: true) %>
         </li>
       <% end %>
-    </ul>
-    <p><%= presentation_link("Abrir o quadro do SGU", links[:trello], class: "apr-btn apr-btn--outline") %></p>
-  </section>
+    <% end %>
+    <%= presentation_item slide, "ambientes", class: "apr-envs" do %>
+      <p class="apr-label">Links para ambientes</p>
+      <ul class="apr-envs__list" role="list">
+        <% g[:ambientes].each do |ambiente| %>
+          <li>
+            <%= presentation_link(ambiente[:nome], ambiente[:url], class: "apr-envs__name") %>
+            <%= presentation_state(ambiente[:estado], short: true) %>
+            <% if ambiente[:nota].present? %><span class="apr-envs__note"><%= ambiente[:nota] %></span><% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <%= presentation_item slide, "trello", :p do %>
+      <%= presentation_link("Abrir o quadro do SGU", links[:trello], class: "apr-btn apr-btn--outline") %>
+    <% end %>
+  <% end %>
 
-  <section class="apr-mgmt__col" aria-labelledby="<%= slide.dom_id %>-github">
+  <%= presentation_item slide, "praticas", :section, class: "apr-mgmt__col", aria: { labelledby: "#{slide.dom_id}-github" } do %>
     <h3 id="<%= slide.dom_id %>-github" class="apr-mgmt__title">
       <%= render "presentations/shared/icon", name: "git" %> GitHub
     </h3>
@@ -34,9 +48,9 @@
       <% end %>
     </ul>
     <p><%= presentation_link("Abrir o repositório", links[:github], class: "apr-btn apr-btn--outline") %></p>
-  </section>
+  <% end %>
 
-  <section class="apr-mgmt__col apr-mgmt__col--meetings" aria-labelledby="<%= slide.dom_id %>-reunioes">
+  <%= presentation_item slide, "reunioes", :section, class: "apr-mgmt__col apr-mgmt__col--meetings", aria: { labelledby: "#{slide.dom_id}-reunioes" } do %>
     <h3 id="<%= slide.dom_id %>-reunioes" class="apr-mgmt__title">
       <%= render "presentations/shared/icon", name: "users" %> Reuniões de monitoramento
     </h3>
@@ -72,5 +86,6 @@
         <% end %>
       </ol>
     <% end %>
-  </section>
+  <% end %>
 </div>
+<%= presentation_update_note("gestao.yml", "cards, ambientes, práticas e reuniões.") %>

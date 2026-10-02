@@ -1,7 +1,7 @@
 <%# Cabeçalho padrão de slide. locals: slide, kicker, title, lead (opcional) %>
 <header class="apr-head">
   <p class="apr-kicker">
-    <span class="apr-kicker__num"><%= slide.appendix ? "Apêndice #{slide.label}" : slide.label %></span>
+    <%= presentation_slide_label slide, class: "apr-kicker__num" %>
     <span class="apr-kicker__text"><%= kicker %></span>
   </p>
   <h2 id="<%= slide.heading_id %>" class="apr-title"><%= title %></h2>

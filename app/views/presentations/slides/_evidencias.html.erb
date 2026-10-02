@@ -3,34 +3,35 @@
       kicker: "rastreabilidade",
       title: "Evidências no repositório" %>
 
-<div class="apr-evidence">
-  <section aria-labelledby="<%= slide.dom_id %>-commits">
+<div class="apr-evidence apr-fit">
+  <%= presentation_item slide, "commits", :section, aria: { labelledby: "#{slide.dom_id}-commits" } do %>
     <h3 id="<%= slide.dom_id %>-commits" class="apr-evidence__title">Commits publicados</h3>
     <ol class="apr-evidence__list" role="list">
       <% ev[:marcos].select { |m| m[:commit].present? }.each do |marco| %>
         <li><%= presentation_commit_link(marco[:commit]) %> <span><%= presentation_date(marco[:data]) %> — <%= marco[:titulo] %></span></li>
       <% end %>
     </ol>
-  </section>
+  <% end %>
 
-  <section aria-labelledby="<%= slide.dom_id %>-arquivos">
+  <%= presentation_item slide, "arquivos", :section, aria: { labelledby: "#{slide.dom_id}-arquivos" } do %>
     <h3 id="<%= slide.dom_id %>-arquivos" class="apr-evidence__title">Onde verificar cada capacidade</h3>
     <ul class="apr-evidence__list" role="list">
       <% ev[:capacidades].select { |c| c[:evidencia].present? }.each do |cap| %>
         <li><%= presentation_path(cap[:evidencia]) %> <span><%= cap[:nome] %></span></li>
       <% end %>
     </ul>
-  </section>
+  <% end %>
 
-  <section aria-labelledby="<%= slide.dom_id %>-testes">
+  <%= presentation_item slide, "testes", :section, aria: { labelledby: "#{slide.dom_id}-testes" } do %>
     <h3 id="<%= slide.dom_id %>-testes" class="apr-evidence__title">Testes e integração contínua</h3>
     <ul class="apr-evidence__list" role="list">
       <li><%= presentation_path("spec/requests/home_request_spec.rb") %> <span>landing pública sem login</span></li>
       <li><%= presentation_path("spec/requests/sessions_request_spec.rb") %> <span>login, logout e limite de tentativas</span></li>
       <li><%= presentation_path("spec/requests/admin/users_authorization_spec.rb") %> <span>perfis de acesso</span></li>
-      <li><%= presentation_path("spec/requests/presentations_request_spec.rb") %> <span>esta apresentação</span></li>
+      <li><%= presentation_path("spec/requests/presentations_request_spec.rb") %> <span>esta apresentação e seus perfis</span></li>
+      <li><%= presentation_path("spec/requests/admin/presentation_profiles_request_spec.rb") %> <span>perfis da apresentação no admin</span></li>
       <li><%= presentation_path(".github/workflows/ci.yml") %> <span>Brakeman, auditoria do Importmap, RuboCop e RSpec</span></li>
     </ul>
-  </section>
+  <% end %>
 </div>
 <%= presentation_update_note("evolucao.yml", "marcos (commit) e capacidades (evidencia).") %>

@@ -1,3 +1,6 @@
+# Perfis da apresentação: necessários em qualquer ambiente; o arquivo não sobrescreve edições.
+load Rails.root.join("db/seeds/presentation_profiles.rb")
+
 return unless Rails.env.development?
 
 [

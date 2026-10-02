@@ -5,8 +5,8 @@
       title: "Retrospectiva e lições aprendidas",
       lead: [ presentation_date(r[:data]), r[:formato] ].compact_blank.join(" · ").presence %>
 
-<div class="apr-retro">
-  <div class="apr-retro__photo">
+<div class="apr-retro apr-fit">
+  <%= presentation_item slide, "imagem", class: "apr-retro__photo" do %>
     <% if r[:imagem].present? %>
       <%= render "presentations/shared/figure",
             image: r[:imagem], alt: r[:imagem_descricao].presence || "Registro da retrospectiva da equipe",
@@ -19,16 +19,16 @@
             file: "retrospectiva.yml",
             frame: true %>
     <% end %>
-  </div>
+  <% end %>
 
-  <div class="apr-retro__notes">
+  <%= presentation_group slide, %w[pontos acoes licoes], class: "apr-retro__notes" do %>
     <% blocks = [
-      [ "Pontos discutidos", r[:pontos] ],
-      [ "Ações combinadas", r[:acoes] ],
-      [ "O que aprendemos", r[:licoes] ]
+      [ "pontos", "Pontos discutidos", r[:pontos] ],
+      [ "acoes", "Ações combinadas", r[:acoes] ],
+      [ "licoes", "O que aprendemos", r[:licoes] ]
     ] %>
-    <% blocks.each do |titulo, itens| %>
-      <section class="apr-retro__block <%= 'apr-retro__block--empty' if itens.blank? %>" aria-label="<%= titulo %>">
+    <% blocks.each do |item_id, titulo, itens| %>
+      <%= presentation_item slide, item_id, :section, class: ["apr-retro__block", ("apr-retro__block--empty" if itens.blank?)], aria: { label: titulo } do %>
         <h3 class="apr-retro__title"><%= titulo %></h3>
         <% if itens.present? %>
           <ul class="apr-retro__list" role="list">
@@ -47,10 +47,11 @@
         <% else %>
           <p class="apr-retro__empty"><%= presentation_state(:aguardando_evidencia) %></p>
         <% end %>
-      </section>
+      <% end %>
     <% end %>
     <% unless registered %>
       <p class="apr-source">Nada neste slide foi preenchido por suposição: os itens aparecem quando a equipe registrar a retrospectiva.</p>
     <% end %>
-  </div>
+  <% end %>
 </div>
+<%= presentation_update_note("retrospectiva.yml", "data, formato, imagem, pontos, ações e lições.") %>

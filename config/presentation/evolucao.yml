@@ -4,8 +4,9 @@
 # commit: SHA completo de um commit publicado em origin/main (gera link para o GitHub).
 #         Deixe vazio para trabalho ainda não publicado.
 
-# Data da primeira entrega, para delimitar "desde a última entrega" (preencher).
-data_primeira_entrega:
+# Data da primeira entrega (prazo do Classroom: 23/09/2026, 19h30). Delimita "desde a última entrega"
+# no status report: entram os marcos posteriores a esta data.
+data_primeira_entrega: 2026-09-23
 
 marcos:
   - data: 2026-08-19

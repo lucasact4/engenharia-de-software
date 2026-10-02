@@ -3,12 +3,12 @@
       kicker: "arquitetura e tecnologias",
       title: "Um monólito Rails no padrão MVC" %>
 
-<div class="apr-arch">
-  <figure class="apr-figure apr-figure--svg">
+<div class="apr-arch apr-fit">
+  <%= presentation_item slide, "diagrama", :figure, class: "apr-figure apr-figure--svg" do %>
     <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: arquitetura atual da aplicação">
       <svg class="apr-arch__svg" viewBox="0 0 600 416" role="img" aria-labelledby="apr-arch-title apr-arch-desc">
         <title id="apr-arch-title">Arquitetura atual da aplicação SGU</title>
-        <desc id="apr-arch-desc">O navegador envia requisições às rotas do Rails; os controllers usam políticas do Pundit, consultam os models Active Record, que persistem em SQLite, e renderizam views ERB devolvidas como HTML. O conteúdo desta apresentação vem de arquivos YAML.</desc>
+        <desc id="apr-arch-desc">O navegador envia requisições às rotas do Rails; os controllers usam políticas do Pundit, consultam os models Active Record, que persistem em SQLite, e renderizam views ERB devolvidas como HTML. O conteúdo desta apresentação vem de arquivos YAML; os perfis de exibição ficam no banco.</desc>
         <defs>
           <marker id="apr-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0 L10 5 L0 10 z" class="apr-arch__head"/>
@@ -74,10 +74,10 @@
     <figcaption class="apr-figure__caption">
       <span class="apr-figure__title">Arquitetura atual, desenhada a partir do código</span>
     </figcaption>
-  </figure>
+  <% end %>
 
-  <div class="apr-arch__side">
-    <div class="apr-stack">
+  <%= presentation_group slide, %w[tecnologias mudancas], class: "apr-arch__side" do %>
+    <%= presentation_item slide, "tecnologias", class: "apr-stack" do %>
       <% t[:stack].each do |grupo| %>
         <section class="apr-stack__group" aria-label="<%= grupo[:grupo] %>">
           <h3 class="apr-stack__title"><%= grupo[:grupo] %></h3>
@@ -86,15 +86,15 @@
               <% version = presentation.version_for(item) %>
               <li title="Evidência: <%= item[:evidencia] %>">
                 <span><%= item[:nome] %></span>
-                <% if version %><code class="apr-stack__v"><%= version %></code><% end %>
+                <% if version %><%= presentation_item slide, "versoes", :code, class: "apr-stack__v" do %><%= version %><% end %><% end %>
               </li>
             <% end %>
           </ul>
         </section>
       <% end %>
-    </div>
+    <% end %>
 
-    <div class="apr-changes">
+    <%= presentation_item slide, "mudancas", class: "apr-changes" do %>
       <h3 class="apr-changes__title">Mudanças em relação ao anunciado na 1ª entrega</h3>
       <ul class="apr-changes__list" role="list">
         <% t[:mudancas].each do |mudanca| %>
@@ -121,7 +121,7 @@
           <% end %>
         </ul>
       <% end %>
-    </div>
-  </div>
+    <% end %>
+  <% end %>
 </div>
 <%= presentation_update_note("tecnologias.yml", "stack, mudanças e justificativa (versões vêm do Gemfile.lock).") %>

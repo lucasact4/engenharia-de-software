@@ -1,0 +1,20 @@
+<% item = presentation.diagramas[:itens].find { |diagrama| diagrama[:id] == "modelo-conceitual" } %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "modelagem",
+      title: "Modelo conceitual",
+      lead: "Conceitos do domínio e suas relações, independentes de tabelas e tecnologia." %>
+
+<%= presentation_item slide, "diagrama" do %>
+  <%= render "presentations/shared/diagram", item: item %>
+<% end %>
+
+<%= presentation_item slide, "distincao", class: "apr-model-note" do %>
+  <p class="apr-label">Conceitual ≠ físico</p>
+  <p>
+    O modelo conceitual descreve o domínio do SGU (ocorrência, categoria, status, pessoa usuária…).
+    O banco atual (<code>users</code>, <code>sessions</code>, <code>dogs</code>, <code>presentation_profiles</code>) veio da base Rails e
+    do suporte a esta apresentação: é modelo físico e ainda não tem ocorrências.
+    <%= presentation_slide_ref "modelo-dados" do %><a class="apr-more" href="#s-modelo-dados">Ver o modelo físico no apêndice</a>.<% end %>
+  </p>
+<% end %>
+<%= presentation_update_note("diagramas.yml", "imagem, versao, origem e data do modelo-conceitual.") %>

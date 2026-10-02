@@ -1,4 +1,7 @@
-# Diagramas exigidos. Cada um tem título próprio: um não substitui o outro.
+# Diagramas do projeto. Cada um tem slide próprio (modelo-conceitual, casos-de-uso,
+# fluxo-ocorrencias no roteiro.yml) e um não substitui o outro.
+#
+# exigido_em: texto do selo exibido no slide (ex.: "2ª entrega"); vazio quando não houver.
 #
 # Para publicar um diagrama:
 #   1. salve a imagem (PNG ou SVG) em app/assets/images/presentation/diagramas/
@@ -10,7 +13,7 @@ itens:
   - id: modelo-conceitual
     titulo: "Modelo conceitual"
     descricao: "Conceitos do domínio (ocorrência, categoria, status, pessoa usuária…) e suas relações."
-    exigido_na_entrega: true
+    exigido_em: "2ª entrega"
     card:
     estado: aguardando_evidencia
     imagem:
@@ -20,7 +23,7 @@ itens:
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."
-    exigido_na_entrega: false
+    exigido_em: "1ª entrega"
     card:
       numero: 14
       titulo: "Criar diagrama de casos de uso do SGU"
@@ -33,7 +36,7 @@ itens:
   - id: fluxo-ocorrencias
     titulo: "Fluxo de ocorrências e emergências (revisado)"
     descricao: "Caminho de uma ocorrência comum e de uma emergência, do registro ao encerramento."
-    exigido_na_entrega: false
+    exigido_em:
     card:
       numero: 5
       titulo: "Revisar fluxo de ocorrências e emergências"

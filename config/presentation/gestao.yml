@@ -18,6 +18,23 @@ cards:
     url: "https://trello.com/c/YdQk4x6A/14-uml-criar-diagrama-de-casos-de-uso-do-sgu"
     estado: aguardando_evidencia
 
+# Links para os ambientes do projeto (requisito da 1ª entrega: o Trello deve apontar para eles).
+# url: somente links públicos (https://...). Sem url, o item aparece como texto.
+# Não cadastre um ambiente publicado antes de existir um deploy real.
+ambientes:
+  - nome: "Repositório no GitHub"
+    url: "https://github.com/lucasact4/engenharia-de-software"
+    nota: "Código, pull requests e integração contínua."
+    estado: implementado
+  - nome: "Ambiente local (Dev Container)"
+    url:
+    nota: "bin/dev e http://localhost:3000 — roda na máquina de cada integrante."
+    estado: implementado
+  - nome: "Ambiente publicado (homologação)"
+    url:
+    nota: "Sem deploy registrado; a base inclui Dockerfile e Kamal."
+    estado: planejado
+
 praticas:
   - titulo: "Branch por card"
     texto: "Trabalho do card #11 isolado na branch card-11."
