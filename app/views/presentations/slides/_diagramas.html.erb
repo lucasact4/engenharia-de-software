@@ -12,7 +12,10 @@
         <% if item[:exigido_na_entrega] %><span class="apr-tag apr-tag--gold">Exigido na 2ª entrega</span><% end %>
       </header>
 
-      <% if item[:imagem].present? %>
+      <% if item[:id] == "modelo-conceitual" %>
+        <%= render "presentations/shared/er_diagram", key: "conceptual" %>
+        <p class="apr-diagram__meta"><%= [ item[:origem], "versão #{item[:versao]}", presentation_date(item[:data]) ].compact_blank.join(" · ") %></p>
+      <% elsif item[:imagem].present? %>
         <%= render "presentations/shared/figure",
               image: item[:imagem], alt: "#{item[:titulo]}: #{item[:descricao]}",
               caption: [ item[:titulo], item[:versao] && "versão #{item[:versao]}" ].compact.join(" · "),
@@ -36,4 +39,4 @@
   <a class="apr-more" href="#s-modelo-conceitual">ver modelo conceitual ampliado</a> e
   <a class="apr-more" href="#s-modelo-dados">apêndices do DER</a>.
 </p>
-<%= presentation_update_note("diagramas.yml", "imagem, versao, origem e data de cada diagrama.") %>
+<%= presentation_update_note("diagramas.yml", "versao, origem e data; estrutura do modelo em data_diagrams.yml.") %>

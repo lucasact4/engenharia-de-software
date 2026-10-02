@@ -17,10 +17,11 @@ itens:
       url: "https://trello.com/c/a8kascTx/6-dados-modelar-ocorr%C3%AAncias-e-criar-migra%C3%A7%C3%A3o-inicial"
     # parcial: diagrama produzido a partir do schema real; depende da revisão da equipe.
     estado: parcial
-    imagem: "presentation/diagramas/modelo-conceitual-v1.svg"
-    versao: "1"
+    imagem:
+    renderizacao: html_css
+    versao: "2"
     origem: "Card #6 — derivado das migrações e do db/schema.rb"
-    data: 2026-10-01
+    data: 2026-10-02
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."

@@ -260,7 +260,7 @@ export default class extends Controller {
 
   touchStart(event) {
     const touch = event.changedTouches[0]
-    const scrollsSideways = event.target.closest?.(".apr-table-wrap, .apr-lightbox")
+    const scrollsSideways = event.target.closest?.(".apr-table-wrap, .apr-data-viewport, .apr-lightbox")
     this.touchOrigin = scrollsSideways ? null : { x: touch.clientX, y: touch.clientY }
   }
 
@@ -314,8 +314,17 @@ export default class extends Controller {
       media = document.createElement("img")
       media.src = trigger.dataset.zoomSrc
       media.alt = trigger.querySelector("img")?.alt || ""
+    } else if (figure?.querySelector(".apr-data-viewport")) {
+      media = figure.querySelector(".apr-data-viewport").cloneNode(true)
+      media.classList.add("apr-data-viewport--zoomed")
+      media.querySelectorAll("[aria-pressed]").forEach((button) => button.setAttribute("aria-pressed", "false"))
+      media.querySelectorAll(".has-selection, .is-linked, .is-selected").forEach((node) => {
+        node.classList.remove("has-selection", "is-linked", "is-selected")
+      })
+      media.classList.remove("has-selection")
     } else {
-      media = trigger.querySelector("svg").cloneNode(true)
+      media = trigger.querySelector("svg")?.cloneNode(true)
+      if (!media) return
       const label = media.querySelector("title")?.textContent || ""
       media.querySelectorAll("title[id], desc[id]").forEach((node) => node.removeAttribute("id"))
       media.removeAttribute("aria-labelledby")

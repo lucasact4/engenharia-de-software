@@ -47,7 +47,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = example.metadata[:type] == :feature ? :truncation : :transaction
 
     DatabaseCleaner.cleaning do
-      example.run
+      I18n.with_locale(I18n.default_locale) { example.run }
     end
   end
 end

@@ -1,18 +1,9 @@
-<%# Modelo conceitual em tamanho legível para leitura e impressão. Mesma imagem do slide de diagramas. %>
-<% item = presentation.diagramas[:itens].find { |diagram| diagram[:id] == "modelo-conceitual" } %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "modelagem · apêndice",
       title: "Modelo conceitual (ampliado)",
       lead: "Conceitos do domínio e multiplicidades, sem detalhes de tabela. Não substitui o fluxo (#5) nem os casos de uso (#14)." %>
 
-<% if item && item[:imagem].present? %>
-  <%= render "presentations/shared/figure",
-        image: item[:imagem], alt: "#{item[:titulo]}: #{item[:descricao]}",
-        caption: [ item[:titulo], item[:versao] && "versão #{item[:versao]}", presentation_date(item[:data]) ].compact_blank.join(" · "),
-        state: item[:estado], modifier: "apr-figure--conceptual" %>
-<% else %>
-  <%= render "presentations/shared/pending", title: "Modelo conceitual ainda não publicado.", state: :aguardando_evidencia, file: "diagramas.yml" %>
-<% end %>
+<%= render "presentations/shared/er_diagram", key: "conceptual" %>
 
 <ul class="apr-footnotes" role="list">
   <li>As multiplicidades refletem as restrições do banco (ex.: alerta com 0..1 publicação; comentário com 0..1 comentário pai).</li>

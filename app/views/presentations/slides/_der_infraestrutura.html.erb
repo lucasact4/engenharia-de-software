@@ -1,24 +1,9 @@
-<%# DER físico — infraestrutura (fora do domínio do SGU). %>
-<% tables = [
-  { name: "active_storage_blobs", x: 10, y: 10, w: 260, variant: "infra", columns: [ [ "id", "PK" ], [ "key", "UQ" ], [ "filename", "" ], [ "content_type", "" ], [ "metadata", "" ], [ "service_name", "" ], [ "byte_size", "" ], [ "checksum", "" ], [ "created_at", "" ] ] },
-  { name: "active_storage_attachments", x: 290, y: 10, w: 360, variant: "infra", columns: [ [ "id", "PK" ], [ "name", "" ], [ "record_type", "polimórfico" ], [ "record_id", "polimórfico" ], [ "blob_id", "FK active_storage_blobs" ], [ "created_at", "" ] ] },
-  { name: "active_storage_variant_records", x: 670, y: 10, w: 360, variant: "infra", columns: [ [ "id", "PK" ], [ "blob_id", "FK active_storage_blobs" ], [ "variation_digest", "" ] ] },
-  { name: "sessions", x: 670, y: 125, w: 360, variant: "infra", columns: [ [ "id", "PK" ], [ "user_id", "FK users" ], [ "ip_address", "" ], [ "user_agent", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "dogs", x: 290, y: 175, w: 360, variant: "example", columns: [ [ "id", "PK" ], [ "name", "" ], [ "age", "" ], [ "deleted_at", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] }
-] %>
-<% relations = [
-  { d: "M290 121 H270", labels: [] }
-] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "DER físico · apêndice",
       title: "Infraestrutura (fora do domínio)",
       lead: "Active Storage, sessões e o exemplo do template, conforme db/schema.rb (versão #{presentation.schema_version})." %>
 
-<%= render "presentations/shared/er_diagram", id: "apr-der-infra",
-      title: "DER físico — infraestrutura",
-      desc: "active_storage_attachments liga um registro (polimórfico, por exemplo as fotos de um alerta) a um active_storage_blobs; active_storage_variant_records referencia blobs. sessions pertence a users. dogs é o exemplo do template, sem relação com o domínio.",
-      width: 1040, height: 330, tables: tables, relations: relations,
-      caption: "active_storage_* · sessions · dogs (exemplo do template, preservado)" %>
+<%= render "presentations/shared/er_diagram", key: "infrastructure" %>
 
 <ul class="apr-footnotes" role="list">
   <li>As tabelas do Active Storage foram criadas por uma migração nova (as três migrações de 2024 só atualizavam tabelas inexistentes). As rotas padrão de blobs estão desativadas: fotos de alertas só saem por um endpoint que revalida a permissão.</li>

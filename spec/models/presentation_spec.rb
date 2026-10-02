@@ -105,13 +105,10 @@ RSpec.describe Presentation do
 
   it "shows every table of db/schema.rb in the DER appendices" do
     tables = Rails.root.join("db/schema.rb").read.scan(/create_table "(\w+)"/).flatten
-    partials = %w[_modelo_dados _der_operacional _der_social _der_infraestrutura].map do |name|
-      Rails.root.join("app/views/presentations/slides/#{name}.html.erb").read
-    end.join
-
-    tables.each do |table|
-      expect(partials).to include(%(name: "#{table}")), "tabela #{table} ausente nos apêndices do DER"
-    end
+    drawn = PresentationDiagram.load_all.values.flat_map do |diagram|
+      diagram.nodes.filter_map { |node| node["table"] unless node["reference"] }
+    end.uniq
+    expect(drawn).to match_array(tables)
   end
 
   it "stamps the DER with the current schema version" do
