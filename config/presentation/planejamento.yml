@@ -14,8 +14,8 @@ proximos_passos:
     texto: "Modelo conceitual, casos de uso (#14) e fluxo revisado (#5)."
     card: 14
   - titulo: "Implementar a ocorrência"
-    texto: "Modelo, registro e acompanhamento de status com testes."
-    card:
+    texto: "Telas de registro e acompanhamento sobre o backend do card #6, após validar as premissas."
+    card: 6
   - titulo: "Concluir duas funcionalidades"
     texto: "Escolher, implementar e validar ponta a ponta."
     card:
