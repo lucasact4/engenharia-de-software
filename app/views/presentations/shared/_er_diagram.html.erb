@@ -1,0 +1,39 @@
+<%# DER em SVG; tables define posição, colunas e divisão interna, relations define caminhos e cardinalidades. %>
+<% head_h = 30 %>
+<% row_h = 18 %>
+<figure class="apr-figure apr-figure--svg apr-figure--wide">
+  <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: <%= title %>">
+    <svg class="apr-er apr-er--full" viewBox="0 0 <%= width %> <%= height %>" role="img" aria-labelledby="<%= id %>-title <%= id %>-desc">
+      <title id="<%= id %>-title"><%= title %></title>
+      <desc id="<%= id %>-desc"><%= desc %></desc>
+      <% local_assigns.fetch(:relations, []).each do |relation| %>
+        <path class="apr-er__rel" d="<%= relation[:d] %>"/>
+        <% relation[:labels].each do |x, y, text| %>
+          <text x="<%= x %>" y="<%= y %>" class="apr-er__card"><%= text %></text>
+        <% end %>
+      <% end %>
+      <% tables.each do |table| %>
+        <% split = table.fetch(:split, 1) %>
+        <% rows = (table[:columns].size / split.to_f).ceil %>
+        <% sub_w = table[:w] / split %>
+        <g class="apr-er__table <%= "apr-er__table--#{table[:variant]}" if table[:variant] %>" data-table="<%= table[:name] %>">
+          <rect x="<%= table[:x] %>" y="<%= table[:y] %>" width="<%= table[:w] %>" height="<%= head_h + rows * row_h + 8 %>" rx="10"/>
+          <path d="M<%= table[:x] %> <%= table[:y] + head_h %> H<%= table[:x] + table[:w] %>" class="apr-er__sep"/>
+          <text x="<%= table[:x] + 14 %>" y="<%= table[:y] + 21 %>" class="apr-er__name"><%= table[:name] %><%= " · exemplo do template" if table[:variant] == "example" %></text>
+          <% table[:columns].each_with_index do |(column, note), index| %>
+            <% left = table[:x] + (index / rows) * sub_w %>
+            <% baseline = table[:y] + head_h + (index % rows) * row_h + 14 %>
+            <text x="<%= left + 14 %>" y="<%= baseline %>" class="apr-er__col"><%= column %></text>
+            <% if note.present? %>
+              <text x="<%= left + sub_w - 12 %>" y="<%= baseline %>" class="apr-er__note" text-anchor="end"><%= note %></text>
+            <% end %>
+          <% end %>
+        </g>
+      <% end %>
+    </svg>
+    <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
+  </button>
+  <figcaption class="apr-figure__caption">
+    <span class="apr-figure__title"><%= caption %></span>
+  </figcaption>
+</figure>
