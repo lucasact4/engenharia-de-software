@@ -103,12 +103,18 @@ RSpec.describe Presentation do
     expect(presentation.version_for({ versao_ruby: true })).to eq(RUBY_VERSION)
   end
 
-  it "shows every table of db/schema.rb in the data model appendix" do
+  it "shows every table of db/schema.rb in the DER appendices" do
     tables = Rails.root.join("db/schema.rb").read.scan(/create_table "(\w+)"/).flatten
-    partial = Rails.root.join("app/views/presentations/slides/_modelo_dados.html.erb").read
+    partials = %w[_modelo_dados _der_operacional _der_social _der_infraestrutura].map do |name|
+      Rails.root.join("app/views/presentations/slides/#{name}.html.erb").read
+    end.join
 
     tables.each do |table|
-      expect(partial).to include(%(name: "#{table}")), "tabela #{table} ausente no apêndice de modelo de dados"
+      expect(partials).to include(%(name: "#{table}")), "tabela #{table} ausente nos apêndices do DER"
     end
+  end
+
+  it "stamps the DER with the current schema version" do
+    expect(presentation.schema_version).to eq(ActiveRecord::Base.connection_pool.migration_context.current_version.to_s.sub(/\A(\d{4})(\d{2})(\d{2})(\d{6})\z/, '\1_\2_\3_\4'))
   end
 end

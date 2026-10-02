@@ -1,8 +1,6 @@
-# Be sure to restart your server when you modify this file.
-
-# Configure parameters to be partially matched (e.g. passw matches password) and filtered from the log file.
-# Use this to limit dissemination of sensitive information.
-# See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
+# Filtros de dados sensíveis; reinicie o servidor ao alterar esta configuração.
 Rails.application.config.filter_parameters += [
-  :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc
+  :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc,
+  # Coordenadas informadas em alertas (dado pessoal de localização).
+  :latitude, :longitude
 ]

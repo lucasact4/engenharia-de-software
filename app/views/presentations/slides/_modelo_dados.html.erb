@@ -1,45 +1,42 @@
-<%# Espelha db/schema.rb. O spec da apresentação falha se uma tabela nova não aparecer aqui. %>
+<%# DER físico — visão resumida do núcleo. %>
 <% tables = [
-  { name: "users", x: 10, columns: [ [ "id", "PK" ], [ "email_address", "único" ], [ "password_digest", "" ], [ "admin", "boolean" ], [ "deleted_at", "exclusão lógica" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "sessions", x: 290, columns: [ [ "id", "PK" ], [ "user_id", "FK" ], [ "ip_address", "" ], [ "user_agent", "" ], [ "created_at", "" ], [ "updated_at", "" ] ] },
-  { name: "dogs", x: 560, example: true, columns: [ [ "id", "PK" ], [ "name", "" ], [ "age", "" ], [ "deleted_at", "exclusão lógica" ], [ "created_at", "" ], [ "updated_at", "" ] ] }
+  { name: "categories", x: 10, y: 10, w: 200, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "requires_details", "" ], [ "active", "" ] ] },
+  { name: "locations", x: 10, y: 170, w: 200, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "reference_latitude", "" ], [ "active", "" ] ] },
+  { name: "alerts", x: 280, y: 10, w: 200, columns: [ [ "id", "PK" ], [ "author_id", "FK" ], [ "kind", "" ], [ "protocol", "UQ" ], [ "category_id", "FK" ], [ "location_id", "FK" ], [ "requested_visibility", "" ], [ "visibility", "" ], [ "status", "" ], [ "priority", "" ], [ "assigned_to_id", "FK" ], [ "duplicate_of_id", "FK" ] ] },
+  { name: "users", x: 550, y: 10, w: 200, columns: [ [ "id", "PK" ], [ "email_address", "UQ" ], [ "admin", "" ], [ "deleted_at", "" ], [ "username", "UQ" ], [ "public_profile", "" ] ] },
+  { name: "user_roles", x: 820, y: 10, w: 200, columns: [ [ "id", "PK" ], [ "user_id", "FK" ], [ "role_id", "FK" ], [ "granted_by_id", "FK" ] ] },
+  { name: "roles", x: 820, y: 160, w: 200, columns: [ [ "id", "PK" ], [ "code", "UQ" ], [ "name", "" ], [ "active", "" ] ] },
+  { name: "publications", x: 280, y: 300, w: 200, columns: [ [ "id", "PK" ], [ "alert_id", "FK·UQ" ], [ "author_id", "FK" ], [ "kind", "" ], [ "visibility", "" ], [ "review_status", "" ], [ "state", "" ], [ "content_version", "" ] ] },
+  { name: "comments", x: 550, y: 300, w: 200, columns: [ [ "id", "PK" ], [ "publication_id", "FK" ], [ "author_id", "FK" ], [ "parent_id", "FK" ], [ "body", "" ], [ "removed_at", "" ] ] }
+] %>
+<% relations = [
+  { d: "M280 121 H210", labels: [ [ 264, 116, "N" ], [ 214, 116, "0..1" ] ] },
+  { d: "M280 139 H245 V200 H210", labels: [ [ 264, 134, "N" ], [ 214, 195, "0..1" ] ] },
+  { d: "M480 67 H550", labels: [ [ 486, 62, "N" ], [ 538, 62, "1" ] ] },
+  { d: "M480 229 H505 V130 H550", labels: [ [ 486, 224, "N" ], [ 512, 125, "0..1" ] ] },
+  { d: "M280 247 H262 V282 H330 V264", labels: [ [ 298, 296, "0..1" ] ] },
+  { d: "M420 300 V264", labels: [ [ 426, 278, "0..1" ], [ 426, 296, "0..1" ] ] },
+  { d: "M480 375 H520 V145 H550", labels: [ [ 486, 370, "N" ], [ 538, 141, "1" ] ] },
+  { d: "M550 357 H530 V440 H480", labels: [ [ 536, 352, "N" ], [ 486, 435, "1" ] ] },
+  { d: "M650 300 V156", labels: [ [ 656, 294, "N" ], [ 656, 172, "1" ] ] },
+  { d: "M750 393 H772 V430 H750", labels: [ [ 776, 416, "0..1 pai" ] ] },
+  { d: "M820 67 H750", labels: [ [ 806, 62, "N" ], [ 754, 62, "1" ] ] },
+  { d: "M820 103 H750", labels: [ [ 806, 98, "N" ], [ 754, 98, "0..1" ] ] },
+  { d: "M920 120 V160", labels: [ [ 926, 136, "N" ], [ 926, 156, "1" ] ] }
 ] %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "banco de dados",
-      title: "Modelo de dados atual (db/schema.rb)",
-      lead: "Registro do que existe hoje. Não é o modelo conceitual do SGU: ainda não há tabela de ocorrências." %>
+      kicker: "banco de dados · DER físico",
+      title: "DER físico — visão resumida do núcleo",
+      lead: "Tabelas reais de db/schema.rb (versão #{presentation.schema_version}). Distinto do modelo conceitual e do fluxo; detalhes completos nos apêndices seguintes." %>
 
-<figure class="apr-figure apr-figure--svg apr-figure--wide">
-  <button type="button" class="apr-figure__zoom" data-action="presentation#zoom" aria-label="Ampliar diagrama: modelo de dados atual">
-    <svg class="apr-er" viewBox="0 0 760 214" role="img" aria-labelledby="apr-er-title apr-er-desc">
-      <title id="apr-er-title">Modelo de dados atual</title>
-      <desc id="apr-er-desc">Tabela users com relação um para muitos com sessions por meio de user_id. Tabela dogs isolada, usada como exemplo do template.</desc>
-      <path class="apr-er__rel" d="M230 52 H260 V74 H290"/>
-      <text x="236" y="46" class="apr-er__card">1</text>
-      <text x="276" y="68" class="apr-er__card">N</text>
-      <% tables.each do |table| %>
-        <% height = 34 + table[:columns].size * 22 + 6 %>
-        <g class="apr-er__table <%= 'apr-er__table--example' if table[:example] %>">
-          <rect x="<%= table[:x] %>" y="4" width="<%= table[:example] ? 190 : 220 %>" height="<%= height %>" rx="10"/>
-          <path d="M<%= table[:x] %> 36 H<%= table[:x] + (table[:example] ? 190 : 220) %>" class="apr-er__sep"/>
-          <text x="<%= table[:x] + 14 %>" y="26" class="apr-er__name"><%= table[:name] %><%= " · exemplo" if table[:example] %></text>
-          <% table[:columns].each_with_index do |(column, note), index| %>
-            <text x="<%= table[:x] + 14 %>" y="<%= 56 + index * 22 %>" class="apr-er__col"><%= column %></text>
-            <% if note.present? %>
-              <text x="<%= table[:x] + (table[:example] ? 176 : 206) %>" y="<%= 56 + index * 22 %>" class="apr-er__note" text-anchor="end"><%= note %></text>
-            <% end %>
-          <% end %>
-        </g>
-      <% end %>
-    </svg>
-    <span class="apr-figure__hint" aria-hidden="true"><%= render "presentations/shared/icon", name: "zoom" %> Ampliar</span>
-  </button>
-  <figcaption class="apr-figure__caption">
-    <span class="apr-figure__title">Tabelas: <%= tables.map { |t| t[:name] }.to_sentence(last_word_connector: " e ") %></span>
-  </figcaption>
-</figure>
+<%= render "presentations/shared/er_diagram", id: "apr-der-nucleo",
+      title: "DER físico do SGU — núcleo",
+      desc: "users registra N alerts (author_id) e pode ser responsável (assigned_to_id). alerts tem 0..1 categories e 0..1 locations, pode apontar para 0..1 alerta original (duplicate_of_id) e tem 0..1 publications; publications.alert_id é opcional e único. publications tem N comments; comments.parent_id aponta para 0..1 comentário pai. users tem N user_roles e cada user_role liga a 1 role; granted_by_id aponta para quem concedeu.",
+      width: 1030, height: 490, tables: tables, relations: relations,
+      caption: "Núcleo: users → alerts → publications → comments; categories/locations; roles/user_roles" %>
 
 <ul class="apr-footnotes" role="list">
-  <li><code>users</code> e <code>sessions</code> sustentam o login atual (herdado da base Rails).</li>
-  <li><code>dogs</code> é o CRUD de exemplo do template e deve ser removido quando a ocorrência for modelada.</li>
+  <li>Alert tem <strong>0..1</strong> Publication (<code>alert_id</code> opcional e único); avisos e notícias não têm alerta de origem. Pânico nunca vira publicação.</li>
+  <li><code>users.admin</code> continua a única fonte de administração; papéis em <code>user_roles</code> são múltiplos e não comprovam vínculo com a UFRPE.</li>
+  <li>Premissas provisórias (foto opcional, restrito = autor + gestão, acesso de coordenação/segurança) aguardam validação da equipe.</li>
 </ul>

@@ -6,8 +6,7 @@ class Admin::UsersController < Admin::BaseController
       return prevent_self_deactivation
     end
 
-    @instance.sessions.destroy_all
-    @instance.update!(deleted_at: Time.current)
+    Users::Deactivate.call(actor: Current.user, user: @instance)
 
     respond_to do |format|
       format.html { redirect_to send(redirect_to_index), flash: { success: translate_flash("success") } }

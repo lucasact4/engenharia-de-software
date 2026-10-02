@@ -38,7 +38,7 @@ export default class extends Controller {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
   }
 
-  // Navegação ------------------------------------------------------------
+  // Navegação
 
   next() {
     this.step(1)
@@ -117,7 +117,7 @@ export default class extends Controller {
     }
   }
 
-  // Links internos (#s-...) e índice -------------------------------------
+  // Links internos (#s-...) e índice
 
   followSlideLink(event) {
     const link = event.target.closest?.('a[href^="#s-"]')
@@ -173,7 +173,7 @@ export default class extends Controller {
     if (event.target === event.currentTarget) event.currentTarget.close()
   }
 
-  // Modos: apresentação e leitura ----------------------------------------
+  // Modos: apresentação e leitura
 
   toggleMode() {
     if (!this.presenting) this.index = this.firstVisibleSlide()
@@ -212,7 +212,7 @@ export default class extends Controller {
     window.history.replaceState(window.history.state, "", url)
   }
 
-  // Teclado e gestos ------------------------------------------------------
+  // Teclado e gestos
 
   handleKeydown(event) {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
@@ -279,7 +279,7 @@ export default class extends Controller {
     return this.indexDialogTarget.open || this.lightboxTarget.open
   }
 
-  // Tela cheia e impressão -----------------------------------------------
+  // Tela cheia e impressão
 
   toggleFullscreen() {
     if (document.fullscreenElement) {
@@ -301,7 +301,7 @@ export default class extends Controller {
     window.print()
   }
 
-  // Ampliação de imagens e diagramas -------------------------------------
+  // Ampliação de imagens e diagramas
 
   zoom(event) {
     event.preventDefault()

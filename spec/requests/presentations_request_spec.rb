@@ -38,6 +38,37 @@ RSpec.describe "Presentation", type: :request do
     end
   end
 
+  it "draws only real tables and columns in the DER and covers every column in the detailed appendices" do
+    get presentation_path
+
+    connection = ActiveRecord::Base.connection
+    schema_tables = connection.tables - %w[schema_migrations ar_internal_metadata]
+    drawn = Hash.new { |hash, key| hash[key] = [] }
+
+    document.css(".apr-er__table[data-table]").each do |group|
+      table = group["data-table"]
+      columns = group.css(".apr-er__col").map(&:text)
+      expect(schema_tables).to include(table)
+      expect(columns - connection.columns(table).map(&:name)).to be_empty, "colunas inexistentes em #{table}"
+      drawn[table].concat(columns) unless group.ancestors("#s-modelo-dados").any?
+    end
+
+    schema_tables.each do |table|
+      expect(drawn[table]).to match_array(connection.columns(table).map(&:name)), "colunas de #{table} incompletas no DER"
+    end
+  end
+
+  it "keeps the conceptual model, the physical DER and the flow as distinct artifacts" do
+    get presentation_path
+
+    diagrams = document.at_css("#s-diagramas")
+    expect(diagrams.at_css("img[src*='modelo-conceitual']")).to be_present
+    expect(diagrams.text).to include("Fluxo de ocorrências e emergências")
+    expect(document.at_css("#s-modelo-dados").text).to include("DER físico", Presentation.schema_version)
+    expect(document.at_css("#s-der-infraestrutura").text).to include("dogs", "preservado")
+    expect(document.at_css("#s-modelo-dados svg desc").text).to include("0..1")
+  end
+
   it "renders meeting agendas when the team supplies them" do
     presentation = Presentation.load
     presentation.gestao[:reunioes] = [

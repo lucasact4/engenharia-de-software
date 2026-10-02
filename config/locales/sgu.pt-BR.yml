@@ -1,0 +1,186 @@
+# Labels e ajudas do domínio SGU (ocorrências, publicações e base social).
+# Os valores gravados no banco são os codes estáveis; somente os textos abaixo podem mudar.
+pt-br:
+  activerecord:
+    models:
+      alert: "Alerta"
+      publication: "Publicação"
+      comment: "Comentário"
+      category: "Categoria"
+      location: "Local"
+      content_report: "Denúncia"
+      audit_event: "Evento de auditoria"
+    attributes:
+      alert:
+        kind: "Tipo"
+        protocol: "Protocolo"
+        title: "Título"
+        description: "Descrição"
+        category: "Categoria"
+        category_other_description: "Explicação da categoria"
+        location_source: "Origem da localização"
+        location: "Local"
+        latitude: "Latitude"
+        longitude: "Longitude"
+        location_accuracy_meters: "Precisão da localização (m)"
+        location_captured_at: "Momento da captura da localização"
+        location_unavailable_reason: "Motivo da localização indisponível"
+        requested_visibility: "Audiência solicitada"
+        visibility: "Visibilidade do registro"
+        reported_severity: "Severidade percebida"
+        assessed_severity: "Severidade avaliada"
+        priority: "Prioridade de atendimento"
+        status: "Situação do atendimento"
+        assigned_to: "Responsável"
+        closure_reason: "Motivo do encerramento"
+        closure_notes: "Explicação do encerramento"
+        duplicate_of: "Alerta original"
+        resolved_at: "Resolvido em"
+        closed_at: "Encerrado em"
+        client_request_id: "Chave de envio"
+        photos: "Fotos"
+      publication:
+        kind: "Tipo de publicação"
+        title: "Título"
+        body: "Texto"
+        visibility: "Audiência"
+        review_status: "Revisão"
+        state: "Situação"
+        alert: "Alerta de origem"
+        reviewed_by: "Revisor"
+        reviewed_at: "Revisado em"
+        reviewed_content_version: "Versão revisada"
+        review_reason: "Justificativa da revisão"
+        published_at: "Publicado em"
+        expires_at: "Expira em"
+        withdrawn_at: "Retirado em"
+      comment:
+        body: "Comentário"
+        parent: "Comentário respondido"
+        removal_reason: "Motivo da remoção"
+      content_report:
+        reason: "Motivo"
+        details: "Detalhes"
+      user:
+        display_name: "Nome de exibição"
+        username: "Nome de usuário"
+        bio: "Apresentação"
+        public_profile: "Perfil público"
+        roles: "Papéis"
+  errors:
+    messages:
+      inactive: "está inativo e não pode ser escolhido"
+      immutable: "não pode ser alterado depois da criação"
+      reason_required: "Informe o motivo desta ação."
+      required_for_occurrence: "é obrigatória em ocorrências comuns (GPS ou local do catálogo)"
+      coordinates_pair: "Latitude e longitude devem ser informadas juntas."
+      gps_coordinates_required: "Localização por GPS exige latitude e longitude."
+      manual_without_coordinates: "Seleção manual de local não grava coordenadas."
+      unavailable_without_location: "Localização indisponível não aceita local nem coordenadas."
+      gps_only: "só se aplica à localização por GPS"
+      unavailable_only: "só se aplica quando a localização está indisponível"
+      must_match_request: "só pode ser interna quando a audiência solicitada é interna"
+      panic_restricted: "deve ser restrita em pedidos de pânico"
+      only_when_closed: "só pode ser preenchido quando o alerta está encerrado"
+      only_when_resolved: "só pode ser preenchido depois da resolução"
+      resolved_requires_resolution: "\"resolvido\" exige que o atendimento tenha passado por Resolvida"
+      only_for_duplicate: "só pode ser informado quando o motivo é duplicidade"
+      self_reference: "não pode referenciar o próprio registro"
+      cycle: "criaria um ciclo de duplicidade"
+      not_eligible: "não está habilitado para este tipo de alerta"
+      too_many: "permite no máximo %{count} arquivos"
+      content_type: "aceita somente PNG ou JPEG verdadeiros"
+      too_large: "aceita arquivos de até %{megabytes} MB (1 MB = 1024 × 1024 bytes)"
+      reused_blob: "aceita somente arquivos enviados neste pedido"
+      panic_not_publishable: "de pânico não pode gerar publicação"
+      incompatible_audience: "não autorizou esta audiência"
+      only_for_occurrence: "só pode ser vinculado a publicações de ocorrência"
+      requires_current_approval: "exige aprovação da versão atual do conteúdo"
+      after_publication: "deve ser posterior à publicação"
+      not_submittable: "não permite envio para revisão nesta situação"
+      not_pending: "não está aguardando revisão"
+      source_review_pending: "O alerta de origem mudou depois da aprovação; revise a publicação novamente."
+      incompatible_source: "O alerta de origem não autoriza esta audiência."
+      expires_in_future: "A validade precisa estar no futuro no momento da publicação."
+      notice_requires_expiration: "Avisos exigem data de expiração."
+      other_publication: "pertence a outra publicação"
+      reply_depth: "é uma resposta; só é possível responder a um comentário raiz"
+      hidden: "foi removido e não aceita respostas"
+      self_follow: "não pode ser a própria conta"
+      single_target: "A denúncia deve ter exatamente um alvo (publicação ou comentário)."
+      reference_coordinates_pair: "Latitude e longitude de referência devem ser informadas juntas."
+      unavailable: "não está disponível para concessão"
+  sgu:
+    public_identity:
+      anonymous: "Pessoa usuária"
+      editorial: "Equipe do SGU"
+  enums:
+    alert:
+      kind:
+        occurrence: { label: "Ocorrência", description: "Situação no campus com título, descrição, categoria e localização." }
+        panic: { label: "Pânico", description: "Pedido de ajuda com envio simplificado. O canal ainda não tem equipe de monitoramento definida." }
+      location_source:
+        gps: { label: "GPS do aparelho", description: "Coordenadas informadas pelo aparelho no momento do envio. Não comprovam o local." }
+        manual: { label: "Escolha de prédio ou área", description: "Local selecionado no catálogo do campus." }
+        unavailable: { label: "Localização indisponível", description: "Aceito somente em pedidos de pânico." }
+      location_unavailable_reason:
+        permission_denied: { label: "Permissão negada", description: "O aparelho não autorizou a localização." }
+        position_unavailable: { label: "Posição indisponível", description: "O aparelho não conseguiu determinar a posição." }
+        timeout: { label: "Tempo esgotado", description: "A localização demorou demais." }
+        not_supported: { label: "Não suportado", description: "O aparelho não oferece localização." }
+        not_shared: { label: "Não compartilhada", description: "A pessoa optou por não enviar a localização." }
+      requested_visibility:
+        internal: { label: "Interna", description: "Pessoas autenticadas podem ver o registro." }
+        restricted: { label: "Restrita", description: "Somente você e a equipe responsável." }
+        public_external: { label: "Pública externa", description: "Pedido de divulgação sem login, somente após revisão e publicação pela administração. O registro continua restrito." }
+      visibility:
+        internal: { label: "Interna", description: "Visível para pessoas autenticadas." }
+        restricted: { label: "Restrita", description: "Visível para o autor e a equipe responsável." }
+      severity:
+        low: { label: "Leve", description: "Incômodo sem risco imediato." }
+        moderate: { label: "Moderada", description: "Afeta o uso de um espaço ou serviço." }
+        high: { label: "Alta", description: "Risco relevante a pessoas ou ao patrimônio." }
+        critical: { label: "Crítica", description: "Risco grave e imediato." }
+      priority:
+        low: { label: "Baixa", description: "Pode aguardar a fila normal." }
+        normal: { label: "Normal", description: "Atendimento na ordem regular." }
+        high: { label: "Alta", description: "Deve ser atendida antes das demais." }
+        urgent: { label: "Urgente", description: "Exige ação imediata." }
+      status:
+        received: { label: "Recebida", description: "Registrada no sistema; ainda não avaliada." }
+        triaging: { label: "Em triagem", description: "Equipe avaliando severidade, prioridade e responsável." }
+        in_progress: { label: "Em atendimento", description: "Ação em andamento." }
+        awaiting_information: { label: "Aguardando informação", description: "A equipe precisa de mais dados." }
+        resolved: { label: "Resolvida", description: "Problema resolvido; pode ser encerrada ou reaberta." }
+        closed: { label: "Encerrada", description: "Atendimento finalizado com motivo." }
+      closure_reason:
+        resolved: { label: "Resolvida", description: "Encerramento após resolução." }
+        duplicate: { label: "Duplicada", description: "Já existe outro registro sobre o mesmo fato." }
+        invalid: { label: "Inválida", description: "Registro sem fundamento; exige explicação." }
+        out_of_scope: { label: "Fora do escopo", description: "Não cabe ao SGU; exige explicação." }
+        other: { label: "Outro", description: "Outro motivo; exige explicação." }
+    publication:
+      kind:
+        occurrence: { label: "Ocorrência divulgada", description: "Texto editorial revisado sobre uma ocorrência." }
+        notice: { label: "Aviso temporário", description: "Comunicado com data de expiração obrigatória." }
+        news: { label: "Notícia", description: "Comunicado sem expiração obrigatória." }
+      visibility:
+        internal: { label: "Interna", description: "Pessoas autenticadas." }
+        public_external: { label: "Pública externa", description: "Qualquer pessoa, sem login." }
+      review_status:
+        not_submitted: { label: "Não enviada", description: "Rascunho ainda não enviado para revisão." }
+        pending: { label: "Em revisão", description: "Aguardando decisão editorial." }
+        approved: { label: "Aprovada", description: "Versão aprovada; ainda precisa ser publicada." }
+        rejected: { label: "Rejeitada", description: "Revisão recusada com justificativa." }
+      state:
+        draft: { label: "Rascunho", description: "Fora do ar." }
+        published: { label: "Publicada", description: "No ar para a audiência definida." }
+        withdrawn: { label: "Retirada", description: "Retirada do ar com motivo." }
+    content_report:
+      reason:
+        spam: { label: "Spam", description: "Conteúdo repetitivo ou publicitário." }
+        harassment: { label: "Assédio", description: "Ataque ou intimidação a pessoas." }
+        misinformation: { label: "Informação falsa", description: "Conteúdo enganoso." }
+        privacy: { label: "Privacidade", description: "Exposição de dados pessoais." }
+        inappropriate: { label: "Impróprio", description: "Conteúdo ofensivo ou inadequado." }
+        other: { label: "Outro", description: "Outro motivo; exige detalhes." }

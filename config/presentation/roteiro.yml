@@ -62,8 +62,20 @@ slides:
   - id: conflitos
     titulo: "Requisitos em conflito"
     apendice: true
+  - id: modelo-conceitual
+    titulo: "Modelo conceitual (ampliado)"
+    apendice: true
   - id: modelo-dados
-    titulo: "Modelo de dados atual"
+    titulo: "DER físico — núcleo"
+    apendice: true
+  - id: der-operacional
+    titulo: "DER — perfis, catálogos e alertas"
+    apendice: true
+  - id: der-social
+    titulo: "DER — publicações e base social"
+    apendice: true
+  - id: der-infraestrutura
+    titulo: "DER — infraestrutura"
     apendice: true
   - id: evidencias
     titulo: "Evidências no repositório"

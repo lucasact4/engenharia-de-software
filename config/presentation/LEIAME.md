@@ -1,6 +1,6 @@
 # Apresentação da segunda entrega — guia de manutenção
 
-A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo está nesta pasta, em YAML; o layout de cada slide está em `app/views/presentations/slides/`. Para atualizar o conteúdo, edite o YAML e recarregue a página: não é preciso mexer no ERB.
+A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo está nesta pasta, em YAML; o layout de cada slide está em `app/views/presentations/slides/`. Para atualizar textos e a ordem dos slides, edite o YAML e recarregue a página. Estrutura visual e colunas do DER ficam nos partials ERB.
 
 ## Onde atualizar cada coisa
 
@@ -13,6 +13,7 @@ A apresentação fica em `/apresentacao` (pública, sem login). O conteúdo est�
 | Capturas de tela e paleta | `conceito_visual.yml` |
 | As duas funcionalidades completas | `funcionalidades.yml` |
 | Modelo conceitual, casos de uso (#14) e fluxo revisado (#5) | `diagramas.yml` |
+| DER físico (apêndices de banco de dados) | `app/views/presentations/slides/_modelo_dados.html.erb` e `_der_*.html.erb` |
 | Stack, mudanças em relação à 1ª entrega e justificativas | `tecnologias.yml` |
 | Cards, práticas e reuniões de monitoramento | `gestao.yml` |
 | Retrospectiva: imagem, pontos, ações e lições | `retrospectiva.yml` |
@@ -35,6 +36,10 @@ Só marque `implementado` com evidência verificável (código, teste, captura).
 Campos vazios e blocos de pendência são intencionais: indicam conteúdo ainda não confirmado. Preencha requisitos, funcionalidades, reuniões e retrospectiva com registros reais; não invente decisões, testes, datas ou imagens. Atualize também o checklist em `entrega.yml` e marque `confirmado_pela_equipe: true` somente após a revisão da equipe.
 
 ## Imagens e diagramas
+
+O DER físico não é imagem: é SVG gerado pelos partials `_modelo_dados` (visão resumida) e `_der_operacional`, `_der_social` e `_der_infraestrutura` (todas as colunas), com a versão lida de `db/schema.rb`. Ao criar uma migração, acrescente as colunas novas nesses partials; o spec de requisição aponta o que faltar.
+
+Para imagens e diagramas fornecidos pela equipe:
 
 1. Salve o arquivo em `app/assets/images/presentation/` (diagramas em `app/assets/images/presentation/diagramas/`).
 2. No YAML, informe o caminho relativo a `app/assets/images`. Exemplo: `presentation/diagramas/casos-de-uso-v1.png`.
@@ -104,7 +109,7 @@ Os specs conferem:
 - ausência de caminhos locais;
 - links internos válidos;
 - limite de 7 minutos;
-- que o apêndice de modelo de dados lista todas as tabelas de `db/schema.rb`;
+- que os apêndices do DER mostram somente tabelas e colunas existentes no banco e cobrem todas as colunas do banco de teste preparado com as migrações atuais (uma migração nova exige atualizar os diagramas);
 - navegação por teclado sem entrar nos apêndices, recuperação de fragmento inválido na URL, retorno do foco após fechar a ampliação de imagem e modo leitura.
 
 Ao carregar os YAMLs, o modelo também valida algumas chaves obrigatórias, identificadores e tempos do roteiro, estados conhecidos e cores no formato `#RRGGBB`. Isso não é uma validação completa de todos os campos nem uma confirmação das informações apresentadas.

@@ -1,3 +1,4 @@
+# CRUD administrativo compartilhado; subclasses definem o recurso e os campos permitidos.
 class Admin::BaseController < ApplicationController
   include Pagy::Method
   include Translations::TranslationFlashMessages
@@ -18,7 +19,6 @@ class Admin::BaseController < ApplicationController
     Current.user
   end
 
-  # GET /admin instance/or /admin.instance/json
   def index
     scope = policy_scope(@model)
     scope = apply_term_filter(scope)
@@ -28,21 +28,17 @@ class Admin::BaseController < ApplicationController
     authorize @model
   end
 
-  # GET /admin/instance/1 or /admin/instance/1.json
   def show
   end
 
-  # GET /admin/instance/new
   def new
     @instance = @model.new
     authorize @instance
   end
 
-  # GET /admin/instance/1/edit
   def edit
   end
 
-  # POST /admin instance/or /admin.instance/json
   def create
     @instance = @model.new(instance_params)
     authorize @instance
@@ -58,7 +54,6 @@ class Admin::BaseController < ApplicationController
     end
   end
 
-  # PATCH/PUT /admin/instance/1 or /admin/instance/1.json
   def update
     respond_to do |format|
       if @instance.update(instance_params)
@@ -71,7 +66,6 @@ class Admin::BaseController < ApplicationController
     end
   end
 
-  # DELETE /admin/instance/1 or /admin/instance/1.json
   def destroy
     @instance.destroy!
 
@@ -94,17 +88,14 @@ class Admin::BaseController < ApplicationController
       Pagy::I18n.locale = I18n.locale.to_s.tr("_", "-").sub(/-[a-z]{2}\z/) { |region| region.upcase }
     end
 
-    # Use callbacks to share common setup or constraints between actions.
     def set_instance_and_authorize
       @instance = @model.find(params.expect(:id))
       authorize @instance
     end
 
     def redirect_to_index
-      # Exemple: admin/dogs
       controller = params[:controller]
       namespace = controller.gsub("/", "_")
-      # namespace = controller.gsub("/", "_")[6..]
       "#{namespace}_path"
     end
 
@@ -227,7 +218,6 @@ class Admin::BaseController < ApplicationController
     end
 
     def instance_params
-      # Resulte exemple: dog: [ :name, :age, :deleted_at ]
       params.require(default_param_required).permit(default_params_permited)
     end
 end

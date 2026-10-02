@@ -67,16 +67,17 @@ Reset local data only when it is safe to discard it:
 
 ```bash
 bin/rails db:reset
-bin/rails db:seed
 ```
 
-The project also provides a development initialization task:
+`db:reset` also runs seeds. The project provides a development initialization task:
 
 ```bash
 bin/rails rails_base:db:init
 ```
 
 It creates, migrates, and seeds the local database. The seeded accounts are documented in the main [README](../README.md).
+
+Seeds also create the essential role and category catalogs in every environment; in development they additionally reset the demo accounts. To upgrade an existing database to the SGU data model, or to create catalogs without running seeds, see [Upgrading an existing database to the SGU data model](data-model-upgrade.md).
 
 ## Daily validation
 

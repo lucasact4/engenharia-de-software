@@ -46,7 +46,7 @@ export default class extends Controller {
 
     this.element.classList.toggle("minified", shouldApplyMinifiedLayout)
 
-    // Keep desktop width transitions responsive-aware to avoid fighting base mobile width classes.
+    // A transição de largura vale apenas no desktop; no celular, prevalecem as classes responsivas.
     this.element.classList.toggle("lg:w-16", shouldApplyMinifiedLayout)
     this.element.classList.toggle("lg:w-64", desktop && !shouldApplyMinifiedLayout)
     this.element.classList.remove("w-16", "w-64")
@@ -99,7 +99,7 @@ export default class extends Controller {
     try {
       window.localStorage.setItem(this.storageKey, minified ? "1" : "0")
     } catch (_error) {
-      // Ignore storage errors (private mode, blocked storage, etc.)
+      // O menu continua funcionando quando o navegador bloqueia o armazenamento.
     }
   }
 }

@@ -15,6 +15,7 @@ A reusable Ruby on Rails foundation for starting new Propósito Digital applicat
 - [Set up local development](docs/development.md)
 - [Decide whether SQLite is suitable for production](docs/sqlite-production.md)
 - [Back up and restore SQLite production data](docs/sqlite-backup-and-restore.md)
+- [Upgrade an existing database to the SGU data model](docs/data-model-upgrade.md)
 - [Migrate from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
 - [First deployment checklist](docs/first-deploy.md)
 - [New project delivery checklist](docs/project-delivery.md)
@@ -81,7 +82,7 @@ To create, migrate, and seed the development database:
 bin/rails rails_base:db:init
 ```
 
-The development seed creates the users documented below. To apply migrations only, run:
+In development, seeds create or reset the demo accounts listed below, including their passwords, administrator flag, and active status. For essential SGU catalogs without changing accounts, use `bin/rails sgu:catalogs:bootstrap`. To apply migrations only, run:
 
 ```bash
 bin/rails db:migrate
@@ -91,10 +92,10 @@ bin/rails db:migrate
 
 The administrative area is available at `http://localhost:3000/admin`.
 
-| Email | Password |
-| --- | --- |
-| `test@test.com` | `test@123` |
-| `dev@dev.com` | `test@123` |
+| Email | Password | Access |
+| --- | --- | --- |
+| `test@test.com` | `test@123` | Regular account |
+| `dev@dev.com` | `test@123` | Administrator |
 
 These credentials exist only in development. Never use them in production.
 
@@ -241,7 +242,7 @@ bin/rubocop && \
   bundle exec rspec
 ```
 
-The `main` branch is protected: pull requests can be merged only after the security, lint, and test checks pass in GitHub Actions.
+GitHub Actions runs security, lint, and test checks for pull requests and pushes to `main`. Confirm all checks pass before merging.
 
 ## Infrastructure and deployment
 

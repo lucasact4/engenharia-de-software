@@ -1,4 +1,3 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
 import "preline"
@@ -15,7 +14,7 @@ const safeCall = (fn) => {
   try {
     fn()
   } catch (_error) {
-    // Keep page interactions alive even if another Preline component fails.
+    // Uma falha no Preline não deve interromper as demais interações.
   }
 }
 
@@ -151,7 +150,7 @@ const applySidebarPreference = (root = document) => {
   if (sidebar) {
     sidebar.classList.toggle("minified", shouldApplyMinifiedLayout)
 
-    // Keep desktop width transitions responsive-aware to avoid fighting base mobile width classes.
+    // A transição de largura vale apenas no desktop; no celular, prevalecem as classes responsivas.
     sidebar.classList.toggle("lg:w-16", shouldApplyMinifiedLayout)
     sidebar.classList.toggle("lg:w-64", desktop && !shouldApplyMinifiedLayout)
     sidebar.classList.remove("w-16", "w-64")
