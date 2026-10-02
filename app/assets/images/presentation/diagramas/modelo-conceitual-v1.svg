@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" role="img" aria-labelledby="mc-title mc-desc">
+  <title id="mc-title">Modelo conceitual do SGU — versão 1 (card #6, 01/10/2026)</title>
+  <desc id="mc-desc">Pessoa usuária possui zero ou mais papéis e registra zero ou mais alertas. Alerta é ocorrência ou pânico, tem zero ou uma categoria, zero ou um local do campus, até cinco fotos privadas e zero ou uma publicação revisada; pânico nunca gera publicação. Publicação é ocorrência divulgada, aviso ou notícia e recebe comentários; comentário pode responder a um comentário raiz. Denúncia aponta para exatamente uma publicação ou um comentário. Interações sociais ligam a pessoa a publicações, alertas acompanhados e outras pessoas. Eventos de auditoria registram ator e ações administrativas. Premissas provisórias a validar pela equipe.</desc>
+  <style>
+    .box { fill: #ffffff; stroke: #153c36; stroke-width: 1.4; }
+    .box--core { fill: #eef6f3; }
+    .box--note { fill: #fbf7ec; stroke: #b9862f; stroke-dasharray: 5 4; }
+    .name { font: 700 15px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #153c36; }
+    .attr { font: 12px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #24322f; }
+    .small { font: 11px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #4b5b57; }
+    .rel { fill: none; stroke: #b9862f; stroke-width: 1.8; }
+    .card { font: 700 11.5px ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; fill: #8a5a12; }
+    .verb { font: italic 11px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #6b4a14; }
+  </style>
+  <rect width="1000" height="580" fill="#ffffff"/>
+
+  <!-- Relações (desenhadas antes das caixas) -->
+  <path class="rel" d="M220 85 H260"/>
+  <text class="card" x="223" y="79">0..*</text><text class="card" x="229" y="101">0..*</text>
+  <path class="rel" d="M480 85 H520"/>
+  <text class="card" x="484" y="79">1</text><text class="card" x="489" y="101">0..*</text>
+  <path class="rel" d="M880 30 V14 H420 V30"/>
+  <text class="card" x="426" y="27">0..1</text><text class="card" x="886" y="27">0..*</text>
+  <text class="verb" x="600" y="10">ator das ações administrativas</text>
+  <path class="rel" d="M370 140 V200"/>
+  <text class="card" x="376" y="156">1</text><text class="card" x="376" y="195">0..*</text>
+  <text class="verb" x="364" y="176" text-anchor="end">registra</text>
+  <path class="rel" d="M260 247 H220"/>
+  <text class="card" x="224" y="241">0..1</text><text class="card" x="230" y="262">0..*</text>
+  <path class="rel" d="M260 342 H220"/>
+  <text class="card" x="224" y="336">0..1</text><text class="card" x="230" y="357">0..*</text>
+  <path class="rel" d="M480 292 H520"/>
+  <text class="card" x="484" y="286">1</text><text class="card" x="489" y="307">0..5</text>
+  <path class="rel" d="M370 390 V440"/>
+  <text class="card" x="376" y="405">0..1</text><text class="card" x="376" y="435">0..1</text>
+  <text class="verb" x="364" y="420" text-anchor="end">projeção revisada</text>
+  <path class="rel" d="M480 495 H520"/>
+  <text class="card" x="484" y="489">1</text><text class="card" x="489" y="510">0..*</text>
+  <path class="rel" d="M720 470 H750 V520 H720"/>
+  <text class="card" x="726" y="464">0..1</text><text class="card" x="726" y="538">0..*</text>
+  <path class="rel" d="M220 495 H260"/>
+  <text class="card" x="223" y="489">0..*</text><text class="card" x="229" y="510">0..1</text>
+  <path class="rel" d="M120 550 V568 H620 V550"/>
+  <text class="card" x="126" y="564">0..*</text><text class="card" x="626" y="564">0..1</text>
+  <text class="verb" x="370" y="564" text-anchor="middle">alvo: exatamente uma publicação ou um comentário</text>
+
+  <!-- Linha 1 -->
+  <rect class="box" x="20" y="30" width="200" height="110" rx="10"/>
+  <text class="name" x="34" y="54">Papel</text>
+  <text class="attr" x="34" y="76">Segurança · Coordenação</text>
+  <text class="attr" x="34" y="93">Professor · Estudante</text>
+  <text class="attr" x="34" y="110">Funcionário · Visitante</text>
+  <text class="small" x="34" y="129">Morador · multiperfil · não é admin</text>
+
+  <rect class="box box--core" x="260" y="30" width="220" height="110" rx="10"/>
+  <text class="name" x="274" y="54">Pessoa usuária</text>
+  <text class="attr" x="274" y="76">conta por e-mail e senha</text>
+  <text class="attr" x="274" y="93">administração: booleano admin</text>
+  <text class="attr" x="274" y="110">perfil público opcional (opt-in)</text>
+  <text class="small" x="274" y="129">desativação preserva o histórico</text>
+
+  <rect class="box" x="520" y="30" width="220" height="110" rx="10"/>
+  <text class="name" x="534" y="54">Interações sociais</text>
+  <text class="attr" x="534" y="76">curtir · salvar (privado)</text>
+  <text class="attr" x="534" y="93">acompanhar publicação ou alerta</text>
+  <text class="attr" x="534" y="110">seguir pessoa com perfil público</text>
+  <text class="small" x="534" y="129">nenhuma interação concede acesso</text>
+
+  <rect class="box" x="780" y="30" width="200" height="110" rx="10"/>
+  <text class="name" x="794" y="54">Evento de auditoria</text>
+  <text class="attr" x="794" y="76">ator · ação · data · motivo</text>
+  <text class="attr" x="794" y="93">antes/depois (allowlist)</text>
+  <text class="small" x="794" y="112">append-only na aplicação</text>
+  <text class="small" x="794" y="129">sem GPS, senha ou texto pessoal</text>
+
+  <!-- Linha 2 -->
+  <rect class="box" x="20" y="210" width="200" height="75" rx="10"/>
+  <text class="name" x="34" y="234">Categoria</text>
+  <text class="attr" x="34" y="255">assunto (7 categorias propostas)</text>
+  <text class="small" x="34" y="273">"Outro" exige explicação</text>
+
+  <rect class="box" x="20" y="305" width="200" height="75" rx="10"/>
+  <text class="name" x="34" y="329">Local do campus</text>
+  <text class="attr" x="34" y="350">prédio ou área (catálogo)</text>
+  <text class="small" x="34" y="368">não é o GPS de quem reporta</text>
+
+  <rect class="box box--core" x="260" y="200" width="220" height="190" rx="10"/>
+  <text class="name" x="274" y="224">Alerta</text>
+  <text class="attr" x="274" y="246">tipo: Ocorrência | Pânico</text>
+  <text class="attr" x="274" y="264">protocolo opaco do servidor</text>
+  <text class="attr" x="274" y="282">local: GPS · manual · indisponível</text>
+  <text class="attr" x="274" y="300">severidade percebida / avaliada</text>
+  <text class="attr" x="274" y="318">prioridade (somente na triagem)</text>
+  <text class="attr" x="274" y="336">situação do atendimento</text>
+  <text class="attr" x="274" y="354">audiência solicitada / efetiva</text>
+  <text class="small" x="274" y="375">pânico: restrito, sem circuito social</text>
+
+  <rect class="box" x="520" y="245" width="200" height="95" rx="10"/>
+  <text class="name" x="534" y="269">Foto (anexo)</text>
+  <text class="attr" x="534" y="290">PNG ou JPEG, até 5 MB</text>
+  <text class="attr" x="534" y="308">privada; entrega autorizada</text>
+  <text class="small" x="534" y="327">nunca reaproveitada como pública</text>
+
+  <rect class="box box--note" x="780" y="200" width="200" height="330" rx="10"/>
+  <text class="name" x="794" y="224">Dimensões distintas</text>
+  <text class="attr" x="794" y="246">categoria = assunto</text>
+  <text class="attr" x="794" y="264">severidade = impacto</text>
+  <text class="attr" x="794" y="282">prioridade = triagem</text>
+  <text class="attr" x="794" y="300">situação = atendimento</text>
+  <text class="attr" x="794" y="318">audiência = autorização</text>
+  <text class="name" x="794" y="356">Premissas provisórias</text>
+  <text class="attr" x="794" y="378">foto opcional</text>
+  <text class="attr" x="794" y="396">restrita: autor + gestão</text>
+  <text class="attr" x="794" y="414">acesso de coordenação e</text>
+  <text class="attr" x="794" y="432">segurança a validar</text>
+  <text class="attr" x="794" y="450">identidade pública neutra</text>
+  <text class="attr" x="794" y="468">sem perfil público</text>
+  <text class="small" x="794" y="496">propostas, não aprovação</text>
+  <text class="small" x="794" y="513">da equipe</text>
+
+  <!-- Linha 3 -->
+  <rect class="box" x="20" y="440" width="200" height="110" rx="10"/>
+  <text class="name" x="34" y="464">Denúncia</text>
+  <text class="attr" x="34" y="486">motivo · situação da análise</text>
+  <text class="attr" x="34" y="503">uma por pessoa e alvo</text>
+  <text class="small" x="34" y="522">só denunciante e gestão veem</text>
+  <text class="small" x="34" y="538">não oculta conteúdo sozinha</text>
+
+  <rect class="box box--core" x="260" y="440" width="220" height="110" rx="10"/>
+  <text class="name" x="274" y="464">Publicação</text>
+  <text class="attr" x="274" y="486">ocorrência · aviso · notícia</text>
+  <text class="attr" x="274" y="503">texto e audiência próprios</text>
+  <text class="attr" x="274" y="520">aprovada não é publicada</text>
+  <text class="small" x="274" y="539">aviso expira; fonte pode ser nula</text>
+
+  <rect class="box" x="520" y="440" width="200" height="110" rx="10"/>
+  <text class="name" x="534" y="464">Comentário</text>
+  <text class="attr" x="534" y="486">raiz + 1 nível de respostas</text>
+  <text class="attr" x="534" y="503">acesso herdado da publicação</text>
+  <text class="small" x="534" y="522">remoção preserva respostas</text>
+</svg>

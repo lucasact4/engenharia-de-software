@@ -2501,6 +2501,19 @@
   font-weight: 700;
 }
 
+.apr-er--full {
+  max-height: min(56vh, 46em);
+}
+
+.apr-er__table--infra rect {
+  fill: #f4f7f6;
+}
+
+.apr-figure--conceptual .apr-figure__img {
+  max-height: min(60vh, 40em);
+  object-fit: contain;
+}
+
 /* Evidências */
 
 .apr-evidence {
@@ -2865,6 +2878,14 @@
 
   .apr-arch__svg {
     max-height: 95mm;
+  }
+
+  .apr-er--full {
+    max-height: 116mm;
+  }
+
+  .apr-figure--conceptual .apr-figure__img {
+    max-height: 120mm;
   }
 
   .apr-table-wrap {

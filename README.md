@@ -15,6 +15,7 @@ A reusable Ruby on Rails foundation for starting new Propósito Digital applicat
 - [Set up local development](docs/development.md)
 - [Decide whether SQLite is suitable for production](docs/sqlite-production.md)
 - [Back up and restore SQLite production data](docs/sqlite-backup-and-restore.md)
+- [Upgrade an existing database to the SGU data model](docs/data-model-upgrade.md)
 - [Migrate from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
 - [First deployment checklist](docs/first-deploy.md)
 - [New project delivery checklist](docs/project-delivery.md)
