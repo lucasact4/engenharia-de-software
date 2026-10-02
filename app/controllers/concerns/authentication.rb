@@ -28,7 +28,7 @@ module Authentication
     end
 
     def find_session_by_cookie
-      Session.find_by(id: cookies.signed[:session_id])
+      Session.joins(:user).merge(User.active).find_by(id: cookies.signed[:session_id])
     end
 
     def request_authentication
