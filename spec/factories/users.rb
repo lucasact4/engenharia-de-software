@@ -8,5 +8,15 @@ FactoryBot.define do
     trait :admin do
       admin { true }
     end
+
+    trait :inactive do
+      deleted_at { 1.day.ago }
+    end
+
+    trait :public_profile do
+      sequence(:username) { |n| "pessoa_#{n}" }
+      display_name { "Pessoa Fictícia" }
+      public_profile { true }
+    end
   end
 end
