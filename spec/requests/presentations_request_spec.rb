@@ -38,6 +38,59 @@ RSpec.describe "Presentation", type: :request do
     end
   end
 
+  it "draws only real tables and columns in the DER and covers every column in the detailed appendices" do
+    get presentation_path
+
+    connection = ActiveRecord::Base.connection
+    schema_tables = connection.tables - %w[schema_migrations ar_internal_metadata]
+    drawn = Hash.new { |hash, key| hash[key] = [] }
+
+    document.css(".apr-er__table[data-table]").each do |group|
+      table = group["data-table"]
+      columns = group.css(".apr-er__col").map(&:text)
+      expect(schema_tables).to include(table)
+      expect(columns - connection.columns(table).map(&:name)).to be_empty, "colunas inexistentes em #{table}"
+      drawn[table].concat(columns) unless group.ancestors("#s-modelo-dados").any?
+    end
+
+    schema_tables.each do |table|
+      expect(drawn[table]).to match_array(connection.columns(table).map(&:name)), "colunas de #{table} incompletas no DER"
+    end
+  end
+
+  it "keeps the conceptual model, the physical DER and the flow as distinct artifacts" do
+    get presentation_path
+
+    expect(document.at_css("#s-modelo-conceitual .apr-data-figure[data-diagram='conceptual']")).to be_present
+    expect(document.at_css("#s-fluxo-ocorrencias").text).to include("Fluxo de ocorrências e emergências")
+    expect(document.at_css("#s-fluxo-ocorrencias .apr-data-figure")).to be_nil
+    expect(document.at_css("#s-modelo-dados").text).to include("DER físico", Presentation.schema_version)
+    expect(document.at_css("#s-der-infraestrutura").text).to include("dogs", "preservado")
+    expect(document.at_css("#s-modelo-dados .apr-data-legend").text).to include("0..1")
+  end
+
+  it "uses HTML and CSS for every diagram of the catalog" do
+    get presentation_path
+
+    figures = document.css(".apr-data-figure")
+    expect(figures.map { |figure| figure["data-diagram"] }).to match_array(PresentationDiagram.load_all.keys)
+    expect(figures.css("svg, canvas, img")).to be_empty
+    expect(figures.css(".apr-data-line")).not_to be_empty
+  end
+
+  it "renders every foreign key in the detailed diagrams" do
+    get presentation_path
+
+    detailed = document.css("#s-der-operacional, #s-der-social, #s-der-infraestrutura")
+    drawn = detailed.css("[data-kind='foreign_key']").map do |edge|
+      [ edge["data-source"], edge["data-column"], edge["data-target"] ]
+    end
+    actual = ActiveRecord::Base.connection.tables.flat_map do |table|
+      ActiveRecord::Base.connection.foreign_keys(table).map { |edge| [ table, edge.column.to_s, edge.to_table ] }
+    end
+    expect(drawn).to match_array(actual)
+  end
+
   it "renders meeting agendas when the team supplies them" do
     presentation = Presentation.load
     presentation.gestao[:reunioes] = [

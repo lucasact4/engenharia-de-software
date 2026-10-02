@@ -116,7 +116,9 @@ O spec `spec/requests/presentations_request_spec.rb` falha se um conteúdo do ca
 | Linha do tempo (commits), capacidades e data da primeira entrega (base do status report) | `evolucao.yml` |
 | Protótipo, capturas de tela e paleta | `conceito_visual.yml` |
 | As duas funcionalidades completas | `funcionalidades.yml` |
-| Modelo conceitual, casos de uso (#14) e fluxo revisado (#5) | `diagramas.yml` |
+| Títulos, estado, versão e origem do modelo conceitual, casos de uso (#14) e fluxo revisado (#5) | `diagramas.yml` |
+| Tabelas, colunas, chaves estrangeiras e disposição do DER; conceitos e relações; componentes da arquitetura | `data_diagrams.yml` |
+| Renderização dos diagramas e estilo visual | `app/views/presentations/shared/_er_diagram.html.erb` e `app/assets/stylesheets/presentation.css` |
 | Stack, mudanças em relação à 1ª entrega e justificativas | `tecnologias.yml` |
 | Cards, links para ambientes, práticas e reuniões de monitoramento | `gestao.yml` |
 | Retrospectiva: data, formato, imagem, pontos, ações e lições | `retrospectiva.yml` |
@@ -141,6 +143,16 @@ Só marque `implementado` com evidência verificável (código, teste, captura).
 Campos vazios e blocos de pendência são intencionais: indicam conteúdo ainda não confirmado. Preencha requisitos, funcionalidades, reuniões e retrospectiva com registros reais; não invente decisões, participantes, testes, datas, links ou imagens. Atualize também o checklist da entrega em `entrega.yml` e marque `confirmado_pela_equipe: true` somente após a revisão da equipe.
 
 ## Imagens e diagramas
+
+O DER, o modelo conceitual e a arquitetura são desenhados em HTML/CSS pelo partial `_er_diagram.html.erb`. O catálogo `data_diagrams.yml` reúne tabelas, colunas, chaves estrangeiras e definições de cada diagrama. O modelo `PresentationDiagram` calcula os caminhos das conexões e rejeita entidades sobrepostas ou fora da área definida, sem consultar o banco. O DER mostra a versão lida de `db/schema.rb`.
+
+Ao criar uma migração, atualize `tables` e `foreign_keys` no catálogo; depois ajuste as entidades em `diagrams` quando necessário. A visão resumida seleciona algumas colunas, enquanto os apêndices operacional, social e de infraestrutura devem cobrir todas as colunas. Mantenha `required` e `unique` das chaves estrangeiras alinhados ao banco: esses valores definem as cardinalidades. Vínculos polimórficos ficam em `relations` e aparecem tracejados, pois não são chaves estrangeiras do banco.
+
+Para alterar o modelo conceitual ou a arquitetura, edite suas entidades e relações no mesmo catálogo. As coordenadas e larguras definem a disposição; a altura de cada entidade acompanha a quantidade de campos ou linhas. Ao revisar o modelo conceitual, atualize também estado, versão, origem e data em `diagramas.yml`; sua renderização usa `html_css`, sem caminho de imagem.
+
+Selecione uma entidade para destacar suas conexões e ler os vínculos e cardinalidades na faixa acima do desenho, também disponível ao **Ampliar**. A seção **Relações e cardinalidades** reúne todos os vínculos por escrito. Em telas pequenas, o diagrama permite rolagem interna para preservar o tamanho do texto. A escala de impressão é própria para o PDF; confira o resultado após mudar a disposição.
+
+Para imagens fornecidas pela equipe:
 
 1. Salve o arquivo em `app/assets/images/presentation/` (diagramas em `app/assets/images/presentation/diagramas/`, reuniões em `app/assets/images/presentation/reunioes/`).
 2. No YAML, informe o caminho relativo a `app/assets/images`. Exemplo: `presentation/diagramas/casos-de-uso-v1.png`.
@@ -167,9 +179,9 @@ As imagens existentes não são atualizadas automaticamente. Para refazê-las ma
 
 **Protótipo visual e capturas.** O que existe hoje são telas reais de landing e login, com capturas desktop e mobile. Se a equipe fizer um protótipo separado (Figma, Penpot ou papel fotografado), preencha `prototipo` em `conceito_visual.yml` com ferramenta, link público de visualização, captura e uma nota dizendo o que difere das telas implementadas. Para as capturas das telas reais, siga a seção acima.
 
-**Evidências das duas funcionalidades.** A equipe escolhe duas jornadas do SGU e só as declara completas quando cumprirem os critérios de `funcionalidades.yml`. Elementos herdados da base Rails (login, CRUD de exemplo `Dog`) não devem ser contados automaticamente: verifique sua relação com o escopo aprovado do SGU e se fazem parte de uma jornada completa e validada. Para cada uma, registre os requisitos atendidos, os passos da jornada, os arquivos de código, os specs que a cobrem, uma captura e como foi validada. Se a modelagem de ocorrências desenvolvida em outra branch (`card-6`) for integrada, cite apenas o que estiver nesta branch, com commit e testes.
+**Evidências das duas funcionalidades.** A equipe escolhe duas jornadas do SGU e só as declara completas quando cumprirem os critérios de `funcionalidades.yml`. Elementos herdados da base Rails (login, CRUD de exemplo `Dog`) não devem ser contados automaticamente: verifique sua relação com o escopo aprovado do SGU e se fazem parte de uma jornada completa e validada. Para cada uma, registre os requisitos atendidos, os passos da jornada, os arquivos de código, os specs que a cobrem, uma captura e como foi validada. O backend de ocorrências do card #6 (models, serviços e testes, já integrado) não tem telas: sozinho, não conta como funcionalidade completa.
 
-**Modelo conceitual (2ª entrega).** Mostre os conceitos do domínio e suas relações (ocorrência, categoria, status, visibilidade, localização, pessoa usuária, perfil de acesso…), com multiplicidades e sem tipos de coluna, chaves estrangeiras ou nomes de tabela. O apêndice “Modelo de dados atual” mostra o modelo físico de `db/schema.rb` e não substitui o conceitual. A branch `card-6` já contém os diagramas em HTML/CSS (commit `389dc12`, `PresentationDiagram` e `config/presentation/data_diagrams.yml`). Priorize integrar e revisar esse material antes de produzir outro diagrama. Nesta branch (`card-11`), `modelo-conceitual` em `diagramas.yml` ainda está sem imagem e o renderer em HTML/CSS não está integrado.
+**Modelo conceitual (2ª entrega).** O diagrama já existe em HTML/CSS (card #6, `data_diagrams.yml` → `conceptual`) e aparece no slide **Modelo conceitual**. Não produza outro: falta a revisão da equipe. Confira entidades, multiplicidades e premissas provisórias e, depois da aprovação registrada, atualize `estado`, `versao` e `data` em `diagramas.yml`. O DER físico fica nos apêndices e não substitui o modelo conceitual.
 
 **Retrospectiva.** Faça a dinâmica com a equipe (ex.: [funretrospectives.com](https://www.funretrospectives.com/), formato Manter / Melhorar / Experimentar). Fotografe ou capture o quadro real, sem dados pessoais além dos nomes. Preencha em `retrospectiva.yml`: `data`, `formato`, `imagem`, `imagem_descricao`, `pontos`, `acoes` (com responsável e prazo) e `licoes`. As lições também alimentam o status report.
 
@@ -181,9 +193,7 @@ As imagens existentes não são atualizadas automaticamente. Para refazê-las ma
 
 ### Situação atual dos materiais
 
-Levantamento feito em 02/10/2026 na branch `card-11`.
-
-**Diferença entre branches:** o `db/schema.rb` desta branch declara quatro tabelas de aplicação (`users`, `sessions`, `dogs` e `presentation_profiles`). O banco de desenvolvimento consultado mantém 22 tabelas de aplicação: as tabelas do domínio trabalhadas na `card-6` continuam presentes. Essa conferência de estrutura não reconstrói o histórico de todos os registros. Os diagramas em HTML/CSS daquela branch também ainda não estão no código da `card-11`. Isso exige integração de código e revisão do schema e das evidências. Executar seeds ou marcar checkboxes não integra branches. Não use reset do banco para resolver essa diferença.
+Levantamento feito em 02/10/2026 na branch `card-11`, após integrar a `main` (card #6).
 
 | Seção | Situação real | Material faltante | Onde preencher | Como produzir |
 | --- | --- | --- | --- | --- |
@@ -197,7 +207,7 @@ Levantamento feito em 02/10/2026 na branch `card-11`.
 | GitHub estruturado (2ª) | Implementado: repositório, CI e Dependabot | Código das duas funcionalidades | `funcionalidades.yml` (código e testes) | Ver "Evidências das duas funcionalidades" |
 | Duas funcionalidades completas (2ª) | Aguardando decisão: nenhuma escolhida | Escolha, implementação, testes, captura e validação | `funcionalidades.yml` → `itens` | Ver "Evidências das duas funcionalidades" |
 | Imagem da retrospectiva (2ª) | Aguardando evidência | Foto ou captura real, data e formato | `retrospectiva.yml` → `imagem`, `data`, `formato` | Ver "Retrospectiva" |
-| Modelo conceitual (2ª) | Pendente na `card-11`; material em HTML/CSS já existe na `card-6` | Integração e revisão do diagrama existente | `diagramas.yml` → `modelo-conceitual`; código e catálogo da `card-6` | Ver "Modelo conceitual" e integrar antes de produzir novamente |
+| Modelo conceitual (2ª) | Parcial: diagrama nativo produzido no card #6, com premissas provisórias | Revisão e aprovação da equipe | `data_diagrams.yml` → `conceptual`; `diagramas.yml` → `modelo-conceitual` | Ver "Modelo conceitual" |
 | Reuniões de monitoramento (2ª) | Aguardando evidência: nenhuma registrada | Data, participantes, pauta, decisões e evidência de cada reunião | `gestao.yml` → `reunioes` | Ver "Evidências de reuniões de monitoramento" |
 | O que foi feito desde a última entrega | Parcial: marcos até 30/09/2026; trabalho do card #11 não publicado | Commit publicado após o merge | `evolucao.yml` → `marcos` | Ver "Status report e próximos passos" |
 | Fluxo de ocorrências (card #5) | Aguardando evidência | Diagrama revisado | `diagramas.yml` → `fluxo-ocorrencias` | Exportar o fluxo revisado e preencher como os outros diagramas |
@@ -247,9 +257,9 @@ Execute dentro do Dev Container. Os testes de navegação com JavaScript precisa
 
 ```bash
 bundle exec rspec spec/models/presentation_spec.rb spec/models/presentation spec/models/presentation_profile_spec.rb \
-  spec/policies/presentation_profile_policy_spec.rb spec/requests/presentations_request_spec.rb \
+  spec/models/presentation_diagram_spec.rb spec/policies/presentation_profile_policy_spec.rb spec/requests/presentations_request_spec.rb \
   spec/requests/admin/presentation_profiles_request_spec.rb spec/helpers/presentations_helper_spec.rb \
-  spec/features/presentation_navigation_spec.rb spec/features/admin/presentation_profiles_features_spec.rb
+  spec/features/presentation_navigation_spec.rb spec/features/presentation_diagrams_spec.rb spec/features/admin/presentation_profiles_features_spec.rb
 ```
 
 Os specs conferem:
@@ -261,6 +271,8 @@ Os specs conferem:
 - acesso ao admin restrito a administradores;
 - renumeração, slides sem conteúdo omitidos, grupos vazios ocultos e aviso de tempo acima do limite;
 - no navegador: navegação por teclado sem entrar nos apêndices, fragmento inválido ou oculto, painel temporário (foco, Esc, ocultar o slide atual, restaurar, recarregar sem gravar no banco), índice e apêndices renumerados e quantidade de páginas impressas;
-- que o apêndice de modelo de dados lista todas as tabelas de `db/schema.rb`.
+- correspondência das tabelas, colunas e chaves estrangeiras do catálogo dos diagramas com o banco de teste, incluindo cobertura de todas as colunas nos apêndices do DER;
+- limites e disposição das entidades, caminhos das conexões e cardinalidades dos diagramas;
+- destaque de conexões e ampliação dos diagramas em HTML.
 
 Esses testes não conferem a disponibilidade ou as permissões dos links externos, a legibilidade do PDF nem o tempo de fala real. Abra Trello, GitHub e os registros compartilhados sem a sessão da equipe para conferir o acesso da professora. Teste a apresentação no celular e faça um ensaio cronometrado antes de cada entrega (até 7 minutos na segunda).

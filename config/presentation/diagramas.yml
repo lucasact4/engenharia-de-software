@@ -12,14 +12,19 @@
 itens:
   - id: modelo-conceitual
     titulo: "Modelo conceitual"
-    descricao: "Conceitos do domínio (ocorrência, categoria, status, pessoa usuária…) e suas relações."
+    descricao: "Pessoa usuária, papéis, alerta (ocorrência ou pânico), categoria, local, foto, publicação revisada, comentário, denúncia, interações e auditoria, com multiplicidades. Premissas provisórias a validar."
     exigido_em: "2ª entrega"
     card:
-    estado: aguardando_evidencia
+      numero: 6
+      titulo: "Modelar ocorrências e criar migração inicial"
+      url: "https://trello.com/c/a8kascTx/6-dados-modelar-ocorr%C3%AAncias-e-criar-migra%C3%A7%C3%A3o-inicial"
+    # parcial: diagrama produzido a partir do schema real; depende da revisão da equipe.
+    estado: parcial
     imagem:
-    versao:
-    origem:
-    data:
+    renderizacao: html_css
+    versao: "2"
+    origem: "Card #6 — derivado das migrações e do db/schema.rb"
+    data: 2026-10-02
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."

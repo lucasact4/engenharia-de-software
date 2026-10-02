@@ -1,0 +1,11 @@
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "DER físico · apêndice",
+      title: "Perfis, catálogos, alertas e auditoria",
+      lead: "Todas as colunas, conforme db/schema.rb (versão #{presentation.schema_version}). Conexões conferidas com as chaves estrangeiras; selecione uma entidade para destacar suas relações." %>
+
+<%= render "presentations/shared/er_diagram", key: "operational" %>
+
+<ul class="apr-footnotes" role="list">
+  <li><code>alerts</code> guarda ocorrência e pânico (<code>kind</code>), sem STI. CHECKs condicionais exigem título, descrição, categoria e local na ocorrência e mantêm o pânico restrito.</li>
+  <li>UQ* = único por autor (<code>author_id</code> + <code>client_request_id</code>), apenas quando a chave é informada. <code>audit_events</code> não tem FK para o assunto (polimórfico, tipos limitados no model).</li>
+</ul>

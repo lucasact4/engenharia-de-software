@@ -186,7 +186,19 @@ slides:
     apendice: true
     padrao: true
   - id: modelo-dados
-    titulo: "Modelo de dados atual"
+    titulo: "DER físico — núcleo"
+    apendice: true
+    padrao: true
+  - id: der-operacional
+    titulo: "DER — perfis, catálogos e alertas"
+    apendice: true
+    padrao: true
+  - id: der-social
+    titulo: "DER — publicações e base social"
+    apendice: true
+    padrao: true
+  - id: der-infraestrutura
+    titulo: "DER — infraestrutura"
     apendice: true
     padrao: true
   - id: evidencias

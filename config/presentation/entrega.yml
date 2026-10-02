@@ -107,9 +107,9 @@ entregas:
         observacao: "Adicionar a imagem real da retrospectiva."
         confirmado_pela_equipe: false
       - item: "Modelo conceitual"
-        estado: aguardando_evidencia
+        estado: parcial
         onde: modelo-conceitual
-        observacao: "Não confundir com o fluxograma (#5), com o diagrama de casos de uso (#14) nem com o banco atual."
+        observacao: "Modelo conceitual e DER do card #6 com premissas provisórias; aguarda revisão da equipe. Não substitui o fluxo (#5) nem os casos de uso (#14)."
         confirmado_pela_equipe: false
       - item: "Evidência de reuniões de monitoramento"
         estado: aguardando_evidencia

@@ -2,19 +2,22 @@
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "modelagem",
       title: "Modelo conceitual",
-      lead: "Conceitos do domínio e suas relações, independentes de tabelas e tecnologia." %>
+      lead: "Conceitos do domínio e multiplicidades, sem detalhes de tabela. Não substitui o fluxo (#5) nem os casos de uso (#14)." %>
 
-<%= presentation_item slide, "diagrama" do %>
-  <%= render "presentations/shared/diagram", item: item %>
+<%= presentation_item slide, "diagrama", class: "apr-model-diagram" do %>
+  <%= render "presentations/shared/er_diagram", key: "conceptual" %>
+  <p class="apr-diagram__meta"><%= [ item[:origem], ("versão #{item[:versao]}" if item[:versao].present?), presentation_date(item[:data]) ].compact_blank.join(" · ") %> <%= presentation_state(item[:estado], short: true) %></p>
 <% end %>
 
 <%= presentation_item slide, "distincao", class: "apr-model-note" do %>
   <p class="apr-label">Conceitual ≠ físico</p>
-  <p>
-    O modelo conceitual descreve o domínio do SGU (ocorrência, categoria, status, pessoa usuária…).
-    O banco atual (<code>users</code>, <code>sessions</code>, <code>dogs</code>, <code>presentation_profiles</code>) veio da base Rails e
-    do suporte a esta apresentação: é modelo físico e ainda não tem ocorrências.
-    <%= presentation_slide_ref "modelo-dados" do %><a class="apr-more" href="#s-modelo-dados">Ver o modelo físico no apêndice</a>.<% end %>
-  </p>
+  <ul class="apr-footnotes" role="list">
+    <li>As multiplicidades refletem as restrições do banco (ex.: alerta com 0..1 publicação; comentário com 0..1 comentário pai).</li>
+    <li>Itens marcados como premissas provisórias dependem de decisão da equipe e não representam aprovação de requisito.</li>
+    <li>
+      As tabelas reais de <code>db/schema.rb</code> ficam no DER físico.
+      <%= presentation_slide_ref "modelo-dados" do %><a class="apr-more" href="#s-modelo-dados">Ver o DER físico nos apêndices</a>.<% end %>
+    </li>
+  </ul>
 <% end %>
-<%= presentation_update_note("diagramas.yml", "imagem, versao, origem e data do modelo-conceitual.") %>
+<%= presentation_update_note("diagramas.yml", "versao, origem e data; estrutura do modelo em data_diagrams.yml.") %>

@@ -1,0 +1,11 @@
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "DER físico · apêndice",
+      title: "Publicações, comentários e base social",
+      lead: "Todas as colunas, conforme db/schema.rb (versão #{presentation.schema_version}). Somente modelos e regras: não há telas de feed, comentários ou moderação." %>
+
+<%= render "presentations/shared/er_diagram", key: "social" %>
+
+<ul class="apr-footnotes" role="list">
+  <li>Curtidas, favoritos, acompanhamentos e seguidores têm UNIQUE por par no banco; <code>user_follows</code> tem CHECK contra seguir a si mesmo. Nenhuma interação concede acesso.</li>
+  <li><code>content_reports</code>: exatamente um alvo (CHECK) e uma denúncia por pessoa e alvo (UNIQUE parcial).</li>
+</ul>

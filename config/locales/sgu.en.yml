@@ -1,0 +1,119 @@
+# SGU domain labels (English). Stored values are stable codes; only these texts may change.
+en:
+  sgu:
+    public_identity:
+      anonymous: "User"
+      editorial: "SGU team"
+  errors:
+    messages:
+      inactive: "is inactive and cannot be selected"
+      immutable: "cannot be changed after creation"
+      reason_required: "Provide a reason for this action."
+      required_for_occurrence: "is required for regular occurrences (GPS or catalog location)"
+      coordinates_pair: "Latitude and longitude must be provided together."
+      gps_coordinates_required: "GPS location requires latitude and longitude."
+      manual_without_coordinates: "Manual location selection does not store coordinates."
+      unavailable_without_location: "Unavailable location accepts neither a place nor coordinates."
+      gps_only: "only applies to GPS location"
+      unavailable_only: "only applies when the location is unavailable"
+      must_match_request: "can only be internal when the requested audience is internal"
+      panic_restricted: "must be restricted for panic requests"
+      only_when_closed: "can only be set when the alert is closed"
+      only_when_resolved: "can only be set after resolution"
+      resolved_requires_resolution: "\"resolved\" requires the alert to have been resolved first"
+      only_for_duplicate: "can only be set when the reason is duplicate"
+      self_reference: "cannot reference the record itself"
+      cycle: "would create a duplicate cycle"
+      not_eligible: "is not eligible for this alert type"
+      too_many: "accepts at most %{count} files"
+      content_type: "only accepts genuine PNG or JPEG files"
+      too_large: "accepts files up to %{megabytes} MB (1 MB = 1024 × 1024 bytes)"
+      reused_blob: "only accepts files uploaded in this request"
+      panic_not_publishable: "of panic type cannot be published"
+      incompatible_audience: "did not authorize this audience"
+      only_for_occurrence: "can only be linked to occurrence publications"
+      requires_current_approval: "requires approval of the current content version"
+      after_publication: "must be after publication"
+      not_submittable: "cannot be submitted for review in this state"
+      not_pending: "is not awaiting review"
+      source_review_pending: "The source alert changed after approval; review the publication again."
+      incompatible_source: "The source alert does not authorize this audience."
+      expires_in_future: "Expiration must be in the future when publishing."
+      notice_requires_expiration: "Notices require an expiration date."
+      other_publication: "belongs to another publication"
+      reply_depth: "is a reply; only root comments accept replies"
+      hidden: "was removed and does not accept replies"
+      self_follow: "cannot be your own account"
+      single_target: "A report must have exactly one target (publication or comment)."
+      reference_coordinates_pair: "Reference latitude and longitude must be provided together."
+      unavailable: "is not available to grant"
+  enums:
+    alert:
+      kind:
+        occurrence: { label: "Occurrence", description: "Campus situation with title, description, category and location." }
+        panic: { label: "Panic", description: "Simplified help request. No monitoring team has been defined yet." }
+      location_source:
+        gps: { label: "Device GPS", description: "Coordinates reported by the device. They do not prove the location." }
+        manual: { label: "Building or area", description: "Location selected from the campus catalog." }
+        unavailable: { label: "Location unavailable", description: "Accepted for panic requests only." }
+      location_unavailable_reason:
+        permission_denied: { label: "Permission denied", description: "The device did not allow location access." }
+        position_unavailable: { label: "Position unavailable", description: "The device could not determine its position." }
+        timeout: { label: "Timeout", description: "Location took too long." }
+        not_supported: { label: "Not supported", description: "The device does not provide location." }
+        not_shared: { label: "Not shared", description: "The person chose not to send the location." }
+      requested_visibility:
+        internal: { label: "Internal", description: "Authenticated people can see the record." }
+        restricted: { label: "Restricted", description: "Only you and the responsible team." }
+        public_external: { label: "Public", description: "Request for public disclosure, only after administrative review and publication. The record stays restricted." }
+      visibility:
+        internal: { label: "Internal", description: "Visible to authenticated people." }
+        restricted: { label: "Restricted", description: "Visible to the author and the responsible team." }
+      severity:
+        low: { label: "Low", description: "Nuisance without immediate risk." }
+        moderate: { label: "Moderate", description: "Affects the use of a space or service." }
+        high: { label: "High", description: "Relevant risk to people or property." }
+        critical: { label: "Critical", description: "Severe and immediate risk." }
+      priority:
+        low: { label: "Low", description: "Can wait in the regular queue." }
+        normal: { label: "Normal", description: "Regular order." }
+        high: { label: "High", description: "Handle before the others." }
+        urgent: { label: "Urgent", description: "Requires immediate action." }
+      status:
+        received: { label: "Received", description: "Stored by the system; not yet assessed." }
+        triaging: { label: "Triaging", description: "Team assessing severity, priority and assignee." }
+        in_progress: { label: "In progress", description: "Action under way." }
+        awaiting_information: { label: "Awaiting information", description: "The team needs more data." }
+        resolved: { label: "Resolved", description: "Problem solved; can be closed or reopened." }
+        closed: { label: "Closed", description: "Handling finished with a reason." }
+      closure_reason:
+        resolved: { label: "Resolved", description: "Closed after resolution." }
+        duplicate: { label: "Duplicate", description: "Another record covers the same fact." }
+        invalid: { label: "Invalid", description: "Unfounded record; requires an explanation." }
+        out_of_scope: { label: "Out of scope", description: "Not handled by SGU; requires an explanation." }
+        other: { label: "Other", description: "Other reason; requires an explanation." }
+    publication:
+      kind:
+        occurrence: { label: "Published occurrence", description: "Reviewed editorial text about an occurrence." }
+        notice: { label: "Temporary notice", description: "Announcement with a required expiration date." }
+        news: { label: "News", description: "Announcement without required expiration." }
+      visibility:
+        internal: { label: "Internal", description: "Authenticated people." }
+        public_external: { label: "Public", description: "Anyone, without login." }
+      review_status:
+        not_submitted: { label: "Not submitted", description: "Draft not yet submitted." }
+        pending: { label: "Under review", description: "Awaiting editorial decision." }
+        approved: { label: "Approved", description: "Approved version; still needs publishing." }
+        rejected: { label: "Rejected", description: "Review declined with justification." }
+      state:
+        draft: { label: "Draft", description: "Not live." }
+        published: { label: "Published", description: "Live for the defined audience." }
+        withdrawn: { label: "Withdrawn", description: "Removed with a reason." }
+    content_report:
+      reason:
+        spam: { label: "Spam", description: "Repetitive or promotional content." }
+        harassment: { label: "Harassment", description: "Attack or intimidation." }
+        misinformation: { label: "Misinformation", description: "Misleading content." }
+        privacy: { label: "Privacy", description: "Exposure of personal data." }
+        inappropriate: { label: "Inappropriate", description: "Offensive or unsuitable content." }
+        other: { label: "Other", description: "Other reason; requires details." }

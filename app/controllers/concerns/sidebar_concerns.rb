@@ -35,31 +35,6 @@ module SidebarConcerns
           url: { controller: "presentation_profiles", action: "index" },
           active: controller_path == "admin/presentation_profiles"
         }
-        # Submenu Example
-        # {
-        #   name: translate_view_application_shared("sidebar_menu.home"),
-        #   icon: "house",
-        #   policy: :dashboard,
-        #   url: { controller: "dashboard", action: "index" },
-        #   id_collapse: "tenant-collapse",
-        #   active: (controller_path == "admin/users" || controller_path == "admin/users"),
-        #   items: [
-        #       {
-        #         name: t("users.plural"),
-        #         icon: "user",
-        #         policy: :user,
-        #         url: { controller: "users", action: "index" },
-        #         active: controller_path == "admin/users"
-        #       },
-        #       {
-        #         name: t("users.plural"),
-        #         icon: "user",
-        #         policy: :user,
-        #         url: { controller: "users", action: "index" },
-        #         active: controller_path == "admin/users"
-        #       }
-        #   ]
-        # }
       ]
     end
   end

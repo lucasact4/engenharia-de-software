@@ -24,9 +24,9 @@ Rails.application.configure do
 
   if defined?(BetterErrors)
     # 'C:/Users/diogo/ruby/rails_base'
-    if ENV['PROJECT_HOST_PATH']
+    if ENV["PROJECT_HOST_PATH"]
       BetterErrors.editor = proc { |full_path, line|
-        full_path = full_path.sub(Rails.root.to_s, ENV['PROJECT_HOST_PATH'])
+        full_path = full_path.sub(Rails.root.to_s, ENV["PROJECT_HOST_PATH"])
         # for sublime
         # "subl://open?url=file://#{full_path}&line=#{line}"
         # for vscode

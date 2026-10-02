@@ -1,3 +1,4 @@
+# Administração de contas, permitida somente a administradores ativos.
 class UserPolicy < ApplicationPolicy
   def menu?
     admin?
@@ -25,7 +26,7 @@ class UserPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      return scope.none unless user&.admin?
+      return scope.none unless active_admin?
 
       scope.where(deleted_at: nil)
     end
@@ -34,6 +35,6 @@ class UserPolicy < ApplicationPolicy
   private
 
     def admin?
-      user&.admin?
+      active_admin?
     end
 end

@@ -142,12 +142,15 @@ end
     expect(presentation.version_for({ versao_ruby: true })).to eq(RUBY_VERSION)
   end
 
-  it "shows every table of db/schema.rb in the data model appendix" do
+  it "shows every table of db/schema.rb in the DER appendices" do
     tables = Rails.root.join("db/schema.rb").read.scan(/create_table "(\w+)"/).flatten
-    partial = Rails.root.join("app/views/presentations/slides/_modelo_dados.html.erb").read
+    drawn = PresentationDiagram.load_all.values.flat_map do |diagram|
+      diagram.nodes.filter_map { |node| node["table"] unless node["reference"] }
+    end.uniq
+    expect(drawn).to match_array(tables)
+  end
 
-    tables.each do |table|
-      expect(partial).to include(%(name: "#{table}")), "tabela #{table} ausente no apêndice de modelo de dados"
-    end
+  it "stamps the DER with the current schema version" do
+    expect(presentation.schema_version).to eq(ActiveRecord::Base.connection_pool.migration_context.current_version.to_s.sub(/\A(\d{4})(\d{2})(\d{2})(\d{6})\z/, '\1_\2_\3_\4'))
   end
 end

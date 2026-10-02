@@ -1,4 +1,9 @@
 module PresentationsHelper
+  def presentation_diagram(key)
+    @presentation_diagrams ||= PresentationDiagram.load_all
+    @presentation_diagrams.fetch(key)
+  end
+
   STATE_ICONS = {
     "implementado" => "✓",
     "parcial" => "", # meio círculo desenhado em CSS

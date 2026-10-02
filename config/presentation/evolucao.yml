@@ -25,6 +25,10 @@ marcos:
     titulo: "Apresentação da 2ª entrega"
     texto: "Card #11 em andamento na branch card-11 (ainda não publicado)."
     commit:
+  - data: 2026-10-01
+    titulo: "Modelo de dados das ocorrências"
+    texto: "Card #6: migrações, regras e testes do backend e DER na apresentação (ainda não publicado)."
+    commit:
 
 # Situação das capacidades do produto.
 # origem: "sgu" (feito para o SGU) ou "base" (herdado da base Rails).
@@ -60,15 +64,15 @@ capacidades:
     nota: "Só a vitrine visual, sem dados reais."
     evidencia: "app/views/home/index.html.erb"
   - nome: "Registro de ocorrência"
-    estado: planejado
+    estado: parcial
     origem: sgu
-    nota: "Sem modelo nem tabela no schema."
-    evidencia: "db/schema.rb"
+    nota: "Modelo, migrações, regras e testes no backend (card #6); sem tela de registro."
+    evidencia: "app/models/alert.rb"
   - nome: "Feed público real"
     estado: planejado
     origem: sgu
-    nota: "Depende da ocorrência e da visibilidade."
-    evidencia:
+    nota: "Base editorial revisada (Publication) no backend; sem tela nem conteúdo real."
+    evidencia: "app/models/publication.rb"
   - nome: "Mapa e localização"
     estado: planejado
     origem: sgu
@@ -77,8 +81,8 @@ capacidades:
   - nome: "Emergência / pânico"
     estado: planejado
     origem: sgu
-    nota: "Fluxo em revisão (#5)."
-    evidencia:
+    nota: "Registro idempotente no backend (card #6); sem tela e sem equipe de recebimento definida (#5)."
+    evidencia: "app/services/alerts/create_panic.rb"
   - nome: "Cadastro institucional"
     estado: aguardando_decisao
     origem: sgu
@@ -89,3 +93,4 @@ capacidades:
 observacoes:
   - "Dog é uma entidade de exemplo do template (CRUD administrativo), não uma ocorrência do SGU."
   - "Os testes existentes cobrem principalmente o que foi herdado da base; eles não comprovam funcionalidades do SGU."
+  - "O card #6 entrega backend e DER, sem telas do produto: não conta como funcionalidade completa."
