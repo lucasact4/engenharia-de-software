@@ -50,6 +50,10 @@ class Presentation
     new(data)
   end
 
+  def self.schema_version
+    Rails.root.join("db/schema.rb").read[/define\(version: ([\d_]+)\)/, 1]
+  end
+
   def self.locked_gem_versions
     @locked_gem_versions ||= Bundler::LockfileParser
       .new(Bundler.read_file(Bundler.default_lockfile))
@@ -101,6 +105,8 @@ class Presentation
   def total_seconds
     main_slides.sum(&:seconds)
   end
+
+  def schema_version = self.class.schema_version
 
   def version_for(item)
     return RUBY_VERSION if item[:versao_ruby]
