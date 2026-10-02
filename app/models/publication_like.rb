@@ -1,4 +1,3 @@
-# Curtida em publicação.
 
 class PublicationLike < ApplicationRecord
   belongs_to :user

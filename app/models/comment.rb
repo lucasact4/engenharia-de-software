@@ -1,4 +1,4 @@
-# Comentário de uma Publication. Premissa inicial: raiz + um nível de respostas.
+# Comentários com um nível de respostas; remoção preserva a conversa.
 class Comment < ApplicationRecord
   BODY_LENGTH = 1..2000
 

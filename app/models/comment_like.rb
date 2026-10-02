@@ -1,4 +1,3 @@
-# Curtida em comentário.
 class CommentLike < ApplicationRecord
   belongs_to :user
   belongs_to :comment

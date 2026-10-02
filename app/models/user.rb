@@ -1,3 +1,4 @@
+# Conta de acesso; perfis institucionais são múltiplos e users.admin define a administração.
 class User < ApplicationRecord
   USERNAME_FORMAT = /\A[a-z0-9_]{3,30}\z/
 

@@ -1,5 +1,4 @@
-# Concessão de um papel a uma pessoa. Criada e removida apenas por Roles::Grant e
-
+# Vínculo institucional concedido ou revogado pelos serviços Roles.
 class UserRole < ApplicationRecord
   belongs_to :user
   belongs_to :role

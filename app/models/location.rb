@@ -1,5 +1,4 @@
-# Prédio ou área do campus para seleção manual. O catálogo nasce vazio: não há nomes nem
-
+# Local do campus para seleção manual; o catálogo aguarda os dados oficiais.
 class Location < ApplicationRecord
   include CatalogEntry
 

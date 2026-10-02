@@ -36,9 +36,9 @@ class Publication < ApplicationRecord
   def self.compatible_sources_for(visibility)
     case visibility.to_s
     when "internal"
-      Alert.occurrence.where(requested_visibility: "internal", visibility: "internal")
+      Alert.occurrence.where(publication_blocked: false).where(requested_visibility: "internal", visibility: "internal")
     when "public_external"
-      Alert.occurrence.where(requested_visibility: "public_external")
+      Alert.occurrence.where(publication_blocked: false).where(requested_visibility: "public_external")
     else
       Alert.none
     end

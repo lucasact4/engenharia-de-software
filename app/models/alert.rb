@@ -1,11 +1,9 @@
-# Registro operacional de uma ocorrência comum (occurrence) ou de um pedido de pânico (panic).
-
+# Registro de ocorrência ou pânico; a divulgação editorial fica em Publication.
 class Alert < ApplicationRecord
   TITLE_LENGTH = 5..160
   DESCRIPTION_LENGTH = 10..5000
   CATEGORY_DETAILS_MAX = 500
   MAX_PHOTOS = 5
-  # Convenção única do projeto: 1 MB = 1024 * 1024 bytes (MiB).
   MAX_PHOTO_BYTES = 5 * 1024 * 1024
   PHOTO_CONTENT_TYPES = %w[image/png image/jpeg].freeze
 

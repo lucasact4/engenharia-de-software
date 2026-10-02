@@ -1,10 +1,9 @@
-# Trilha de auditoria append-only na API da aplicação.
-
+# Histórico imutável pela API da aplicação, com campos limitados para evitar dados sensíveis.
 class AuditEvent < ApplicationRecord
   SUBJECT_TYPES = %w[Alert Publication Comment ContentReport User].freeze
 
   ALLOWED_CHANGES = {
-    "Alert" => %w[status priority assessed_severity assigned_to_id visibility requested_visibility
+    "Alert" => %w[status priority assessed_severity assigned_to_id visibility requested_visibility publication_blocked
                   closure_reason duplicate_of_id resolved_at closed_at],
     "Publication" => %w[state review_status visibility content_version reviewed_content_version
                         expires_at comments_enabled published_at withdrawn_at source_changed_at],
@@ -34,7 +33,6 @@ class AuditEvent < ApplicationRecord
     persisted? || super
   end
 
-  # changes: { "status" => [antes, depois] }.
   def self.record!(actor:, action:, subject:, changes: {}, reason: nil, metadata: {})
     allowed = ALLOWED_CHANGES.fetch(subject.class.name, [])
     create!(
