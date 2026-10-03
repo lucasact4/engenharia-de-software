@@ -1,7 +1,16 @@
 # Separa acesso editorial e leitura; verifica aprovação, validade e audiência da fonte.
 class PublicationPolicy < ApplicationPolicy
+  def menu?
+    active_admin?
+  end
+
   def index?
     true
+  end
+
+  # Gestão editorial (listas e detalhes administrativos, inclusive rascunhos).
+  def manage?
+    active_admin?
   end
 
   def show?
@@ -45,6 +54,13 @@ class PublicationPolicy < ApplicationPolicy
     def resolve
       return scope.all if active_admin?
 
+      FeedScope.new(user, scope).resolve
+    end
+  end
+
+  # O que está no ar para quem lê, inclusive para administradores (rascunhos ficam no admin).
+  class FeedScope < ApplicationPolicy::Scope
+    def resolve
       visible = scope
         .where(state: "published", review_status: "approved")
         .where("publications.reviewed_content_version = publications.content_version")
