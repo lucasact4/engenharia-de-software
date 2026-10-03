@@ -34,7 +34,7 @@ Start the development processes:
 bin/dev
 ```
 
-Open `http://localhost:3000` and confirm that the home page loads. The administrative area is available at `/admin`.
+Open `http://localhost:3000` and confirm that the home page loads. Administrators land on `/admin` after signing in; other accounts land on `/painel`.
 
 ## 3. Establish the project baseline
 

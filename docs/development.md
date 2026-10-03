@@ -47,7 +47,7 @@ Start Rails and the Tailwind watcher together:
 bin/dev
 ```
 
-The application is available at `http://localhost:3000`. The administrative area is at `http://localhost:3000/admin`.
+The application is available at `http://localhost:3000`. Administrators land on `/admin` after signing in; other accounts land on `/painel`.
 
 To run only Rails:
 
