@@ -27,7 +27,7 @@ module Alerts
 
       Alert.transaction do
         @alert.save!
-        flagged = flag_publication
+        flagged = self.class.flag_publication(actor, @alert)
         AuditEvent.record!(
           actor: actor, action: "alert.content_updated", subject: @alert,
           metadata: { fields: fields, photos_count: @photos.size, source: (flagged ? "publication_flagged" : nil) }
@@ -36,18 +36,17 @@ module Alerts
       @alert
     end
 
-    private
+    # Fonte alterada marca a publicação para nova revisão, sem copiar o texto operacional.
+    def self.flag_publication(actor, alert)
+      publication = alert.publication
+      return false if publication.nil?
 
-      def flag_publication
-        publication = @alert.publication
-        return false if publication.nil?
-
-        publication.update!(source_changed_at: Time.current)
-        AuditEvent.record!(
-          actor: actor, action: "publication.source_changed", subject: publication,
-          changes: { "source_changed_at" => [ nil, publication.source_changed_at ] }
-        )
-        true
-      end
+      publication.update!(source_changed_at: Time.current)
+      AuditEvent.record!(
+        actor: actor, action: "publication.source_changed", subject: publication,
+        changes: { "source_changed_at" => [ nil, publication.source_changed_at ] }
+      )
+      true
+    end
   end
 end
