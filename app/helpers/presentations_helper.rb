@@ -38,7 +38,7 @@ module PresentationsHelper
     presentation_link(sha.first(7), url, class: "apr-code apr-code--link")
   end
 
-  def presentation_path(path)
+  def presentation_file_path(path)
     tag.code(path, class: "apr-code") if path.present?
   end
 
