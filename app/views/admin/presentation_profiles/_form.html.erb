@@ -28,24 +28,24 @@
       <%= f.select :delivery,
             @presentation.deliveries.map { |delivery| [ "#{delivery[:titulo]}#{" (até #{delivery[:duracao_maxima_minutos]} min)" if delivery[:duracao_maxima_minutos]}", delivery[:id] ] },
             {}, class: "form-control", data: { presentation_profile_form_target: "delivery" } %>
-      <p class="mt-1 text-xs text-slate-500">Define os nomes dos slides, a capa, as exigências do checklist e o limite de tempo.</p>
+      <p class="mt-1 text-xs text-muted">Define os nomes dos slides, a capa, as exigências do checklist e o limite de tempo.</p>
     </div>
     <div class="lg:col-span-2">
       <%= f.label :description, "Descrição (opcional)", class: "form-label" %>
       <%= f.text_area :description, rows: 2, maxlength: 500, class: "form-control", placeholder: "Para quando e por que usar este perfil" %>
     </div>
     <div class="lg:col-span-2">
-      <label class="inline-flex items-start gap-2 text-sm text-slate-800">
-        <%= f.check_box :active, class: "mt-0.5 size-4 rounded border-slate-300" %>
+      <label class="inline-flex items-start gap-2 text-sm text-ink">
+        <%= f.check_box :active, class: "mt-0.5 size-4 rounded border-line" %>
         <span>
           <strong>Perfil padrão da apresentação pública</strong>
-          <span class="block text-xs text-slate-500">Ao salvar marcado, este perfil passa a ser o usado em /apresentacao e o anterior deixa de ser padrão.</span>
+          <span class="block text-xs text-muted">Ao salvar marcado, este perfil passa a ser o usado em /apresentacao e o anterior deixa de ser padrão.</span>
         </span>
       </label>
     </div>
   </div>
 
-  <div class="mt-6 rounded-xl border px-4 py-3 text-sm <%= selection.over_limit? ? 'border-red-200 bg-red-50 text-red-800' : 'border-slate-200 bg-slate-50 text-slate-700' %>"
+  <div class="mt-6 rounded-xl border px-4 py-3 text-sm <%= selection.over_limit? ? 'border-negative-line bg-negative-soft text-negative-ink' : 'border-line bg-surface-muted text-ink' %>"
        data-presentation-profile-form-target="estimateBox" role="status" aria-live="polite">
     <p class="font-semibold" data-presentation-profile-form-target="estimate"><%= presentation_estimate_text(selection) %></p>
     <p class="mt-1 text-xs">Soma dos tempos do <code>roteiro.yml</code> para os slides principais marcados. É uma estimativa e não garante a duração real.</p>
@@ -53,34 +53,34 @@
 
   <% @presentation.slide_groups(selection.delivery).each_with_index do |(key, group, slides), group_index| %>
     <section class="mt-6" aria-labelledby="profile-group-<%= group_index %>">
-      <h2 id="profile-group-<%= group_index %>" class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600"><%= group %></h2>
+      <h2 id="profile-group-<%= group_index %>" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted"><%= group %></h2>
       <ul class="space-y-2" role="list" data-presentation-profile-form-target="group" data-profile-group="<%= key %>">
         <% slides.each do |slide| %>
           <% field = "presentation_profile[selections][#{slide.id}]" %>
           <% input_id = "selection_#{slide.id.underscore}" %>
           <% hint_id = "#{input_id}_hint" %>
-          <li class="rounded-xl border border-slate-200 bg-white" data-presentation-profile-form-target="slide" data-slide-id="<%= slide.id %>">
+          <li class="rounded-xl border border-line bg-surface" data-presentation-profile-form-target="slide" data-slide-id="<%= slide.id %>">
             <fieldset class="px-4 py-3">
               <% requirement = selection.requirement_label(slide) %>
               <legend class="sr-only" data-slide-title><%= selection.slide_title(slide) %></legend>
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <% if slide.required %>
-                  <input type="checkbox" id="<%= input_id %>" checked disabled class="size-4 rounded border-slate-300" aria-describedby="<%= hint_id %>">
+                  <input type="checkbox" id="<%= input_id %>" checked disabled class="size-4 rounded border-line" aria-describedby="<%= hint_id %>">
                 <% else %>
                   <%= hidden_field_tag field, "0", id: nil %>
-                  <%= check_box_tag field, "1", selection.chosen?(slide.id), id: input_id, class: "size-4 rounded border-slate-300", aria: { describedby: hint_id }, data: { key: slide.id } %>
+                  <%= check_box_tag field, "1", selection.chosen?(slide.id), id: input_id, class: "size-4 rounded border-line", aria: { describedby: hint_id }, data: { key: slide.id } %>
                 <% end %>
-                <label for="<%= input_id %>" class="min-w-0 break-words text-sm font-semibold text-slate-900" data-slide-title><%= selection.slide_title(slide) %></label>
-                <span class="rounded-full border px-2 py-0.5 text-xs font-medium <%= requirement.to_s.end_with?("omplementar") ? "border-slate-200 bg-slate-50 text-slate-500" : "border-emerald-200 bg-emerald-50 text-emerald-800" %>" data-slide-label <%= "hidden" unless requirement %>><%= requirement %></span>
+                <label for="<%= input_id %>" class="min-w-0 break-words text-sm font-semibold text-ink" data-slide-title><%= selection.slide_title(slide) %></label>
+                <span class="rounded-full border px-2 py-0.5 text-xs font-medium <%= requirement.to_s.end_with?("omplementar") ? "border-line bg-surface-muted text-muted" : "border-positive-line bg-positive-soft text-positive-ink" %>" data-slide-label <%= "hidden" unless requirement %>><%= requirement %></span>
                 <% if slide.required %>
-                  <span class="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Obrigatório</span>
+                  <span class="rounded-full border border-line bg-surface-muted px-2 py-0.5 text-xs font-medium text-ink">Obrigatório</span>
                 <% end %>
                 <% if slide.seconds.positive? && !slide.appendix %>
-                  <span class="text-xs text-slate-500"><%= presentation_duration(slide.seconds) %></span>
+                  <span class="text-xs text-muted"><%= presentation_duration(slide.seconds) %></span>
                 <% end %>
-                <code class="ms-auto text-xs text-slate-400"><%= slide.id %></code>
+                <code class="ms-auto text-xs text-subtle"><%= slide.id %></code>
               </div>
-              <p id="<%= hint_id %>" class="mt-1 text-xs text-amber-800" data-hint><%=
+              <p id="<%= hint_id %>" class="mt-1 text-xs text-warning-ink" data-hint><%=
                 if slide.required
                   "Sempre exibido; não pode ser ocultado."
                 elsif selection.without_content?(slide)
@@ -92,7 +92,7 @@
 
               <% if slide.items.any? %>
                 <details class="mt-2" open>
-                  <summary class="cursor-pointer text-xs font-medium text-slate-600">
+                  <summary class="cursor-pointer text-xs font-medium text-muted">
                     Conteúdos do slide (<span data-count><%= slide.items.count { |item| selection.chosen?(item.key) } %></span> de <%= slide.items.size %> marcados)
                   </summary>
                   <ul class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 ps-6 sm:grid-cols-2 <%= 'opacity-60' unless selection.chosen?(slide.id) %>" role="list" data-items aria-label="Conteúdos de <%= selection.slide_title(slide) %>" data-slide-contents-label>
@@ -101,11 +101,11 @@
                       <% item_id = "selection_#{item.key.tr('.-', '__')}" %>
                       <li class="<%= 'ps-5' if item.parent_key %>">
                         <%= hidden_field_tag item_field, "0", id: nil %>
-                        <label for="<%= item_id %>" class="inline-flex items-start gap-2 py-0.5 text-sm text-slate-700">
-                          <%= check_box_tag item_field, "1", selection.chosen?(item.key), id: item_id, class: "mt-0.5 size-4 rounded border-slate-300", data: { key: item.key } %>
+                        <label for="<%= item_id %>" class="inline-flex items-start gap-2 py-0.5 text-sm text-ink">
+                          <%= check_box_tag item_field, "1", selection.chosen?(item.key), id: item_id, class: "mt-0.5 size-4 rounded border-line", data: { key: item.key } %>
                           <span>
                             <%= item.title %>
-                            <% if item.parent_key %><span class="text-xs text-slate-500">(aparece com “<%= @presentation.item(item.parent_key).title %>”)</span><% end %>
+                            <% if item.parent_key %><span class="text-xs text-muted">(aparece com “<%= @presentation.item(item.parent_key).title %>”)</span><% end %>
                           </span>
                         </label>
                       </li>
@@ -120,7 +120,7 @@
     </section>
   <% end %>
 
-  <div class="sticky bottom-0 mt-6 flex flex-col-reverse gap-2 border-t border-slate-200 bg-white/95 py-3 sm:flex-row sm:justify-end">
+  <div class="sticky bottom-0 mt-6 flex flex-col-reverse gap-2 border-t border-line bg-surface/95 py-3 sm:flex-row sm:justify-end">
     <%= link_to "Voltar", admin_presentation_profiles_path, class: "btn-secondary w-full sm:w-auto" %>
     <% if @instance.persisted? %>
       <%= link_to presentation_path(locale: nil, perfil: @instance.id), class: "btn-secondary w-full sm:w-auto", target: "_blank", rel: "noopener" do %>

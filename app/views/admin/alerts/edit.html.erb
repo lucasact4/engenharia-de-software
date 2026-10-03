@@ -1,0 +1,7 @@
+<% content_for :title, "Corrigir #{@alert.protocol}" %>
+<div class="mx-auto max-w-3xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_alert_path(@alert), back_label: @alert.protocol, eyebrow: "Correção administrativa", title: "Corrigir relato",
+        description: "Use para corrigir texto ou categoria (ex.: dados pessoais expostos, categoria errada). A alteração e o motivo ficam no histórico; uma publicação vinculada é marcada para nova revisão." %>
+  <%= render "shared/alerts/form", alert: @alert, options: @options, url: admin_alert_path(@alert), method: :patch,
+        mode: :correct, cancel_path: admin_alert_path(@alert) %>
+</div>

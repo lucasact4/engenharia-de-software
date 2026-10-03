@@ -1,0 +1,101 @@
+<%# Seções do alerta conforme o leitor (AlertDetailPresenter). Texto do usuário sempre escapado. %>
+<% alert = detail.alert %>
+<div class="space-y-5">
+  <% if alert.panic? %>
+    <section class="rounded-2xl border border-negative-line bg-negative-soft p-5 text-sm text-negative-ink">
+      <p class="font-bold">O sistema recebeu este pedido de ajuda.</p>
+      <p class="mt-1">Isso não significa que uma pessoa já viu o pedido nem que socorro foi acionado. O SGU não despacha equipes nem rastreia localização. Em risco imediato, procure ajuda presencial ou os serviços de emergência.</p>
+    </section>
+  <% end %>
+
+  <section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_<%= alert.id %>_identification">
+    <h2 id="alert_<%= alert.id %>_identification" class="sgu-section-title">Identificação</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>Protocolo</dt><dd class="font-mono"><%= alert.protocol %></dd>
+      <dt>Tipo</dt><dd><%= enum_label("alert.kind", alert.kind) %></dd>
+      <dt>Registrado em</dt><dd><%= sgu_time(alert.created_at) %></dd>
+      <% if (author = detail.author_label) %>
+        <dt>Autoria</dt><dd><%= author %></dd>
+      <% end %>
+      <% if (assignee = detail.assignee_label) %>
+        <dt>Responsável</dt><dd><%= assignee %></dd>
+      <% end %>
+    </dl>
+  </section>
+
+  <% if alert.occurrence? || alert.description.present? %>
+    <section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_<%= alert.id %>_report">
+      <h2 id="alert_<%= alert.id %>_report" class="sgu-section-title">Relato</h2>
+      <% if alert.description.present? %>
+        <p class="sgu-prose mt-3"><%= alert.description %></p>
+      <% else %>
+        <p class="mt-3 text-sm text-muted">Sem descrição.</p>
+      <% end %>
+      <dl class="sgu-dl mt-5">
+        <% if alert.category %>
+          <dt>Categoria</dt>
+          <dd><%= alert.category.name %><% unless alert.category.active? %> <span class="sgu-badge sgu-badge-slate">inativa no catálogo</span><% end %></dd>
+        <% end %>
+        <% if alert.category_other_description.present? %>
+          <dt>Detalhamento</dt><dd class="sgu-prose"><%= alert.category_other_description %></dd>
+        <% end %>
+        <dt>Severidade percebida</dt><dd><%= alert_severity_badge(alert.reported_severity) %></dd>
+      </dl>
+    </section>
+  <% end %>
+
+  <section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_<%= alert.id %>_location">
+    <h2 id="alert_<%= alert.id %>_location" class="sgu-section-title">Localização</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>Origem</dt><dd><%= enum_label("alert.location_source", alert.location_source) %></dd>
+      <dt>Local</dt>
+      <dd>
+        <%= detail.location_label %>
+        <% if alert.location && !alert.location.active? %> <span class="sgu-badge sgu-badge-slate">inativo no catálogo</span><% end %>
+      </dd>
+      <% if alert.location_unavailable? && alert.location_unavailable_reason.present? %>
+        <dt>Motivo</dt><dd><%= enum_label("alert.location_unavailable_reason", alert.location_unavailable_reason) %></dd>
+      <% end %>
+      <% if (coordinates = detail.coordinates) %>
+        <dt>Coordenadas</dt>
+        <dd>
+          <span class="font-mono"><%= format("%.6f", coordinates[:latitude]) %>, <%= format("%.6f", coordinates[:longitude]) %></span>
+          <% if coordinates[:accuracy] %> · precisão ≈ <%= number_with_precision(coordinates[:accuracy], precision: 0) %> m<% end %>
+          <% if coordinates[:captured_at] %> · capturadas em <%= sgu_time(coordinates[:captured_at]) %><% end %>
+        </dd>
+      <% end %>
+    </dl>
+  </section>
+
+  <section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_<%= alert.id %>_status">
+    <h2 id="alert_<%= alert.id %>_status" class="sgu-section-title">Situação do atendimento</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>Situação</dt><dd><%= alert_status_badge(alert) %> <span class="ml-1 text-muted"><%= enum_description("alert.status", alert.status) %></span></dd>
+      <% if detail.operational? %>
+        <dt>Severidade avaliada</dt><dd><%= alert_severity_badge(alert.assessed_severity, empty: "Ainda não avaliada") %></dd>
+        <dt>Prioridade</dt><dd><%= alert_priority_badge(alert) %></dd>
+      <% end %>
+      <% if alert.resolved_at %><dt>Resolvido em</dt><dd><%= sgu_time(alert.resolved_at) %></dd><% end %>
+      <% if alert.closed? %>
+        <dt>Encerrado em</dt><dd><%= sgu_time(alert.closed_at) %></dd>
+        <dt>Motivo do encerramento</dt><dd><%= enum_label("alert.closure_reason", alert.closure_reason) %></dd>
+        <% if (detail.operational?) && alert.closure_notes.present? %>
+          <dt>Explicação</dt><dd class="sgu-prose"><%= alert.closure_notes %></dd>
+        <% end %>
+        <% if detail.operational? && alert.duplicate_of && AlertPolicy.new(detail.viewer, alert.duplicate_of).show? %>
+          <dt>Alerta original</dt><dd class="font-mono"><%= alert.duplicate_of.protocol %></dd>
+        <% end %>
+      <% end %>
+      <% if alert.occurrence? && detail.operational? %>
+        <dt>Audiência solicitada</dt><dd><%= enum_label("alert.requested_visibility", alert.requested_visibility) %></dd>
+      <% end %>
+    </dl>
+  </section>
+
+  <% photos = detail.photos %>
+  <% if photos.any? %>
+    <%= render "shared/alerts/photos", alert: alert, photos: photos, removable: local_assigns[:removable_photos], return_to: local_assigns[:return_to] %>
+  <% end %>
+
+  <%= render "shared/alerts/history", detail: detail %>
+</div>

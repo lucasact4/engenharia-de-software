@@ -1,0 +1,9 @@
+<% content_for :title, "Ação não permitida - SGU UFRPE" %>
+<section class="sgu-card mx-auto max-w-xl p-6 text-center sm:p-10">
+  <p class="text-sm font-bold uppercase tracking-[0.16em] text-brand-link">Erro 403</p>
+  <h1 class="mt-3 text-2xl font-bold text-ink">Ação não permitida</h1>
+  <p class="mt-3 text-muted">Sua conta não tem permissão para esta ação, ou a situação do registro mudou e ela deixou de ser possível. Nada foi alterado.</p>
+  <div class="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
+    <%= link_to "Voltar ao painel", (authenticated? ? panel_path : root_path(locale: nil)), class: "sgu-btn sgu-btn-primary" %>
+  </div>
+</section>

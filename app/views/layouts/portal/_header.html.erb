@@ -1,0 +1,57 @@
+<% user = Current.user %>
+<header class="sticky top-0 z-50 border-b border-line/80 bg-surface/95 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+    <%= link_to (user ? panel_path : root_path(locale: nil)), class: "flex shrink-0 items-center gap-2.5 !text-ink", aria: { label: "SGU UFRPE, início" } do %>
+      <span class="grid size-9 place-items-center rounded-xl bg-brand-solid text-on-brand"><%= sgu_icon("map-pin", "size-5") %></span>
+      <span class="hidden sm:block">
+        <span class="block text-base font-bold leading-none">SGU UFRPE</span>
+        <span class="mt-1 block text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-muted">Campus em conexão</span>
+      </span>
+    <% end %>
+
+    <nav class="ml-2 hidden flex-1 items-center gap-1 lg:flex" aria-label="Navegação principal">
+      <%= render "layouts/portal/nav_links", user: user %>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <%= render "shared/theme_toggle" %>
+      <% if user %>
+        <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pedir ajuda (pânico)" } do %>
+          <%= sgu_icon("siren") %><span>Pânico</span>
+        <% end %>
+
+        <details class="relative hidden lg:block">
+          <summary class="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-line bg-surface text-sm font-bold text-brand-link hover:bg-surface-muted sgu-focus-ring" aria-label="Menu da conta">
+            <%= initials_for(user.display_name.presence || user.email_address) %>
+          </summary>
+          <div class="absolute right-0 mt-2 w-64 rounded-xl border border-line bg-surface p-1.5 shadow-lg">
+            <p class="truncate px-3 py-2 text-xs text-muted">Conectado como<br><span class="font-semibold text-ink"><%= user.email_address %></span></p>
+            <%= render "layouts/portal/account_links", user: user %>
+          </div>
+        </details>
+      <% else %>
+        <%= link_to "Criar conta", new_registration_path(locale: nil), class: "sgu-btn sgu-btn-sm sgu-btn-secondary hidden sm:inline-flex" %>
+        <%= link_to new_session_path(locale: nil, return_to: request.get? ? request.fullpath : nil), class: "sgu-btn sgu-btn-sm sgu-btn-primary" do %>
+          <%= sgu_icon("log-in") %><span>Entrar</span>
+        <% end %>
+      <% end %>
+
+      <details class="relative lg:hidden">
+        <summary class="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg border border-line bg-surface text-ink sgu-focus-ring" aria-label="Abrir menu">
+          <%= sgu_icon("menu", "size-5") %>
+        </summary>
+        <div class="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-xl border border-line bg-surface p-2 shadow-lg">
+          <nav class="flex flex-col gap-0.5" aria-label="Navegação principal (celular)">
+            <%= render "layouts/portal/nav_links", user: user %>
+          </nav>
+          <% unless user %><%= link_to "Criar conta", new_registration_path(locale: nil), class: "sgu-nav-link" %><% end %>
+          <% if user %>
+            <div class="mt-2 border-t border-line pt-2">
+              <%= render "layouts/portal/account_links", user: user %>
+            </div>
+          <% end %>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

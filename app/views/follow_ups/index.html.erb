@@ -1,0 +1,61 @@
+<% content_for :title, "Acompanhamentos - SGU UFRPE" %>
+<p class="sgu-eyebrow">Lista privada</p>
+<h1 class="sgu-page-title mt-1">Acompanhamentos</h1>
+<p class="mt-2 text-muted">O que você escolheu acompanhar. O SGU não envia notificações: volte aqui para ver as novidades.</p>
+
+<section class="mt-6" aria-labelledby="followups_publications">
+  <h2 id="followups_publications" class="sgu-section-title flex items-center gap-2"><%= sgu_icon("bell") %> Publicações</h2>
+  <% if @unavailable_publications.positive? %>
+    <div class="mt-3 flex flex-col gap-2 rounded-xl border border-warning-line bg-warning-soft p-3 text-sm text-warning-ink sm:flex-row sm:items-center sm:justify-between">
+      <p><%= pluralize(@unavailable_publications, "publicação acompanhada saiu do ar", plural: "publicações acompanhadas saíram do ar") %> ou deixou de estar disponível.</p>
+      <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "publicacoes"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    </div>
+  <% end %>
+  <% if @publication_cards.any? %>
+    <ul class="mt-3 space-y-2">
+      <% @publication_cards.each do |card| %>
+        <li class="sgu-card flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <%= link_to card[:title], publication_path(card[:id]), class: "font-semibold !text-ink hover:underline" %>
+          <span class="text-sm text-muted"><%= pluralize(card[:comments_count], "comentário", plural: "comentários") %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-3 text-sm text-muted">Nenhuma publicação acompanhada.</p>
+  <% end %>
+</section>
+
+<section class="mt-8" aria-labelledby="followups_alerts">
+  <h2 id="followups_alerts" class="sgu-section-title flex items-center gap-2"><%= sgu_icon("inbox") %> Ocorrências</h2>
+  <% if @unavailable_alerts.positive? %>
+    <div class="mt-3 flex flex-col gap-2 rounded-xl border border-warning-line bg-warning-soft p-3 text-sm text-warning-ink sm:flex-row sm:items-center sm:justify-between">
+      <p><%= pluralize(@unavailable_alerts, "ocorrência acompanhada ficou", plural: "ocorrências acompanhadas ficaram") %> fora do seu acesso.</p>
+      <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "alertas"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    </div>
+  <% end %>
+  <% if @alerts.any? %>
+    <ul class="mt-3 space-y-3"><% @alerts.each do |alert| %><%= render "shared/alerts/list_item", alert: alert, path: alert_path(alert) %><% end %></ul>
+  <% else %>
+    <p class="mt-3 text-sm text-muted">Nenhuma ocorrência acompanhada. Abra uma ocorrência interna em <%= link_to "Alertas", alerts_path(aba: "internos"), class: "sgu-link" %> e escolha “Acompanhar atendimento”.</p>
+  <% end %>
+</section>
+
+<section class="mt-8" aria-labelledby="followups_people">
+  <h2 id="followups_people" class="sgu-section-title flex items-center gap-2"><%= sgu_icon("users") %> Pessoas que você segue</h2>
+  <% if @people.any? %>
+    <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+      <% @people.each do |person| %>
+        <% identity = PublicIdentity.for(person) %>
+        <li class="sgu-card flex items-center justify-between gap-3 p-4">
+          <%= link_to person_path(person), class: "min-w-0 !text-ink" do %>
+            <span class="block truncate font-semibold"><%= identity[:display_name] %></span>
+            <% if identity[:username] %><span class="block text-xs text-muted">@<%= identity[:username] %></span><% end %>
+          <% end %>
+          <%= button_to "Deixar de seguir", person_follow_path(person), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-3 text-sm text-muted">Você não segue ninguém. Perfis públicos estão em <%= link_to "Pessoas", people_path, class: "sgu-link" %>. Quem sai do perfil público some desta lista (o vínculo é guardado e volta se o perfil voltar a ser público).</p>
+  <% end %>
+</section>

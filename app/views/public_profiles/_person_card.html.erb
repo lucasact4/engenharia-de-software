@@ -1,0 +1,10 @@
+<% identity = PublicIdentity.for(person) %>
+<li>
+  <%= link_to person_path(person), class: "sgu-card flex items-center gap-3 p-4 !text-ink hover:border-brand-link" do %>
+    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-positive-soft font-bold text-brand-link" aria-hidden="true"><%= initials_for(identity[:display_name]) %></span>
+    <span class="min-w-0">
+      <span class="block truncate font-semibold"><%= identity[:display_name] %></span>
+      <% if identity[:username] %><span class="block truncate text-xs text-muted">@<%= identity[:username] %></span><% end %>
+    </span>
+  <% end %>
+</li>

@@ -1,0 +1,38 @@
+<% content_for :title, "#{@alert.protocol} - SGU UFRPE" %>
+<div class="mx-auto max-w-4xl space-y-5">
+  <%= link_to alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Alertas<% end %>
+
+  <%= render "shared/alerts/header", detail: @detail do %>
+    <% if policy(@alert).update_content? %>
+      <%= link_to edit_alert_path(@alert), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("square-pen") %> Editar relato<% end %>
+    <% end %>
+    <% if policy(@alert).handle? %>
+      <%= link_to handling_alert_path(@alert), class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("clipboard-list") %> Abrir no atendimento<% end %>
+    <% end %>
+    <% if policy(@alert).subscribe? && !@detail.author? %>
+      <% if @subscribed %>
+        <%= button_to alert_subscription_path(@alert), method: :delete, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: true } do %><%= sgu_icon("bell") %> Acompanhando<% end %>
+      <% else %>
+        <%= button_to alert_subscription_path(@alert), method: :post, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: false } do %><%= sgu_icon("bell") %> Acompanhar atendimento<% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @detail.author? && @alert.occurrence? %>
+    <p class="rounded-xl border border-positive-line bg-positive-soft p-4 text-sm text-brand-link">
+      Guarde o protocolo <strong class="font-mono"><%= @alert.protocol %></strong>. Você pode editar o relato enquanto ele estiver “Recebida” ou “Aguardando informação”.
+      <% if @subscribed == false && !@alert.panic? %>Novidades aparecem nesta página; o SGU não envia notificações por e-mail ou push.<% end %>
+    </p>
+  <% end %>
+
+  <%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: alert_path(@alert) %>
+
+  <% if @detail.author? && policy(@alert).change_audience? && !@alert.requested_restricted? %>
+    <section class="sgu-card p-5 sm:p-6">
+      <h2 class="sgu-section-title">Restringir meu registro</h2>
+      <p class="mt-1 text-sm text-muted">Hoje a audiência solicitada é “<%= enum_label("alert.requested_visibility", @alert.requested_visibility) %>”. Restringir deixa o registro visível só para você e para a equipe responsável e cancela qualquer pedido de divulgação. Para ampliar de novo, fale com a administração.</p>
+      <%= button_to audience_alert_path(@alert), method: :patch, params: { lock_version: @alert.lock_version }, class: "sgu-btn sgu-btn-secondary mt-3",
+            data: { turbo_confirm: "Restringir este registro a você e à equipe responsável?" } do %><%= sgu_icon("lock") %> Restringir<% end %>
+    </section>
+  <% end %>
+</div>

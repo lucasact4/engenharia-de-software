@@ -54,13 +54,13 @@
         <% end %>
         <dl class="apr-feature__evidence">
           <% if item[:codigo].present? %>
-            <div><dt>Código</dt><dd><% item[:codigo].each do |path| %><%= presentation_path(path) %> <% end %></dd></div>
+            <div><dt>Código</dt><dd><% item[:codigo].each do |path| %><%= presentation_file_path(path) %> <% end %></dd></div>
           <% end %>
           <div>
             <dt>Testes</dt>
             <dd>
               <% if item[:testes].present? %>
-                <% item[:testes].each do |path| %><%= presentation_path(path) %> <% end %>
+                <% item[:testes].each do |path| %><%= presentation_file_path(path) %> <% end %>
               <% else %>
                 <%= presentation_state(:aguardando_evidencia) %>
               <% end %>

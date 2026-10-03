@@ -1,0 +1,157 @@
+<% content_for :title, @publication.title %>
+<% p = @publication %>
+<div class="space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { back: admin_publications_path, back_label: "Publicações", eyebrow: "#{enum_label('publication.kind', p.kind)} · versão #{p.content_version}", title: p.title } do %>
+    <%= link_to edit_admin_publication_path(p), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("square-pen") %> Editar<% end %>
+    <% if @feed_visible %>
+      <%= link_to publication_path(p), class: "sgu-btn sgu-btn-secondary", target: "_blank", rel: "noopener" do %><%= sgu_icon("eye") %> Ver no mural<% end %>
+    <% end %>
+  <% end %>
+
+  <% if p.errors.any? %>
+    <div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert">
+      <ul class="list-disc space-y-1 pl-5"><% p.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <div class="space-y-5">
+      <section class="sgu-card p-5 sm:p-6">
+        <h2 class="sgu-section-title">Situação editorial</h2>
+        <dl class="sgu-dl mt-4">
+          <dt>Situação</dt><dd><%= enum_badge("publication.state", p.state, PortalHelper::PUBLICATION_STATE_BADGES) %> <% if p.published? && p.expired? %><span class="sgu-badge sgu-badge-slate">Expirada</span><% end %></dd>
+          <dt>No mural agora</dt><dd><%= @feed_visible ? "Sim" : "Não" %></dd>
+          <dt>Revisão</dt>
+          <dd>
+            <%= enum_badge("publication.review_status", p.review_status, PortalHelper::REVIEW_BADGES) %>
+            <% if p.reviewed_content_version %><span class="ml-1 text-muted">versão revisada <%= p.reviewed_content_version %> de <%= p.content_version %><%= p.approved_for_current_content? ? " (atual)" : "" %></span><% end %>
+          </dd>
+          <% if p.review_reason.present? %><dt>Justificativa da revisão</dt><dd class="sgu-prose"><%= p.review_reason %></dd><% end %>
+          <dt>Audiência</dt><dd><%= enum_label("publication.visibility", p.visibility) %></dd>
+          <dt>Comentários</dt><dd><%= p.comments_enabled? ? "Aceitos" : "Desligados" %></dd>
+          <dt>Publicada em</dt><dd><%= sgu_time(p.published_at) %></dd>
+          <dt>Expira em</dt><dd><%= sgu_time(p.expires_at) %></dd>
+          <% if p.withdrawn_at %><dt>Retirada em</dt><dd><%= sgu_time(p.withdrawn_at) %></dd><% end %>
+          <% if p.alert %>
+            <dt>Fonte</dt>
+            <dd>
+              <%= link_to p.alert.protocol, admin_alert_path(p.alert), class: "sgu-link font-mono" %>
+              <%= p.source_compatible? ? tag.span("compatível", class: "sgu-badge sgu-badge-green") : tag.span("não autoriza esta audiência", class: "sgu-badge sgu-badge-red") %>
+              <% if p.source_changed_at %><span class="sgu-badge sgu-badge-amber">alterada em <%= sgu_time(p.source_changed_at) %></span><% end %>
+            </dd>
+          <% end %>
+          <dt>Interações</dt><dd><%= pluralize(@stats[:likes], "curtida", plural: "curtidas") %> · <%= pluralize(@stats[:comments], "comentário visível", plural: "comentários visíveis") %> · <%= pluralize(@stats[:pending_reports], "denúncia pendente", plural: "denúncias pendentes") %></dd>
+        </dl>
+      </section>
+
+      <section class="sgu-card p-5 sm:p-6">
+        <h2 class="sgu-section-title">Conteúdo (versão <%= p.content_version %>)</h2>
+        <p class="mt-1 text-xs text-muted">Assinatura pública: <%= t("sgu.public_identity.editorial") %>.</p>
+        <h3 class="mt-4 text-lg font-bold text-ink"><%= p.title %></h3>
+        <p class="sgu-prose mt-2"><%= p.body %></p>
+      </section>
+
+      <section class="sgu-card p-5 sm:p-6" aria-labelledby="admin_publication_comments">
+        <h2 id="admin_publication_comments" class="sgu-section-title">Comentários</h2>
+        <% if @comments.any? %>
+          <ul class="mt-4 space-y-3">
+            <% @comments.each do |comment| %>
+              <li class="rounded-xl border border-line p-4" id="admin_comment_<%= comment.id %>">
+                <p class="text-xs text-muted"><%= comment.author.display_name.presence || comment.author.email_address %> · <%= sgu_time(comment.created_at) %><%= " · resposta" if comment.parent_id %><%= " · editado" if comment.edited_at %></p>
+                <% if comment.hidden? %>
+                  <p class="mt-1 text-sm font-semibold text-ink"><%= comment.removed? ? "Removido pela moderação: #{comment.removal_reason}" : "Apagado pelo autor" %></p>
+                  <details class="mt-1 text-sm text-muted"><summary class="cursor-pointer">Texto preservado para análise (não público)</summary><p class="sgu-prose mt-1"><%= comment.body %></p></details>
+                <% else %>
+                  <p class="sgu-prose mt-1 text-sm"><%= comment.body %></p>
+                  <%= form_with url: moderate_admin_comment_path(comment), method: :patch, class: "mt-3 flex flex-col gap-2 sm:flex-row" do %>
+                    <%= hidden_field_tag :return_to, admin_publication_path(p), id: "moderate_#{comment.id}_return_to" %>
+                    <%= label_tag "moderate_#{comment.id}_reason", "Motivo da remoção", class: "sr-only" %>
+                    <%= text_field_tag :reason, nil, id: "moderate_#{comment.id}_reason", class: "sgu-input !py-1.5 text-sm", placeholder: "Motivo da remoção (obrigatório)", required: true %>
+                    <button type="submit" class="sgu-btn sgu-btn-sm sgu-btn-danger-outline" data-turbo-confirm="Remover este comentário da conversa?"><%= sgu_icon("ban", "size-3.5") %> Remover</button>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+          <%= render "shared/pagination", pagy: @pagy %>
+        <% else %>
+          <p class="mt-3 text-sm text-muted">Nenhum comentário.</p>
+        <% end %>
+      </section>
+
+      <section class="sgu-card p-5 sm:p-6">
+        <h2 class="sgu-section-title flex items-center gap-2"><%= sgu_icon("history") %> Histórico</h2>
+        <ol class="mt-4 space-y-3 border-l-2 border-line pl-5">
+          <% @events.each do |event| %>
+            <li>
+              <p class="text-sm font-semibold text-ink"><%= t("sgu.audit.#{event.action}", default: event.action) %></p>
+              <p class="text-xs text-muted"><%= sgu_time(event.created_at) %> · <%= event.actor ? (event.actor.display_name.presence || event.actor.email_address) : "Sistema" %></p>
+              <% if event.reason.present? %><p class="mt-1 text-sm text-ink">Motivo: <%= event.reason %></p><% end %>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+    </div>
+
+    <aside class="space-y-5" aria-label="Ações editoriais">
+      <% if p.review_not_submitted? || p.review_rejected? %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">1. Enviar para revisão</h2>
+          <p class="mt-1 text-sm text-muted">Envia a versão <%= p.content_version %> para decisão editorial.</p>
+          <%= button_to "Enviar para revisão", submit_review_admin_publication_path(p), method: :patch, class: "sgu-btn sgu-btn-primary mt-3 w-full" %>
+        </section>
+      <% end %>
+
+      <% if p.review_pending? %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">2. Revisar versão <%= p.content_version %></h2>
+          <p class="mt-1 text-sm text-muted">A decisão vale apenas para a versão exibida nesta página. Aprovar não coloca no ar.</p>
+          <%= form_with url: review_admin_publication_path(p), method: :patch, id: "review_form", class: "mt-3 space-y-3" do %>
+            <%= hidden_field_tag :reviewed_content_version, p.content_version %>
+            <%= hidden_field_tag :lock_version, p.lock_version, id: "review_lock_version" %>
+            <%= label_tag :review_reason, "Justificativa (obrigatória para rejeitar)", class: "sgu-label" %>
+            <%= text_area_tag :reason, nil, id: "review_reason", rows: 2, maxlength: 1000, class: "sgu-input" %>
+            <div class="flex gap-2">
+              <button type="submit" name="decision" value="approve" class="sgu-btn sgu-btn-primary flex-1"><%= sgu_icon("check") %> Aprovar</button>
+              <button type="submit" name="decision" value="reject" class="sgu-btn sgu-btn-danger-outline flex-1">Rejeitar</button>
+            </div>
+          <% end %>
+        </section>
+      <% end %>
+
+      <% if p.approved_for_current_content? && !p.published? %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">3. Publicar</h2>
+          <% blockers = [] %>
+          <% blockers << "A fonte mudou depois da aprovação: edite ou reenvie para revisão." if p.source_changed_at %>
+          <% blockers << "A fonte não autoriza esta audiência (bloqueio ou pedido do autor)." unless p.source_compatible? %>
+          <% blockers << "A validade já passou." if p.expired? %>
+          <% blockers << "Avisos precisam de data de expiração." if p.notice? && p.expires_at.nil? %>
+          <% if blockers.any? %>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-warning-ink"><% blockers.each do |blocker| %><li><%= blocker %></li><% end %></ul>
+          <% else %>
+            <p class="mt-1 text-sm text-muted">Coloca no mural para a audiência “<%= enum_label("publication.visibility", p.visibility) %>”.</p>
+          <% end %>
+          <%= button_to "Publicar agora", publish_admin_publication_path(p), method: :patch, params: { lock_version: p.lock_version }, class: "sgu-btn sgu-btn-primary mt-3 w-full", disabled: blockers.any? %>
+        </section>
+      <% end %>
+
+      <% if p.published? %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">Retirar do ar</h2>
+          <p class="mt-1 text-sm text-muted">Preserva histórico, comentários e denúncias; o mural deixa de mostrar e novas interações são recusadas.</p>
+          <%= form_with url: withdraw_admin_publication_path(p), method: :patch, id: "withdraw_form", class: "mt-3 space-y-3" do %>
+            <%= label_tag :withdraw_reason, "Motivo", class: "sgu-label" %>
+            <%= text_area_tag :reason, nil, id: "withdraw_reason", rows: 2, maxlength: 1000, class: "sgu-input", required: true %>
+            <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full" data-turbo-confirm="Retirar esta publicação do ar?"><%= sgu_icon("ban") %> Retirar</button>
+          <% end %>
+        </section>
+      <% end %>
+
+      <section class="rounded-2xl border border-line bg-surface-muted p-5 text-sm text-muted">
+        <p class="font-semibold text-ink">Por que não há “Excluir”?</p>
+        <p class="mt-1">Publicações podem ter comentários, curtidas e denúncias. Para tirar do ar, use a retirada com motivo; o registro editorial continua auditável.</p>
+      </section>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <%= render "shared/theme_head" %>
+    <title><%= content_for(:title) || "SGU UFRPE" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="SGU UFRPE: registro e acompanhamento de ocorrências e mural de comunicados do campus.">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= favicon_link_tag "favicon.png" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-dvh bg-canvas text-ink antialiased">
+    <a href="#conteudo" class="sr-only z-[60] rounded-lg bg-surface px-4 py-2 font-semibold focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Pular para o conteúdo</a>
+    <%= render "layouts/portal/header" %>
+
+    <main id="conteudo" class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <%= render "layouts/portal/flash" %>
+      <%= yield %>
+    </main>
+
+    <footer class="mt-10 border-t border-line bg-surface">
+      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <p><span class="font-semibold text-ink">SGU UFRPE</span> · Equipe UFRPE de Engenharia de Software</p>
+        <p>Registrar uma ocorrência não substitui contato com serviços de emergência.</p>
+      </div>
+    </footer>
+  </body>
+</html>

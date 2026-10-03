@@ -1,0 +1,25 @@
+<%# Originais privados: servidos só por AlertPhotosController, que reconfere o acesso. %>
+<section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_<%= alert.id %>_photos">
+  <h2 id="alert_<%= alert.id %>_photos" class="sgu-section-title">Fotos <span class="text-sm font-normal text-muted">(visíveis só ao autor e a quem atende)</span></h2>
+  <ul class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <% photos.each_with_index do |attachment, index| %>
+      <li class="overflow-hidden rounded-xl border border-line bg-surface-muted">
+        <a href="<%= alert_photo_path(alert_id: alert.id, id: attachment.id) %>" target="_blank" rel="noopener" class="block">
+          <img src="<%= alert_photo_path(alert_id: alert.id, id: attachment.id) %>" alt="Foto <%= index + 1 %> do alerta <%= alert.protocol %>" loading="lazy" class="aspect-square w-full object-cover">
+        </a>
+        <% if removable %>
+          <%= form_with url: alert_photo_path(alert_id: alert.id, id: attachment.id), method: :delete, class: "space-y-2 p-2",
+                data: { turbo_confirm: "Remover esta foto do registro? A ação fica no histórico." } do %>
+            <%= hidden_field_tag :lock_version, alert.lock_version, id: "photo_#{attachment.id}_lock_version" %>
+            <%= hidden_field_tag :return_to, return_to, id: "photo_#{attachment.id}_return_to" %>
+            <% unless alert.author_id == Current.user&.id %>
+              <%= label_tag "photo_#{attachment.id}_reason", "Motivo", class: "sr-only" %>
+              <%= text_field_tag :reason, nil, id: "photo_#{attachment.id}_reason", class: "sgu-input !py-1.5 text-xs", placeholder: "Motivo (obrigatório)", required: true %>
+            <% end %>
+            <button type="submit" class="sgu-btn sgu-btn-sm sgu-btn-danger-outline w-full"><%= sgu_icon("trash", "size-3.5") %> Remover</button>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>

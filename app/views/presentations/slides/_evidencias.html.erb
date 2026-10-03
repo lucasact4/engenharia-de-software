@@ -17,7 +17,7 @@
     <h3 id="<%= slide.dom_id %>-arquivos" class="apr-evidence__title">Onde verificar cada capacidade</h3>
     <ul class="apr-evidence__list" role="list">
       <% ev[:capacidades].select { |c| c[:evidencia].present? }.each do |cap| %>
-        <li><%= presentation_path(cap[:evidencia]) %> <span><%= cap[:nome] %></span></li>
+        <li><%= presentation_file_path(cap[:evidencia]) %> <span><%= cap[:nome] %></span></li>
       <% end %>
     </ul>
   <% end %>
@@ -25,12 +25,12 @@
   <%= presentation_item slide, "testes", :section, aria: { labelledby: "#{slide.dom_id}-testes" } do %>
     <h3 id="<%= slide.dom_id %>-testes" class="apr-evidence__title">Testes e integração contínua</h3>
     <ul class="apr-evidence__list" role="list">
-      <li><%= presentation_path("spec/requests/home_request_spec.rb") %> <span>landing pública sem login</span></li>
-      <li><%= presentation_path("spec/requests/sessions_request_spec.rb") %> <span>login, logout e limite de tentativas</span></li>
-      <li><%= presentation_path("spec/requests/admin/users_authorization_spec.rb") %> <span>perfis de acesso</span></li>
-      <li><%= presentation_path("spec/requests/presentations_request_spec.rb") %> <span>esta apresentação e seus perfis</span></li>
-      <li><%= presentation_path("spec/requests/admin/presentation_profiles_request_spec.rb") %> <span>perfis da apresentação no admin</span></li>
-      <li><%= presentation_path(".github/workflows/ci.yml") %> <span>Brakeman, auditoria do Importmap, RuboCop e RSpec</span></li>
+      <li><%= presentation_file_path("spec/requests/home_request_spec.rb") %> <span>landing pública sem login</span></li>
+      <li><%= presentation_file_path("spec/requests/sessions_request_spec.rb") %> <span>login, logout e limite de tentativas</span></li>
+      <li><%= presentation_file_path("spec/requests/admin/users_authorization_spec.rb") %> <span>perfis de acesso</span></li>
+      <li><%= presentation_file_path("spec/requests/presentations_request_spec.rb") %> <span>esta apresentação e seus perfis</span></li>
+      <li><%= presentation_file_path("spec/requests/admin/presentation_profiles_request_spec.rb") %> <span>perfis da apresentação no admin</span></li>
+      <li><%= presentation_file_path(".github/workflows/ci.yml") %> <span>Brakeman, auditoria do Importmap, RuboCop e RSpec</span></li>
     </ul>
   <% end %>
 </div>

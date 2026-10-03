@@ -1,0 +1,16 @@
+<%= form_with model: [ :admin, @instance ], scope: :category, class: "sgu-card space-y-5 p-5 sm:p-6", html: { novalidate: true } do |f| %>
+  <%= render "admin/catalogs/form_fields", f: f, entry: @instance, name_max: 80 %>
+  <% in_use = @instance.persisted? && @instance.in_use? %>
+  <div class="flex items-start gap-2 rounded-xl bg-surface-muted p-3">
+    <%= f.check_box :requires_details, class: "mt-1 size-4 accent-brand-solid", disabled: in_use %>
+    <div>
+      <%= f.label :requires_details, "Exige detalhamento do relato", class: "text-sm font-semibold text-ink" %>
+      <p class="sgu-hint !mt-0"><%= in_use ? "Travado porque a categoria já foi usada (mudaria o sentido dos registros antigos)." : "Use para categorias abertas como “Outro”: quem registra precisa explicar o assunto." %></p>
+      <%= field_errors(@instance, :requires_details) %>
+    </div>
+  </div>
+  <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <%= link_to "Cancelar", admin_categories_path, class: "sgu-btn sgu-btn-secondary" %>
+    <%= f.button "Salvar categoria", type: "submit", class: "sgu-btn sgu-btn-primary" %>
+  </div>
+<% end %>

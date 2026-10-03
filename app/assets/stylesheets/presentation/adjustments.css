@@ -1,0 +1,171 @@
+/* Com o diagrama de arquitetura visível, os cards ocupam a largura toda e o diagrama ganha uma
+   coluna larga (como no layout original), ao lado das mudanças. */
+.apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])):has(.apr-arch__diagram:not([hidden])) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.apr-arch__side:has(> .apr-arch__diagram:not([hidden])):has(> .apr-changes:not([hidden])) {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+/* Ordem no painel: título, selo de obrigatório, tempo; a exigência fica na linha de baixo. */
+.apr-custom__check--slide { order: 0; }
+.apr-custom__legend .apr-tag { order: 1; }
+.apr-custom__time { order: 2; }
+.apr-custom__req { order: 3; }
+
+/* Títulos, tecnologias e blocos novos: telas estreitas e impressão ------------------- */
+
+@media screen and (max-width: 900px) {
+  .apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])),
+  .apr-arch__side:has(> .apr-arch__diagram:not([hidden])):has(> .apr-changes:not([hidden])),
+  .apr-mgmt--two,
+  .apr-model-foot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .apr-title--long {
+    font-size: 1.35em;
+  }
+
+  .apr-repo__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .apr-repo__label {
+    grid-column: 1 / -1;
+  }
+
+  .apr-model-status__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15em;
+  }
+
+  .apr-tech__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .apr-tech__toggle,
+  .apr-tech__hint {
+    display: none !important;
+  }
+
+  .apr-tech__versions {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-top: 0.15em;
+    padding: 0 0.2em !important;
+    background: none !important;
+    color: var(--apr-ink-2) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 7.5pt;
+  }
+
+  .apr-tech__item {
+    height: auto;
+    padding: 0.3em 0.45em;
+  }
+
+  .apr-tech__list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.5mm;
+  }
+
+  .apr-tech__groups {
+    gap: 1.5mm;
+  }
+
+  .apr-tech {
+    font-size: 8.5pt;
+  }
+
+  .apr-tech__credits {
+    font-size: 6.5pt !important;
+  }
+
+  /* No papel, cards e diagrama de arquitetura ficam lado a lado para caber em uma página. */
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__versions {
+    font-size: 6.5pt;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-tech__role {
+    display: none;
+  }
+
+  .apr-arch:has(.apr-arch__diagram:not([hidden])) .apr-arch__side {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* O slide principal divide a página com cabeçalho e situação: escala reduzida da main. */
+  .apr-model-diagram:has(~ .apr-model-foot:not([hidden])) .apr-data-canvas,
+  .apr-arch__diagram .apr-data-canvas {
+    font-size: min(12px, var(--diagram-fit-font), var(--diagram-overview-print-font)) !important;
+  }
+
+  .apr-tech__logo--dark {
+    background: var(--apr-g-900) !important;
+  }
+
+  .apr-requirement {
+    border-color: var(--apr-line-strong) !important;
+    background: #fff !important;
+    color: var(--apr-g-800) !important;
+  }
+
+  .apr-slide--dark .apr-subtitle {
+    color: var(--apr-g-600) !important;
+  }
+}
+
+/* Visibilidade ------------------------------------------------------------------- */
+
+/* Slides e blocos desmarcados no perfil ou no ajuste temporário saem da tela e da impressão,
+   mesmo quando um componente define display próprio (inclusive as regras de impressão acima). */
+.apr-body [hidden][hidden] {
+  display: none !important;
+}
+
+/* O repositório e as duas jornadas pertencem ao mesmo item da segunda entrega. */
+.apr-feature-repository {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding: 0.7em 1em;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-g-50);
+}
+.apr-feature-repository > div { flex: 1 1 20em; }
+.apr-feature-repository p { font-size: 0.85em; }
+
+.apr-retro__photo .apr-pending__frame {
+  aspect-ratio: auto;
+  height: min(42vh, 24em);
+}
+.apr-retro__photo .apr-figure__img {
+  max-height: min(50vh, 28em);
+  object-fit: contain;
+}
+@media print {
+  .apr-retro__photo .apr-pending__frame { height: 85mm; }
+  .apr-retro__photo .apr-figure__img { max-height: 110mm; }
+}

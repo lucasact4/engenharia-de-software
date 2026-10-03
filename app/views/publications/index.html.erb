@@ -1,0 +1,69 @@
+<% content_for :title, "Mural - SGU UFRPE" %>
+<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+  <div>
+    <p class="sgu-eyebrow">Comunicados revisados</p>
+    <h1 class="sgu-page-title mt-1">Mural do campus</h1>
+    <p class="mt-2 text-muted">Avisos, notícias e ocorrências divulgadas pela equipe editorial do SGU. Registros operacionais nunca aparecem aqui sem revisão.</p>
+
+    <%= form_with url: publications_path, method: :get, class: "mt-5 grid gap-2 sm:grid-cols-[1fr_12rem_auto]", data: { turbo_action: "advance" } do %>
+      <%= label_tag :q, "Buscar no mural", class: "sr-only" %>
+      <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Buscar no mural" %>
+      <%= label_tag :kind, "Tipo", class: "sr-only" %>
+      <%= select_tag :kind, options_for_select([ [ "Todos os tipos", "" ] ] + Publication.kinds.values.map { |v| [ enum_label("publication.kind", v), v ] }, params[:kind]), class: "sgu-input" %>
+      <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("search") %> Buscar</button>
+      <% if Current.user %>
+        <div class="flex gap-1 sm:col-span-3" role="group" aria-label="Audiência">
+          <% [ [ "", "Todas" ], [ "public_external", "Públicas" ], [ "internal", "Internas" ] ].each do |value, label| %>
+            <%= link_to label, publications_path(request.query_parameters.except("audience", "page").merge(audience: value.presence)), class: "sgu-tab", aria: { current: (params[:audience].to_s == value ? "page" : nil) } %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if @cards.any? %>
+      <div class="mt-6 space-y-4">
+        <% @cards.each do |card| %>
+          <%= render "publications/card", card: card %>
+        <% end %>
+      </div>
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="sgu-empty mt-6">
+        <p class="font-semibold text-ink"><%= params[:q].present? || params[:kind].present? ? "Nada encontrado com esses filtros." : "Ainda não há comunicados publicados." %></p>
+        <p class="mt-1 text-sm text-muted">
+          <% if params[:q].present? || params[:kind].present? %>
+            <%= link_to "Limpar filtros", publications_path, class: "sgu-link" %>
+          <% elsif Current.user.nil? %>
+            Comunicados internos aparecem para quem entra com a conta institucional.
+          <% else %>
+            Quando a equipe editorial publicar avisos ou notícias, eles aparecem aqui.
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <aside class="space-y-4">
+    <div class="sgu-card p-5">
+      <h2 class="sgu-section-title">Como funciona</h2>
+      <ul class="mt-3 space-y-2 text-sm text-muted">
+        <li><strong class="text-ink">Curtir</strong> mostra apoio ao comunicado.</li>
+        <li><strong class="text-ink">Salvar</strong> guarda em uma lista privada só sua.</li>
+        <li><strong class="text-ink">Acompanhar</strong> marca a publicação para você voltar à conversa em “Acompanhamentos”.</li>
+      </ul>
+      <p class="mt-3 text-xs text-muted">O SGU não envia notificações por e-mail ou push.</p>
+    </div>
+    <% if Current.user %>
+      <%= link_to new_alert_path, class: "sgu-card flex items-center gap-3 p-5 !text-ink hover:border-brand-link" do %>
+        <span class="grid size-10 place-items-center rounded-xl bg-positive-soft text-brand-link"><%= sgu_icon("map-pin", "size-5") %></span>
+        <span><span class="block font-bold">Viu algo no campus?</span><span class="text-sm text-muted">Registre uma ocorrência</span></span>
+      <% end %>
+    <% else %>
+      <div class="sgu-card p-5">
+        <p class="font-bold text-ink">Faz parte da UFRPE?</p>
+        <p class="mt-1 text-sm text-muted">Entre para ver comunicados internos, comentar e registrar ocorrências.</p>
+        <%= link_to "Entrar", new_session_path(locale: nil, return_to: publications_path(locale: nil)), class: "sgu-btn sgu-btn-primary mt-3 w-full" %>
+      </div>
+    <% end %>
+  </aside>
+</div>

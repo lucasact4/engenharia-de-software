@@ -1,0 +1,32 @@
+<div class="auth-shell">
+  <section class="auth-main">
+    <div class="flex items-center justify-between gap-4">
+      <%= link_to root_path(locale: nil), class: "flex items-center gap-3 !text-ink", aria: { label: "Voltar para a página inicial" } do %>
+        <span class="grid size-10 place-items-center rounded-2xl bg-brand-solid text-on-brand"><%= icon("map-pin", class: "size-5", "aria-hidden": true) %></span>
+        <span><span class="block text-lg font-bold leading-none">SGU UFRPE</span><span class="mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted">Campus em conexão</span></span>
+      <% end %>
+      <%= render "shared/theme_toggle" %>
+    </div>
+    <div class="auth-content">
+      <p class="sgu-eyebrow"><%= eyebrow %></p>
+      <h1 class="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl"><%= title %></h1>
+      <p class="mt-3 leading-7 text-muted"><%= description %></p>
+      <div class="mt-6"><%= render "partials/messages" %><%= yield %></div>
+    </div>
+    <p class="text-xs text-muted">Equipe UFRPE de Engenharia de Software</p>
+  </section>
+  <aside class="auth-aside" aria-label="Comunidade SGU">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(242,189,87,0.22),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(65,170,149,0.24),transparent_34%)]"></div>
+    <p class="relative text-sm font-bold uppercase tracking-[0.18em] text-accent">Informação que aproxima</p>
+    <div class="relative">
+      <p class="text-4xl font-bold leading-tight tracking-tight xl:text-5xl">Seu campus.<br>Sua comunidade.<br>Sua participação.</p>
+      <p class="mt-6 max-w-xl text-lg leading-8 text-on-brand/85">Acompanhe notícias, participe das conversas e comunique situações que precisam de atenção.</p>
+      <div class="mt-8 space-y-3">
+        <% [["bell", "Alertas e respostas em um só lugar"], ["message-circle", "Conversas sobre o que acontece no campus"], ["bookmark", "Salve e acompanhe o que importa para você"]].each do |name, text| %>
+          <div class="flex items-center gap-3 rounded-2xl border border-on-brand/20 bg-on-brand/10 p-4 text-sm"><%= icon(name, class: "size-5", "aria-hidden": true) %><span><%= text %></span></div>
+        <% end %>
+      </div>
+    </div>
+    <p class="relative text-sm text-on-brand/80">Uma construção coletiva da UFRPE.</p>
+  </aside>
+</div>

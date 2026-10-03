@@ -1,0 +1,15 @@
+<% content_for :title, "Pessoas - SGU UFRPE" %>
+<p class="sgu-eyebrow">Perfis públicos</p>
+<h1 class="sgu-page-title mt-1">Pessoas</h1>
+<p class="mt-2 max-w-2xl text-muted">Só aparecem pessoas que escolheram ter perfil público. Seguir alguém não dá acesso a nada privado.</p>
+<%= form_with url: people_path, method: :get, class: "mt-4 flex gap-2" do %>
+  <%= label_tag :q, "Buscar por nome ou usuário", class: "sr-only" %>
+  <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Nome ou usuário" %>
+  <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("search") %> Buscar</button>
+<% end %>
+<% if @people.any? %>
+  <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><%= render partial: "public_profiles/person_card", collection: @people, as: :person %></ul>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% else %>
+  <div class="sgu-empty mt-5"><p class="text-sm text-muted"><%= params[:q].present? ? "Nenhum perfil público encontrado." : "Ainda não há perfis públicos." %></p></div>
+<% end %>

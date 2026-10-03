@@ -1,0 +1,192 @@
+/* Personalizar apresentação (ajustes temporários) ---------------------------------- */
+
+.apr-btn.is-customized {
+  border-color: var(--apr-gold);
+  box-shadow: inset 0 0 0 1px var(--apr-gold);
+}
+
+.apr-custom {
+  width: min(100% - 1.5rem, 46rem);
+  max-height: min(100% - 1.5rem, 52rem);
+  overflow: hidden;
+}
+
+.apr-custom[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* O título recebe o foco ao abrir só para orientar leitores de tela; não é interativo. */
+.apr-custom .apr-dialog__head h2:focus {
+  outline: none;
+}
+
+.apr-custom__intro {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--apr-line);
+  font-size: 0.88rem;
+}
+
+.apr-custom__profile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+}
+
+.apr-custom__profile-note,
+.apr-custom__hint-text {
+  color: var(--apr-ink-3);
+  font-size: 0.8rem;
+}
+
+.apr-custom__note {
+  padding: 0.5rem 0.7rem;
+  border: 1px dashed var(--apr-amber);
+  border-radius: 10px;
+  background: rgba(242, 189, 87, 0.12);
+}
+
+.apr-custom__estimate {
+  font-weight: 600;
+}
+
+.apr-custom__body {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.6rem 1.25rem 1rem;
+  overscroll-behavior: contain;
+}
+
+.apr-custom__group + .apr-custom__group {
+  margin-top: 1rem;
+}
+
+.apr-custom__group-title {
+  margin-bottom: 0.4rem !important;
+  color: var(--apr-link);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.apr-custom__slides {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.apr-custom__slide {
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-custom__slide.is-off {
+  background: var(--apr-g-50);
+}
+
+.apr-custom__fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+}
+
+.apr-custom__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+
+/* A legenda flutua para se comportar como bloco comum dentro do fieldset. */
+.apr-custom__fieldset > :not(legend) {
+  clear: both;
+}
+
+.apr-custom__check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 1.9rem;
+  padding: 0.2rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.apr-custom__check input {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--apr-link);
+}
+
+.apr-custom__check input:disabled + span {
+  cursor: default;
+}
+
+.apr-custom__check--slide {
+  flex: 1;
+  font-weight: 700;
+}
+
+.apr-custom__time {
+  color: var(--apr-ink-3);
+  font-family: var(--apr-mono);
+  font-size: 0.75rem;
+}
+
+.apr-custom__slide-hint {
+  color: var(--apr-ink-2);
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
+.apr-custom__slide-hint:empty {
+  display: none;
+}
+
+.apr-custom__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0 1rem;
+  margin: 0.15rem 0 0.1rem 1.6rem !important;
+}
+
+.apr-custom__items.is-muted {
+  opacity: 0.6;
+}
+
+.apr-custom__item--child {
+  padding-left: 1.3rem;
+}
+
+.apr-custom__item .apr-custom__check {
+  font-size: 0.84rem;
+}
+
+.apr-custom__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  border-top: 1px solid var(--apr-line);
+  background: var(--apr-g-50);
+}
+
+.apr-custom__status {
+  flex: 1;
+  min-width: 12rem;
+  color: var(--apr-ink-2);
+  font-size: 0.82rem;
+}

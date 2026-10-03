@@ -1,0 +1,11 @@
+<% content_for :title, "Nova publicação" %>
+<div class="mx-auto max-w-3xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_publications_path, back_label: "Publicações", eyebrow: "Editorial", title: "Nova publicação",
+        description: "Começa como rascunho. Depois: enviar para revisão, aprovar a versão e publicar." %>
+  <%= form_with url: new_admin_publication_path, method: :get, class: "flex gap-2" do %>
+    <%= label_tag :source_q, "Buscar ocorrência de origem por protocolo ou título", class: "sr-only" %>
+    <%= search_field_tag :source_q, params[:source_q], class: "sgu-input", placeholder: "Buscar ocorrência de origem (protocolo ou título)" %>
+    <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("search") %> Buscar</button>
+  <% end %>
+  <%= render "form" %>
+</div>

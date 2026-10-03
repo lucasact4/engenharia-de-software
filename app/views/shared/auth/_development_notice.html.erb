@@ -1,0 +1,9 @@
+<div class="rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink" role="note">
+  <p class="font-semibold">Sistema em desenvolvimento</p>
+  <p class="mt-1">A confirmação de e-mail ainda não foi implementada. O endereço informado não é verificado nesta fase.</p>
+  <% if Rails.configuration.x.registration.auto_approve %>
+    <p class="mt-1">Os novos cadastros são aprovados automaticamente e já podem utilizar o sistema.</p>
+  <% else %>
+    <p class="mt-1">Os novos cadastros precisam de aprovação da administração para entrar.</p>
+  <% end %>
+</div>

@@ -1,0 +1,27 @@
+<% content_for :title, "Denunciar - SGU UFRPE" %>
+<div class="mx-auto max-w-2xl space-y-4">
+  <%= link_to publication_path(@target_publication), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar à publicação<% end %>
+  <h1 class="sgu-page-title">Denunciar <%= @target.is_a?(Comment) ? "comentário" : "publicação" %></h1>
+  <p class="text-muted">A administração analisa a denúncia. Seu nome e o motivo não aparecem para outras pessoas. Denunciar de novo o mesmo conteúdo não cria outra denúncia.</p>
+  <%= form_with url: (@target.is_a?(Comment) ? comment_content_reports_path(@target) : publication_content_reports_path(@target)), method: :post, class: "sgu-card space-y-4 p-5" do %>
+    <% if @report.errors.any? %>
+      <div class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink" role="alert"><%= @report.errors.full_messages.to_sentence %></div>
+    <% end %>
+    <fieldset>
+      <legend class="sgu-label">Motivo</legend>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <% ContentReport.reasons.values.each do |reason| %>
+          <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
+            <%= radio_button_tag :reason, reason, params[:reason] == reason, class: "mt-1 accent-brand-solid", required: true %>
+            <span><span class="block font-semibold"><%= enum_label("content_report.reason", reason) %></span><span class="block text-xs text-muted"><%= enum_description("content_report.reason", reason) %></span></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+    <div>
+      <%= label_tag :details, "Detalhes (obrigatório para “Outro”)", class: "sgu-label" %>
+      <%= text_area_tag :details, params[:details], rows: 3, maxlength: ContentReport::DETAILS_MAX, class: "sgu-input" %>
+    </div>
+    <button type="submit" class="sgu-btn sgu-btn-primary"><%= sgu_icon("flag") %> Enviar denúncia</button>
+  <% end %>
+</div>

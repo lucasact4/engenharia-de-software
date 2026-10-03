@@ -1,0 +1,125 @@
+<%# Ações de atendimento. As opções vêm do AlertOptionsPresenter (matriz de transições e permissões);
+    o servidor revalida tudo nos services. submitted: valores enviados que voltaram com erro/409. %>
+<% policy = AlertPolicy.new(Current.user, alert) %>
+<% assess_values = submitted[:assessment] || {} %>
+<% assign_values = submitted[:assignment] || {} %>
+<% transition_values = submitted[:transition] || {} %>
+<% transitions = options.transitions %>
+
+<aside class="space-y-5" aria-label="Ações de atendimento">
+  <% if alert.errors[:base].any? %>
+    <div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert">
+      <% alert.errors.full_messages_for(:base).each do |message| %><p><%= message %></p><% end %>
+    </div>
+  <% end %>
+
+  <% if policy.assess? %>
+    <section class="sgu-card p-5" aria-labelledby="handling_assessment_title">
+      <h2 id="handling_assessment_title" class="sgu-section-title">Classificação</h2>
+      <p class="mt-1 text-xs text-muted">Severidade avaliada e prioridade são da equipe e não alteram a severidade percebida pelo autor.</p>
+      <%= form_with url: urls[:assessment], method: :patch, id: "handling_assessment_form", class: "mt-4 space-y-3" do %>
+        <%= hidden_field_tag :lock_version, alert.lock_version, id: "handling_assessment_lock_version" %>
+        <div>
+          <%= label_tag "handling_assessed_severity", "Severidade avaliada", class: "sgu-label" %>
+          <%= select_tag :assessed_severity, options_from_select_options(options.assessed_severities, assess_values.fetch("assessed_severity", alert.assessed_severity), include_blank: "Ainda não avaliada"), id: "handling_assessed_severity", class: "sgu-input" %>
+          <%= field_errors(alert, :assessed_severity) %>
+        </div>
+        <div>
+          <%= label_tag "handling_priority", "Prioridade do atendimento", class: "sgu-label" %>
+          <%= select_tag :priority, options_from_select_options(options.priorities, assess_values.fetch("priority", alert.priority), include_blank: "Ainda não classificada"), id: "handling_priority", class: "sgu-input" %>
+          <%= field_errors(alert, :priority) %>
+        </div>
+        <div>
+          <%= label_tag "handling_assessment_reason", "Observação (opcional)", class: "sgu-label" %>
+          <%= text_area_tag :reason, assess_values["reason"], id: "handling_assessment_reason", rows: 2, maxlength: 1000, class: "sgu-input" %>
+        </div>
+        <button type="submit" class="sgu-btn sgu-btn-primary w-full" data-turbo-submits-with="Salvando…"><%= sgu_icon("check") %> Salvar classificação</button>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% if policy.assign? %>
+    <section class="sgu-card p-5" aria-labelledby="handling_assignment_title">
+      <h2 id="handling_assignment_title" class="sgu-section-title">Responsável</h2>
+      <p class="mt-1 text-xs text-muted">Somente contas ativas habilitadas para <%= alert.panic? ? "pânico (segurança)" : "ocorrências (coordenação ou segurança)" %> ou administradoras.</p>
+      <%= form_with url: urls[:assignment], method: :patch, id: "handling_assignment_form", class: "mt-4 space-y-3" do %>
+        <%= hidden_field_tag :lock_version, alert.lock_version, id: "handling_assignment_lock_version" %>
+        <div>
+          <%= label_tag "handling_assigned_to_id", "Pessoa responsável", class: "sgu-label" %>
+          <%= select_tag :assigned_to_id, options_for_select([ [ "Sem responsável", "" ] ] + assignees.map { |user| [ [ user.display_name, user.email_address ].compact_blank.join(" · "), user.id ] }, assign_values.fetch("assigned_to_id", alert.assigned_to_id).to_s), id: "handling_assigned_to_id", class: "sgu-input" %>
+          <%= field_errors(alert, :assigned_to) %>
+        </div>
+        <div>
+          <%= label_tag "handling_assignment_reason", "Observação (opcional)", class: "sgu-label" %>
+          <%= text_area_tag :reason, assign_values["reason"], id: "handling_assignment_reason", rows: 2, maxlength: 1000, class: "sgu-input" %>
+        </div>
+        <button type="submit" class="sgu-btn sgu-btn-primary w-full" data-turbo-submits-with="Salvando…"><%= sgu_icon("user-plus") %> Atualizar responsável</button>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% if policy.transition? %>
+    <section class="sgu-card p-5" aria-labelledby="handling_transition_title">
+      <h2 id="handling_transition_title" class="sgu-section-title">Situação</h2>
+      <p class="mt-1 text-sm text-muted">Atual: <%= alert_status_badge(alert) %></p>
+      <% if transitions.empty? %>
+        <p class="mt-3 text-sm text-muted">
+          <%= alert.closed? ? "Registros encerrados só podem ser reabertos pela administração." : "Não há mudanças de situação disponíveis." %>
+        </p>
+      <% else %>
+        <%= form_with url: urls[:transition], method: :patch, id: "handling_transition_form", class: "mt-4 space-y-3", data: { controller: "reveal" } do %>
+          <%= hidden_field_tag :lock_version, alert.lock_version, id: "handling_transition_lock_version" %>
+          <fieldset>
+            <legend class="sgu-label">Nova situação</legend>
+            <div class="space-y-2">
+              <% transitions.each do |option| %>
+                <% reopening = alert.reopening?(option.value) %>
+                <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
+                  <%= radio_button_tag :to, option.value, transition_values["to"] == option.value, id: "handling_to_#{option.value}", class: "mt-1 accent-brand-solid",
+                        data: { reveal_target: "input", action: "reveal#update" } %>
+                  <span>
+                    <span class="block font-semibold text-ink"><%= reopening ? "Reabrir → #{option.label}" : (option.value == "closed" ? "Encerrar (com motivo)" : option.label) %></span>
+                    <span class="block text-xs text-muted"><%= reopening ? "Exige motivo." : option.description %></span>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+            <%= field_errors(alert, :status) %>
+          </fieldset>
+
+          <% if transitions.any? { |option| option.value == "closed" } %>
+            <div class="space-y-3 rounded-xl bg-surface-muted p-3" data-reveal-target="block" data-reveal-when="closed">
+              <p class="text-xs text-muted">Encerrar não apaga o registro: ele continua no histórico e pode ser reaberto pela administração.</p>
+              <div>
+                <%= label_tag "handling_closure_reason", "Motivo do encerramento", class: "sgu-label" %>
+                <%= select_tag :closure_reason, options_from_select_options(options.closure_reasons, transition_values["closure_reason"], include_blank: "Selecione"), id: "handling_closure_reason", class: "sgu-input" %>
+                <%= field_errors(alert, :closure_reason) %>
+              </div>
+              <div>
+                <%= label_tag "handling_closure_notes", "Explicação", class: "sgu-label" %>
+                <%= text_area_tag :closure_notes, transition_values["closure_notes"], id: "handling_closure_notes", rows: 2, maxlength: 2000, class: "sgu-input" %>
+                <p class="sgu-hint">Obrigatória para “Inválida”, “Fora do escopo” e “Outro”. Visível ao autor.</p>
+                <%= field_errors(alert, :closure_notes) %>
+              </div>
+              <div>
+                <%= label_tag "handling_duplicate_protocol", "Protocolo do alerta original (duplicidade)", class: "sgu-label" %>
+                <%= text_field_tag :duplicate_protocol, transition_values["duplicate_protocol"], id: "handling_duplicate_protocol", class: "sgu-input font-mono", placeholder: "SGU-XXXXX-XXXXX", autocomplete: "off" %>
+                <p class="sgu-hint">Só para o motivo “Duplicada”. Precisa ser outro alerta que você possa consultar.</p>
+                <%= field_errors(alert, :duplicate_of) %>
+              </div>
+            </div>
+          <% end %>
+
+          <div>
+            <%= label_tag "handling_transition_reason", "Motivo / observação", class: "sgu-label" %>
+            <%= text_area_tag :reason, transition_values["reason"], id: "handling_transition_reason", rows: 2, maxlength: 1000, class: "sgu-input" %>
+            <p class="sgu-hint">Obrigatório para reabrir. Fica no histórico e é mostrado ao autor.</p>
+          </div>
+          <button type="submit" class="sgu-btn sgu-btn-primary w-full" data-turbo-submits-with="Salvando…"><%= sgu_icon("refresh-cw") %> Atualizar situação</button>
+        <% end %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <%= yield if block_given? %>
+</aside>

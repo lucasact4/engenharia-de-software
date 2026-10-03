@@ -1,0 +1,13 @@
+<div class="flex flex-col gap-0.5">
+  <%= nav_link "Meu perfil", profile_path, "user", active: controller_name == "profiles" %>
+  <%= nav_link "Salvos", saved_publications_path, "bookmark", active: controller_name == "saved_publications" %>
+  <%= nav_link "Acompanhamentos", follow_ups_path, "bell", active: controller_name == "follow_ups" %>
+  <%= nav_link "Pessoas", people_path, "users", active: controller_name == "public_profiles" %>
+  <%= nav_link "Minhas denúncias", content_reports_path, "flag", active: controller_path == "content_reports" %>
+  <% if user.admin? %>
+    <%= nav_link "Administração", admin_path, "shield", active: false %>
+  <% end %>
+  <%= button_to session_path, method: :delete, class: "sgu-nav-link w-full !text-negative-ink", form: { class: "w-full" } do %>
+    <%= sgu_icon("log-out") %><span>Sair</span>
+  <% end %>
+</div>

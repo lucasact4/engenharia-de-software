@@ -1,0 +1,24 @@
+<% content_for :title, "Editar #{@alert.protocol} - SGU UFRPE" %>
+<div class="mx-auto max-w-3xl">
+  <%= link_to alert_path(@alert), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar ao registro<% end %>
+  <p class="sgu-eyebrow mt-4">Protocolo <span class="font-mono"><%= @alert.protocol %></span></p>
+  <h1 class="sgu-page-title mt-1">Editar relato</h1>
+  <p class="mt-2 text-muted">A situação, a classificação e o responsável são definidos pela equipe. Se houver comunicado publicado sobre este registro, ele será marcado para nova revisão editorial.</p>
+
+  <% if @stale_conflict %>
+    <p class="mt-4 rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink" role="alert">
+      Este registro mudou enquanto você editava (situação atual: <strong><%= enum_label("alert.status", @alert.status_in_database) %></strong>). Seu texto foi mantido abaixo; revise e salve de novo.
+    </p>
+  <% end %>
+
+  <% if @alert.photos_attachments.any? %>
+    <div class="mt-6">
+      <%= render "shared/alerts/photos", alert: @alert, photos: @detail.photos, removable: policy(@alert).remove_photo?, return_to: edit_alert_path(@alert) %>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= render "shared/alerts/form", alert: @alert, options: @options, url: alert_path(@alert), method: :patch,
+          mode: :edit, cancel_path: alert_path(@alert), photos_dropped: @photos_dropped %>
+  </div>
+</div>

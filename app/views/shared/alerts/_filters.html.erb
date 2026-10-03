@@ -1,0 +1,51 @@
+<%# Filtros da fila/admin; os valores são validados por AlertQueueFilters (allowlist). %>
+<%= form_with url: url, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4", data: { turbo_action: "advance" } do %>
+  <div class="sm:col-span-2">
+    <%= label_tag :q, "Protocolo ou título", class: "sgu-label" %>
+    <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "SGU-… ou palavras do título" %>
+  </div>
+  <div>
+    <%= label_tag :status, "Situação", class: "sgu-label" %>
+    <%= select_tag :status, options_for_select([ [ "Em aberto", "" ], [ "Todas", "todas" ] ] + filter_options[:statuses].map { |o| [ o.label, o.value ] }, params[:status].to_s), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :kind, "Tipo", class: "sgu-label" %>
+    <%= select_tag :kind, options_from_select_options(filter_options[:kinds], params[:kind], include_blank: "Todos"), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :priority, "Prioridade", class: "sgu-label" %>
+    <%= select_tag :priority, options_from_select_options(filter_options[:priorities], params[:priority], include_blank: "Todas"), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :assigned, "Responsável", class: "sgu-label" %>
+    <%= select_tag :assigned, options_for_select([ [ "Qualquer", "" ], [ "Comigo", "me" ], [ "Sem responsável", "none" ] ] + local_assigns.fetch(:assignees, []).map { |u| [ u.display_name.presence || u.email_address, u.id ] }, params[:assigned].to_s), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :category_id, "Categoria", class: "sgu-label" %>
+    <%= select_tag :category_id, options_from_select_options(filter_options[:categories], params[:category_id], include_blank: "Todas"), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :location_id, "Local", class: "sgu-label" %>
+    <%= select_tag :location_id, options_from_select_options(filter_options[:locations], params[:location_id], include_blank: "Todos"), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :visibility, "Audiência solicitada", class: "sgu-label" %>
+    <%= select_tag :visibility, options_from_select_options(filter_options[:visibilities], params[:visibility], include_blank: "Todas"), class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :from, "Registrados a partir de", class: "sgu-label" %>
+    <%= date_field_tag :from, params[:from], class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :to, "Registrados até", class: "sgu-label" %>
+    <%= date_field_tag :to, params[:to], class: "sgu-input" %>
+  </div>
+  <div>
+    <%= label_tag :sort, "Ordenar por", class: "sgu-label" %>
+    <%= select_tag :sort, options_for_select([ [ "Mais recentes", "recentes" ], [ "Mais antigos", "antigos" ], [ "Prioridade", "prioridade" ], [ "Situação", "situacao" ] ], params[:sort]), class: "sgu-input" %>
+  </div>
+  <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-1">
+    <button type="submit" class="sgu-btn sgu-btn-primary flex-1"><%= sgu_icon("filter") %> Filtrar</button>
+    <%= link_to "Limpar", url, class: "sgu-btn sgu-btn-secondary" %>
+  </div>
+<% end %>

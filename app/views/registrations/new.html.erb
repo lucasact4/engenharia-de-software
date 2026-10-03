@@ -1,0 +1,23 @@
+<% content_for :title, "Criar conta · SGU UFRPE" %>
+<%= render layout: "shared/auth/shell", locals: { eyebrow: "Faça parte da comunidade", title: "Crie sua conta", description: "Use seu e-mail da UFRPE para participar do mural e acompanhar o campus." } do %>
+  <%= render "shared/auth/development_notice" %>
+  <% if @registration.errors.any? %>
+    <div class="mt-4 rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert">
+      <p class="font-semibold">Revise os dados do cadastro</p>
+      <ul class="mt-2 list-disc space-y-1 pl-5"><% @registration.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+  <%= form_with model: @registration, url: registration_path(locale: nil), class: "mt-6 space-y-5" do |form| %>
+    <div><%= form.label :display_name, "Nome", class: "sgu-label" %><%= form.text_field :display_name, required: true, maxlength: 80, autocomplete: "name", class: "sgu-input", placeholder: "Como você se chama?" %></div>
+    <div>
+      <%= form.label :email_address, "E-mail da UFRPE", class: "sgu-label" %>
+      <%= form.email_field :email_address, required: true, maxlength: 254, autocomplete: "email", class: "sgu-input", placeholder: "seunome@ufrpe.br", aria: { describedby: "email_hint" } %>
+      <p id="email_hint" class="sgu-hint">O domínio precisa ser exatamente @ufrpe.br. Subdomínios não são aceitos.</p>
+    </div>
+    <div><%= form.label :role_code, "Você é um…", class: "sgu-label" %><%= form.select :role_code, [["Visitante", "visitor"], ["Professor", "professor"], ["Estudante", "student"]], { prompt: "Selecione seu perfil" }, { required: true, class: "sgu-input" } %></div>
+    <%= render "shared/auth/password_fields", form: form %>
+    <%= form.submit "Criar minha conta", class: "sgu-btn sgu-btn-primary h-12 w-full" %>
+    <p class="sgu-hint text-center">Seu perfil começa privado. Você poderá escolher torná-lo público nas configurações.</p>
+  <% end %>
+  <p class="mt-6 text-center text-sm text-muted">Já tem conta? <%= link_to "Entrar", new_session_path(locale: nil), class: "sgu-link" %></p>
+<% end %>

@@ -1,0 +1,59 @@
+<% content_for :title, "Publicações" %>
+<div class="space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { eyebrow: "Editorial", title: "Publicações", description: "Ocorrências divulgadas, avisos e notícias. Situação (rascunho, no ar, retirada) e revisão (enviada, aprovada, rejeitada) são independentes: aprovado não significa publicado." } do %>
+    <%= link_to new_admin_publication_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Nova publicação<% end %>
+  <% end %>
+
+  <%= form_with url: admin_publications_path, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6", data: { turbo_action: "advance" } do %>
+    <div class="lg:col-span-2">
+      <%= label_tag :q, "Título", class: "sgu-label" %>
+      <%= search_field_tag :q, params[:q], class: "sgu-input" %>
+    </div>
+    <div>
+      <%= label_tag :state, "Situação", class: "sgu-label" %>
+      <%= select_tag :state, options_for_select([ [ "Todas", "" ] ] + Publication.states.values.map { |v| [ enum_label("publication.state", v), v ] }, params[:state]), class: "sgu-input" %>
+    </div>
+    <div>
+      <%= label_tag :review, "Revisão", class: "sgu-label" %>
+      <%= select_tag :review, options_for_select([ [ "Todas", "" ] ] + Publication.review_statuses.values.map { |v| [ enum_label("publication.review_status", v), v ] }, params[:review]), class: "sgu-input" %>
+    </div>
+    <div>
+      <%= label_tag :kind, "Tipo", class: "sgu-label" %>
+      <%= select_tag :kind, options_for_select([ [ "Todos", "" ] ] + Publication.kinds.values.map { |v| [ enum_label("publication.kind", v), v ] }, params[:kind]), class: "sgu-input" %>
+    </div>
+    <div class="flex items-end gap-2">
+      <label class="flex items-center gap-2 pb-2 text-sm"><%= check_box_tag :source_review, "1", params[:source_review] == "1", class: "size-4 accent-brand-solid" %> Fonte alterada</label>
+    </div>
+    <div class="flex gap-2 sm:col-span-2 lg:col-span-6 lg:justify-end">
+      <button type="submit" class="sgu-btn sgu-btn-primary"><%= sgu_icon("filter") %> Filtrar</button>
+      <%= link_to "Limpar", admin_publications_path, class: "sgu-btn sgu-btn-secondary" %>
+    </div>
+  <% end %>
+
+  <% if @publications.any? %>
+    <ul class="space-y-3">
+      <% @publications.each do |publication| %>
+        <li>
+          <%= link_to admin_publication_path(publication), class: "sgu-card flex flex-col gap-2 p-4 !text-ink hover:border-brand-link sm:flex-row sm:items-center sm:justify-between", id: "admin_publication_#{publication.id}" do %>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-muted"><%= enum_label("publication.kind", publication.kind) %> · <%= enum_label("publication.visibility", publication.visibility) %> · versão <%= publication.content_version %><% if publication.alert %> · fonte <span class="font-mono"><%= publication.alert.protocol %></span><% end %></p>
+              <p class="mt-1 truncate font-bold"><%= publication.title %></p>
+            </div>
+            <div class="flex shrink-0 flex-wrap gap-1.5">
+              <%= enum_badge("publication.state", publication.state, PortalHelper::PUBLICATION_STATE_BADGES) %>
+              <%= enum_badge("publication.review_status", publication.review_status, PortalHelper::REVIEW_BADGES) %>
+              <% if publication.published? && publication.expired? %><span class="sgu-badge sgu-badge-slate">Expirada</span><% end %>
+              <% if publication.source_changed_at %><span class="sgu-badge sgu-badge-amber">Fonte alterada</span><% end %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% else %>
+    <div class="sgu-empty">
+      <p class="font-semibold text-ink">Nenhuma publicação encontrada.</p>
+      <p class="mt-1 text-sm text-muted">Crie um aviso, uma notícia ou divulgue uma ocorrência que pediu divulgação.</p>
+    </div>
+  <% end %>
+</div>

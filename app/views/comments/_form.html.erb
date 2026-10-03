@@ -1,0 +1,9 @@
+<%= form_with url: publication_comments_path(publication_id), method: :post, id: form_id, class: "mt-3 space-y-2" do %>
+  <% if parent_id %><%= hidden_field_tag :parent_id, parent_id, id: "#{form_id}_parent_id" %><% end %>
+  <%= label_tag "#{form_id}_body", parent_id ? "Sua resposta" : "Seu comentário", class: "sgu-label" %>
+  <%= text_area_tag :body, body, id: "#{form_id}_body", rows: 3, maxlength: Comment::BODY_LENGTH.max, required: true, class: "sgu-input",
+        aria: { invalid: local_assigns[:errors].present?, describedby: "#{form_id}_hint #{form_id}_error" } %>
+  <p class="sgu-hint" id="<%= form_id %>_hint">Texto simples, até <%= number_with_delimiter(Comment::BODY_LENGTH.max, delimiter: ".") %> caracteres. Seja respeitoso; denúncias são analisadas pela administração.</p>
+  <% if local_assigns[:errors].present? %><p class="sgu-field-error" id="<%= form_id %>_error"><%= errors.to_sentence %></p><% end %>
+  <button type="submit" class="sgu-btn sgu-btn-sm sgu-btn-primary" data-turbo-submits-with="Enviando…"><%= sgu_icon("send", "size-3.5") %> <%= parent_id ? "Responder" : "Comentar" %></button>
+<% end %>

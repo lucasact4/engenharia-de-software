@@ -1,0 +1,19 @@
+<li>
+  <%= link_to path, class: "flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 shadow-sm transition hover:border-brand-link sm:flex-row sm:items-center sm:justify-between sgu-focus-ring", id: "alert_item_#{alert.id}" do %>
+    <div class="min-w-0">
+      <p class="text-xs font-semibold text-muted"><span class="font-mono"><%= alert.protocol %></span> · <%= sgu_time(alert.created_at) %></p>
+      <p class="mt-1 truncate font-bold text-ink">
+        <% if alert.panic? %><span class="mr-1 text-negative-ink"><%= sgu_icon("siren", "inline size-4 align-text-bottom") %></span><% end %>
+        <%= alert.title.presence || "Pedido de ajuda (pânico)" %>
+      </p>
+      <p class="mt-0.5 text-sm text-muted">
+        <%= alert.category&.name || enum_label("alert.kind", alert.kind) %>
+        <% if alert.location %> · <%= alert.location.name %><% end %>
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap gap-1.5">
+      <%= alert_status_badge(alert) %>
+      <% if local_assigns[:show_priority] %><%= alert_priority_badge(alert) %><% end %>
+    </div>
+  <% end %>
+</li>

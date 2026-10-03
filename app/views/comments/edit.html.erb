@@ -1,0 +1,16 @@
+<% content_for :title, "Editar comentário - SGU UFRPE" %>
+<div class="mx-auto max-w-2xl space-y-4">
+  <%= link_to publication_path(@comment.publication_id, anchor: "comment_#{@comment.id}"), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar à publicação<% end %>
+  <h1 class="sgu-page-title">Editar comentário</h1>
+  <%= form_with url: comment_path(@comment), method: :patch, class: "sgu-card space-y-3 p-5" do %>
+    <%= hidden_field_tag :lock_version, @comment.lock_version %>
+    <%= label_tag :body, "Comentário", class: "sgu-label" %>
+    <%= text_area_tag :body, @body || @comment.body, rows: 4, maxlength: Comment::BODY_LENGTH.max, required: true, class: "sgu-input", aria: { invalid: @comment.errors.any? } %>
+    <% if @comment.errors.any? %><p class="sgu-field-error"><%= @comment.errors.full_messages.to_sentence %></p><% end %>
+    <p class="sgu-hint">O comentário passa a mostrar “editado”.</p>
+    <div class="flex gap-2">
+      <button type="submit" class="sgu-btn sgu-btn-primary">Salvar</button>
+      <%= link_to "Cancelar", publication_path(@comment.publication_id, anchor: "comment_#{@comment.id}"), class: "sgu-btn sgu-btn-secondary" %>
+    </div>
+  <% end %>
+</div>

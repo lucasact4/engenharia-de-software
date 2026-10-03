@@ -1,0 +1,239 @@
+/* Movimento reduzido ------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .apr-body *,
+  .apr-body *::before,
+  .apr-body *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .apr--presenting .apr-slide,
+  .apr--presenting[data-direction="backward"] .apr-slide:not(.is-active) {
+    transform: none;
+  }
+}
+
+/* Impressão / PDF ----------------------------------------------------------------- */
+
+@page {
+  size: A4 landscape;
+  margin: 10mm 12mm;
+}
+
+@media print {
+  :root {
+    --apr-line: rgba(21, 60, 54, 0.22);
+  }
+
+  html,
+  body,
+  .apr-body {
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .apr-bar,
+  .apr-nav,
+  .apr-toc,
+  .apr-skip,
+  .apr-dialog,
+  .apr-maint,
+  .apr-figure__hint,
+  .apr-figure__open,
+  .apr-local-only,
+  .apr-cover__map {
+    display: none !important;
+  }
+
+  .apr-deck,
+  .apr--presenting .apr-deck {
+    position: static !important;
+    display: block !important;
+    width: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: none !important;
+  }
+
+  .apr-slide,
+  .apr--presenting .apr-slide {
+    position: relative !important;
+    inset: auto !important;
+    display: block !important;
+    min-height: 186mm;
+    margin: 0 !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: none !important;
+    font-size: 10.5pt !important;
+    break-before: page;
+    break-inside: auto;
+    background: #fff !important;
+    color: var(--apr-ink) !important;
+  }
+
+  .apr-slide--capa {
+    break-before: auto;
+  }
+
+  .apr-slide__inner {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 0 6mm !important;
+    gap: 0.9em;
+  }
+
+  .apr-slide__inner > * {
+    animation: none !important;
+  }
+
+  .apr-slide__folio {
+    display: flex !important;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 1.5mm 0 0 !important;
+    border-top: 0.3mm solid var(--apr-line);
+    font-size: 7.5pt;
+    color: var(--apr-ink-3);
+    opacity: 1;
+  }
+
+  .apr-title {
+    font-size: 21pt;
+  }
+
+  .apr-head {
+    break-after: avoid;
+  }
+
+  .apr-figure,
+  .apr-dimension,
+  .apr-board__col,
+  .apr-feature,
+  .apr-pending,
+  .apr-diagram,
+  .apr-conflicts,
+  .apr-changes,
+  .apr-timeline__item,
+  .apr-mgmt__col,
+  .apr-retro__block,
+  .apr-risks li,
+  .apr-table tr {
+    break-inside: avoid;
+  }
+
+  .apr-figure__zoom {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .apr-figure--hero .apr-figure__img {
+    max-height: 105mm;
+    object-fit: contain;
+  }
+
+  .apr-arch__svg {
+    max-height: 95mm;
+  }
+
+  .apr-er--full {
+    max-height: 116mm;
+  }
+
+  .apr-figure--conceptual .apr-figure__img {
+    max-height: 120mm;
+  }
+
+  .apr-table-wrap {
+    overflow: visible;
+  }
+
+  .apr-table {
+    min-width: 0;
+    font-size: 9pt;
+  }
+
+  .apr-table thead {
+    display: table-header-group;
+  }
+
+  .apr-slide a[href^="http"] {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .apr-body * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Slides escuros viram claros no papel, com acentos preservados. */
+  .apr-slide--dark {
+    border-top: 3mm solid var(--apr-g-800) !important;
+    padding-top: 4mm !important;
+  }
+
+  .apr-slide--dark .apr-lead,
+  .apr-slide--dark .apr-source,
+  .apr-slide--dark .apr-cover__lead,
+  .apr-slide--dark .apr-cover__note,
+  .apr-slide--dark .apr-pains__text,
+  .apr-slide--dark .apr-flow__text,
+  .apr-slide--dark .apr-steps__text,
+  .apr-slide--dark .apr-milestone__text,
+  .apr-slide--dark .apr-milestone__title--empty,
+  .apr-slide--dark .apr-end__lead,
+  .apr-slide--dark .apr-end__note {
+    color: var(--apr-ink-2) !important;
+  }
+
+  .apr-slide--dark .apr-kicker {
+    color: var(--apr-link);
+  }
+
+  .apr-slide--dark .apr-label,
+  .apr-slide--dark .apr-cover__meta dt,
+  .apr-slide--dark .apr-cover__team-label,
+  .apr-slide--dark .apr-pains__num,
+  .apr-slide--dark .apr-risks strong,
+  .apr-slide--dark .apr-end__title span,
+  .apr-slide--dark .apr-end .apr-label {
+    color: var(--apr-amber) !important;
+  }
+
+  .apr-cover__sigla {
+    background: none;
+    color: var(--apr-heading);
+  }
+
+  .apr-cover__eyebrow,
+  .apr-end__eyebrow,
+  .apr-chip,
+  .apr-flow__step,
+  .apr-cover__team,
+  .apr-risks li,
+  .apr-milestone,
+  .apr-slide--dark .apr-btn--outline {
+    border-color: var(--apr-line-strong) !important;
+    background: #fff !important;
+    color: var(--apr-ink) !important;
+  }
+
+  .apr-cover__meta,
+  .apr-end__team {
+    border-color: var(--apr-line-strong);
+  }
+
+  .apr-slide--dark .apr-state--aguardando-evidencia {
+    color: #4a5a57;
+    border-color: #8a9a96;
+  }
+}

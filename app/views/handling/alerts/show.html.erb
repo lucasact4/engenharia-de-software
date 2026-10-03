@@ -1,0 +1,10 @@
+<% content_for :title, "Atendimento #{@alert.protocol} - SGU UFRPE" %>
+<div class="space-y-5">
+  <%= link_to handling_alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Fila de atendimento<% end %>
+  <%= render "shared/alerts/header", detail: @detail %>
+  <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+    <%= render "shared/alerts/detail", detail: @detail %>
+    <%= render "shared/alerts/handling_panel", alert: @alert, options: @options, assignees: @assignees, submitted: @submitted || {},
+          urls: { assessment: assessment_handling_alert_path(@alert), assignment: assignment_handling_alert_path(@alert), transition: transition_handling_alert_path(@alert) } %>
+  </div>
+</div>

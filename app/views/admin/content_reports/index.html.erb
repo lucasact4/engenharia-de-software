@@ -1,0 +1,42 @@
+<% content_for :title, "Denúncias" %>
+<div class="space-y-5 py-2">
+  <%= render "admin/shared/page_header", eyebrow: "Moderação", title: "Denúncias",
+        description: "Denúncias são privadas: quem denunciou e o motivo nunca aparecem no mural. A decisão da denúncia e a moderação do conteúdo são ações separadas." %>
+
+  <nav class="flex gap-1 overflow-x-auto border-b border-line" aria-label="Situação das denúncias">
+    <% [ [ "pending", "Pendentes" ], [ "actioned", "Procedentes" ], [ "dismissed", "Improcedentes" ], [ "todas", "Todas" ] ].each do |value, label| %>
+      <%= link_to label, admin_content_reports_path(state: value, reason: params[:reason], target: params[:target]), class: "sgu-tab", aria: { current: (@state == value ? "page" : nil) } %>
+    <% end %>
+  </nav>
+
+  <%= form_with url: admin_content_reports_path, method: :get, class: "flex flex-col gap-2 sm:flex-row" do %>
+    <%= hidden_field_tag :state, @state %>
+    <%= label_tag :reason, "Motivo", class: "sr-only" %>
+    <%= select_tag :reason, options_for_select([ [ "Todos os motivos", "" ] ] + ContentReport.reasons.values.map { |v| [ enum_label("content_report.reason", v), v ] }, params[:reason]), class: "sgu-input sm:w-56" %>
+    <%= label_tag :target, "Alvo", class: "sr-only" %>
+    <%= select_tag :target, options_for_select([ [ "Publicações e comentários", "" ], [ "Publicações", "publication" ], [ "Comentários", "comment" ] ], params[:target]), class: "sgu-input sm:w-64" %>
+    <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("filter") %> Filtrar</button>
+  <% end %>
+
+  <% if @reports.any? %>
+    <ul class="space-y-3">
+      <% @reports.each do |report| %>
+        <li>
+          <%= link_to admin_content_report_path(report), class: "sgu-card flex flex-col gap-2 p-4 !text-ink hover:border-brand-link sm:flex-row sm:items-center sm:justify-between", id: "admin_report_#{report.id}" do %>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-muted"><%= report.comment_id ? "Comentário" : "Publicação" %> · <%= sgu_time(report.created_at) %></p>
+              <p class="mt-1 truncate font-semibold"><%= report.target_publication&.title %></p>
+            </div>
+            <div class="flex shrink-0 gap-1.5">
+              <span class="sgu-badge sgu-badge-slate"><%= enum_label("content_report.reason", report.reason) %></span>
+              <%= enum_badge("content_report.state", report.state, PortalHelper::REPORT_STATE_BADGES) %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% else %>
+    <div class="sgu-empty"><p class="font-semibold text-ink">Nenhuma denúncia nesta lista.</p></div>
+  <% end %>
+</div>

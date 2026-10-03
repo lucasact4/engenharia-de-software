@@ -1,0 +1,137 @@
+/* Componentes do portal e das telas de domínio (SGU). Usados no portal e no admin. */
+@layer components {
+  .sgu-btn {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .sgu-btn-sm {
+    @apply min-h-8 rounded-lg px-3 py-1.5 text-xs;
+  }
+
+  .sgu-btn-primary {
+    @apply bg-brand-solid !text-on-brand shadow-sm hover:bg-brand-hover focus-visible:ring-brand-link/30;
+  }
+
+  .sgu-btn-secondary {
+    @apply border border-line bg-surface !text-ink hover:border-brand-link hover:!text-brand-link focus-visible:ring-line/60;
+  }
+
+  .sgu-btn-ghost {
+    @apply !text-ink hover:bg-surface-muted focus-visible:ring-line/60;
+  }
+
+  .sgu-btn-gold {
+    @apply bg-accent !text-on-accent hover:bg-accent-hover focus-visible:ring-accent/40;
+  }
+
+  .sgu-btn-danger {
+    @apply bg-negative-solid !text-on-brand hover:bg-negative-hover focus-visible:ring-negative-line/40;
+  }
+
+  .sgu-btn-danger-outline {
+    @apply border border-negative-line bg-surface !text-negative-ink hover:bg-negative-soft focus-visible:ring-negative-line/50;
+  }
+
+  .sgu-btn-toggle[aria-pressed="true"] {
+    @apply border-brand-link bg-positive-soft !text-brand-link;
+  }
+
+  .sgu-card {
+    @apply rounded-2xl border border-line bg-surface shadow-sm;
+  }
+
+  .sgu-label {
+    @apply mb-1.5 block text-sm font-semibold text-ink;
+  }
+
+  .sgu-hint {
+    @apply mt-1.5 text-xs leading-5 text-muted;
+  }
+
+  .sgu-input {
+    @apply block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none transition placeholder:text-subtle focus:border-brand-link focus:ring-4 focus:ring-brand-link/15 disabled:bg-surface-muted disabled:text-muted;
+  }
+
+  .sgu-input[aria-invalid="true"] {
+    @apply border-negative-line focus:border-negative-line focus:ring-negative-line/15;
+  }
+
+  .sgu-field-error {
+    @apply mt-1.5 text-sm font-medium text-negative-ink;
+  }
+
+  .sgu-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .sgu-badge-green { @apply bg-positive-soft text-positive-ink; }
+  .sgu-badge-teal { @apply bg-positive-soft text-brand-link; }
+  .sgu-badge-amber { @apply bg-warning-soft text-warning-ink; }
+  .sgu-badge-sky { @apply bg-info-soft text-info-ink; }
+  .sgu-badge-slate { @apply bg-surface-muted text-ink; }
+  .sgu-badge-red { @apply bg-negative-soft text-negative-ink; }
+  .sgu-badge-violet { @apply bg-violet-soft text-violet-ink; }
+
+  .sgu-eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.16em] text-brand-link;
+  }
+
+  .sgu-page-title {
+    @apply text-2xl font-bold tracking-tight text-ink sm:text-3xl;
+  }
+
+  .sgu-section-title {
+    @apply text-base font-bold text-ink sm:text-lg;
+  }
+
+  .sgu-link {
+    @apply font-semibold !text-brand-link underline-offset-2 hover:underline;
+  }
+
+  .sgu-dl {
+    @apply grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[minmax(0,12rem)_1fr];
+  }
+
+  .sgu-dl dt {
+    @apply font-semibold text-muted;
+  }
+
+  .sgu-dl dd {
+    @apply break-words text-ink;
+  }
+
+  .sgu-nav-link {
+    @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold !text-ink transition hover:bg-surface-muted hover:!text-brand-link focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-link/40;
+  }
+
+  .sgu-nav-link[aria-current="page"] {
+    @apply bg-positive-soft !text-brand-link;
+  }
+
+  .sgu-tab {
+    @apply inline-flex items-center gap-2 border-b-2 border-transparent px-3 py-2.5 text-sm font-semibold !text-muted hover:!text-brand-link;
+  }
+
+  .sgu-tab[aria-current="page"] {
+    @apply border-brand-link !text-brand-link;
+  }
+
+  .sgu-empty {
+    @apply rounded-2xl border border-dashed border-line bg-surface/70 px-6 py-10 text-center;
+  }
+
+  .sgu-prose {
+    @apply whitespace-pre-line break-words leading-7 text-ink;
+  }
+
+  .sgu-focus-ring {
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-link/30;
+  }
+}
+
+@layer components {
+  .publication-feed-card { @apply transition-shadow hover:shadow-lg; }
+  .publication-feed-card:focus-within { @apply border-brand-link; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--brand-solid); }
+  ::selection { background: var(--brand-solid); color: var(--on-brand); }
+}

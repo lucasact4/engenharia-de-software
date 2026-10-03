@@ -1,0 +1,29 @@
+<% content_for :title, "Meu perfil - SGU UFRPE" %>
+<div class="mx-auto max-w-3xl space-y-5">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="sgu-eyebrow">Sua conta</p>
+      <h1 class="sgu-page-title mt-1">Meu perfil</h1>
+    </div>
+    <%= link_to edit_profile_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("square-pen") %> Editar perfil<% end %>
+  </div>
+  <section class="sgu-card p-5 sm:p-6">
+    <dl class="sgu-dl">
+      <dt>Nome de exibição</dt><dd><%= @user.display_name.presence || "—" %></dd>
+      <dt>Nome de usuário</dt><dd><%= @user.username ? "@#{@user.username}" : "—" %></dd>
+      <dt>Apresentação</dt><dd class="sgu-prose"><%= @user.bio.presence || "—" %></dd>
+      <dt>Perfil público</dt>
+      <dd>
+        <% if @user.public_profile? %>
+          Sim — <%= link_to "ver como os outros veem", person_path(@user), class: "sgu-link" %>
+        <% else %>
+          Não. Ninguém vê seu perfil nem pode seguir você.
+        <% end %>
+      </dd>
+      <dt>Seguidores</dt><dd><%= @user.public_profile? ? @followers_count : "—" %></dd>
+      <dt>Seguindo</dt><dd><%= link_to @following_count, follow_ups_path(anchor: "followups_people"), class: "sgu-link" %></dd>
+      <dt>E-mail da conta</dt><dd><%= @user.email_address %> <span class="text-xs text-muted">(privado)</span></dd>
+      <dt>Papéis</dt><dd><%= @user.roles.active.ordered.map(&:name).to_sentence.presence || "Nenhum" %> <span class="text-xs text-muted">(privado; definidos pela administração)</span></dd>
+    </dl>
+  </section>
+</div>

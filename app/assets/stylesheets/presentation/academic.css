@@ -1,0 +1,379 @@
+/* Tabelas (apêndices) ------------------------------------------------------- */
+
+.apr-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--apr-line);
+  border-radius: var(--apr-radius);
+  background: var(--apr-surface);
+}
+
+.apr-table {
+  width: 100%;
+  min-width: 44em;
+  border-collapse: collapse;
+  font-size: 0.76em;
+}
+
+.apr-table th,
+.apr-table td {
+  padding: 0.45em 0.75em;
+  border-bottom: 1px solid var(--apr-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.apr-table thead th {
+  background: var(--apr-g-800);
+  color: #fff;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+}
+
+.apr-table tbody th {
+  font-weight: 700;
+}
+
+.apr-table tbody tr:nth-child(even) {
+  background: var(--apr-g-50);
+}
+
+.apr-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.apr-table--compact th,
+.apr-table--compact td {
+  padding: 0.4em 0.8em;
+}
+
+.apr-doc-ref {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em;
+  font-size: 0.9em;
+}
+
+/* Modelo de dados */
+
+.apr-figure--wide .apr-figure__zoom {
+  padding: 1em;
+}
+
+/* Evidências */
+
+.apr-evidence {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2em;
+}
+
+.apr-evidence__title {
+  margin-bottom: 0.5em !important;
+  padding-bottom: 0.35em;
+  border-bottom: 2px solid var(--apr-g-800);
+  font-size: 0.95em;
+}
+
+.apr-evidence__list {
+  display: grid;
+  gap: 0.5em;
+}
+
+.apr-evidence__list li {
+  display: grid;
+  gap: 0.15em;
+  justify-items: start;
+}
+
+.apr-evidence__list li span {
+  color: var(--apr-ink-2);
+  font-size: 0.8em;
+}
+
+/* Encerramento ------------------------------------------------------------------ */
+
+.apr-end {
+  display: grid;
+  gap: 1.1em;
+  align-content: center;
+  justify-items: start;
+  min-height: 100%;
+}
+
+.apr-end__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.35em 0.9em;
+  border: 1px solid rgba(159, 200, 190, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apr-end__title {
+  font-size: 3.2em;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.apr-end__title span {
+  color: var(--apr-gold);
+}
+
+.apr-end__lead {
+  max-width: 52ch;
+  color: rgba(227, 239, 235, 0.82);
+  font-size: 1.05em;
+}
+
+.apr-end__team {
+  display: grid;
+  gap: 0.5em;
+  width: 100%;
+  padding-top: 1em;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.apr-end__note {
+  color: rgba(227, 239, 235, 0.6);
+  font-size: 0.72em;
+}
+
+/* Requisitos refinados ------------------------------------------------------------ */
+
+.apr-reqs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2em;
+  align-items: start;
+}
+
+.apr-reqs__col {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+}
+
+.apr-reqs__title {
+  display: grid;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid var(--apr-g-800);
+  font-size: 1.02em;
+}
+
+.apr-reqs__title span {
+  color: var(--apr-ink-3);
+  font-size: 0.78em;
+  font-weight: 600;
+}
+
+.apr-reqs__list {
+  display: grid;
+  gap: 0.55em;
+}
+
+.apr-req {
+  display: grid;
+  gap: 0.3em;
+  padding: 0.6em 0.8em;
+  border: 1px solid var(--apr-line);
+  border-radius: 10px;
+  background: var(--apr-surface);
+}
+
+.apr-req__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.6em;
+}
+
+.apr-req__id {
+  color: var(--apr-amber);
+  font-family: var(--apr-mono);
+}
+
+.apr-req__name {
+  font-weight: 700;
+}
+
+.apr-req__text,
+.apr-req__criteria {
+  color: var(--apr-ink-2);
+  font-size: 0.82em;
+}
+
+.apr-req__criteria {
+  display: grid;
+  gap: 0.2em;
+}
+
+.apr-req__criteria li::before {
+  content: "✓ ";
+  color: var(--apr-link);
+  font-weight: 800;
+}
+
+.apr-reqs__foot {
+  display: grid;
+  gap: 0.5em;
+}
+
+/* Status report ------------------------------------------------------------------- */
+
+.apr-status {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1em;
+  align-items: stretch;
+}
+
+.apr-status__col {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+  padding: 1em 1.1em;
+  border: 1px solid var(--apr-line);
+  border-top: 4px solid var(--apr-g-600);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-status__col--next {
+  border-top-color: var(--apr-gold);
+}
+
+.apr-status__col--learn {
+  border-top-color: var(--apr-heading);
+}
+
+.apr-status__title {
+  font-size: 1em;
+}
+
+.apr-status__list {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.86em;
+}
+
+.apr-status__list li {
+  display: grid;
+  gap: 0.1em;
+}
+
+.apr-status__list span {
+  color: var(--apr-ink-3);
+  font-size: 0.9em;
+}
+
+.apr-status__marco,
+.apr-status__more {
+  color: var(--apr-ink-2);
+  font-size: 0.8em;
+}
+
+/* Protótipo e blocos auxiliares ---------------------------------------------------- */
+
+.apr-proto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em 1.2em;
+  padding: 0.6em 0.9em;
+  border: 1px dashed var(--apr-line-strong);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-proto .apr-figure {
+  flex: 0 1 18em;
+}
+
+.apr-proto__body {
+  display: grid;
+  flex: 1 1 18em;
+  gap: 0.3em;
+}
+
+.apr-proto__text {
+  color: var(--apr-ink-2);
+  font-size: 0.86em;
+}
+
+.apr-problem__block,
+.apr-next__block {
+  display: grid;
+  gap: 1em;
+  align-content: start;
+}
+
+.apr-next__block {
+  gap: 0.9em;
+}
+
+.apr-envs {
+  display: grid;
+  gap: 0.4em;
+}
+
+.apr-envs__list {
+  display: grid;
+  gap: 0.35em;
+  font-size: 0.84em;
+}
+
+.apr-envs__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2em 0.5em;
+}
+
+.apr-envs__name {
+  font-weight: 650;
+  text-underline-offset: 0.2em;
+}
+
+.apr-envs__note {
+  flex-basis: 100%;
+  color: var(--apr-ink-3);
+  font-size: 0.9em;
+}
+
+.apr-muted {
+  color: var(--apr-ink-3);
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+.apr-estimate.is-over,
+.apr-custom__estimate.is-over {
+  color: var(--negative-ink);
+  font-weight: 700;
+}
+
+.apr-index__estimate {
+  margin: 0.8rem 1.25rem 0 !important;
+  color: var(--apr-ink-2);
+  font-size: 0.85rem;
+}
+
+.apr-index__estimate.is-over {
+  color: var(--negative-ink);
+  font-weight: 700;
+}
+
+/* Blocos ocultos: os vizinhos ocupam o espaço em vez de deixar colunas vazias.
+   Especificidade baixa para que as regras responsivas abaixo continuem valendo. */
+.apr-fit:where(:has(> [hidden])) {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}

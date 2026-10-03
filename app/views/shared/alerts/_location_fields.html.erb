@@ -1,0 +1,60 @@
+<%# Localização da ocorrência: GPS do aparelho (pedido só após clique) ou local do catálogo.
+    As coordenadas de referência de um local nunca são copiadas para os campos de GPS. %>
+<% locations = options.locations %>
+<fieldset class="sgu-card space-y-4 p-5 sm:p-6" data-controller="geolocation"
+          data-geolocation-has-locations-value="<%= locations.any? %>">
+  <legend class="sr-only">Localização</legend>
+  <h2 class="sgu-section-title">Localização</h2>
+  <p class="text-sm text-muted">Ocorrências comuns precisam de localização: pelo GPS do aparelho ou escolhendo um local cadastrado. Coordenadas indicam onde o aparelho estava, não comprovam o local.</p>
+
+  <div class="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Como informar a localização">
+    <% options.location_sources.each do |option| %>
+      <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line bg-surface p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
+        <%= f.radio_button :location_source, option.value, id: "#{form_id}_location_source_#{option.value}", class: "mt-1 accent-brand-solid",
+              data: { geolocation_target: "source", action: "geolocation#switch" } %>
+        <span><span class="block font-semibold text-ink"><%= option.label %></span><span class="block text-xs text-muted"><%= option.description %></span></span>
+      </label>
+    <% end %>
+  </div>
+  <%= field_errors(alert, :location_source) %>
+  <% %i[base].each do |attribute| %>
+    <%= field_errors(alert, attribute) %>
+  <% end %>
+
+  <div data-geolocation-target="gpsPanel" class="space-y-3 rounded-xl bg-surface-muted p-4">
+    <noscript>
+      <p class="text-sm text-warning-ink">Sem JavaScript não é possível ler o GPS. Escolha um local cadastrado.</p>
+    </noscript>
+    <button type="button" class="sgu-btn sgu-btn-secondary hidden" data-geolocation-target="captureButton" data-action="geolocation#capture">
+      <%= sgu_icon("locate") %><span>Usar minha localização</span>
+    </button>
+    <p class="text-sm text-ink" data-geolocation-target="status" role="status" aria-live="polite">
+      <% if alert.latitude.present? && alert.longitude.present? %>
+        Localização informada: <%= format("%.5f", alert.latitude) %>, <%= format("%.5f", alert.longitude) %>.
+      <% else %>
+        O navegador só pedirá permissão quando você clicar no botão.
+      <% end %>
+    </p>
+    <%= f.hidden_field :latitude, id: "#{form_id}_latitude", data: { geolocation_target: "latitude" } %>
+    <%= f.hidden_field :longitude, id: "#{form_id}_longitude", data: { geolocation_target: "longitude" } %>
+    <%= f.hidden_field :location_accuracy_meters, id: "#{form_id}_accuracy", data: { geolocation_target: "accuracy" } %>
+    <%= f.hidden_field :location_captured_at, value: alert.location_captured_at&.iso8601, id: "#{form_id}_captured_at", data: { geolocation_target: "capturedAt" } %>
+    <% %i[latitude longitude location_accuracy_meters location_captured_at].each do |attribute| %>
+      <%= field_errors(alert, attribute) %>
+    <% end %>
+  </div>
+
+  <div data-geolocation-target="manualPanel" class="space-y-2 rounded-xl bg-surface-muted p-4">
+    <% if locations.any? %>
+      <%= f.label :location_id, "Local do campus", class: "sgu-label", for: "#{form_id}_location_id" %>
+      <%= f.select :location_id, options_from_select_options(locations, alert.location_id, include_blank: "Selecione o local"), {},
+            id: "#{form_id}_location_id", class: "sgu-input", aria: { invalid: invalid?(alert, :location), describedby: "#{form_id}_location_error" } %>
+      <%= field_errors(alert, :location, id: "#{form_id}_location_error") %>
+    <% else %>
+      <p class="text-sm text-ink">
+        <strong>Ainda não há locais cadastrados.</strong> A lista oficial de prédios e áreas da UFRPE está pendente; enquanto isso, use o GPS do aparelho.
+      </p>
+      <%= field_errors(alert, :location) %>
+    <% end %>
+  </div>
+</fieldset>

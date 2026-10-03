@@ -1,0 +1,65 @@
+<% content_for :title, "Pânico - SGU UFRPE" %>
+<div class="mx-auto max-w-2xl" data-controller="panic" data-panic-key-value="<%= @client_request_id %>" data-panic-alerts-url-value="<%= alerts_path %>">
+  <p class="sgu-eyebrow !text-negative-ink">Pedido de ajuda</p>
+  <h1 class="sgu-page-title mt-1">Pânico</h1>
+  <div class="mt-3 space-y-2 text-ink">
+    <p>Envia um registro <strong>restrito</strong> à equipe de segurança do SGU, com a localização que estiver disponível. Não precisa de título, categoria ou foto.</p>
+    <p class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink"><strong>Importante:</strong> o SGU confirma apenas que o sistema recebeu o pedido. Ele não aciona viaturas, não liga para ninguém e não rastreia sua localização. Em risco imediato, procure ajuda presencial ou os serviços de emergência.</p>
+  </div>
+
+  <div class="mt-4 hidden rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink" data-panic-target="pending" role="alert">
+    <p class="font-bold">Há um pedido de pânico sem confirmação de recebimento neste navegador.</p>
+    <p class="mt-1">Reenvie o mesmo pedido (não cria duplicado) ou confira seus alertas antes de iniciar outro.</p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <button type="button" class="sgu-btn sgu-btn-sm sgu-btn-danger" data-action="panic#resend">Reenviar o mesmo pedido</button>
+      <%= link_to "Ver meus alertas", alerts_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+      <button type="button" class="sgu-btn sgu-btn-sm sgu-btn-ghost" data-action="panic#discard">Descartar e começar outro</button>
+    </div>
+  </div>
+
+  <%= form_with url: panic_path, method: :post, id: "panic_form", class: "sgu-card mt-6 space-y-5 p-5 sm:p-6",
+        data: { panic_target: "form", action: "submit->panic#submit", turbo: false } do %>
+    <%= hidden_field_tag :client_request_id, @client_request_id, id: "panic_client_request_id", data: { panic_target: "key" } %>
+    <%= hidden_field_tag "panic[latitude]", nil, id: "panic_latitude", data: { panic_target: "latitude" } %>
+    <%= hidden_field_tag "panic[longitude]", nil, id: "panic_longitude", data: { panic_target: "longitude" } %>
+    <%= hidden_field_tag "panic[location_accuracy_meters]", nil, id: "panic_accuracy", data: { panic_target: "accuracy" } %>
+    <%= hidden_field_tag "panic[location_captured_at]", nil, id: "panic_captured_at", data: { panic_target: "capturedAt" } %>
+    <%= hidden_field_tag "panic[location_unavailable_reason]", "not_shared", id: "panic_unavailable_reason", data: { panic_target: "reason" } %>
+
+    <div>
+      <%= label_tag "panic_description", "O que está acontecendo? (opcional)", class: "sgu-label" %>
+      <%= text_area_tag "panic[description]", params.dig(:panic, :description), id: "panic_description", rows: 2, maxlength: Alert::DESCRIPTION_LENGTH.max, class: "sgu-input", placeholder: "Se puder, em poucas palavras." %>
+    </div>
+
+    <% if @locations.any? %>
+      <div>
+        <%= label_tag "panic_location_id", "Onde você está? (opcional)", class: "sgu-label" %>
+        <%= select_tag "panic[location_id]", options_from_select_options(@locations, params.dig(:panic, :location_id), include_blank: "Não informar"), id: "panic_location_id", class: "sgu-input" %>
+        <p class="sgu-hint">Se o GPS estiver disponível, ele é usado no lugar do local escolhido.</p>
+      </div>
+    <% end %>
+
+    <label class="flex items-start gap-2 text-sm text-ink">
+      <input type="checkbox" checked class="mt-0.5 size-4 accent-brand-solid" data-panic-target="useGps">
+      <span>Tentar enviar a localização do GPS (até <span data-panic-target="gpsSeconds">6</span> segundos; se não vier, o pedido segue sem ela).</span>
+    </label>
+
+    <div data-panic-target="start" class="hidden">
+      <button type="button" class="sgu-btn w-full bg-negative-solid !py-4 text-lg !text-on-brand hover:bg-negative-hover" data-action="panic#arm">
+        <%= sgu_icon("siren", "size-6") %> Pedir ajuda
+      </button>
+    </div>
+
+    <div data-panic-target="confirm" class="space-y-3">
+      <p class="text-sm font-semibold text-ink" data-panic-target="confirmText">Confirme para enviar o pedido de ajuda.</p>
+      <div class="flex flex-col gap-2 sm:flex-row">
+        <button type="submit" class="sgu-btn sgu-btn-danger flex-1 !py-3 text-base" data-panic-target="submit">
+          <%= sgu_icon("siren", "size-5") %> Confirmar pedido de ajuda
+        </button>
+        <button type="button" class="sgu-btn sgu-btn-secondary hidden" data-panic-target="cancel" data-action="panic#disarm">Cancelar</button>
+      </div>
+    </div>
+
+    <p class="text-sm text-ink" data-panic-target="status" role="status" aria-live="assertive"></p>
+  <% end %>
+</div>

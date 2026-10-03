@@ -1,0 +1,374 @@
+/* Títulos por exigência ----------------------------------------------------------- */
+
+.apr-kicker {
+  flex-wrap: wrap;
+}
+
+/* Exigência atendida pelo slide ("2ª entrega · Item 1"), separada do número do slide. */
+.apr-requirement {
+  padding: 0.15em 0.6em;
+  border: 1px solid var(--apr-g-300);
+  border-radius: 999px;
+  background: var(--apr-g-50);
+  color: var(--apr-heading);
+  font-family: var(--apr-font);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.apr-requirement--extra {
+  border-style: dashed;
+  background: transparent;
+  color: var(--apr-ink-3);
+}
+
+.apr-slide--dark .apr-requirement {
+  border-color: rgba(159, 200, 190, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--apr-g-100);
+}
+
+.apr-title {
+  overflow-wrap: break-word;
+}
+
+.apr-title--long {
+  max-width: 56ch;
+  font-size: 1.6em;
+  line-height: 1.12;
+}
+
+.apr-subtitle {
+  max-width: 70ch;
+  color: var(--apr-link);
+  font-size: 1.05em;
+  font-weight: 650;
+  text-wrap: pretty;
+}
+
+.apr-slide--dark .apr-subtitle {
+  color: var(--apr-g-300);
+}
+
+.apr-slide-list__title {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.apr-slide-list__req {
+  display: block;
+  color: var(--apr-ink-3);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.apr-slide-list__link[aria-current="true"] .apr-slide-list__req {
+  color: var(--apr-g-300);
+}
+
+.apr-custom__req {
+  flex-basis: 100%;
+  margin-left: 1.6rem;
+  color: var(--apr-link);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.apr-custom__req--extra {
+  color: var(--apr-ink-3);
+  font-weight: 500;
+}
+
+.apr-custom__note {
+  display: grid;
+  gap: 0.25rem;
+  padding-left: 1.6rem !important;
+  list-style: disc !important;
+}
+
+.apr-checklist__part {
+  display: block;
+  color: var(--apr-link);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Sem JavaScript, controles que dependem dele não aparecem. */
+.apr:not(.apr--js) .apr-js-only {
+  display: none !important;
+}
+
+/* Repositório, Trello e reuniões ---------------------------------------------------- */
+
+/* Duas colunas só quando nenhuma está oculta (senão vale .apr-fit). */
+.apr-mgmt--two:where(:not(:has(> [hidden]))) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.apr-repo {
+  display: grid;
+  gap: 0.3em;
+}
+
+.apr-repo__item {
+  display: grid;
+  grid-template-columns: minmax(0, 9.5em) 3em minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.6em;
+  padding: 0.28em 0.7em;
+  border: 1px solid var(--apr-line);
+  border-radius: 10px;
+  background: var(--apr-surface);
+}
+
+.apr-repo__item .apr-code {
+  justify-self: start;
+}
+
+.apr-repo__count {
+  color: var(--apr-amber);
+  font-family: var(--apr-mono);
+  font-weight: 800;
+  text-align: right;
+}
+
+.apr-repo__label {
+  color: var(--apr-ink-2);
+  font-size: 0.84em;
+}
+
+.apr-meetings--grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18em), 1fr));
+}
+
+/* Modelo conceitual: situação ------------------------------------------------------- */
+
+.apr-model-foot {
+  display: grid;
+}
+
+.apr-model-foot:where(:not(:has(> [hidden]))) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1em;
+  align-items: start;
+}
+
+.apr-model-status {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.86em;
+}
+
+.apr-model-status__row {
+  display: grid;
+  grid-template-columns: minmax(0, 11em) minmax(0, 1fr);
+  gap: 0.6em;
+  align-items: baseline;
+}
+
+.apr-model-status dt {
+  font-weight: 700;
+}
+
+.apr-model-status dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3em 0.6em;
+  color: var(--apr-ink-2);
+}
+
+/* Tecnologias: cards com logo e versões discretas ----------------------------------- */
+
+.apr-arch:has(> .apr-tech:not([hidden])):has(> .apr-arch__side:not([hidden])) {
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+}
+
+.apr-tech {
+  display: grid;
+  gap: 0.7em;
+  align-content: start;
+}
+
+.apr-tech__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4em 1em;
+}
+
+.apr-tech__hint {
+  color: var(--apr-ink-3);
+  font-size: 0.78em;
+}
+
+.apr-tech__groups {
+  display: grid;
+  gap: 0.45em;
+}
+
+.apr-tech__title {
+  margin-bottom: 0.2em !important;
+  color: var(--apr-link);
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apr-tech__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5em), 1fr));
+  gap: 0.35em;
+}
+
+.apr-tech__card {
+  position: relative;
+}
+
+.apr-tech__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 100%;
+  padding: 0.32em 0.5em;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-tech__item:hover,
+.apr-tech__item:focus-visible {
+  border-color: var(--apr-link);
+}
+
+.apr-tech__logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 8px;
+  background: var(--apr-g-50);
+  color: var(--apr-heading);
+}
+
+.apr-tech__logo--dark {
+  background: var(--apr-g-900);
+}
+
+.apr-tech__img {
+  width: 1.15em;
+  height: 1.15em;
+  object-fit: contain;
+}
+
+.apr-tech__symbol {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.apr-tech__text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.apr-tech__name {
+  font-size: 0.9em;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.apr-tech__role {
+  color: var(--apr-ink-3);
+  font-size: 0.72em;
+}
+
+/* Recolhidas: dica acima do card ao passar o mouse ou focar (sem depender de hover no PDF). */
+.apr-tech__versions {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.35em);
+  z-index: 5;
+  display: grid;
+  gap: 0.15em;
+  width: max-content;
+  max-width: min(22em, 80vw);
+  padding: 0.45em 0.6em;
+  border-radius: 10px;
+  background: var(--apr-g-900);
+  color: #fff;
+  font-size: 0.74em;
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  transition: opacity 0.15s var(--apr-ease);
+}
+
+/* Mantém a dica aberta durante a passagem do cursor entre o card e o texto. */
+.apr-tech__versions::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 0.35em;
+}
+
+.apr-tech__card:hover .apr-tech__versions,
+.apr-tech__card:focus-within .apr-tech__versions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.apr-tech__card.is-dismissed .apr-tech__versions {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.apr-tech__version {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 0.6em;
+}
+
+.apr-tech__version-label {
+  opacity: 0.8;
+}
+
+.apr-tech__version code {
+  font-weight: 700;
+}
+
+.apr-tech__version-text {
+  font-style: italic;
+}
+
+/* Expandidas (botão) ou sem JavaScript: versões abaixo de cada tecnologia. */
+.apr-tech.is-expanded .apr-tech__versions,
+.apr:not(.apr--js) .apr-tech__versions {
+  position: static;
+  width: auto;
+  max-width: none;
+  margin-top: 0.25em;
+  padding: 0.3em 0.5em;
+  border: 1px dashed var(--apr-line-strong);
+  background: var(--apr-g-50);
+  color: var(--apr-ink-2);
+  box-shadow: none;
+  opacity: 1;
+  visibility: visible;
+}
+
+.apr-tech.is-expanded .apr-tech__item,
+.apr:not(.apr--js) .apr-tech__item {
+  height: auto;
+}
+
+.apr-tech__credits {
+  font-size: 0.68em;
+}

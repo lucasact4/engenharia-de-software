@@ -1,0 +1,84 @@
+<% creating = @publication.new_record? %>
+<%= form_with model: [ :admin, @publication ], scope: :publication, id: "publication_form", class: "space-y-5", html: { novalidate: true } do |f| %>
+  <% unless creating %><%= hidden_field_tag :lock_version, @publication.lock_version %><% end %>
+  <% if @publication.errors.any? %>
+    <div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert">
+      <ul class="list-disc space-y-1 pl-5"><% @publication.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <% if creating %>
+    <fieldset class="sgu-card space-y-4 p-5 sm:p-6">
+      <legend class="sr-only">Tipo e fonte</legend>
+      <h2 class="sgu-section-title">Tipo e fonte</h2>
+      <p class="text-sm text-muted">Tipo e fonte não mudam depois de criados. Avisos e notícias não têm alerta de origem.</p>
+      <div class="grid gap-2 md:grid-cols-3">
+        <% Publication.kinds.values.each do |kind| %>
+          <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line bg-surface p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
+            <%= f.radio_button :kind, kind, class: "mt-1 accent-brand-solid" %>
+            <span><span class="block font-semibold"><%= enum_label("publication.kind", kind) %></span><span class="block text-xs text-muted"><%= enum_description("publication.kind", kind) %></span></span>
+          </label>
+        <% end %>
+      </div>
+      <%= field_errors(@publication, :kind) %>
+      <div>
+        <%= f.label :alert_id, "Ocorrência de origem (só para “Ocorrência divulgada”)", class: "sgu-label" %>
+        <%= f.select :alert_id, options_for_select([ [ "Nenhuma", "" ] ] + (@sources.to_a | [ @source ].compact).map { |a| [ "#{a.protocol} · #{a.title.to_s.truncate(70)} (pediu: #{enum_label('alert.requested_visibility', a.requested_visibility)})", a.id ] }, @source&.id), {}, class: "sgu-input" %>
+        <p class="sgu-hint">Lista só ocorrências sem publicação, sem bloqueio editorial e que pediram divulgação interna ou externa (até <%= PublicationSourcesQuery::LIMIT %> mais recentes). Escreva um texto editorial próprio: não copie a descrição do autor, fotos ou localização precisa.</p>
+        <%= field_errors(@publication, :alert) %>
+      </div>
+    </fieldset>
+  <% elsif @publication.alert %>
+    <p class="rounded-xl bg-surface-muted p-4 text-sm text-ink">Fonte: <%= link_to @publication.alert.protocol, admin_alert_path(@publication.alert), class: "sgu-link font-mono" %> (imutável).</p>
+  <% end %>
+
+  <fieldset class="sgu-card space-y-4 p-5 sm:p-6">
+    <legend class="sr-only">Conteúdo</legend>
+    <h2 class="sgu-section-title">Conteúdo</h2>
+    <div>
+      <%= f.label :title, "Título", class: "sgu-label" %>
+      <%= f.text_field :title, class: "sgu-input", maxlength: Publication::TITLE_LENGTH.max, required: true, aria: { invalid: invalid?(@publication, :title) } %>
+      <p class="sgu-hint">De <%= Publication::TITLE_LENGTH.min %> a <%= Publication::TITLE_LENGTH.max %> caracteres.</p>
+      <%= field_errors(@publication, :title) %>
+    </div>
+    <div>
+      <%= f.label :body, "Texto", class: "sgu-label" %>
+      <%= f.text_area :body, rows: 10, class: "sgu-input", maxlength: Publication::BODY_LENGTH.max, required: true, aria: { invalid: invalid?(@publication, :body) } %>
+      <p class="sgu-hint">De <%= Publication::BODY_LENGTH.min %> a <%= number_with_delimiter(Publication::BODY_LENGTH.max, delimiter: ".") %> caracteres. Texto simples; quebras de linha são preservadas.</p>
+      <%= field_errors(@publication, :body) %>
+    </div>
+  </fieldset>
+
+  <fieldset class="sgu-card grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
+    <legend class="sr-only">Audiência e validade</legend>
+    <h2 class="sgu-section-title sm:col-span-2">Audiência e validade</h2>
+    <div>
+      <%= f.label :visibility, "Audiência", class: "sgu-label" %>
+      <%= f.select :visibility, Publication.visibilities.values.map { |v| [ "#{enum_label('publication.visibility', v)} — #{enum_description('publication.visibility', v)}", v ] }, {}, class: "sgu-input" %>
+      <p class="sgu-hint">Ocorrência divulgada só pode usar a audiência que o autor pediu e enquanto não houver bloqueio.</p>
+      <%= field_errors(@publication, :visibility) %>
+    </div>
+    <div>
+      <%= f.label :expires_at, "Expira em", class: "sgu-label" %>
+      <%= f.datetime_local_field :expires_at, value: @publication.expires_at&.strftime("%Y-%m-%dT%H:%M"), class: "sgu-input", aria: { invalid: invalid?(@publication, :expires_at) } %>
+      <p class="sgu-hint">Obrigatória para avisos. Horário de Recife. Depois dela a publicação sai do mural automaticamente.</p>
+      <%= field_errors(@publication, :expires_at) %>
+    </div>
+    <div class="flex items-start gap-2 sm:col-span-2">
+      <%= f.check_box :comments_enabled, class: "mt-1 size-4 accent-brand-solid" %>
+      <div>
+        <%= f.label :comments_enabled, "Aceitar comentários", class: "text-sm font-semibold text-ink" %>
+        <p class="sgu-hint !mt-0">Desligar impede novos comentários e respostas; os existentes continuam visíveis.</p>
+      </div>
+    </div>
+  </fieldset>
+
+  <% unless creating %>
+    <p class="rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink">Alterar título, texto, audiência ou validade cria a versão <%= @publication.content_version + 1 %>, invalida a aprovação atual e tira a publicação do ar até nova revisão.</p>
+  <% end %>
+
+  <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <%= link_to "Cancelar", (creating ? admin_publications_path : admin_publication_path(@publication)), class: "sgu-btn sgu-btn-secondary" %>
+    <%= f.button (creating ? "Criar rascunho" : "Salvar alterações"), type: "submit", class: "sgu-btn sgu-btn-primary", data: { turbo_submits_with: "Salvando…" } %>
+  </div>
+<% end %>

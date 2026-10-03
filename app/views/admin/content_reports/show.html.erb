@@ -1,0 +1,82 @@
+<% content_for :title, "Denúncia" %>
+<% report = @report %>
+<% comment = report.comment %>
+<div class="space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_content_reports_path, back_label: "Denúncias", eyebrow: "Denúncia ##{report.id}", title: "#{enum_label('content_report.reason', report.reason)} · #{comment ? 'comentário' : 'publicação'}" %>
+
+  <% if report.errors.any? %>
+    <div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert"><%= report.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <div class="space-y-5">
+      <section class="sgu-card p-5 sm:p-6">
+        <h2 class="sgu-section-title">Denúncia</h2>
+        <dl class="sgu-dl mt-4">
+          <dt>Situação</dt><dd><%= enum_badge("content_report.state", report.state, PortalHelper::REPORT_STATE_BADGES) %></dd>
+          <dt>Motivo</dt><dd><%= enum_label("content_report.reason", report.reason) %></dd>
+          <dt>Detalhes</dt><dd class="sgu-prose"><%= report.details.presence || "—" %></dd>
+          <dt>Recebida em</dt><dd><%= sgu_time(report.created_at) %></dd>
+          <dt>Denunciante</dt><dd><%= report.reporter.email_address %> <span class="text-xs text-muted">(dado privado; não aparece no mural)</span></dd>
+          <% if report.reviewed_at %>
+            <dt>Decisão</dt><dd><%= sgu_time(report.reviewed_at) %> por <%= report.reviewed_by.display_name.presence || report.reviewed_by.email_address %></dd>
+            <% if report.resolution_notes.present? %><dt>Notas</dt><dd class="sgu-prose"><%= report.resolution_notes %></dd><% end %>
+          <% end %>
+        </dl>
+      </section>
+
+      <section class="sgu-card p-5 sm:p-6">
+        <h2 class="sgu-section-title">Conteúdo denunciado</h2>
+        <% if @target_publication %>
+          <p class="mt-2 text-sm text-muted">Publicação: <%= link_to @target_publication.title, admin_publication_path(@target_publication), class: "sgu-link" %> (<%= enum_label("publication.state", @target_publication.state) %>)</p>
+        <% end %>
+        <% if comment %>
+          <div class="mt-3 rounded-xl border border-line p-4">
+            <p class="text-xs text-muted"><%= comment.author.display_name.presence || comment.author.email_address %> · <%= sgu_time(comment.created_at) %></p>
+            <% if comment.hidden? %><p class="mt-1 text-sm font-semibold text-ink"><%= comment.removed? ? "Já removido pela moderação" : "Apagado pelo autor" %></p><% end %>
+            <p class="sgu-prose mt-1 text-sm"><%= comment.body %></p>
+          </div>
+        <% elsif @target_publication %>
+          <p class="sgu-prose mt-3 text-sm"><%= @target_publication.body.truncate(1200) %></p>
+        <% end %>
+      </section>
+    </div>
+
+    <aside class="space-y-5" aria-label="Decisão e moderação">
+      <section class="sgu-card p-5">
+        <h2 class="sgu-section-title">Decisão da denúncia</h2>
+        <%= form_with url: review_admin_content_report_path(report), method: :patch, class: "mt-3 space-y-3" do %>
+          <%= label_tag :notes, "Notas internas (opcionais)", class: "sgu-label" %>
+          <%= text_area_tag :notes, report.resolution_notes, rows: 3, maxlength: 1000, class: "sgu-input" %>
+          <div class="flex gap-2">
+            <button type="submit" name="decision" value="actioned" class="sgu-btn sgu-btn-primary flex-1">Procedente</button>
+            <button type="submit" name="decision" value="dismissed" class="sgu-btn sgu-btn-secondary flex-1">Improcedente</button>
+          </div>
+          <p class="sgu-hint">Registrar a decisão não altera o conteúdo. Quem denunciou pode reabrir com novas informações.</p>
+        <% end %>
+      </section>
+
+      <% if comment && !comment.removed? %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">Remover comentário</h2>
+          <%= form_with url: moderate_admin_comment_path(comment), method: :patch, class: "mt-3 space-y-3" do %>
+            <%= hidden_field_tag :return_to, admin_content_report_path(report) %>
+            <%= label_tag :moderation_reason, "Motivo", class: "sgu-label" %>
+            <%= text_area_tag :reason, nil, id: "moderation_reason", rows: 2, maxlength: 1000, class: "sgu-input", required: true %>
+            <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full" data-turbo-confirm="Remover este comentário? Respostas de outras pessoas são mantidas."><%= sgu_icon("ban") %> Remover comentário</button>
+          <% end %>
+        </section>
+      <% elsif @target_publication&.published? && report.publication_id %>
+        <section class="sgu-card p-5">
+          <h2 class="sgu-section-title">Retirar publicação</h2>
+          <%= form_with url: withdraw_admin_publication_path(@target_publication), method: :patch, class: "mt-3 space-y-3" do %>
+            <%= hidden_field_tag :return_to, admin_content_report_path(report) %>
+            <%= label_tag :withdraw_reason, "Motivo", class: "sgu-label" %>
+            <%= text_area_tag :reason, nil, id: "withdraw_reason", rows: 2, maxlength: 1000, class: "sgu-input", required: true %>
+            <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full" data-turbo-confirm="Retirar a publicação do ar?"><%= sgu_icon("ban") %> Retirar publicação</button>
+          <% end %>
+        </section>
+      <% end %>
+    </aside>
+  </div>
+</div>
