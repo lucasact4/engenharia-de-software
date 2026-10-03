@@ -16,6 +16,7 @@ A reusable Ruby on Rails foundation for starting new Propósito Digital applicat
 - [Decide whether SQLite is suitable for production](docs/sqlite-production.md)
 - [Back up and restore SQLite production data](docs/sqlite-backup-and-restore.md)
 - [Upgrade an existing database to the SGU data model](docs/data-model-upgrade.md)
+- [SGU registration, account review, and themes](docs/sgu-cadastro-temas-revisao.md) (Portuguese)
 - [Migrate from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
 - [First deployment checklist](docs/first-deploy.md)
 - [New project delivery checklist](docs/project-delivery.md)
@@ -30,7 +31,7 @@ A reusable Ruby on Rails foundation for starting new Propósito Digital applicat
 
 ## Included
 
-- Ruby 3.4.8 and Rails 8.1.3.
+- Ruby 3.4.8 and Rails 8.1.3.1.
 - SQLite, Solid Cache, Solid Queue, and Solid Cable.
 - Session-based authentication and password reset.
 - An administrative area with CRUD, pagination, search, and sorting.
@@ -90,14 +91,20 @@ bin/rails db:migrate
 
 ### Local access
 
-The administrative area is available at `http://localhost:3000/admin`.
+After signing in, administrators land on `http://localhost:3000/admin` and every other account lands on its panel at `/painel`. The public board is at `/mural`. Routes, permissions, and flows for occurrences, panic alerts, publications, and the social features are described in [docs/alertas-crud-implementacao.md](docs/alertas-crud-implementacao.md) (Portuguese).
+
+Public registration is available at `/criar-conta`: an email ending exactly in `@ufrpe.br` and a visitor, professor, or student profile are required. New accounts are automatically approved during development; email ownership is not verified yet. Administrators can review accounts at `/admin/cadastros`. Set `SGU_AUTO_APPROVE_REGISTRATIONS=false` before starting the application to require approval. See the [registration and themes guide](docs/sgu-cadastro-temas-revisao.md) for the current limitations and checks.
+
+Dark mode is the default across the public site, authentication, portal, administration, and presentation. The theme toggle saves the preference in the browser; printed pages use light surfaces. Theme files and maintenance guidance are documented in the [registration and themes guide](docs/sgu-cadastro-temas-revisao.md).
+
+The campus locations catalog starts empty on purpose. Register only real, verified locations at `/admin/locais`; until then, occurrences use the device GPS.
 
 | Email | Password | Access |
 | --- | --- | --- |
 | `test@test.com` | `test@123` | Regular account |
 | `dev@dev.com` | `test@123` | Administrator |
 
-These credentials exist only in development. Never use them in production.
+These credentials exist only in development. Never use them in production. Existing demo accounts remain usable; the institutional email requirement applies to public registration.
 
 ## Creating an administrative CRUD
 
