@@ -33,6 +33,7 @@ pt-br:
   flag_icon: flag-icon-br
   pundit:
     default: 'Você não pode fazer essa ação.'
+    admin_area: "A administração é exclusiva de contas administradoras. Use o seu painel."
     entity_policy:
       update?: 'You cannot edit this post!'
       create?: 'You cannot create posts!'
@@ -284,9 +285,6 @@ pt-br:
       permission: 'Permissão'
       role: 'Perfil'
       entity_category: 'Categoria de Módulos'
-      dog: 
-        one: 'Aviso'
-        other: 'Avisos'
     attributes:
       presentation_profile:
         name: "Nome do perfil"
@@ -302,11 +300,6 @@ pt-br:
         password_confirmation: "Confirmação da Senha"
         role: "Perfil"
         last_sign_in_at: "Último login"
-        created_at: "Criado em"
-        updated_at: "Atualizado em"
-      dog:
-        name: "Nome"
-        age: "Idade"
         created_at: "Criado em"
         updated_at: "Atualizado em"
       role:
@@ -349,6 +342,16 @@ pt-br:
         success: '%{controller_name} foi removido com sucesso.'
         danger: "Erro ao deletar %{controller_name}"
     admin:
+      categories:
+        create:
+          success: "Categoria criada."
+        update:
+          success: "Categoria atualizada."
+      locations:
+        create:
+          success: "Local criado."
+        update:
+          success: "Local atualizado."
       tenants:
         change_current_tenant:
           success: "Tenant mudado com sucesso."
@@ -486,6 +489,9 @@ pt-br:
     single: "Perfil de apresentação"
     plural: "Perfis de apresentação"
     menu: "Apresentação"
-  dogs:
-    single: 'Aviso'
-    plural: 'Avisos'
+  categories:
+    single: "Categoria"
+    plural: "Categorias"
+  locations:
+    single: "Local"
+    plural: "Locais"

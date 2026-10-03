@@ -91,6 +91,5 @@ capacidades:
 
 # Itens herdados que não pertencem ao domínio do SGU.
 observacoes:
-  - "Dog é uma entidade de exemplo do template (CRUD administrativo), não uma ocorrência do SGU."
   - "Os testes validam o template e as regras do backend do SGU; não comprovam jornadas completas com telas."
   - "O card #6 entrega backend e DER, sem telas do produto: não conta como funcionalidade completa."

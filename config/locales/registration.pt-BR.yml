@@ -1,0 +1,14 @@
+pt-BR:
+  activemodel:
+    attributes:
+      registration:
+        display_name: Nome
+        email_address: E-mail
+        role_code: Perfil
+        password: Senha
+        password_confirmation: Confirmação de senha
+  activerecord:
+    attributes:
+      user:
+        registration_review_reason: Motivo
+        registration_status: Situação do cadastro

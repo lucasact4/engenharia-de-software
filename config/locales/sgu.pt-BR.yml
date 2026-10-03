@@ -110,10 +110,26 @@ pt-br:
       single_target: "A denúncia deve ter exatamente um alvo (publicação ou comentário)."
       reference_coordinates_pair: "Latitude e longitude de referência devem ser informadas juntas."
       unavailable: "não está disponível para concessão"
+      in_use: "não pode ser alterado porque a entrada já foi usada; desative-a e crie outra"
+      in_future: "está no futuro; confira o relógio do aparelho e capture de novo"
+      too_old: "é antiga demais (mais de 24 horas); capture a localização de novo"
+      opt_in_only: "só pode ser ativado pela própria pessoa"
   sgu:
     public_identity:
       anonymous: "Pessoa usuária"
       editorial: "Equipe do SGU"
+    audit:
+      publication.created: "Rascunho criado"
+      publication.updated: "Conteúdo ou configuração alterados"
+      publication.submitted: "Enviada para revisão"
+      publication.approved: "Versão aprovada"
+      publication.rejected: "Revisão rejeitada"
+      publication.published: "Publicada"
+      publication.withdrawn: "Retirada do ar"
+      publication.source_changed: "Fonte alterada; nova revisão necessária"
+      publication.review_invalidated: "Revisão invalidada pela mudança de audiência da fonte"
+      content_report.reviewed: "Denúncia analisada"
+      content_report.reopened: "Denúncia reaberta por quem denunciou"
   enums:
     alert:
       kind:
@@ -184,3 +200,7 @@ pt-br:
         privacy: { label: "Privacidade", description: "Exposição de dados pessoais." }
         inappropriate: { label: "Impróprio", description: "Conteúdo ofensivo ou inadequado." }
         other: { label: "Outro", description: "Outro motivo; exige detalhes." }
+      state:
+        pending: { label: "Pendente", description: "Aguardando análise da administração." }
+        actioned: { label: "Procedente", description: "A administração considerou a denúncia procedente." }
+        dismissed: { label: "Improcedente", description: "A administração não viu violação." }

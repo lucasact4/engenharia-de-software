@@ -13,14 +13,14 @@ proximos_passos:
   - titulo: "Fechar os diagramas"
     texto: "Modelo conceitual, casos de uso (#14) e fluxo revisado (#5)."
     card: 14
-  - titulo: "Implementar a ocorrência"
-    texto: "Telas de registro e acompanhamento sobre o backend do card #6, após validar as premissas."
+  - titulo: "Validar o registro e o atendimento"
+    texto: "Homologar com a equipe as telas de registro, atendimento e acompanhamento já implementadas."
     card: 6
-  - titulo: "Concluir duas funcionalidades"
-    texto: "Escolher, implementar e validar ponta a ponta."
+  - titulo: "Homologar duas funcionalidades"
+    texto: "Validar manualmente as jornadas de ocorrência e de publicação no mural, além dos testes automatizados."
     card:
-  - titulo: "Limpar herança do template"
-    texto: "Remover o exemplo Dog e a marca da base na área administrativa."
+  - titulo: "Validar cadastro institucional"
+    texto: "Validar os novos fluxos de cadastro e revisão com a equipe."
     card:
 
 riscos:

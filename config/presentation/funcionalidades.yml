@@ -20,21 +20,37 @@ criterios:
   - "Evidência: captura ou demonstração"
 
 itens:
+  # Jornadas implementadas e testadas em 02/10/2026. RFs vazios até o documento do card #13;
+  # código não aprova requisito nem substitui a validação humana da equipe.
+  # Detalhes: docs/alertas-crud-implementacao.md. Capturas ficaram fora: qualquer imagem neste slide
+  # faz a impressão passar de uma página (ver spec/features/presentation_navigation_spec.rb).
   - id: funcionalidade-1
-    nome:
-    estado: aguardando_decisao
+    nome: "Registrar ocorrência e acompanhar o atendimento"
+    estado: implementado
     requisitos: []
-    jornada: []
-    codigo: []
-    testes: []
+    jornada:
+      - "Registro com categoria, GPS ou local e protocolo"
+      - "Coordenação classifica, atribui e resolve"
+      - "Autor acompanha a situação, sem notas internas"
+    codigo:
+      - "app/controllers/alerts_controller.rb"
+      - "app/controllers/handling/alerts_controller.rb"
+    testes:
+      - "spec/features/alert_journey_spec.rb"
     captura:
-    validacao:
+    validacao: "Testes automatizados; validação da equipe pendente."
   - id: funcionalidade-2
-    nome:
-    estado: aguardando_decisao
+    nome: "Publicar comunicado e interagir no mural"
+    estado: implementado
     requisitos: []
-    jornada: []
-    codigo: []
-    testes: []
+    jornada:
+      - "Rascunho, revisão da versão e publicação"
+      - "Leitor comenta, responde, curte, salva e acompanha"
+      - "Moderação e retirada revogam exposição e interações"
+    codigo:
+      - "app/controllers/admin/publications_controller.rb"
+      - "app/controllers/publications_controller.rb"
+    testes:
+      - "spec/features/editorial_journey_spec.rb"
     captura:
-    validacao:
+    validacao: "Testes automatizados; validação da equipe pendente."

@@ -47,6 +47,10 @@ en:
       single_target: "A report must have exactly one target (publication or comment)."
       reference_coordinates_pair: "Reference latitude and longitude must be provided together."
       unavailable: "is not available to grant"
+      in_use: "cannot change because the entry is already in use; deactivate it and create another"
+      in_future: "is in the future; check the device clock and capture again"
+      too_old: "is too old (over 24 hours); capture the location again"
+      opt_in_only: "can only be enabled by the person themselves"
   enums:
     alert:
       kind:
@@ -117,3 +121,7 @@ en:
         privacy: { label: "Privacy", description: "Exposure of personal data." }
         inappropriate: { label: "Inappropriate", description: "Offensive or unsuitable content." }
         other: { label: "Other", description: "Other reason; requires details." }
+      state:
+        pending: { label: "Pending", description: "Awaiting administrative review." }
+        actioned: { label: "Upheld", description: "The administration upheld the report." }
+        dismissed: { label: "Dismissed", description: "No violation found." }

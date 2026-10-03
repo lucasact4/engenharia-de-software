@@ -13,6 +13,11 @@ module RailsBase
     config.i18n.load_path += Dir[Rails.root.join("my", "locales", "*.{rb,yml}").to_s]
     config.i18n.available_locales = [ :en, "pt-br" ]
     config.i18n.default_locale = "pt-br"
+    # Horários exibidos e lidos em formulários no fuso do campus (UFRPE, Recife); o banco guarda UTC.
+    config.time_zone = "America/Recife"
+    config.x.registration.auto_approve = ENV.fetch("SGU_AUTO_APPROVE_REGISTRATIONS", "true") == "true"
+    # O cadastro informa a ausência de envio/verificação de e-mail nesta fase.
+    config.x.registration.email_verification_enabled = false
 
     # Fotos privadas passam pelo controller com autorização; URLs assinadas não bastam.
     config.active_storage.draw_routes = false

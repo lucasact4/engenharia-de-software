@@ -24,6 +24,18 @@ tables:
       - ''
     - - updated_at
       - ''
+    - - registration_status
+      - ''
+    - - registration_role_code
+      - ''
+    - - registration_reviewed_at
+      - ''
+    - - registration_review_reason
+      - ''
+    - - email_verified_at
+      - ''
+    - - registration_reviewed_by_id
+      - FK users
   user_roles:
     columns:
     - - id
@@ -416,20 +428,6 @@ tables:
       - ''
     - - updated_at
       - ''
-  dogs:
-    columns:
-    - - id
-      - PK
-    - - name
-      - ''
-    - - age
-      - ''
-    - - deleted_at
-      - ''
-    - - created_at
-      - ''
-    - - updated_at
-      - ''
   presentation_profiles:
     columns:
     - - id
@@ -449,6 +447,11 @@ tables:
     - - updated_at
       - ""
 foreign_keys:
+- source: users
+  target: users
+  column: registration_reviewed_by_id
+  required: false
+  unique: false
 - source: active_storage_attachments
   target: active_storage_blobs
   column: blob_id
@@ -739,7 +742,7 @@ diagrams:
     description: Todas as colunas e chaves estrangeiras operacionais. Alvo polimórfico
       da auditoria é indicado em tracejado.
     width: 1080
-    height: 730
+    height: 770
     nodes:
     - table: users
       x: 30
@@ -754,7 +757,7 @@ diagrams:
       split: 1
     - table: roles
       x: 790
-      "y": 560
+      "y": 600
       width: 260
       split: 2
     - table: audit_events
@@ -764,24 +767,24 @@ diagrams:
       split: 1
     - table: alerts
       x: 30
-      "y": 300
+      "y": 340
       width: 1020
       split: 4
       variant: core
     - table: categories
       x: 30
-      "y": 560
+      "y": 600
       width: 330
       split: 2
     - table: locations
       x: 375
-      "y": 560
+      "y": 600
       width: 400
       split: 2
     - id: audit_subject
       title: Registros auditados
       x: 30
-      "y": 212
+      "y": 252
       width: 480
       lines:
       - Alert · Publication · Comment · ContentReport · User
@@ -858,9 +861,9 @@ diagrams:
       "y": 20
       width: 240
   infrastructure:
-    title: Infraestrutura e exemplo do template
+    title: Infraestrutura e autenticação
     description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
-      Fotos usam vínculo polimórfico com alertas. Dogs permanece isolado. presentation_profiles
+      Fotos usam vínculo polimórfico com alertas. presentation_profiles
       guarda só a seleção de slides da apresentação, sem chave estrangeira.
     width: 1080
     height: 590
@@ -889,12 +892,6 @@ diagrams:
       width: 290
       split: 1
       variant: infra
-    - table: dogs
-      x: 350
-      "y": 340
-      width: 340
-      split: 1
-      variant: example
     - table: presentation_profiles
       x: 30
       "y": 370
