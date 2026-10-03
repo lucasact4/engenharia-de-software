@@ -1,6 +1,15 @@
 # Conta de acesso; perfis institucionais são múltiplos e users.admin define a administração.
 class User < ApplicationRecord
+  include TextSearch
   USERNAME_FORMAT = /\A[a-z0-9_]{3,30}\z/
+
+  REGISTRATION_ROLES = %w[visitor professor student].freeze
+
+  # Tipos explícitos também permitem executar os testes de atualização a partir do esquema antigo.
+  attribute :registration_status, :string, default: "approved"
+  attribute :registration_role_code, :string
+  enum :registration_status, { pending: "pending", approved: "approved", rejected: "rejected" }, prefix: :registration, validate: true
+  belongs_to :registration_reviewed_by, class_name: "User", optional: true
 
   has_secure_password
   has_many :sessions, dependent: :destroy
@@ -34,14 +43,19 @@ class User < ApplicationRecord
   normalizes :display_name, with: ->(name) { name.squish.presence }
   normalizes :bio, with: ->(bio) { bio.strip.presence }
 
+  validates :email_address, presence: true, uniqueness: true
+  validates :registration_role_code, inclusion: { in: REGISTRATION_ROLES }, allow_nil: true
+  validate :password_requirements, on: %i[registration password_change]
+  validates :password_confirmation, presence: true, on: %i[registration password_change]
+
   validates :username, format: { with: USERNAME_FORMAT }, uniqueness: true, allow_nil: true
   validates :display_name, length: { maximum: 80 }
   validates :bio, length: { maximum: 500 }
 
-  scope :active, -> { where(deleted_at: nil) }
+  scope :active, -> { where(deleted_at: nil, registration_status: "approved") }
 
   def active?
-    deleted_at.blank?
+    deleted_at.blank? && registration_approved?
   end
 
   def role?(code)
@@ -50,4 +64,10 @@ class User < ApplicationRecord
 
     roles.active.exists?(code: code)
   end
+
+  private
+
+    def password_requirements
+      PasswordRequirements.errors(password).each { |message| errors.add(:password, message) }
+    end
 end

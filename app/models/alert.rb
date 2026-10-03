@@ -1,11 +1,16 @@
 # Registro de ocorrência ou pânico; a divulgação editorial fica em Publication.
 class Alert < ApplicationRecord
+  include TextSearch
   TITLE_LENGTH = 5..160
   DESCRIPTION_LENGTH = 10..5000
   CATEGORY_DETAILS_MAX = 500
   MAX_PHOTOS = 5
   MAX_PHOTO_BYTES = 5 * 1024 * 1024
   PHOTO_CONTENT_TYPES = %w[image/png image/jpeg].freeze
+  # Metadados do GPS vêm do navegador: limites de coerência, não prova de local.
+  MAX_ACCURACY_METERS = 100_000
+  CAPTURE_CLOCK_SKEW = 5.minutes
+  CAPTURE_MAX_AGE = 24.hours
 
   SEVERITIES = { low: "low", moderate: "moderate", high: "high", critical: "critical" }.freeze
 
@@ -67,7 +72,8 @@ class Alert < ApplicationRecord
   validates :category_other_description, length: { maximum: CATEGORY_DETAILS_MAX }
   validates :latitude, numericality: { in: -90..90 }, allow_nil: true
   validates :longitude, numericality: { in: -180..180 }, allow_nil: true
-  validates :location_accuracy_meters, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :location_accuracy_meters,
+            numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_ACCURACY_METERS }, allow_nil: true
   validates :client_request_id, length: { in: 8..64 }, allow_nil: true
 
   with_options if: :occurrence? do
@@ -80,6 +86,7 @@ class Alert < ApplicationRecord
   validate :category_details
   validate :active_catalog_entries
   validate :location_consistency
+  validate :gps_capture_time
   validate :visibility_consistency
   validate :panic_rules
   validate :closure_consistency
@@ -111,8 +118,11 @@ class Alert < ApplicationRecord
       errors.add(:location_source, :required_for_occurrence) if occurrence? && location_unavailable?
     end
 
+    # Só vale ao escolher a categoria ou editar o detalhe: mudanças posteriores no catálogo
+    # não podem impedir o atendimento de registros antigos.
     def category_details
       return unless category&.requires_details?
+      return unless new_record? || will_save_change_to_category_id? || will_save_change_to_category_other_description?
       return if category_other_description.present?
 
       errors.add(:category_other_description, :blank)
@@ -144,6 +154,19 @@ class Alert < ApplicationRecord
         errors.add(:location_captured_at, :gps_only) if location_captured_at.present?
       end
       errors.add(:location_unavailable_reason, :unavailable_only) if location_unavailable_reason.present? && !location_unavailable?
+    end
+
+    def gps_capture_time
+      raw = location_captured_at_before_type_cast
+      if raw.present? && location_captured_at.nil?
+        errors.add(:location_captured_at, :invalid)
+        return
+      end
+      return unless location_captured_at && will_save_change_to_location_captured_at?
+
+      now = Time.current
+      errors.add(:location_captured_at, :in_future) if location_captured_at > now + CAPTURE_CLOCK_SKEW
+      errors.add(:location_captured_at, :too_old) if location_captured_at < now - CAPTURE_MAX_AGE
     end
 
     # O registro operacional nunca é público. Pedido de divulgação externa mantém o

@@ -9,7 +9,7 @@ class AuditEvent < ApplicationRecord
                         expires_at comments_enabled published_at withdrawn_at source_changed_at],
     "Comment" => %w[removed_at removed_by_id],
     "ContentReport" => %w[state],
-    "User" => %w[deleted_at]
+    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id]
   }.freeze
 
   METADATA_KEYS = %w[kind fields role_code decision target_type source reopening system_reason

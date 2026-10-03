@@ -1,6 +1,7 @@
 # Conteúdo editorial revisado (ocorrência divulgada, aviso ou notícia).
 
 class Publication < ApplicationRecord
+  include TextSearch
   TITLE_LENGTH = 5..160
   BODY_LENGTH = 10..10_000
   RELEVANT_ATTRIBUTES = %w[title body visibility expires_at].freeze
