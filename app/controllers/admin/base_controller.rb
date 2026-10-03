@@ -1,23 +1,13 @@
-# CRUD administrativo compartilhado; subclasses definem o recurso e os campos permitidos.
-class Admin::BaseController < ApplicationController
-  include Pagy::Method
-  include Translations::TranslationFlashMessages
-  include SidebarConcerns
-  include Pundit::Authorization
-
-  after_action :verify_authorized
+# CRUD administrativo genérico; subclasses definem o recurso e os campos permitidos.
+# Regras de domínio (alertas, publicações, denúncias) usam controllers próprios, que herdam
+# Admin::ApplicationController e chamam os services com a query de policy correspondente.
+class Admin::BaseController < Admin::ApplicationController
   after_action :verify_policy_scoped, only: :index
 
-  before_action :set_pagy_locale
-  before_action :set_menu # SidebarConcerns
   before_action :set_model_class
   before_action :set_instance_and_authorize, only: %i[ show edit update destroy ]
 
   helper_method :filter_sort_column, :filter_sort_direction, :sortable_column?
-
-  def pundit_user
-    Current.user
-  end
 
   def index
     scope = policy_scope(@model)
@@ -83,10 +73,6 @@ class Admin::BaseController < ApplicationController
     end
 
   private
-
-    def set_pagy_locale
-      Pagy::I18n.locale = I18n.locale.to_s.tr("_", "-").sub(/-[a-z]{2}\z/) { |region| region.upcase }
-    end
 
     def set_instance_and_authorize
       @instance = @model.find(params.expect(:id))
