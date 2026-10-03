@@ -14,6 +14,11 @@ class AlertOptionsPresenter
     catalog_options(Category, @alert&.category)
   end
 
+  # Categorias cujo detalhamento é obrigatório (ex.: "Outro"); o servidor valida de novo.
+  def category_ids_requiring_details
+    Category.where(requires_details: true).pluck(:id)
+  end
+
   def locations
     catalog_options(Location, @alert&.location)
   end
