@@ -9,13 +9,13 @@ RSpec.describe "Admin users authorization", type: :request do
     expect(response).to have_http_status(:ok)
   end
 
-  it "redirects a regular user to the dashboard" do
+  it "redirects a regular user to their panel" do
     user = create(:user, password: "123", password_confirmation: "123")
     sign_in(user)
 
     get admin_users_path
 
-    expect(response).to redirect_to(root_path(locale: I18n.default_locale))
+    expect(response).to redirect_to(panel_path(locale: I18n.default_locale))
   end
 
   it "returns forbidden for a regular user requesting JSON" do

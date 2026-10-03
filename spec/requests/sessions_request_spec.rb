@@ -17,8 +17,32 @@ RSpec.describe "Sessions", type: :request do
         post session_path, params: { email_address: user.email_address, password: "123" }
       end.to change(Session, :count).by(1)
 
-      expect(response).to redirect_to(admin_path(locale: I18n.locale))
+      expect(response).to redirect_to(panel_path(locale: I18n.locale))
       expect(Session.last.user).to eq(user)
+    end
+
+    it "sends administrators to the administration by default" do
+      admin = create(:user, :admin, password: "123", password_confirmation: "123")
+      post session_path, params: { email_address: admin.email_address, password: "123" }
+
+      expect(response).to redirect_to(admin_path(locale: I18n.locale))
+    end
+
+    it "returns to a stored internal path after login" do
+      get new_session_path(return_to: "/mural/1")
+      post session_path, params: { email_address: user.email_address, password: "123" }
+
+      expect(response).to redirect_to("/mural/1")
+    end
+
+    it "ignores external or protocol-relative return paths" do
+      [ "https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)" ].each do |target|
+        get new_session_path(return_to: target)
+        post session_path, params: { email_address: user.email_address, password: "123" }
+
+        expect(response).to redirect_to(panel_path(locale: I18n.locale))
+        delete session_path
+      end
     end
 
     it "redirects back to sign in when credentials are invalid" do
@@ -44,10 +68,10 @@ RSpec.describe "Sessions", type: :request do
     it "returns a user to the requested page after sign in" do
       admin = create(:user, :admin, password: "123", password_confirmation: "123")
 
-      get admin_dogs_path
+      get admin_users_path
       post session_path, params: { email_address: admin.email_address, password: "123" }
 
-      expect(response.headers["Location"]).to include("/admin/dogs")
+      expect(response.headers["Location"]).to include("/admin/users")
     end
 
     it "temporarily limits repeated sign in attempts" do

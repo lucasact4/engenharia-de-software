@@ -2,10 +2,10 @@ require "rails_helper"
 
 RSpec.describe SidebarHelper, type: :helper do
   describe "#menu_active?" do
-    let(:current_menu) { { url: { controller: "dogs" } } }
+    let(:current_menu) { { url: { controller: "categories" } } }
 
     before do
-      allow(helper).to receive(:controller_name).and_return("dogs")
+      allow(helper).to receive(:controller_name).and_return("categories")
     end
 
     it "returns true when current controller matches menu controller" do
@@ -23,17 +23,17 @@ RSpec.describe SidebarHelper, type: :helper do
 
   describe "#mobile_navbar_title" do
     it "returns active menu name when available" do
-      helper.instance_variable_set(:@menu, [ { active: true, name: "Cachorros" } ])
+      helper.instance_variable_set(:@menu, [ { active: true, name: "Categorias" } ])
 
-      expect(helper.mobile_navbar_title).to eq("Cachorros")
+      expect(helper.mobile_navbar_title).to eq("Categorias")
     end
 
     it "returns translated title when no active menu name is available" do
       helper.instance_variable_set(:@menu, [])
-      allow(helper).to receive(:controller_name).and_return("dogs")
-      allow(helper).to receive(:t).with("dogs.plural", default: "").and_return("Dogs")
+      allow(helper).to receive(:controller_name).and_return("categories")
+      allow(helper).to receive(:t).with("categories.plural", default: "").and_return("Categorias")
 
-      expect(helper.mobile_navbar_title).to eq("Dogs")
+      expect(helper.mobile_navbar_title).to eq("Categorias")
     end
 
     it "falls back to humanized controller name when translation is blank" do

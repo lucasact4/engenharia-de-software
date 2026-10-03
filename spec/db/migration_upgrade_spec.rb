@@ -62,7 +62,7 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(dir.join("before_block_again.rb").read).to eq(dir.join("before_block.rb").read)
   end
 
-  it "preserves users, admin, deactivated accounts, sessions and dogs, and matches the clean schema" do
+  it "preserves legacy accounts and sessions, removes the example table and matches the clean schema" do
     target = rails("runner", "print ActiveRecord::Base.connection_db_config.database")
     expect(target.strip.lines.last).to eq(db_path.to_s)
 
@@ -79,13 +79,13 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     snapshot = "SELECT id, email_address, password_digest, admin, deleted_at, created_at, updated_at FROM users ORDER BY id"
     before_users = query(snapshot)
     before_sessions = query("SELECT * FROM sessions")
-    before_dogs = query("SELECT * FROM dogs")
 
     rails("db:migrate", schema: dir.join("after.rb"))
 
     expect(query(snapshot)).to eq(before_users)
     expect(query("SELECT * FROM sessions")).to eq(before_sessions)
-    expect(query("SELECT * FROM dogs")).to eq(before_dogs)
+    expect(query("SELECT name FROM sqlite_master WHERE type = 'table'").flatten).not_to include("dogs")
+    expect(query("SELECT registration_status, registration_role_code, email_verified_at FROM users").uniq).to eq([ [ "approved", nil, nil ] ])
     expect(query("SELECT display_name, username, bio, public_profile FROM users").uniq).to eq([ [ nil, nil, nil, 0 ] ])
     expect(query("SELECT count(*) FROM user_roles")).to eq([ [ 0 ] ])
     expect(query("SELECT count(*) FROM roles")).to eq([ [ 7 ] ])

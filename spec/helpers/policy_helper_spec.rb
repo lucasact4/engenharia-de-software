@@ -54,7 +54,6 @@ RSpec.describe PolicyHelper, type: :helper do
 
   describe "#check_policy_error" do
     let(:user) { create(:user) }
-    let(:dog) { create(:dog) }
 
     it "returns false when policy allows action" do
       allow(helper).to receive(:policy).with(user).and_return(double(update?: true))
@@ -70,11 +69,11 @@ RSpec.describe PolicyHelper, type: :helper do
     end
 
     it "returns translated message from raised Pundit error policy and query" do
-      policy_error = Pundit::NotAuthorizedError.new(query: :destroy?, record: dog, policy: DogPolicy.new(true, dog))
-      allow(helper).to receive(:policy).with(dog).and_raise(policy_error)
-      allow(helper).to receive(:t).with("dog_policy.destroy?", scope: "pundit", default: :default).and_return("Cannot destroy")
+      policy_error = Pundit::NotAuthorizedError.new(query: :destroy?, record: user, policy: UserPolicy.new(true, user))
+      allow(helper).to receive(:policy).with(user).and_raise(policy_error)
+      allow(helper).to receive(:t).with("user_policy.destroy?", scope: "pundit", default: :default).and_return("Cannot destroy")
 
-      expect(helper.check_policy_error(instance: dog, action: :destroy?)).to eq("Cannot destroy")
+      expect(helper.check_policy_error(instance: user, action: :destroy?)).to eq("Cannot destroy")
     end
   end
 end

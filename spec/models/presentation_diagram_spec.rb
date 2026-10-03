@@ -56,6 +56,6 @@ RSpec.describe PresentationDiagram do
     expect(source).to include("source_cardinality" => "0..1", "target_cardinality" => "0..1")
     expect(diagrams["social"].relations).to include(include("source" => "comments", "target" => "comments", "column" => "parent_id"))
     expect(diagrams["infrastructure"].relations).to include(include("kind" => "polymorphic", "source" => "active_storage_attachments"))
-    expect(diagrams["infrastructure"].relations.any? { |relation| relation["source"] == "dogs" || relation["target"] == "dogs" }).to be(false)
+    expect(diagrams["infrastructure"].nodes.map { |node| node["table"] }).to include("sessions", "presentation_profiles")
   end
 end

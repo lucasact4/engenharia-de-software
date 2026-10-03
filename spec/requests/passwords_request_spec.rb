@@ -72,18 +72,27 @@ RSpec.describe "Passwords", type: :request do
     let(:reset_token) { user.password_reset_token }
 
     it "updates password and redirects when params are valid" do
-      patch password_path(reset_token), params: { password: "new-password", password_confirmation: "new-password" }
+      patch password_path(reset_token), params: { password: "NovaSenha123!", password_confirmation: "NovaSenha123!" }
 
       expect(response).to redirect_to(new_session_path(locale: I18n.locale))
       expect(flash[:notice]).to eq(I18n.t("authentication.passwords.reset_success"))
-      expect(User.authenticate_by(email_address: user.email_address, password: "new-password")).to eq(user.reload)
+      expect(User.authenticate_by(email_address: user.email_address, password: "NovaSenha123!")).to eq(user.reload)
     end
 
-    it "redirects back to edit when params are invalid" do
-      patch password_path(reset_token), params: { password: "new-password", password_confirmation: "mismatch" }
+    it "rejects an absent, weak or unconfirmed new password without changing the digest" do
+      digest = user.password_digest
+      [ {}, { password: "password", password_confirmation: "password" }, { password: "NovaSenha123!" } ].each do |attributes|
+        patch password_path(reset_token), params: attributes
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(user.reload.password_digest).to eq(digest)
+      end
+    end
 
-      expect(response).to redirect_to(edit_password_path(reset_token, locale: I18n.locale))
-      expect(flash[:alert]).to eq(I18n.t("authentication.passwords.mismatch"))
+    it "renders validation errors when params are invalid" do
+      patch password_path(reset_token), params: { password: "NovaSenha123!", password_confirmation: "mismatch" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Confirmação")
       expect(User.authenticate_by(email_address: user.email_address, password: "123")).to eq(user.reload)
     end
   end

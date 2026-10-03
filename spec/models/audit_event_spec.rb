@@ -27,7 +27,7 @@ RSpec.describe AuditEvent do
   it "requires an actor except for identified technical events and recognized subject types" do
     expect { described_class.record!(actor: nil, action: "alert.assessed", subject: alert) }.to raise_error(ActiveRecord::RecordInvalid)
     expect(described_class.record!(actor: nil, action: "system.bootstrap", subject: alert)).to be_persisted
-    expect { described_class.record!(actor: admin, action: "dog.updated", subject: create(:dog)) }.to raise_error(ActiveRecord::RecordInvalid)
+    expect { described_class.record!(actor: admin, action: "category.updated", subject: create(:category)) }.to raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "is written in the same transaction as the change" do

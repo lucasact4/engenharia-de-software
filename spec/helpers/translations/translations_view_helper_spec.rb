@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe Translations::TranslationsViewHelper, type: :helper do
   describe "#base_translate_view_controller_path" do
     it "builds translation path using controller path" do
-      allow(helper).to receive(:translation_view_path).and_return("admin.dogs")
-      expect(helper).to receive(:base_translate_view).with("admin.dogs.actions.index.title", {}).and_return("ok")
+      allow(helper).to receive(:translation_view_path).and_return("admin.users")
+      expect(helper).to receive(:base_translate_view).with("admin.users.actions.index.title", {}).and_return("ok")
 
       expect(helper.base_translate_view_controller_path("actions.index.title")).to eq("ok")
     end
@@ -83,9 +83,9 @@ RSpec.describe Translations::TranslationsViewHelper, type: :helper do
 
   describe "#translation_view_path" do
     it "builds dotted path from controller class name" do
-      allow(helper).to receive(:controller).and_return(Admin::DogsController.new)
+      allow(helper).to receive(:controller).and_return(Admin::UsersController.new)
 
-      expect(helper.translation_view_path).to eq("admin.dogs")
+      expect(helper.translation_view_path).to eq("admin.users")
     end
   end
 end

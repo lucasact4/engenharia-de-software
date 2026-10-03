@@ -90,13 +90,13 @@ RSpec.describe "Users", type: :request do
       patch admin_user_path(target_user), params: {
         user: {
           email_address: target_user.email_address,
-          password: 'new-pass-123',
-          password_confirmation: 'new-pass-123'
+          password: 'NovaSenha123!',
+          password_confirmation: 'NovaSenha123!'
         }
       }
 
       expect(response).to have_http_status(302)
-      expect(User.authenticate_by(email_address: target_user.email_address, password: 'new-pass-123')).to eq(target_user.reload)
+      expect(User.authenticate_by(email_address: target_user.email_address, password: 'NovaSenha123!')).to eq(target_user.reload)
     end
 
     it "renders edit with unprocessable_entity when HTML params are invalid" do

@@ -65,7 +65,7 @@ RSpec.describe "Presentation", type: :request do
     expect(document.at_css("#s-fluxo-ocorrencias").text).to include("Fluxo de ocorrências e emergências")
     expect(document.at_css("#s-fluxo-ocorrencias .apr-data-figure")).to be_nil
     expect(document.at_css("#s-modelo-dados").text).to include("DER físico", Presentation.schema_version)
-    expect(document.at_css("#s-der-infraestrutura").text).to include("dogs", "preservado")
+    expect(document.at_css("#s-der-infraestrutura").text).to include("presentation_profiles", "sessões")
     expect(document.at_css("#s-modelo-dados .apr-data-legend").text).to include("0..1")
   end
 

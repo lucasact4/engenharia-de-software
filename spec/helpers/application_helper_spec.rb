@@ -83,19 +83,19 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe "#flash_banner_class" do
     it "returns warning class for alert" do
-      expect(helper.flash_banner_class("alert")).to include("border-amber-200")
+      expect(helper.flash_banner_class("alert")).to include("border-warning-line")
     end
 
     it "returns danger class for error" do
-      expect(helper.flash_banner_class("error")).to include("border-red-200")
+      expect(helper.flash_banner_class("error")).to include("border-negative-line")
     end
 
     it "returns primary class for notice" do
-      expect(helper.flash_banner_class("notice")).to include("border-blue-200")
+      expect(helper.flash_banner_class("notice")).to include("border-info-line")
     end
 
     it "returns default class for unknown type" do
-      expect(helper.flash_banner_class("unknown")).to include("border-slate-200")
+      expect(helper.flash_banner_class("unknown")).to include("border-line")
     end
   end
 
