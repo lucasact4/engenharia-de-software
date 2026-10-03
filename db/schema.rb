@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -216,15 +216,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
     t.check_constraint "state IN ('pending', 'actioned', 'dismissed')", name: "content_reports_state"
   end
 
-  create_table "dogs", force: :cascade do |t|
-    t.integer "age"
-    t.datetime "created_at", null: false
-    t.datetime "deleted_at"
-    t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["deleted_at"], name: "index_dogs_on_deleted_at"
-  end
-
   create_table "locations", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.string "code", null: false
@@ -375,15 +366,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
     t.datetime "deleted_at"
     t.string "display_name"
     t.string "email_address", null: false
+    t.datetime "email_verified_at"
     t.string "password_digest", null: false
     t.boolean "public_profile", default: false, null: false
+    t.text "registration_review_reason"
+    t.datetime "registration_reviewed_at"
+    t.integer "registration_reviewed_by_id"
+    t.string "registration_role_code"
+    t.string "registration_status", default: "approved", null: false
     t.datetime "updated_at", null: false
     t.string "username"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
+    t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
     t.index ["username"], name: "index_users_on_username", unique: true
     t.check_constraint "bio IS NULL OR length(bio) <= 500", name: "users_bio_length"
     t.check_constraint "display_name IS NULL OR length(display_name) BETWEEN 1 AND 80", name: "users_display_name_length"
+    t.check_constraint "registration_role_code IS NULL OR registration_role_code IN ('visitor', 'professor', 'student')", name: "users_registration_role_valid"
+    t.check_constraint "registration_status IN ('pending', 'approved', 'rejected')", name: "users_registration_status_valid"
     t.check_constraint "username IS NULL OR (length(username) BETWEEN 3 AND 30 AND username = lower(username))", name: "users_username_length_and_case"
   end
 
@@ -422,4 +423,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "user_roles", "users", column: "granted_by_id"
+  add_foreign_key "users", "users", column: "registration_reviewed_by_id"
 end
