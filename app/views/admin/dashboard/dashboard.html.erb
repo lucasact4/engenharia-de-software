@@ -13,7 +13,7 @@
            [ "Pânicos em aberto", @counts[:open_panics], admin_alerts_path(kind: "panic") ],
            [ "Sem responsável", @counts[:unassigned], admin_alerts_path(assigned: "none") ],
            [ "Publicações em revisão", @counts[:pending_reviews], admin_publications_path(review: "pending") ],
-           [ "Fonte alterada", @counts[:source_review], admin_publications_path(source_review: "1") ],
+           [ "Ocorrências pendentes", @counts[:source_review], admin_publications_path(source_review: "1") ],
            [ "Denúncias pendentes", @counts[:pending_reports], admin_content_reports_path ] ].each do |label, value, path| %>
         <%= link_to path, class: "sgu-card block p-4 !text-ink hover:border-brand-link" do %>
           <p class="text-xs font-semibold text-muted"><%= label %></p>
