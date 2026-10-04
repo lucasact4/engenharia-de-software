@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# Ciclo editorial: rascunho → revisão (aprovar/rejeitar a versão lida) → publicação → retirada.
-# Aprovado não significa publicado. Mudança relevante invalida a aprovação (Publications::Update).
-# Não há exclusão: publicações saem do ar por retirada com motivo, preservando comentários e denúncias.
+# Aprova a visibilidade pública de ocorrências sem recriar o relato.
+# Avisos e notícias mantêm o ciclo editorial; retiradas preservam o histórico.
 class Admin::PublicationsController < Admin::ApplicationController
   include ErrorResponses
 
@@ -18,8 +17,8 @@ class Admin::PublicationsController < Admin::ApplicationController
     scope = scope.where(review_status: params[:review]) if Publication.review_statuses.key?(params[:review].to_s)
     scope = scope.where(kind: params[:kind]) if Publication.kinds.key?(params[:kind].to_s)
     scope = scope.where(visibility: params[:visibility]) if Publication.visibilities.key?(params[:visibility].to_s)
-    scope = scope.needing_source_review if params[:source_review] == "1"
-    scope = scope.text_search(params[:q], "publications.title")
+    scope = scope.occurrence.review_pending if params[:source_review] == "1"
+    scope = scope.left_joins(:alert).text_search(params[:q], "COALESCE(alerts.title, publications.title)")
     @pagy, @publications = pagy(scope.includes(:alert).order(updated_at: :desc, id: :desc), limit: 20)
   end
 
@@ -30,26 +29,26 @@ class Admin::PublicationsController < Admin::ApplicationController
 
   def new
     authorize Publication, :create?
-    @source = source_from_params
-    @publication = Publication.new(kind: @source ? "occurrence" : "news", visibility: default_visibility(@source), comments_enabled: true)
-    prepare_form
+    if params[:alert_id].present?
+      source = policy_scope(Alert).find(params[:alert_id])
+      return redirect_to(source.publication ? admin_publication_path(source.publication) : admin_alert_path(source), status: :see_other)
+    end
+    @publication = Publication.new(kind: "news", visibility: "public_external", comments_enabled: true)
   end
 
   def create
     authorize Publication, :create?
-    @source = source_from_params
-    @publication = Publications::Create.call(actor: Current.user, attributes: publication_params.merge(kind: params.dig(:publication, :kind)),
-                                             alert: @source)
+    raise Pundit::NotAuthorizedError if params[:alert_id].present? || params.dig(:publication, :alert_id).present?
+
+    @publication = Publications::Create.call(actor: Current.user, attributes: publication_params.merge(kind: params.dig(:publication, :kind)))
     redirect_to admin_publication_path(@publication), flash: { success: "Rascunho criado. Envie para revisão quando estiver pronto." }, status: :see_other
   rescue ActiveRecord::RecordInvalid => error
     @publication = error.record.is_a?(Publication) ? error.record : Publication.new(publication_params)
-    prepare_form
     render :new, status: :unprocessable_entity
   end
 
   def edit
     authorize @publication, :update?
-    prepare_form
   end
 
   def update
@@ -63,7 +62,6 @@ class Admin::PublicationsController < Admin::ApplicationController
     @publication.assign_attributes(publication_params)
     errors.each { |item| @publication.errors.import(item) }
     flash.now[:alert] = stale_message if error.is_a?(ActiveRecord::StaleObjectError)
-    prepare_form
     render :edit, status: (error.is_a?(ActiveRecord::StaleObjectError) ? :conflict : :unprocessable_entity)
   end
 
@@ -75,7 +73,11 @@ class Admin::PublicationsController < Admin::ApplicationController
   # A decisão vale para a versão de conteúdo exibida ao revisor (reviewed_content_version).
   def review
     authorize @publication, :review?
-    message = params[:decision] == "approve" ? "Versão aprovada. Ela ainda não está no ar: publique quando quiser." : "Revisão rejeitada com justificativa."
+    message = if @publication.occurrence?
+      params[:decision] == "approve" ? "Publicação aprovada e disponível publicamente." : "Publicação pública não aprovada. O motivo está disponível ao autor."
+    else
+      params[:decision] == "approve" ? "Versão aprovada. Ela ainda não está no ar: publique quando quiser." : "Revisão rejeitada com justificativa."
+    end
     editorial_action(message) do
       Publications::Review.call(actor: Current.user, publication: @publication, decision: params[:decision],
                                 reviewed_content_version: params[:reviewed_content_version], reason: params[:reason],
@@ -139,23 +141,8 @@ class Admin::PublicationsController < Admin::ApplicationController
         PublicationPolicy::FeedScope.new(Current.user, Publication.where(id: @publication.id)).resolve.exists?
     end
 
-    def prepare_form
-      @sources = PublicationSourcesQuery.new(Current.user, term: params[:source_q]).call if @publication.new_record?
-    end
-
-    def source_from_params
-      alert_id = params[:alert_id].presence || params.dig(:publication, :alert_id).presence
-      return if alert_id.nil?
-
-      policy_scope(Alert).find(alert_id)
-    end
-
-    def default_visibility(source)
-      source&.requested_internal? ? "internal" : "public_external"
-    end
-
     def publication_params
-      params.fetch(:publication, {}).permit(*FIELDS).to_h.symbolize_keys.tap do |attributes|
+      params.fetch(:publication, {}).permit(*FIELDS, photos: []).to_h.symbolize_keys.tap do |attributes|
         attributes[:expires_at] = attributes[:expires_at].presence if attributes.key?(:expires_at)
       end
     end

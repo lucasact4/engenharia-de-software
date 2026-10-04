@@ -10,7 +10,7 @@ class Admin::DashboardController < Admin::ApplicationController
       open_panics: open.panic.count,
       unassigned: open.where(assigned_to_id: nil).count,
       pending_reviews: Publication.review_pending.count,
-      source_review: Publication.needing_source_review.count,
+      source_review: Publication.occurrence.review_pending.count,
       pending_reports: ContentReport.pending.count,
       active_locations: Location.active.count,
       active_categories: Category.active.count

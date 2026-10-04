@@ -12,7 +12,7 @@ class PublicationsController < PortalController
     scope = feed_scope
     scope = scope.where(kind: params[:kind]) if Publication.kinds.key?(params[:kind].to_s)
     scope = scope.where(visibility: params[:audience]) if Current.user && Publication.visibilities.key?(params[:audience].to_s)
-    scope = scope.text_search(params[:q], "publications.title", "publications.body")
+    scope = scope.left_joins(:alert).text_search(params[:q], "COALESCE(alerts.title, publications.title)", "COALESCE(alerts.description, publications.body)")
     @pagy, records = pagy(scope.order(published_at: :desc, id: :desc), limit: 10)
     @cards = PublicationProjection.collection(records, viewer: Current.user)
   end

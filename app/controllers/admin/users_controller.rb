@@ -41,6 +41,13 @@ class Admin::UsersController < Admin::BaseController
     end
   end
 
+  def verification
+    user = policy_scope(User).find(params[:id])
+    authorize user, :update?, policy_class: UserVerificationPolicy
+    Users::ChangeVerification.call(actor: Current.user, user: user, verified: params[:verified] == "1")
+    redirect_to admin_user_path(user), notice: user.verified? ? "Selo de verificado concedido." : "Selo de verificado removido.", status: :see_other
+  end
+
   private
 
   def default_params_permited

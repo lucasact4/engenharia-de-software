@@ -25,11 +25,13 @@ class AlertsController < PortalController
     authorize @alert, :show?
     @detail = AlertDetailPresenter.new(@alert, viewer: Current.user)
     @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
+    post = @alert.publication if @alert.occurrence?
+    @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
   end
 
   def new
     authorize Alert, :create_occurrence?
-    @alert = Alert.new(kind: "occurrence", requested_visibility: "restricted", location_source: default_location_source)
+    @alert = Alert.new(kind: "occurrence", requested_visibility: "internal", location_source: default_location_source)
     @client_request_id = SecureRandom.uuid
     prepare_form
   end
@@ -60,16 +62,16 @@ class AlertsController < PortalController
   def update
     authorize @alert, :update_content?
     Alerts::UpdateContent.call(
-      actor: Current.user, alert: @alert, attributes: occurrence_params(with_visibility: false),
-      photos: uploaded_photos, lock_version: lock_version_param
+      actor: Current.user, alert: @alert, attributes: occurrence_params,
+      photos: uploaded_photos, photo_order: submitted_photo_order, removed_photo_ids: removed_photo_ids, lock_version: lock_version_param
     )
     redirect_to alert_path(@alert), notice: "Relato atualizado.", status: :see_other
   rescue ActiveRecord::RecordInvalid
-    keep_errors_and_reload { @alert.assign_attributes(occurrence_params(with_visibility: false)) }
+    keep_errors_and_reload { @alert.assign_attributes(occurrence_params) }
     prepare_form
     render :edit, status: :unprocessable_entity
   rescue ActiveRecord::StaleObjectError
-    submitted = occurrence_params(with_visibility: false)
+    submitted = occurrence_params
     @alert = policy_scope(Alert).find(@alert.id)
     unless policy(@alert).update_content?
       return redirect_to alert_path(@alert), status: :see_other,
@@ -83,12 +85,13 @@ class AlertsController < PortalController
     render :edit, status: :conflict
   end
 
-  # O autor só pode restringir o próprio registro; ampliar a audiência é administrativo.
+  # O autor escolhe a audiência; divulgação externa segue a verificação e a revisão.
   def audience
     authorize @alert, :change_audience?
-    Alerts::ChangeAudience.call(actor: Current.user, alert: @alert, requested_visibility: "restricted",
+    requested = params[:requested_visibility].presence || "restricted"
+    Alerts::ChangeAudience.call(actor: Current.user, alert: @alert, requested_visibility: requested,
                                 lock_version: params[:lock_version])
-    redirect_to alert_path(@alert), notice: "Registro restrito a você e à equipe responsável.", status: :see_other
+    redirect_to alert_path(@alert), notice: "Visibilidade atualizada.", status: :see_other
   rescue ActiveRecord::StaleObjectError
     redirect_to alert_path(@alert), alert: stale_conflict_message, status: :see_other
   end
@@ -114,7 +117,7 @@ class AlertsController < PortalController
     end
 
     def default_location_source
-      Location.active.exists? ? "manual" : "gps"
+      "gps"
     end
 
     def prepare_form
