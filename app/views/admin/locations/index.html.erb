@@ -5,10 +5,10 @@
       edit_path: ->(entry) { edit_admin_location_path(entry) }, activate_path: ->(entry) { activate_admin_location_path(entry) },
       deactivate_path: ->(entry) { deactivate_admin_location_path(entry) }, instances: @instances, usage: @usage,
       empty_title: "Nenhum local cadastrado ainda.",
-      empty_description: "A lista oficial de prédios e áreas da UFRPE ainda não foi fornecida. Cadastre aqui os locais reais quando estiverem disponíveis; não use pontos inventados. Enquanto isso, ocorrências comuns são registradas pelo GPS do aparelho." } do %>
+      empty_description: "A lista oficial de prédios e áreas da UFRPE ainda não foi fornecida. Cadastre aqui os locais reais quando estiverem disponíveis; não use pontos inventados. Enquanto isso, use GPS, ponto no mapa ou descrição do local." } do %>
   <% unless Location.active.exists? %>
     <p class="rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink" role="status">
-      Sem locais ativos, a opção “Escolha de prédio ou área” fica indisponível no registro de ocorrências e quem estiver sem GPS não consegue registrar uma ocorrência comum (o pânico continua funcionando sem localização).
+      O catálogo é opcional. GPS, seleção no mapa e descrição do local continuam disponíveis para registrar ocorrências.
     </p>
   <% end %>
 <% end %>
