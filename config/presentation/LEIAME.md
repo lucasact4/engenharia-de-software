@@ -1,213 +1,318 @@
-# Apresentação do SGU — guia de manutenção
+# SGU Presentation Maintenance Guide
 
-A apresentação pública fica em `/apresentacao`. O conteúdo vem dos YAMLs desta pasta; os perfis de exibição ficam no banco e são editados em **Admin → Apresentação**. O painel **Personalizar apresentação** altera somente a aba aberta.
+The public presentation is `/apresentacao`. Content comes from the YAML files in this directory; display profiles are stored in the database and edited through **Admin → Apresentação**. **Personalizar apresentação** changes only the current browser tab. This guide is in English; quoted slide names and controls match the Portuguese interface.
 
-## Qual slide atende a cada exigência?
+## Match slides to delivery requirements
 
-**“Protótipo com o conceito visual do projeto” é o nome do slide da segunda entrega**, com o id `conceito-visual`. Selecione as capturas da landing, login e celular, a paleta e as notas para mostrar as telas existentes. O subitem **Protótipo de referência (Figma ou similar)** serve para um material separado; hoje está vazio. O enunciado não exige Figma.
+**“Protótipo com o conceito visual do projeto”** is the second-delivery slide `conceito-visual`. Its content includes landing, login, and mobile screenshots in light and dark versions, the palette, the SGU brand card, and capture notes. **Protótipo de referência (Figma ou similar)** is optional material kept separately and is currently empty; the assignment does not require Figma.
 
-Os nomes vêm de `entrega.yml` → `entregas[].exigencias`, conforme a entrega escolhida no perfil. Cabeçalho, índice, contador, admin e painel usam essa mesma fonte. O selo **2ª entrega · Item 1** identifica a exigência; **04**, por exemplo, é a posição atual do slide e muda quando a seleção muda. Procure pelo nome e pelo id, não por um número fixo.
+Names come from `entrega.yml` → `entregas[].exigencias` for the profile's delivery. Headings, index, counters, administration, and customization share that source. **2ª entrega · Item 1** identifies the requirement; a number such as **04** is the current slide position and changes with selection. Use the title and stable ID rather than a fixed position.
 
-Cada perfil recomendado segue a ordem do enunciado: capa, itens da entrega, itens do status report (somente na segunda) e encerramento. O catálogo também permite complementos, mas eles começam desmarcados. Slides sem exigência correspondente recebem o selo **Complementar**. Capa e encerramento ficam sempre visíveis.
+Recommended profiles follow the assignment order: cover, delivery items, status-report items for the second delivery, then closing. Additional slides remain available but start disabled. Slides without a matching requirement use **Complementar**. Cover and closing are always visible.
 
-### Primeira entrega
+### First delivery
 
-| Item | Nome exibido | Id | Conteúdos a selecionar |
+| Item | Displayed name | Stable ID | Content |
 | --- | --- | --- | --- |
-| 1 | Lista de requisitos refinada | `requisitos` | Requisitos funcionais; Requisitos não funcionais; Critérios de aceite; Documento e card de refinamento |
-| 2 | Lista de ferramentas e tecnologias escolhidas | `arquitetura` | Tecnologias utilizadas; Versões. A arquitetura pode complementar a fala. |
-| 3 | Diagrama de casos de uso do sistema/App proposto | `casos-de-uso` | Marcar o slide e preencher o diagrama em `diagramas.yml`; não possui subitens. |
-| 4 | Ferramenta de monitoramento dos projetos ativa com os requisitos e links para ambientes — Trello | `gestao` | Quadro do Trello; Cards e requisitos do projeto; Links para ambientes |
-| 5 | Planejamento dos próximos passos do projeto | `proximos-passos` | Marco demonstrável; Lista de próximos passos; Riscos; Dependências |
-| 6 | Reflexão sobre o período (Lições aprendidas) | `retrospectiva` | Pontos discutidos; Ações combinadas; Lições aprendidas |
+| 1 | Lista de requisitos refinada | `requisitos` | Functional/nonfunctional requirements, acceptance criteria, refinement document/card. |
+| 2 | Lista de ferramentas e tecnologias escolhidas | `arquitetura` | Technologies and versions; architecture may support the explanation. |
+| 3 | Diagrama de casos de uso do sistema/App proposto | `casos-de-uso` | Enable the slide and provide its diagram in `diagramas.yml`; no subitems. |
+| 4 | Ferramenta de monitoramento dos projetos ativa com os requisitos e links para ambientes — Trello | `gestao` | Trello board, project cards/requirements, environment links. |
+| 5 | Planejamento dos próximos passos do projeto | `proximos-passos` | Demonstrable milestone, next steps, risks, dependencies. |
+| 6 | Reflexão sobre o período (Lições aprendidas) | `retrospectiva` | Discussion points, agreed actions, lessons. |
 
-### Segunda entrega — Status Report 2
+### Second delivery — Status Report 2
 
-| Item | Nome exibido | Id | Conteúdos a selecionar |
+| Item | Displayed name | Stable ID | Content |
 | --- | --- | --- | --- |
-| 1 | Protótipo com o conceito visual do projeto | `conceito-visual` | Captura da landing; Captura do login; Captura no celular; Paleta de cores; Notas sobre as capturas. Protótipo de referência apenas quando houver material separado. |
-| 2 | GitHub criado e estruturado com código fonte total ou parcial, contemplando as 2 funcionalidades do sistema proposto (Completas) | `funcionalidades` | GitHub e estrutura do código; Critérios de “completa”; Funcionalidade 1; Funcionalidade 2 |
-| 3 | Imagem de uma retrospectiva | `retrospectiva` | Imagem da retrospectiva; o aviso permanece enquanto a equipe não anexar o registro real. |
-| 4 | Modelo conceitual | `modelo-conceitual` | Diagrama do modelo conceitual; Produção, revisão da equipe e premissas; Diferença para o modelo físico do banco |
-| 5 | Evidência de reuniões de monitoramento do projeto | `reunioes` | Registros das reuniões |
-| Status report | O que foi feito desde a última entrega | `evolucao` | Linha do tempo (commits), limitada aos marcos posteriores à primeira entrega. Situação das capacidades é opcional e começa desmarcada. |
-| Status report | O que será feito até a próxima entrega | `proximos-passos` | Marco demonstrável; Lista de próximos passos; Riscos; Dependências |
-| Status report | O que aprendemos nesse sprint (Imagem de uma retrospectiva) | `status-report` | Lições aprendidas pela equipe; Ações combinadas para a próxima sprint; Referência à imagem da retrospectiva. |
+| 1 | Protótipo com o conceito visual do projeto | `conceito-visual` | Landing, login, mobile screenshots (light and dark), palette, brand card, capture notes. Separate reference prototype only when available. |
+| 2 | GitHub criado e estruturado com código fonte total ou parcial, contemplando as 2 funcionalidades do sistema proposto (Completas) | `funcionalidades` | GitHub capture and code structure, completeness criteria (dialog), functionality 1, functionality 2, other parts of the system (`extras`). |
+| 3 | Imagem de uma retrospectiva | `retrospectiva` | Retrospective board image, legend, and link to the original session. |
+| 4 | Modelo conceitual | `modelo-conceitual` | Conceptual diagram, technical production/team review/assumptions, distinction from the physical database model. |
+| 5 | Evidência de reuniões de monitoramento do projeto | `reunioes` | Meeting records and genuine evidence. |
+| Status report | O que foi feito desde a última entrega | `evolucao` | Commit timeline after the first delivery; capability overview is optional and initially disabled. |
+| Status report | O que será feito até a próxima entrega | `proximos-passos` | Milestone, next steps, risks, dependencies. |
+| Status report | O que aprendemos nesse sprint (Imagem de uma retrospectiva) | `status-report` | “Aprendi” cards as lessons, “Faltou” titles as points to improve, agreed actions (currently none), reference to the retrospective image. |
 
-Na segunda entrega, a sequência tem **8 slides de conteúdo**, além de capa e encerramento: os 5 itens da entrega, depois os 3 itens do status report. Na primeira, são **6 slides de conteúdo**, além de capa e encerramento, na ordem da tabela. A ordem vem dos vínculos em `entrega.yml` → `exigencias[].slides` e se aplica à apresentação, índice, admin, personalização e PDF.
+The second delivery has **eight content slides plus cover and closing**; the first has **six content slides plus cover and closing**. Ordering comes from `entrega.yml` → `exigencias[].slides` and applies to presentation, index, administration, customization, and PDF. Do not rename IDs or reorder requirements to add meeting images or update evidence.
 
-O item 2 reúne GitHub e as duas funcionalidades em uma única tela. `evolucao` mostra somente o que foi feito; `proximos-passos` mostra o planejamento; `status-report` mostra os aprendizados. A imagem da retrospectiva aparece no item 3 e é referenciada no slide de aprendizados, sem repetir a imagem. Na primeira entrega, `retrospectiva` mostra pontos discutidos, ações combinadas e lições aprendidas.
+Item 2 contains the repository and both functionalities on one slide. `evolucao` contains progress; `proximos-passos` contains planning; `status-report` contains lessons. The retrospective image belongs to item 3 and is referenced from the lessons slide, without duplication. The first-delivery retrospective instead shows points, actions, and lessons. See [Retrospective](#retrospective).
 
-**O modelo conceitual já existe em HTML/CSS**, distinto do DER físico, dos casos de uso e do fluxo. Sua produção técnica está concluída; a revisão da equipe e a aprovação das premissas continuam pendentes.
+The conceptual model already exists in HTML/CSS and is distinct from the physical DER, use cases, and flow diagram. Technical production is complete; recorded team review and acceptance of assumptions remain separate.
 
-Os perfis recomendados estão em `db/seeds/presentation_profiles.rb`. A tarefa de preparação cria apenas perfis ausentes e preserva seleções editadas. Nesta reorganização, os dois perfis existentes foram ajustados explicitamente conforme o pedido, com cópia anterior em `tmp/presentation-profiles-before-simplification-20261002.json`; a **Segunda entrega — Status Report 2** permanece ativa (10 slides, estimativa de 5min20s). A **Primeira entrega** fica inativa (8 slides, estimativa de 3min55s). Não conte com a tarefa de preparação para reorganizar um perfil antigo: revise-o no admin.
+Recommended profiles are defined in `db/seeds/presentation_profiles.rb`. The bootstrap creates missing profiles and preserves edited selections. The recommended **Segunda entrega — Status Report 2** has ten main slides (estimated 5 min 20 sec); **Primeira entrega** has eight (3 min 55 sec). These are recommended profile estimates, not a guarantee of the current database selection. Check the active profile in administration; do not run seeds to overwrite an edited profile. The previous explicit reorganization preserved a historical copy at `tmp/presentation-profiles-before-simplification-20261002.json`.
 
-Os conteúdos extras continuam disponíveis, desmarcados: problema e proposta, escopo, fluxo de ocorrências, detalhes de GitHub (`repositorio`), requisitos em conflito, DER físico e suas visões, evidências, checklist e roteiro/tempo. Tecnologias e Trello pertencem à primeira entrega e ficam fora do perfil recomendado da segunda. Eles podem ser habilitados para uma consulta específica, mas aumentam a sequência e o PDF.
+Optional material includes problem/proposal, scope, occurrence flow, repository details (`repositorio`), requirements conflicts, physical DER and its views, evidence, checklist, and speaking script/time. Technology and Trello slides belong to the first delivery and are outside the recommended second-delivery selection. Enabling extras changes the sequence and PDF. The second delivery has a seven-minute limit; check the estimate and rehearse.
 
-A segunda entrega permite no máximo 7 minutos; confira a estimativa no admin e faça um ensaio.
+## Content, catalog, and profiles
 
-## Conteúdo, catálogo e perfis
-
-| Camada | Onde fica | Como alterar |
+| Layer | Location | How to update |
 | --- | --- | --- |
-| Textos, imagens, links e evidências | YAMLs desta pasta e `app/assets/images/presentation/` | Por commit |
-| Slides, conteúdos, tempos e padrões | `roteiro.yml` e partials em `app/views/presentations/slides/` | Por commit |
-| Nomes, ordem por entrega e vínculo com exigências acadêmicas | `entrega.yml` → `exigencias` | Por commit |
-| Seleção por ocasião | Tabela `presentation_profiles` | Admin → Apresentação |
-| Ajustes temporários | Memória da aba aberta | Personalizar apresentação |
+| Text, images, links, evidence | YAML files here and `app/assets/images/presentation/` | Versioned file changes. |
+| Slides, content keys, times, defaults | `roteiro.yml`, partials in `app/views/presentations/slides/` | Versioned file changes. |
+| Academic names, order, requirement mapping | `entrega.yml` → `exigencias` | Versioned file changes. |
+| Selection for an occasion | `presentation_profiles` table | Admin → Apresentação. |
+| Temporary adjustments | Current browser tab | Personalizar apresentação. |
 
-Um checkbox significa **exibir conteúdo**, não **exigência cumprida**. Não cria imagens ou registros e não edita o texto. A confirmação da equipe fica em `confirmado_pela_equipe` nas exigências de `entrega.yml`.
+A checkbox means **show content**, not **requirement fulfilled**. It does not create evidence or edit wording. Team confirmation is `confirmado_pela_equipe` in `entrega.yml` requirements. All catalog content is rendered in public HTML even when hidden by selection; do not store confidential data in these files.
 
-Tudo do catálogo é renderizado no HTML público, mesmo oculto pela seleção. Não coloque dados confidenciais nesses arquivos.
+## Prepare and use profiles
 
-## Preparar e usar os perfis
-
-No terminal do Dev Container:
+Run from the Dev Container terminal:
 
 ```bash
 bin/rails db:migrate
 bin/rails sgu:presentation:profiles
 ```
 
-A segunda tarefa carrega somente `db/seeds/presentation_profiles.rb`, cria os perfis ausentes e preserva os existentes. O `db:seed` completo também redefine senha, acesso administrativo e exclusão dos usuários de exemplo em desenvolvimento; prefira a tarefa específica para preparar perfis. Em um banco novo, use `db:prepare` conforme o setup do projeto.
+The profile task loads only `db/seeds/presentation_profiles.rb`, creating missing profiles without overwriting existing ones. Full development `db:seed` also resets demonstration account credentials, administrative access, and deletion status; use the targeted task for profiles. For a new database, follow the project's `db:prepare` setup.
 
-Sem perfil ativo, a página usa os `padrao` do roteiro e a `entrega_padrao`. Abrir a página nunca cria registros.
+If no profile is active, the page uses catalog `padrao` values and `entrega_padrao`. Opening the page never creates profiles.
 
-1. Entre como administrador e abra **Admin → Apresentação** (`/admin/apresentacao`). Usuários comuns não acessam a tela.
-2. Abra **Novo perfil** ou **Editar seleção**. Escolha nome, entrega, slides e seus conteúdos.
-3. A entrega muda capa, rodapé, nomes dos slides, selos, checklist e limite de tempo. **Não troca os checkboxes automaticamente**; para outra seleção pronta, abra o perfil correspondente.
-4. Capa e encerramento são obrigatórios. Desmarcar um slide guarda suas escolhas internas; marcar um slide sem nenhum conteúdo visível o omite da sequência.
-5. Clique em **Salvar configurações**. Valores inválidos e chaves fora do catálogo atual são recusados.
-6. **Usar como padrão** escolhe o perfil público. Só um fica ativo; o ativo não pode ser excluído. **Visualizar** abre `/apresentacao?perfil=<id>` sem mudar o padrão.
+1. Sign in as an administrator and open `/admin/apresentacao`. Ordinary accounts cannot manage profiles.
+2. Choose **Novo perfil** or **Editar seleção**, then select a name, delivery, slides, and contents.
+3. Delivery changes cover/footer, academic names, badges, checklist, and time limit. It does not automatically switch checkboxes; open the corresponding profile for another ready selection.
+4. Cover and closing are mandatory. Disabling a slide retains its internal choices. A selected slide with no selected contents is omitted.
+5. Use **Salvar configurações**; invalid values and keys outside the current catalog are rejected.
+6. **Usar como padrão** chooses the public profile. Only one can be active, and the active profile cannot be deleted. **Visualizar** opens `/apresentacao?perfil=<id>` without changing the default.
 
-A estimativa soma apenas os slides principais selecionados; apêndices não entram no tempo, mas entram no PDF quando marcados. A duração real depende do ensaio.
+The estimate sums selected main slides. Appendices do not add speaking time but do add PDF pages when selected. Actual duration depends on rehearsal.
 
-### Ajustes temporários
+### Temporary customization
 
-Em **Personalizar apresentação**, as mudanças recalculam sequência, índice, contador, progresso, numeração, apêndices e impressão. **Concluir** só fecha o painel. **Restaurar padrão do perfil** ou recarregar desfaz os ajustes; nada é salvo no banco nem no navegador.
+**Personalizar apresentação** recalculates sequence, index, counter, progress, appendix access, and printing. **Concluir** closes the panel. **Restaurar padrão do perfil** or reloading discards temporary changes; they are saved neither in the database nor browser storage.
 
-Se o slide atual for ocultado, a página segue ao próximo visível, ou ao anterior quando necessário. Tab/Enter operam o painel e Esc o fecha. Sem JavaScript, o modo leitura usa o perfil salvo e não oferece o painel.
+If the current slide is hidden, navigation moves to the next visible slide, or the previous one when necessary. Tab/Enter operate the panel; Esc closes it. Without JavaScript, reading mode uses the saved profile and has no customization panel.
 
-### Catálogo e compatibilidade
+### Stable keys and compatibility
 
-As chaves salvas são `<id do slide>` e `<id do slide>.<id do conteúdo>`, como `reunioes.registros`. Não dependem do título ou da posição.
+Saved keys are `<slide ID>` and `<slide ID>.<content ID>`, such as `reunioes.registros`; titles and positions do not identify selections.
 
-- Para um novo slide, adicione `id`, `titulo`, `tempo` e `padrao` ao roteiro e crie sua partial, trocando hífens por underscores no arquivo.
-- Para um conteúdo, adicione-o a `conteudos` e marque o bloco na partial com `presentation_item`. `presentation_group` oculta contêineres vazios; `dentro_de` define dependência do conteúdo pai.
-- Chaves ausentes usam o `padrao`. Mude títulos sem renomear ids para preservar perfis.
+- Add a slide with `id`, `titulo`, `tempo`, and `padrao` in the catalog, and create its partial using underscores instead of hyphens in the filename.
+- Add content under `conteudos` and mark its view block with `presentation_item`. `presentation_group` hides empty containers; `dentro_de` defines parent dependency.
+- Missing keys use `padrao`. Change displayed titles without changing IDs.
 
-O campo `substitui` permite herdar escolhas antigas. Os ids dos slides de evolução, planejamento, retrospectiva e aprendizados foram preservados; os antigos conteúdos `status-report.feito` e `status-report.proximo` saíram do catálogo para evitar duplicação. `status-report.aprendizados` continua válido. Ao salvar um perfil, as chaves removidas deixam de fazer parte da seleção. Para os complementos extraídos do antigo slide de gestão, `repositorio` herda `gestao` e `gestao.praticas`; `repositorio.praticas` herda `gestao.praticas`. `reunioes` herda `gestao` e `gestao.reunioes`; `reunioes.registros` herda `gestao.reunioes`.
+`substitui` inherits legacy selections. Evolution, planning, retrospective, and lessons slide IDs were preserved; redundant `status-report.feito` and `status-report.proximo` contents were removed, while `status-report.aprendizados` remains valid. Saving resolves selections using the current catalog.
 
-Entre as chaves antigas presentes no perfil, todas precisam estar marcadas. Sem nenhuma delas, vale o padrão da chave nova. Uma escolha explícita nova tem prioridade. Ao salvar pelo formulário, as escolhas resolvidas usam o catálogo atual; não apague o JSON antigo antes de conferir a seleção.
+`repositorio` inherits `gestao` and `gestao.praticas`; `repositorio.praticas` inherits `gestao.praticas`. `reunioes` inherits `gestao` and `gestao.reunioes`; `reunioes.registros` inherits `gestao.reunioes`. All legacy keys present in a profile must be enabled for inheritance. Without legacy choices, the new key's default applies; an explicit new choice wins. Inspect the resolved selection before deleting old JSON.
 
-## Onde atualizar cada coisa
+## Where to update each item
 
-| Conteúdo | Arquivo |
+| Content | Source |
 | --- | --- |
-| Equipe, disciplina, links, entregas, títulos, exigências, prazos e limites | `entrega.yml` |
-| Catálogo, tempo, responsáveis, padrões e apêndices | `roteiro.yml` |
-| Problema, público, conflitos, RF/RNF e critérios de aceite | `requisitos.yml` |
-| Marcos, capacidades e data da primeira entrega | `evolucao.yml` |
-| Capturas, paleta e protótipo separado | `conceito_visual.yml` |
-| Critérios e evidências das duas funcionalidades | `funcionalidades.yml` |
-| Situação, produção, revisão, versão e origem dos diagramas | `diagramas.yml` |
-| Tabelas, colunas, vínculos, conceitos, arquitetura e disposição | `data_diagrams.yml` |
-| Renderização e estilo dos diagramas | `app/views/presentations/shared/_er_diagram.html.erb` e `app/assets/stylesheets/presentation.css` |
-| Stack, logos, fontes de versões, mudanças e justificativas | `tecnologias.yml` |
-| Trello, ambientes, práticas do GitHub e reuniões | `gestao.yml` |
-| Imagem, pontos, ações e lições da retrospectiva | `retrospectiva.yml` |
-| Marco, próximos passos, riscos e dependências | `planejamento.yml` |
+| Team, course, links, deliveries, names, requirements, deadlines, limits | `entrega.yml` |
+| Catalog, times, speakers, defaults, appendices | `roteiro.yml` |
+| Problem, audience, conflicts, requirements, acceptance criteria | `requisitos.yml` |
+| Milestones, unpublished references, periods, capabilities, first-delivery date | `evolucao.yml` |
+| Visual captures (dark and light), palette, separate prototype | `conceito_visual.yml` |
+| GitHub capture, published commit, both journeys, code evidence, extras | `funcionalidades.yml` |
+| Diagram production, team review, version, origin | `diagramas.yml` |
+| Tables, columns, relationships, concepts, architecture, positions | `data_diagrams.yml` |
+| Diagram rendering/styles | `app/views/presentations/shared/_er_diagram.html.erb`, `app/assets/stylesheets/presentation/diagrams.css` |
+| Technologies, local logos, version sources, rationale | `tecnologias.yml` |
+| Trello, environments, repository practices, meetings | `gestao.yml` |
+| Retrospective board, link, columns and cards, agreed actions | `retrospectiva.yml` |
+| Milestone, next-step priorities and their dependencies, risks, dependencies | `planejamento.yml` |
+| SGU logo in slides and pages | `sgu_brand` in `app/helpers/brand_helper.rb`; files in `app/assets/images/brand/` |
 
-O slide de aprendizados (`status-report`) usa apenas `retrospectiva.yml`; ele não repete os marcos nem os próximos passos. Em `/apresentacao?modo=leitura`, notas tracejadas indicam o arquivo a atualizar; somem na apresentação e no PDF.
+`status-report` reads only `retrospectiva.yml`. Reading mode `/apresentacao?modo=leitura` shows dashed maintenance notes with source filenames; presenting and printing remove those notes.
 
-Estados válidos: `implementado`, `parcial`, `planejado`, `aguardando_decisao` e `aguardando_evidencia`. Só marque implementado com evidência verificável. Uma proposta continua aguardando decisão até haver aprovação registrada.
+Valid states are `implementado`, `parcial`, `planejado`, `aguardando_decisao`, and `aguardando_evidencia`. Use implemented only with verifiable technical evidence. Team confirmation and requirements acceptance require their own recorded review.
 
-## Diagramas em HTML/CSS
+## Implemented journeys and genuine remaining evidence
 
-DER, modelo conceitual e arquitetura usam `_er_diagram.html.erb` e `PresentationDiagram`, sem imagem SVG para o desenho. O catálogo define entidades, colunas, relações e coordenadas; a altura acompanha a quantidade de linhas e o modelo calcula os caminhos das conexões. O DER informa a versão de `db/schema.rb`.
+The two journeys are already chosen, implemented, and tested in `funcionalidades.yml`:
 
-Ao criar migrações, atualize `tables`, `foreign_keys` e as visões pertinentes em `data_diagrams.yml`. Os apêndices operacional, social e de infraestrutura devem cobrir todas as colunas. `required` e `unique` das FKs determinam as cardinalidades; relações polimórficas são tracejadas e ficam em `relations`.
+1. **Registrar ocorrência e acompanhar o atendimento**: author submits an occurrence, coordination assesses/assigns/resolves it, and the author follows its status without receiving internal notes.
+2. **Publicar e interagir no mural**: the same occurrence post reaches its allowed audience, readers comment/reply/like/save/follow, and moderation revokes disclosure/interactions. Verified-author publication and same-post administrator approval are implemented.
 
-`presentation_profiles` aparece na infraestrutura, sem vínculo inventado com o domínio. Configura a apresentação e não representa um conceito do SGU.
+Their `evidencias` and `testes` identify the actual implementation and specs; see [Functionalities and code evidence](#functionalities-and-code-evidence). Empty `requisitos` lists mean the academic requirement document has not yet mapped RFs to these journeys; they do not mean the application is unimplemented. Validate human acceptance and evidence separately.
 
-Selecione uma entidade para destacar suas conexões e ler vínculos e cardinalidades na faixa acima do desenho. **Ampliar** mantém essa interação. As relações também aparecem por escrito. No celular há rolagem interna para preservar o texto; revise o PDF após alterar a disposição.
+The meeting of **03/10/2026 around 18:20**, held on Google Meet, is recorded in `gestao.yml` with four genuine screenshots. Visible participant names and discussion topics are documented, with a note about truncated names. `decisoes: []` remains intentional: next actions and owners have not been formalized. The screenshot times 18:21, 18:23, 18:24, and 18:37 do not establish the meeting's ending or duration. The screenshots show the version demonstrated at that meeting, including its observed problems; they do not prove a deployment, acceptance of requirements, or a retrospective.
 
-Em `diagramas.yml`, produção técnica, revisão da equipe e premissas são independentes. O modelo conceitual foi produzido no card #6; não gere outro para atender a essa entrega. Depois da revisão, registre estado, data e responsáveis em `revisao_equipe`, além da versão e situação geral.
-
-Para uma imagem fornecida pela equipe, salve-a em `app/assets/images/presentation/` e use caminho relativo a `app/assets/images`, com descrição, origem, versão e data quando aplicáveis. Diagramas pendentes de casos de uso e fluxo podem ser exportados em PNG/SVG; os desenhos nativos existentes permanecem HTML/CSS. Só URLs públicas HTTP(S) viram links; caminhos locais aparecem como texto.
-
-## Tecnologias e versões
-
-Os cards mostram logo local ou símbolo neutro, nome e função. Os assets ficam em `app/assets/images/presentation/logos/`; fontes e condições de uso estão em `tecnologias.yml`. Um símbolo neutro não representa a marca.
-
-Quando **Versões** está selecionado dentro de **Tecnologias utilizadas**:
-
-- Passe o mouse ou foque um card com Tab para ver a dica; Esc a fecha.
-- **Mostrar versões** exibe os dados abaixo de todos os cards; **Ocultar versões** recolhe. O estado vale só na página aberta.
-- Desmarcar Versões oculta dicas, dados e botão. Ocultar Tecnologias utilizadas também oculta suas versões.
-- Na impressão, as versões selecionadas aparecem mesmo recolhidas na tela. Sem JavaScript, aparecem abaixo dos cards.
-
-Cada versão possui `rotulo` e uma fonte: `gem` lê o `Gemfile.lock`; `ruby_version_file: true` lê `.ruby-version`; `sqlite_engine: true` lê a biblioteca SQLite carregada; `texto` explica ferramentas sem versão única. Gem de integração não é confundida com a tecnologia subjacente. Tailwind identifica integração Rails e pacote do CLI; SQLite identifica adaptador Ruby e motor.
-
-## Materiais que ainda dependem da equipe
-
-| Material | O que falta |
+| Item still needing team work | Action |
 | --- | --- |
-| Requisitos (card #13) | Resolver conflitos, aprovar RF/RNF e critérios de aceite; registrar documento e versão em `requisitos.yml`. |
-| Casos de uso (card #14) e fluxo (card #5) | Produzir os diagramas aprovados, anexar imagem e registrar origem/versão/data em `diagramas.yml`. Um não substitui o outro nem o conceitual. |
-| Conceito visual | Validar as capturas existentes; o slide público avisa que essa validação está pendente e que os alertas exibidos são demonstrativos. Protótipo separado só se escolhido pela equipe. |
-| Duas funcionalidades | Escolher e implementar duas jornadas completas; preencher requisitos, passos, código, specs, captura e validação em `funcionalidades.yml`. Backend do card #6 sozinho não comprova uma jornada completa. |
-| Modelo conceitual | Revisar multiplicidades e premissas, registrar aprovação. Foto opcional, visibilidade restrita e acessos de coordenação/segurança dependem do card #13. |
-| Retrospectiva | Realizar a dinâmica, anexar imagem real e registrar data, formato, pontos, ações e lições em `retrospectiva.yml`. |
-| Reuniões | Registrar reuniões realizadas: data, tipo, participantes, pauta, decisões e evidência em `gestao.yml`. |
-| Trello e ambientes | Preencher link do card #11 e conferir acesso da professora; só cadastrar URL de homologação depois de deploy real. |
-| Próxima entrega | Decidir marco demonstrável, responsáveis e data da apresentação; ensaiar por até 7 minutos. |
+| Requirements, card #13 | Resolve conflicts, approve RF/RNF and acceptance criteria, record document/version. |
+| Use cases, card #14, and occurrence flow, card #5 | Supply approved diagrams with origin/version/date; neither replaces the conceptual model. |
+| Visual concept | Review the 04/10/2026 captures and their demonstration labels; separate prototype only if chosen. |
+| Both implemented functionalities | Map approved requirements, perform team acceptance, and retain evidence; do not describe the journeys as unchosen or awaiting implementation. |
+| Conceptual model | Record team review of multiplicities and assumptions. Optional photos, private visibility, and operational roles still require requirements acceptance. |
+| Retrospective | The board image, link, and cards are recorded. Still missing: the proven date of the retrospective and any agreed actions with owners and deadlines. |
+| Meetings | Keep genuine records and evidence current; confirm metadata and document only actual discussions/decisions. |
+| Trello/environments | Add the card #11 link and verify teacher access. Add a staging URL only after an actual deployment. |
+| GitHub capture | Add the manual repository-page screenshot (see [Functionalities and code evidence](#functionalities-and-code-evidence)). |
+| Next delivery | Agree on milestone, owners, dates, and rehearse within seven minutes. |
 
-Campos vazios indicam pendências, não convites para inventar evidências. Confirme `confirmado_pela_equipe: true` apenas após revisão. A linha do tempo inclui o card #6 integrado à main em 02/10/2026; commits de melhorias ainda locais ficam sem link até serem publicados.
+Blank fields remain explicit pending work. Set `confirmado_pela_equipe: true` only after review. Timeline links need actual published commits; local changes must not receive invented hashes.
 
-Para refazer capturas: abra `/` e `/entrar` com o sistema rodando, registre tamanho desktop/mobile, aguarde fontes e imagens e capture sem menus cobrindo o conteúdo. Oculte temporariamente pelo inspetor o aviso de credenciais de desenvolvimento; não inclua senhas ou dados pessoais. Atualize caminhos, descrições, notas e `capturado_em` em `conceito_visual.yml`. Informe commit somente se corresponder ao código capturado; alertas estáticos mantêm `demonstrativo: true`.
+## Retrospective
 
-## Executar e gerar PDF
+`retrospectiva.yml` is the single source for the `retrospectiva` slide and the `status-report` slide. `Presentation::Retrospective` (`app/models/presentation/retrospective.rb`) reads it.
 
-No terminal do Dev Container, inicie `bin/dev` e abra `http://localhost:3000/apresentacao`. Não inicie outra instância se já estiver rodando. Confira o endereço encaminhado na aba **Portas** do VS Code; outro projeto pode ocupar a mesma porta no computador.
+| Field | Meaning |
+| --- | --- |
+| `data` | Actual date of the retrospective. It is blank because the date is not proven. The 03/10/2026 meeting in `gestao.yml` is a different event. |
+| `ferramenta`, `formato` | Tool (`FunRetrospectives`) and the columns used (“Gostei · Aprendi · Faltou”). |
+| `link` | Public session address. Only `https://` values are accepted. Current value: `https://app.funretrospectives.com/session/-P348lsyv9l5kgdtJO7_` (keep the trailing underscore). |
+| `imagem` | `presentation/retrospectiva/quadro-gostei-aprendi-faltou.png`, relative to `app/assets/images`. It is the original capture (895×782, unedited, SHA-256 starting with `2cecb2e3`). |
+| `imagem_ampliada` | Optional. Another resolution for the enlarged view; blank uses `imagem`. |
+| `imagem_descricao` | Alternative text for the image. |
+| `colunas` | Faithful transcription of the board, in board order. Column ids are `gostei`, `aprendi`, and `faltou`; each has `titulo` and `cartoes` with `titulo` and `texto`. |
+| `acoes` | Actions agreed by the team, each with `acao`, `responsavel`, and `prazo`. It is empty because no action has been formalized. |
+| `pontos`, `licoes` | Legacy first-delivery format. Still accepted, and used only when `colunas` is absent. |
 
-Pelo navegador, use **Imprimir / salvar PDF** ou Ctrl+P. A folha de estilos define A4 paisagem, um slide por página, incluindo apêndices selecionados. A impressão respeita ajustes temporários e remove controles e notas de manutenção. Ative gráficos de plano de fundo.
+The `retrospectiva` slide shows the board image, which opens in the existing lightbox, a legend, an **Abrir retrospectiva** button that opens the session in a new tab (`rel="noopener noreferrer"`), and the URL as text, which stays clickable in the PDF. The session is not embedded; there is no iframe.
 
-Para exportar com Selenium, inicie um servidor adicional em outro terminal do Dev Container:
+The `status-report` slide reads the same data. The four “Aprendi” cards are shown as lessons, and the four “Faltou” titles are shown as points to improve. These points are explicitly labelled as not yet agreed actions. Add entries to `acoes` only after the team agrees on them, with a real owner and deadline.
+
+## Visual concept captures
+
+`conceito_visual.yml` → `capturas` lists the captured screens. Image paths are relative to `app/assets/images`.
+
+| Field | Meaning |
+| --- | --- |
+| `imagem`, `imagem_ampliada`, `alt` | Dark-theme version (the system default). |
+| `claro` | Light-theme version of the same route, size, and state: `{ imagem, imagem_ampliada, alt }`. Without `claro`, the single image is used for both themes, so older entries remain valid. |
+| `rota`, `largura` | Captured route and viewport size, such as `1440 × 1000 px`. |
+| `estado`, `demonstrativo` | State of the captured screen, and whether it shows example data. |
+| `nota` | Secondary detail, shown inside the slide's information button (Popover API). |
+| `capturado_em`, `ambiente` | Capture date and environment, at the top of the file. |
+
+Captures switch with the system theme. They use the same `sgu.theme` localStorage key and `data-theme` attribute as the rest of the application; there is no second preference store. The lightbox shows the version of the active theme, and print uses the light version.
+
+`paleta` lists the six real colors from `app/assets/stylesheets/theme.css`, each with `nome`, `hex`, and `uso`. The `conceito-visual.marca` content shows the SGU brand card.
+
+The current captures were regenerated on **04/10/2026** with the new brand. To regenerate them, start the additional server described in [Run and export PDF](#run-and-export-pdf) and run, with Selenium active:
+
+```bash
+bundle exec ruby script/capturar_conceito_visual.rb [output dir]
+```
+
+The default output is `tmp/conceito_visual/`. Review the images, then copy them to `app/assets/images/presentation/`. Dark files keep the existing names (`landing-desktop.png`, `landing-completa.png`, `landing-mobile.png`, `entrar-desktop.png`); light files add `-claro` (for example, `landing-desktop-claro.png`). Update `capturado_em` and `ambiente`. Keep demonstration credentials and unrelated personal data out of captures, and set `commit` only when it matches the captured code.
+
+## Functionalities and code evidence
+
+`funcionalidades.yml` has these parts:
+
+| Key | Meaning |
+| --- | --- |
+| `repositorio` | `captura` (manual screenshot of the GitHub repository page), `alt`, and `legenda`. While `captura` is empty, the slide shows a discreet placeholder, never a broken image. |
+| `publicacao` | `commit` is the full SHA of `origin/main` used for code links (currently `658bfde07f9fb7f619768538a1c8648e669c0204`); `rotulo` is its label (“main · 02/10/2026”). |
+| `criterios` | Completeness criteria, shown in a dialog. |
+| `itens[]` | Each journey: `resumo`, `fluxo` (three short labels), `jornada` (detailed steps), `evidencias`, `testes`, and `validacao`. |
+| `evidencias[]` | Explicit catalog of files: `tipo` (`controller`, `model`, `view`, `service`, or `policy`), `caminho`, `papel`, `publicado`, and optional `captura`. |
+| `extras` | Other parts of the system, each with `nome`, `estado`, and `nota`. |
+
+`caminho` must be a relative path under `app/`, `config/`, `db/`, `lib/`, or `spec/`, without `..`. `publicado: true` means the file exists in the `publicacao.commit` commit, and the dialog links to `https://github.com/<repository>/blob/<sha>/<path>`. `publicado: false` is shown as “Somente na cópia local”. The server never reads files from URL parameters; only this catalog is displayed.
+
+**Ver implementação** opens a modal `<dialog>`. Focus moves to its title, Esc closes it, and focus returns to the button. Arrow keys do not change slides while it is open, and long content scrolls inside the dialog. The buttons also carry `commandfor` and `command="show-modal"`, so modern browsers open the dialog without JavaScript.
+
+To add the GitHub capture, save the PNG as `app/assets/images/presentation/github/repositorio.png` and set `repositorio.captura: "presentation/github/repositorio.png"`. To add a code capture, save it in the same folder (for example, `app/assets/images/presentation/github/alerts-controller.png`) and set `captura` on that evidence.
+
+When new code is merged into `main`, update `publicacao.commit` and every `publicado` flag. `spec/models/presentation_spec.rb` checks the flags against Git when the commit exists locally.
+
+## Evolution and planning
+
+`evolucao.yml` → `marcos` lists milestones. `commit` is the full SHA of a published commit and becomes a GitHub link. For unpublished work, leave `commit` blank and set `referencia`, the text shown instead of the link. `periodo` is an optional date-range label; `data` stays the start date.
+
+Milestones after the first delivery (23/09/2026):
+
+- 27/09: SGU identity (`da70a47`, published).
+- 02/10: data model and presentation profiles (`658bfde`, PRs #11 and #12).
+- 03/10: alignment meeting, around 18:20.
+- 03–04/10: occurrences, handling, and board (local commits and unpublished changes).
+- 04/10: retrospective, brand, and presentation (local changes).
+
+`planejamento.yml` → `proximos_passos` lists four priorities, each with an optional `depende_de`. No dates or owners are recorded because the team has not decided them.
+
+The use-case diagram review has no evidence in the repository, so neither file lists it as done.
+
+## Meeting record and image gallery
+
+Meeting records remain in `gestao.yml` → `reunioes`; the stable selection keys are still `reunioes` and `reunioes.registros`.
+
+| Field | Meaning |
+| --- | --- |
+| `data`, `horario`, `tipo`, `plataforma` | Actual date, approximate or recorded time, meeting type, and meeting platform. Do not infer duration from screenshots. |
+| `participantes`, `participantes_nota` | Known participant names and limits of that evidence, such as a truncated display name. |
+| `pauta` | Discussion topics supported by the meeting record. |
+| `decisoes`, `nota` | Recorded decisions and any remaining follow-up; keep an empty list when no decisions have been formalized. |
+| `evidencias` | Gallery entries, each containing an asset `imagem`, visible `legenda`, and descriptive `alt`. |
+| `evidencia_imagem`, `evidencia_url` | Compatible legacy single-image and public-link fields; existing records do not need conversion. |
+
+Image paths are relative to `app/assets/images`. The current four assets are:
+
+- `presentation/reunioes/2026-10-03/01-painel.png`
+- `presentation/reunioes/2026-10-03/02-administracao.png`
+- `presentation/reunioes/2026-10-03/03-rails.png`
+- `presentation/reunioes/2026-10-03/04-ambiente.png`
+
+The copied originals were hash-checked against the supplied files and remain unchanged. `app/views/presentations/slides/_reunioes.html.erb` renders each entry through the shared `_figure.html.erb` component. Clicking or keyboard-activating **Ampliar** opens the original in the existing lightbox; Esc closes it and restores focus to the trigger. Without JavaScript, **Abrir imagem** remains available. Print excludes those controls and uses the compact gallery; retain meaningful captions and alt text when adding evidence.
+
+The navigation/gallery verification passed **17 examples, 0 failures**, seed **58478**. The gallery was reviewed on desktop and mobile. A selected cover/meeting/closing profile exported to **three PDF pages**, with all four meeting images on its one meeting page; this does not imply every customized profile has three pages. The final review rechecked the mobile gallery and printed meeting image without a focus outline. Recheck print layout after adding meetings or longer text. A previous integrated run, before the retrospective, brand, and presentation revision of 04/10/2026, recorded **681 examples, 0 failures**, seed **30669**, and **97.09%** line coverage (4,148 of 4,272 lines, SimpleCov). It does not validate the later changes; current results are recorded in [the presentation and brand review](../../docs/apresentacao-identidade-sgu-revisao.md). The meeting date remains 03/10/2026.
+
+The meeting captures are a faithful historical record of the version demonstrated on 03/10/2026. The visual-concept captures were regenerated later, on 04/10/2026, in both themes with the new brand; see [Visual concept captures](#visual-concept-captures).
+
+## HTML/CSS diagrams and technology cards
+
+DER, conceptual model, and architecture use `_er_diagram.html.erb` and `PresentationDiagram`. Entities, columns, relationships, and coordinates come from the catalog; row counts affect height and paths are calculated by the model. The DER displays `db/schema.rb`'s version. Update `tables`, `foreign_keys`, and relevant views in `data_diagrams.yml` after migrations; operational/social/infrastructure appendices should cover all columns. FK `required`/`unique` define cardinalities; polymorphic relationships are dashed entries in `relations`.
+
+The conceptual diagram (`diagrams.conceptual`) is laid out wide, at 1350×580, with the same 11 concepts and 20 relations. Two options control it: `ports: distributed` places one port per connection along each side of a concept, and `cardinality_labels: true` draws the multiplicities at both ends of each relation. Its `notes` list is rendered under “Relações e cardinalidades”; the former “Dimensões distintas” box is now one of these notes. The physical DERs are unchanged.
+
+`presentation_profiles` belongs to infrastructure, not an invented SGU business concept. Selecting an entity highlights connections and cardinalities; **Ampliar** keeps the interaction. Mobile diagrams use internal scrolling. Styles are organized under `app/assets/stylesheets/presentation/`, imported by `presentation.css`; review print after changing positions.
+
+Technical production, team review, and assumptions in `diagramas.yml` are independent. The conceptual model was produced in card #6; revise it instead of creating a duplicate. Record reviewers, date, version, and accepted assumptions. Team-supplied images belong in `app/assets/images/presentation/` with paths relative to `app/assets/images`. Pending use-case/flow images may use PNG/SVG; existing native diagrams stay HTML/CSS. Only public HTTP(S) URLs become links; filesystem paths are rendered as text.
+
+The SGU logo is rendered by `sgu_brand(layout, tone:)` in `app/helpers/brand_helper.rb`. Layouts are `:symbol`, `:horizontal`, and `:vertical`. Tones are `:auto` (follows the page theme), `:on_light`, `:on_dark`, and `:dark_surface` (negative on screen, standard version in print). The files come from `app/assets/images/brand/`; see the main [README](../../README.md#brand).
+
+Technology cards use local logos or a neutral symbol; assets are in `app/assets/images/presentation/logos/`, with sources/conditions in `tecnologias.yml`. A neutral symbol is not a brand logo. With **Versões** selected inside **Tecnologias utilizadas**, mouse hover or keyboard focus shows a tooltip, Esc closes it, and **Mostrar versões** expands data below all cards. Disabling the content hides tooltips/data/control. Printing and no-JavaScript mode show selected versions even when collapsed on screen.
+
+Version `rotulo` uses `gem`, `ruby_version_file: true`, `sqlite_engine: true`, or explanatory `texto`. Integration gem versions do not imply underlying technology versions: Tailwind separates Rails integration from CLI; SQLite separates Ruby adapter from database engine.
+
+## Run and export PDF
+
+Use `bin/dev` in the Dev Container and open `http://localhost:3000/apresentacao`. Avoid starting a second copy if it is already running; inspect the VS Code **Ports** forwarding when another project uses the same host port.
+
+The layout target is a 1920×1080 viewport (full screen on a Full HD monitor) in presenting mode with the default second-delivery selection: every main slide fits without scrolling, as measured by `spec/features/presentation_revision_spec.rb`. In a browser window that is not full screen (about 1920×950), some slides scroll a little, so press **F** for full screen before presenting. On mobile, slides scroll vertically, never horizontally.
+
+Use **Imprimir / salvar PDF** or Ctrl+P for A4 landscape, one slide per page, including selected appendices. Browser printing respects temporary selection, removes controls/maintenance notes, and needs background graphics enabled. Dialogs and information buttons are not printed; instead, print shows compact evidence lines (file basenames and tests) and the short notes of partial items.
+
+For Selenium export, run an additional presentation server in a separate Dev Container terminal:
 
 ```bash
 RAILS_DEVELOPMENT_HOSTS=rails-app bin/rails server -b 0.0.0.0 -p 3100 -P tmp/pids/apresentacao-3100.pid
 ```
 
-Com o serviço Selenium ativo, em outro terminal:
+With Selenium active, run:
 
 ```bash
 bundle exec ruby script/exportar_apresentacao_pdf.rb
 ```
 
-O script abre `http://rails-app:3100/apresentacao?modo=leitura` e grava `tmp/apresentacao/sgu-segunda-entrega.pdf`; aceita outro destino como argumento. `localhost` dentro do Selenium não aponta para o Rails. As portas 3000/3100 são encaminhadas pelo Dev Container; confirme o endereço efetivo em **Portas**. Encerre só o servidor adicional com Ctrl+C ao terminar.
+The script reads `http://rails-app:3100/apresentacao?modo=leitura` and writes `tmp/apresentacao/sgu-segunda-entrega.pdf`; a destination argument is optional. `localhost` inside Selenium is not the Rails container. Confirm forwarded ports 3000/3100 and stop only the additional server with Ctrl+C after export.
 
-O script exporta uma página nova com o perfil ativo; ajustes temporários não entram. Para outro perfil salvo:
+The script loads a new page with the active profile, ignoring temporary selections from another tab. For a saved profile:
 
 ```bash
 APRESENTACAO_URL="http://rails-app:3100/apresentacao?modo=leitura&perfil=<id>" bundle exec ruby script/exportar_apresentacao_pdf.rb
 ```
 
-Substitua `<id>` pelo link Visualizar do admin. `SELENIUM_REMOTE_URL` tem padrão `http://selenium:4444/wd/hub`, definido pelo Dev Container. Se alterar o host, confirme que Selenium o alcança e Rails o aceita.
+Replace `<id>` using administration's **Visualizar** link. The Dev Container defaults `SELENIUM_REMOTE_URL` to `http://selenium:4444/wd/hub`; a different host must be reachable by Selenium and allowed by Rails. Inspect every PDF page, images, clipping, diagrams, text, and links. `tmp/` is ignored by Git; share the final PDF explicitly.
 
-Abra o PDF novo e confira todas as páginas, cortes, diagramas, textos e links. A pasta `tmp/` é ignorada pelo Git: compartilhe o arquivo final explicitamente.
+## Validation
 
-## Verificações
-
-Os specs com JavaScript precisam de Selenium; Capybara inicia seu próprio servidor, sem exigir a porta 3100.
+JavaScript features require Selenium; Capybara starts its own server and does not need port 3100:
 
 ```bash
-bundle exec rspec spec/models/presentation_spec.rb spec/models/presentation spec/models/presentation_profile_spec.rb \
+bundle exec rspec spec/models/presentation_spec.rb spec/models/presentation/selection_spec.rb spec/models/presentation_profile_spec.rb \
   spec/models/presentation_diagram_spec.rb spec/policies/presentation_profile_policy_spec.rb spec/requests/presentations_request_spec.rb \
   spec/requests/admin/presentation_profiles_request_spec.rb spec/helpers/presentations_helper_spec.rb \
-  spec/features/presentation_navigation_spec.rb spec/features/presentation_diagrams_spec.rb spec/features/admin/presentation_profiles_features_spec.rb
+  spec/features/presentation_navigation_spec.rb spec/features/presentation_meeting_spec.rb \
+  spec/features/presentation_diagrams_spec.rb spec/features/admin/presentation_profiles_features_spec.rb \
+  spec/models/presentation/retrospective_spec.rb spec/helpers/brand_helper_spec.rb \
+  spec/requests/presentation_revision_request_spec.rb spec/features/presentation_revision_spec.rb
 ```
 
-Esses arquivos cobrem catálogo, imagens e links internos, seleção por perfil, restrição do admin, navegação, ajustes temporários, impressão, títulos por entrega e correspondência do DER com o banco de teste. O spec de navegação inclui dicas e expansão das versões no celular e exportação real pelo script com carregamento de logos. Testes automatizados não confirmam acesso da professora a links externos, aprovação acadêmica nem duração real. Confira links sem sessão da equipe, leia o PDF e ensaie.
+These checks cover catalog keys, images/links, saved selection, administration restrictions, navigation, customization, print, requirement titles, and DER agreement with the test schema. Navigation tests include technology tooltips/mobile expansion and real script export with loaded logos. `presentation_meeting_spec.rb` verifies the four originals, lightbox focus restoration, mobile layout, and a three-page meeting-only export; it restores the viewport after capturing. `presentation_revision_spec.rb` measures the 1920×1080 layout target and phone width without horizontal scrolling, and checks theme-dependent captures, the evidence dialog, popovers, conceptual multiplicities, and printing without dialogs. Automated tests do not approve academic requirements, verify the teacher's external-link access, or establish actual speaking duration. Read the PDF, check links without the team's session, and rehearse.
 
-A revisão desta atualização, o tutorial curto e os textos para MR/card estão em [docs/presentation-upgrade-review.md](../../docs/presentation-upgrade-review.md).
+See [the earlier presentation review](../../docs/presentation-upgrade-review.md) for its dated handoff and [the current occurrence/social guide](../../docs/occurrence-social-flow.md) for application rules and validation. The focused meeting-gallery results and the previous integrated run are recorded above; current results are in [the presentation and brand review](../../docs/apresentacao-identidade-sgu-revisao.md). Existing alerts without a post are not silently disclosed by visiting their detail: the author must confirm an audience before the new mural creates that legacy record's publication. See the occurrence/social guide for that compatibility boundary.

@@ -1,40 +1,61 @@
-# Capturas reais das telas existentes e paleta do SGU.
+# Item 1 da 2ª entrega: conceito visual mostrado em capturas reais das telas implementadas.
+# Não é um protótipo separado (Figma etc.); esse fica em "prototipo", abaixo.
+# Guia: config/presentation/LEIAME.md → "Visual concept captures".
 #
-# imagem: caminho relativo a app/assets/images (arquivos em app/assets/images/presentation/)
-# estado: estado da tela capturada (não da captura)
-# demonstrativo: true quando a tela mostra dados de exemplo, não dados reais.
-#
-# Para regenerar as capturas, siga config/presentation/LEIAME.md.
+# capturado_em: data das capturas atuais.
+# ambiente:     onde as telas foram capturadas.
+# capturas:
+#   imagem / imagem_ampliada / alt: versão do tema escuro (padrão do sistema).
+#   claro:        mesma rota, dimensões e estado no tema claro: { imagem, imagem_ampliada, alt }.
+#                 Sem "claro", a versão escura é usada nos dois temas (formato anterior).
+#   estado:       estado da tela capturada (não da captura).
+#   demonstrativo: true quando a tela mostra dados de exemplo, não dados reais.
+#   nota:         detalhe secundário (aparece no botão de informações do slide).
+# Regenerar: bundle exec ruby script/capturar_conceito_visual.rb (ver LEIAME.md).
 
-capturado_em: 2026-09-30
-commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
+capturado_em: 2026-10-04
+ambiente: "Ambiente local (Dev Container), após a nova marca SGU"
+commit:
 
 capturas:
   - id: landing
     titulo: "Landing pública"
     rota: "/"
+    largura: "1440 × 1000 px"
     imagem: "presentation/landing-desktop.png"
     imagem_ampliada: "presentation/landing-completa.png"
-    alt: "Página inicial pública do SGU UFRPE com o título “Uma UFRPE mais segura começa com informação compartilhada” e um painel de alertas de exemplo."
+    alt: "Página inicial pública do SGU em tema escuro, com a marca SGU, o título “Uma UFRPE mais segura começa com informação compartilhada” e um painel de alertas de exemplo."
+    claro:
+      imagem: "presentation/landing-desktop-claro.png"
+      imagem_ampliada: "presentation/landing-completa-claro.png"
+      alt: "Página inicial pública do SGU em tema claro, com a marca SGU, o título “Uma UFRPE mais segura começa com informação compartilhada” e um painel de alertas de exemplo."
     estado: implementado
     demonstrativo: true
-    nota: "Os alertas do painel são exemplos estáticos."
+    nota: "Os alertas do painel da landing são exemplos estáticos."
   - id: entrar
     titulo: "Login em /entrar"
     rota: "/entrar"
+    largura: "1440 × 1000 px"
     imagem: "presentation/entrar-desktop.png"
-    alt: "Tela de login do SGU UFRPE com campos de e-mail e senha e painel verde com a frase “Cuidar do campus é uma construção coletiva”."
+    alt: "Tela de login do SGU em tema escuro, com a marca SGU, campos de e-mail e senha e painel verde com a frase “Seu campus. Sua comunidade. Sua participação”."
+    claro:
+      imagem: "presentation/entrar-desktop-claro.png"
+      alt: "Tela de login do SGU em tema claro, com a marca SGU, campos de e-mail e senha e painel verde com a frase “Seu campus. Sua comunidade. Sua participação”."
     estado: implementado
     demonstrativo: false
-    nota: "O aviso de credenciais do ambiente de desenvolvimento foi ocultado na captura."
+    nota: "O aviso de desenvolvimento sobre a confirmação de e-mail pendente aparece na própria tela."
   - id: landing-mobile
     titulo: "Landing no celular"
     rota: "/"
+    largura: "390 × 844 px"
     imagem: "presentation/landing-mobile.png"
-    alt: "Página inicial do SGU em largura de celular, com o título e os botões empilhados."
+    alt: "Página inicial do SGU em largura de celular e tema escuro, com a marca, o título e os botões empilhados."
+    claro:
+      imagem: "presentation/landing-mobile-claro.png"
+      alt: "Página inicial do SGU em largura de celular e tema claro, com a marca, o título e os botões empilhados."
     estado: implementado
     demonstrativo: true
-    nota: "Largura de 390 px."
+    nota: "Mesma landing em largura de celular."
 
 # Protótipo de referência (Figma, Penpot, Excalidraw, papel fotografado...).
 # Preencha somente com um protótipo que a equipe produziu de fato.
@@ -54,16 +75,23 @@ prototipo:
   nota:
   estado: aguardando_evidencia
 
+# Cores essenciais, como estão em app/assets/stylesheets/theme.css.
 paleta:
   - nome: "Verde SGU"
     hex: "#153C36"
-    uso: "Marca, botões e fundos de destaque"
-  - nome: "Verde-água"
-    hex: "#277D6E"
-    uso: "Rótulos e realces"
+    uso: "Marca e botões no tema claro"
+  - nome: "Verde ação"
+    hex: "#226A5C"
+    uso: "Botões no tema escuro"
+  - nome: "Menta"
+    hex: "#93DBC4"
+    uso: "Links e realces no escuro"
   - nome: "Dourado"
     hex: "#F2BD57"
-    uso: "Detalhes e chamadas"
+    uso: "Acentos e chamadas"
+  - nome: "Noite"
+    hex: "#0D171A"
+    uso: "Fundo do tema escuro"
   - nome: "Névoa"
     hex: "#F4F7F5"
-    uso: "Fundo das páginas"
+    uso: "Fundo do tema claro"

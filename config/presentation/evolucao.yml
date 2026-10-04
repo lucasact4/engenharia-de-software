@@ -1,8 +1,10 @@
 # Evolução do produto no período. Cada afirmação precisa de evidência verificável
 # (commit publicado, arquivo do repositório ou captura).
 #
-# commit: SHA completo de um commit publicado em origin/main (gera link para o GitHub).
-#         Deixe vazio para trabalho ainda não publicado.
+# commit:     SHA completo de um commit publicado em origin/main (gera link para o GitHub).
+#             Deixe vazio para trabalho ainda não publicado.
+# referencia: texto exibido no lugar do link quando não há commit publicado (ex.: "alterações locais").
+# periodo:    rótulo opcional quando o marco cobre mais de um dia; "data" continua sendo o início.
 
 # Data da primeira entrega (prazo do Classroom: 23/09/2026, 19h30). Delimita "desde a última entrega"
 # no status report: entram os marcos posteriores a esta data.
@@ -19,77 +21,70 @@ marcos:
     commit: "3e2735de87dbed43bfa9f8d414414184279ad01a"
   - data: 2026-09-27
     titulo: "Identidade SGU UFRPE"
-    texto: "Textos, cores e traduções da landing e do login alinhados ao SGU."
+    texto: "Landing e login com textos, cores e traduções do SGU."
     commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
-  - data: 2026-09-30
-    titulo: "Apresentação da 2ª entrega"
-    texto: "Card #11 em andamento na branch card-11: perfis de exibição, títulos por exigência e integração com a main (ainda não publicado)."
-    commit:
   - data: 2026-10-02
-    titulo: "Modelo de dados das ocorrências"
-    texto: "Card #6 integrado à main: migrações, regras e testes do backend, modelo conceitual e DER em HTML/CSS. Sem telas do produto."
-    commit: "1f7ad8346e6f78d511b3ce1e7a53d5226819c6fc"
+    titulo: "Modelo de dados e apresentação"
+    texto: "Migrações, regras e testes das ocorrências (PR #11); perfis da apresentação (PR #12)."
+    commit: "658bfde07f9fb7f619768538a1c8648e669c0204"
+  - data: 2026-10-03
+    titulo: "Reunião de alinhamento"
+    texto: "Demonstração do sistema, código Rails e diagnóstico do ambiente, por volta das 18h20."
+    commit:
+    referencia: "registro da reunião · gestao.yml"
+  - data: 2026-10-03
+    periodo: "03–04/10/2026"
+    titulo: "Ocorrências, atendimento e mural"
+    texto: "Registro com fotos e mapa, atendimento, interações, selo e aprovação do mesmo post."
+    commit:
+    referencia: "commits locais e alterações não publicadas"
+  - data: 2026-10-04
+    titulo: "Retrospectiva, marca e apresentação"
+    texto: "Quadro da retrospectiva anexado, nova marca SGU e slides revisados."
+    commit:
+    referencia: "alterações locais desta revisão"
 
-# Situação das capacidades do produto.
-# origem: "sgu" (feito para o SGU) ou "base" (herdado da base Rails).
 capacidades:
-  - nome: "Landing pública"
+  - nome: "Landing, login e tema"
     estado: implementado
     origem: sgu
-    nota: "Os alertas exibidos são exemplos estáticos."
+    nota: "Tema escuro padrão; landing ainda usa exemplos identificados."
     evidencia: "app/views/home/index.html.erb"
-  - nome: "Login em /entrar"
+  - nome: "Ocorrências e atendimento"
     estado: implementado
     origem: sgu
-    nota: "Tela nova; sessão herdada da base."
-    evidencia: "app/views/sessions/new.html.erb"
-  - nome: "Sessão, logout e senha"
+    nota: "Título, fotos organizáveis, categoria, gravidade e acompanhamento."
+    evidencia: "app/views/shared/alerts/_form.html.erb"
+  - nome: "Mural e interações"
     estado: implementado
-    origem: base
-    nota: "Autenticação nativa do Rails 8."
-    evidencia: "app/controllers/concerns/authentication.rb"
-  - nome: "Admin de usuários e perfis"
+    origem: sgu
+    nota: "Um post por ocorrência; comentários, respostas, curtidas, salvos e acompanhamento."
+    evidencia: "app/controllers/publications_controller.rb"
+  - nome: "Verificação e moderação"
     estado: implementado
-    origem: base
-    nota: "Administrador e usuário comum (Pundit)."
-    evidencia: "app/policies/user_policy.rb"
-  - nome: "Identidade visual do SGU"
-    estado: parcial
     origem: sgu
-    nota: "Área administrativa ainda com a marca da base."
-    evidencia: "app/views/layouts/admin/_sidebar.html.erb"
-  - nome: "Alertas públicos"
-    estado: parcial
+    nota: "Selo administrado; revisão externa com motivo de recusa."
+    evidencia: "app/services/publications/sync_occurrence.rb"
+  - nome: "Localização flexível"
+    estado: implementado
     origem: sgu
-    nota: "Só a vitrine visual, sem dados reais."
-    evidencia: "app/views/home/index.html.erb"
-  - nome: "Registro de ocorrência"
-    estado: parcial
-    origem: sgu
-    nota: "Modelo, migrações, regras e testes no backend (card #6); sem tela de registro."
-    evidencia: "app/models/alert.rb"
-  - nome: "Feed público real"
-    estado: planejado
-    origem: sgu
-    nota: "Base editorial revisada (Publication) no backend; sem tela nem conteúdo real."
-    evidencia: "app/models/publication.rb"
-  - nome: "Mapa e localização"
-    estado: planejado
-    origem: sgu
-    nota: "Mapa de ocorrências separado do rastreamento em tempo real; depende das regras de localização e acesso."
-    evidencia:
-  - nome: "Emergência / pânico"
-    estado: planejado
-    origem: sgu
-    nota: "Registro idempotente no backend (card #6); sem tela e sem equipe de recebimento definida (#5)."
-    evidencia: "app/services/alerts/create_panic.rb"
+    nota: "GPS, ponto no mapa ou descrição; catálogo opcional. Sem rastreamento contínuo."
+    evidencia: "app/javascript/controllers/geolocation_controller.js"
   - nome: "Cadastro institucional"
-    estado: aguardando_decisao
+    estado: parcial
     origem: sgu
-    nota: "Verificação do vínculo sem regra definida."
-    evidencia:
+    nota: "@ufrpe.br, perfis e revisão; liberação automática em desenvolvimento, sem confirmação de e-mail."
+    evidencia: "app/controllers/registrations_controller.rb"
+  - nome: "Pânico"
+    estado: parcial
+    origem: sgu
+    nota: "Registro restrito e idempotente; operação e equipe responsável a validar."
+    evidencia: "app/services/alerts/create_panic.rb"
+  - nome: "Catálogo oficial e homologação"
+    estado: aguardando_evidencia
+    origem: sgu
+    nota: "Cadastrar locais oficiais e validar jornadas, requisitos, acessibilidade e deploy."
+    evidencia: "config/presentation/planejamento.yml"
 
-# Itens herdados que não pertencem ao domínio do SGU.
 observacoes:
-  - "Os testes validam o template e as regras do backend do SGU; não comprovam jornadas completas com telas."
-  - "O card #6 entrega backend e DER, sem telas do produto: não conta como funcionalidade completa."
+  - "Marcos sem link de commit ainda não estão na main. Não houve deploy; testes automatizados não substituem o aceite da equipe."

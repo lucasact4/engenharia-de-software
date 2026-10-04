@@ -62,6 +62,7 @@ pt-br:
         reason: "Motivo"
         details: "Detalhes"
       user:
+        admin: "Administrador"
         display_name: "Nome de exibição"
         username: "Nome de usuário"
         bio: "Apresentação"
@@ -136,6 +137,7 @@ pt-br:
         occurrence: { label: "Ocorrência", description: "Situação no campus com título, descrição, categoria e localização." }
         panic: { label: "Pânico", description: "Pedido de ajuda com envio simplificado. O canal ainda não tem equipe de monitoramento definida." }
       location_source:
+        map: { label: "Ponto no mapa", description: "Coordenadas escolhidas manualmente no mapa; não são captura GPS." }
         gps: { label: "GPS do aparelho", description: "Coordenadas informadas pelo aparelho no momento do envio. Não comprovam o local." }
         manual: { label: "Escolha de prédio ou área", description: "Local selecionado no catálogo do campus." }
         unavailable: { label: "Localização indisponível", description: "Aceito somente em pedidos de pânico." }

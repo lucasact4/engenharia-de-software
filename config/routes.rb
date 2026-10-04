@@ -32,7 +32,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # Mural editorial (público para conteúdo externo) e interações.
+  # Mural de ocorrências e comunicados, com interações compartilhadas.
   resources :publications, path: "mural", only: %i[index show] do
     { like: "curtida", bookmark: "salvo", subscription: "acompanhamento" }.each do |kind, path|
       resource kind, only: %i[create destroy], controller: "publication_interactions", path: path,
@@ -47,6 +47,8 @@ Rails.application.routes.draw do
     resources :content_reports, only: %i[new create], path: "denuncia"
   end
 
+  get "mural/:publication_id/fotos/:id", to: "publication_media#show", as: :publication_media
+
   get "salvos", to: "saved_publications#index", as: :saved_publications
   get "acompanhamentos", to: "follow_ups#index", as: :follow_ups
   delete "acompanhamentos/indisponiveis", to: "follow_ups#prune", as: :prune_follow_ups
@@ -56,6 +58,7 @@ Rails.application.routes.draw do
   end
 
   resource :profile, path: "perfil", only: %i[show edit update]
+  get "pessoas/:id/foto", to: "profile_photos#show", as: :profile_photo
   resources :people, path: "pessoas", controller: "public_profiles", only: %i[index show] do
     get :followers, on: :member, path: "seguidores"
     resource :follow, only: %i[create destroy], controller: "follows", path: "seguir"
@@ -63,6 +66,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users do
+      patch :verification, on: :member, path: "verificacao"
       resources :roles, only: %i[create destroy], controller: "user_roles", param: :code
     end
     resources :registrations, path: "cadastros", only: %i[index show] do

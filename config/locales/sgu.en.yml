@@ -57,6 +57,7 @@ en:
         occurrence: { label: "Occurrence", description: "Campus situation with title, description, category and location." }
         panic: { label: "Panic", description: "Simplified help request. No monitoring team has been defined yet." }
       location_source:
+        map: { label: "Map point", description: "Coordinates selected on a map, not a GPS capture." }
         gps: { label: "Device GPS", description: "Coordinates reported by the device. They do not prove the location." }
         manual: { label: "Building or area", description: "Location selected from the campus catalog." }
         unavailable: { label: "Location unavailable", description: "Accepted for panic requests only." }

@@ -12,7 +12,7 @@
 itens:
   - id: modelo-conceitual
     titulo: "Modelo conceitual"
-    descricao: "Pessoa usuária, papéis, alerta (ocorrência ou pânico), categoria, local, foto, publicação revisada, comentário, denúncia, interações e auditoria, com multiplicidades. Premissas provisórias a validar."
+    descricao: "Pessoa usuária, papéis, alerta (ocorrência ou pânico), categoria, local, foto, publicação interna ou externa, comentário, denúncia, interações e auditoria, com multiplicidades. Premissas provisórias a validar."
     exigido_em: "2ª entrega"
     card:
       numero: 6
@@ -22,9 +22,9 @@ itens:
     estado: parcial
     imagem:
     renderizacao: html_css
-    versao: "2"
+    versao: "3"
     origem: "Card #6 — derivado das migrações e do db/schema.rb"
-    data: 2026-10-02
+    data: 2026-10-03
     # Três situações independentes. Não marque a revisão como concluída sem registro da equipe.
     producao:          # diagrama tecnicamente produzido
       estado: implementado
@@ -36,7 +36,7 @@ itens:
       nota: "Registrar quem revisou, quando e o que mudou."
     premissas:         # regras de requisitos que o modelo assume
       estado: aguardando_decisao
-      nota: "Foto opcional, visibilidade restrita (autor + gestão) e acesso de coordenação/segurança dependem do card #13."
+      nota: "Ocorrências internas têm post; pânico e dados operacionais são restritos. Foto opcional e regras de acesso ainda precisam do aceite do #13."
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."
