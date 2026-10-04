@@ -7,8 +7,6 @@
     <% end %>
     <% if @publication %>
       <%= link_to admin_publication_path(@publication), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("newspaper") %> Publicação vinculada<% end %>
-    <% elsif @publishable %>
-      <%= link_to new_admin_publication_path(alert_id: @alert.id), class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("megaphone") %> Preparar publicação<% end %>
     <% end %>
   <% end %>
 
