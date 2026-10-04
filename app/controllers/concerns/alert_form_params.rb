@@ -1,13 +1,10 @@
-# Parâmetros do formulário de ocorrência. Cada modo de localização aceita só os seus campos:
-# GPS não leva local do catálogo e seleção manual não leva coordenadas, mesmo que campos
-# ocultos tenham ficado preenchidos ao alternar de modo. Autoria, status, prioridade e demais
-# campos internos nunca são lidos daqui.
+# Campos públicos do relato; catálogo opcional pode complementar GPS ou ponto no mapa.
 module AlertFormParams
   extend ActiveSupport::Concern
 
   OCCURRENCE_FIELDS = %i[
     title description category_id category_other_description reported_severity
-    location_source location_id latitude longitude location_accuracy_meters location_captured_at
+    location_source location_id location_description latitude longitude location_accuracy_meters location_captured_at
   ].freeze
   GPS_FIELDS = %i[latitude longitude location_accuracy_meters location_captured_at].freeze
   CORRECTION_FIELDS = %i[title description category_id category_other_description].freeze
@@ -37,7 +34,9 @@ module AlertFormParams
     def normalize_location(attributes)
       case attributes[:location_source]
       when "manual" then GPS_FIELDS.each { |field| attributes[field] = nil }
-      when "gps" then attributes[:location_id] = nil
+      when "map"
+        attributes[:location_accuracy_meters] = nil
+        attributes[:location_captured_at] = nil
       end
     end
 
@@ -51,6 +50,14 @@ module AlertFormParams
 
     def uploaded_photos
       Array(alert_form_params[:photos]).select { |file| file.respond_to?(:read) }
+    end
+
+    def submitted_photo_order
+      alert_form_params[:photo_order]
+    end
+
+    def removed_photo_ids
+      alert_form_params[:removed_photo_ids]
     end
 
     def lock_version_param
