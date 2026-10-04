@@ -1,0 +1,23 @@
+<% post = @publication %>
+<% content_for :title, "Analisar publicação" %>
+<div class="mx-auto max-w-5xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_publications_path, back_label: "Publicações", title: "Analisar publicação", description: "Conteúdo criado pelo estudante. A decisão altera somente sua divulgação pública." %>
+  <% if post.errors.any? %><div class="rounded-xl bg-negative-soft p-4 text-sm text-negative-ink" role="alert"><%= post.errors.full_messages.to_sentence %></div><% end %>
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+    <%= render "publications/card", card: PublicationProjection.collection([post], viewer: Current.user).first, full: true, preview: true %>
+    <aside class="space-y-4">
+      <% if post.review_pending? && policy(post).review? %>
+        <section class="sgu-card p-5"><h2 class="sgu-section-title">Divulgação pública</h2>
+          <%= form_with url: review_admin_publication_path(post), method: :patch, id: "review_form", class: "mt-4 space-y-3" do %>
+            <%= hidden_field_tag :reviewed_content_version, post.content_version %><%= hidden_field_tag :lock_version, post.lock_version %>
+            <%= label_tag :reason, "Motivo para não aprovar", class: "sgu-label" %><%= text_area_tag :reason, nil, rows: 3, maxlength: 1000, class: "sgu-input" %>
+            <button type="submit" name="decision" value="approve" class="sgu-btn sgu-btn-primary w-full">Aprovar</button>
+            <button type="submit" name="decision" value="reject" class="sgu-btn sgu-btn-danger-outline w-full">Não aprovar</button>
+          <% end %>
+        </section>
+      <% else %><div class="sgu-card p-5"><%= enum_badge("publication.review_status", post.review_status, PortalHelper::REVIEW_BADGES) %><p class="mt-3 text-sm text-muted"><%= post.public_external? ? 'Publicação pública.' : 'Sem pedido público aguardando decisão.' %></p><% if post.review_reason.present? %><p class="mt-2 text-sm">Motivo: <%= post.review_reason %></p><% end %></div><% end %>
+      <%= link_to "Abrir atendimento da ocorrência", admin_alert_path(post.alert_id), class: "sgu-link text-sm" %>
+      <% if post.published? %><details class="sgu-card p-4"><summary class="cursor-pointer text-sm text-muted">Moderação</summary><%= form_with url: withdraw_admin_publication_path(post), method: :patch, class: "mt-3 space-y-3" do %><%= label_tag :withdraw_reason, "Motivo da retirada", class: "sgu-label" %><%= text_area_tag :reason, nil, id: "withdraw_reason", required: true, rows: 2, class: "sgu-input" %><button type="submit" class="sgu-btn sgu-btn-danger-outline">Retirar do mural</button><% end %></details><% end %>
+    </aside>
+  </div>
+</div>

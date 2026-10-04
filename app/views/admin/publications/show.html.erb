@@ -1,3 +1,6 @@
+<% if @publication.occurrence? %>
+  <%= render "occurrence_review" %>
+<% else %>
 <% content_for :title, @publication.title %>
 <% p = @publication %>
 <div class="space-y-5 py-2">
@@ -155,3 +158,5 @@
     </aside>
   </div>
 </div>
+
+<% end %>

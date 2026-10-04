@@ -7,31 +7,7 @@
     </div>
   <% end %>
 
-  <% if creating %>
-    <fieldset class="sgu-card space-y-4 p-5 sm:p-6">
-      <legend class="sr-only">Tipo e fonte</legend>
-      <h2 class="sgu-section-title">Tipo e fonte</h2>
-      <p class="text-sm text-muted">Tipo e fonte não mudam depois de criados. Avisos e notícias não têm alerta de origem.</p>
-      <div class="grid gap-2 md:grid-cols-3">
-        <% Publication.kinds.values.each do |kind| %>
-          <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line bg-surface p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
-            <%= f.radio_button :kind, kind, class: "mt-1 accent-brand-solid" %>
-            <span><span class="block font-semibold"><%= enum_label("publication.kind", kind) %></span><span class="block text-xs text-muted"><%= enum_description("publication.kind", kind) %></span></span>
-          </label>
-        <% end %>
-      </div>
-      <%= field_errors(@publication, :kind) %>
-      <div>
-        <%= f.label :alert_id, "Ocorrência de origem (só para “Ocorrência divulgada”)", class: "sgu-label" %>
-        <%= f.select :alert_id, options_for_select([ [ "Nenhuma", "" ] ] + (@sources.to_a | [ @source ].compact).map { |a| [ "#{a.protocol} · #{a.title.to_s.truncate(70)} (pediu: #{enum_label('alert.requested_visibility', a.requested_visibility)})", a.id ] }, @source&.id), {}, class: "sgu-input" %>
-        <p class="sgu-hint">Lista só ocorrências sem publicação, sem bloqueio editorial e que pediram divulgação interna ou externa (até <%= PublicationSourcesQuery::LIMIT %> mais recentes). Escreva um texto editorial próprio: não copie a descrição do autor, fotos ou localização precisa.</p>
-        <%= field_errors(@publication, :alert) %>
-      </div>
-    </fieldset>
-  <% elsif @publication.alert %>
-    <p class="rounded-xl bg-surface-muted p-4 text-sm text-ink">Fonte: <%= link_to @publication.alert.protocol, admin_alert_path(@publication.alert), class: "sgu-link font-mono" %> (imutável).</p>
-  <% end %>
-
+  <% if creating %><div class="sgu-card p-5"><%= f.label :kind, "Tipo", class: "sgu-label" %><%= f.select :kind, [["Notícia", "news"], ["Aviso", "notice"]], {}, class: "sgu-input" %></div><% end %>
   <fieldset class="sgu-card space-y-4 p-5 sm:p-6">
     <legend class="sr-only">Conteúdo</legend>
     <h2 class="sgu-section-title">Conteúdo</h2>
@@ -48,6 +24,8 @@
       <%= field_errors(@publication, :body) %>
     </div>
   </fieldset>
+
+  <div class="sgu-card p-5"><%= f.label :photos, "Fotos (opcional)", class: "sgu-label" %><%= f.file_field :photos, multiple: true, include_hidden: false, accept: "image/png,image/jpeg", class: "sgu-input" %><%= field_errors(@publication, :photos) %></div>
 
   <fieldset class="sgu-card grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
     <legend class="sr-only">Audiência e validade</legend>
