@@ -31,12 +31,21 @@ module Publications
       apply_lock_version(@publication, @lock_version)
       @publication.assign_attributes(
         review_status: @decision == "approve" ? "approved" : "rejected",
+        approval_method: @decision == "approve" ? "administrator" : nil,
         reviewed_content_version: @reviewed_content_version,
         reviewed_by: actor,
         reviewed_at: Time.current,
         review_reason: @reason
       )
       @publication.source_changed_at = nil if @decision == "approve"
+      if @publication.occurrence?
+        @publication.assign_attributes(visibility: @decision == "approve" ? "public_external" : "internal",
+                                      state: "published", published_at: @publication.published_at || Time.current,
+                                      withdrawn_at: nil, moderation_blocked: false)
+        if @decision == "reject" && @publication.moderation_blocked_in_database
+          @publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current, moderation_blocked: true)
+        end
+      end
       changes = @publication.changes
 
       Publication.transaction do

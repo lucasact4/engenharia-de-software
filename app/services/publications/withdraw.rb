@@ -23,7 +23,7 @@ module Publications
       require_reason!(@reason, @publication)
       return @publication if @publication.withdrawn?
 
-      @publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current)
+      @publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current, moderation_blocked: @source_alert.nil?)
       changes = @publication.changes
       Publication.transaction do
         @publication.save!
