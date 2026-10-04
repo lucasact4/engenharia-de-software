@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 2 255.5 110" role="img" aria-labelledby="titulo">
+  <title id="titulo">SGU</title>
+  <g id="simbolo-padrao">
+  <defs><clipPath id="escudo-padrao"><path d="M14 6H86A10 10 0 0 1 96 16V54C96 81 77 98 50 108C23 98 4 81 4 54V16A10 10 0 0 1 14 6Z"/></clipPath></defs>
+  <path d="M14 6H86A10 10 0 0 1 96 16V54C96 81 77 98 50 108C23 98 4 81 4 54V16A10 10 0 0 1 14 6Z" fill="#153C36"/>
+  <path d="M4 79C18 71 34 67 50 67S82 71 96 79V54 120H4Z" fill="#226A5C" clip-path="url(#escudo-padrao)"/>
+  <path d="M50 86V50" fill="none" stroke="#F4F7F5" stroke-width="7" stroke-linecap="round"/>
+  <path d="M50 66C46 54 37 47 25 46C27 58 36 66 50 66Z" fill="#F4F7F5"/>
+  <path d="M50 56C55 42 66 34 80 33C78 48 66 56 50 56Z" fill="#F4F7F5"/>
+  <circle cx="50" cy="33" r="6.5" fill="#F2BD57"/>
+</g><g id="letras-sgu-padrao" transform="translate(124 32.0) scale(0.5)" fill="none" stroke="#153C36" stroke-width="18" stroke-linejoin="miter"><path d="M57 9H32.5A20.5 20.5 0 0 0 32.5 50A20.5 20.5 0 0 1 32.5 91H5"/><path d="M155.21 21.9A42 42 0 1 0 166 50H130"/><path d="M196 0V65A27 27 0 0 0 250 65V0"/></g>
+</svg>
