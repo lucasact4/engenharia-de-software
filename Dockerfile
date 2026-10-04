@@ -48,7 +48,7 @@ FROM base
 
 # Required at runtime by the Psych YAML extension compiled in the build stage.
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y libyaml-0-2 && \
+    apt-get install --no-install-recommends -y libyaml-0-2 libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

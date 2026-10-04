@@ -10,7 +10,7 @@ USER root
 RUN set -eux \
 && apt-get update \
 && apt-get install -y --no-install-recommends \
-curl unzip ca-certificates \
+curl unzip ca-certificates libvips \
 build-essential libpq-dev libnotify-bin xosd-bin nano wget \
 libnss3 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libasound2 \
 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 xdg-utils\
