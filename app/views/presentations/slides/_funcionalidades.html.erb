@@ -1,74 +1,111 @@
 <% f = presentation.funcionalidades %>
+<% repo_shot = f[:repositorio] || {} %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "repositório e funcionalidades",
-      title: "Repositório organizado e duas jornadas completas",
-      lead: "A escolha é da equipe. Landing e login existem, mas não foram adotados automaticamente como as duas funcionalidades." %>
+      title: "Duas jornadas completas, com o código no GitHub" %>
 
-<div class="apr-features apr-fit">
-  <%= presentation_item slide, "repositorio", :section, class: "apr-feature-repository", aria: { label: "GitHub e estrutura do código" } do %>
-    <% repo = presentation.repository_overview %>
-    <div>
-      <h3 class="apr-mgmt__title">GitHub criado e estruturado</h3>
-      <p>Models, controllers, serviços, policies, views, migrações e testes versionados.
-        <%= repo[:folders].find { |folder| folder[:path] == "spec" }[:count] %> arquivos de teste;
-        CI: <%= repo[:ci_jobs].join(" · ") %>.</p>
-    </div>
-    <%= presentation_link("Abrir GitHub", presentation.entrega.dig(:links, :github), class: "apr-btn apr-btn--ghost") %>
-  <% end %>
-  <%= presentation_item slide, "criterios", :aside, class: "apr-criteria", aria: { labelledby: "#{slide.dom_id}-criterios" } do %>
-    <h3 id="<%= slide.dom_id %>-criterios" class="apr-criteria__title">O que conta como “completa”</h3>
-    <ul class="apr-criteria__list" role="list">
-      <% f[:criterios].each do |criterio| %>
-        <li><%= criterio %></li>
-      <% end %>
-    </ul>
-  <% end %>
-
+<div class="apr-journeys">
   <% f[:itens].each_with_index do |item, index| %>
     <% number = index + 1 %>
+    <% dialog_id = "#{slide.dom_id}-evidencias-#{number}" %>
     <% if item[:nome].blank? %>
-      <%= presentation_item slide, item[:id], class: "apr-feature apr-feature--empty" do %>
-        <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
+      <%= presentation_item slide, item[:id], class: "apr-journey apr-journey--empty" do %>
         <%= render "presentations/shared/pending",
               title: "Funcionalidade #{number}",
               state: item[:estado],
               text: "Ainda não escolhida pela equipe.",
-              needs: [ "Requisitos atendidos", "Jornada ponta a ponta", "Código e testes", "Captura ou demonstração" ],
               file: "funcionalidades.yml" %>
       <% end %>
     <% else %>
-      <%= presentation_item slide, item[:id], :article, class: "apr-feature", aria: { labelledby: "#{slide.dom_id}-f#{number}" } do %>
-        <p class="apr-feature__num" aria-hidden="true"><%= number %></p>
-        <h3 id="<%= slide.dom_id %>-f<%= number %>" class="apr-feature__name"><%= item[:nome] %></h3>
-        <%= presentation_state(item[:estado]) %>
-        <% if item[:requisitos].present? %>
-          <p class="apr-feature__reqs"><% item[:requisitos].each do |req| %><span class="apr-tag"><%= req %></span> <% end %></p>
-        <% end %>
-        <% if item[:jornada].present? %>
-          <ol class="apr-feature__journey" role="list" aria-label="Jornada">
-            <% item[:jornada].each do |passo| %><li><%= passo %></li><% end %>
+      <%= presentation_item slide, item[:id], :article, class: "apr-journey", aria: { labelledby: "#{slide.dom_id}-f#{number}" } do %>
+        <p class="apr-journey__num">Funcionalidade <%= number %></p>
+        <h3 id="<%= slide.dom_id %>-f<%= number %>" class="apr-journey__name"><%= item[:nome] %></h3>
+        <p class="apr-journey__summary"><%= item[:resumo] %></p>
+        <% if item[:fluxo].present? %>
+          <ol class="apr-journey__flow" role="list" aria-label="Etapas da jornada">
+            <% item[:fluxo].each do |step| %><li><%= step %></li><% end %>
           </ol>
         <% end %>
-        <% if item[:captura].present? %>
-          <%= render "presentations/shared/figure", image: item[:captura], alt: "Captura da funcionalidade #{item[:nome]}", caption: item[:nome] %>
-        <% end %>
-        <dl class="apr-feature__evidence">
-          <% if item[:codigo].present? %>
-            <div><dt>Código</dt><dd><% item[:codigo].each do |path| %><%= presentation_file_path(path) %> <% end %></dd></div>
+        <div class="apr-journey__foot">
+          <p class="apr-journey__status">
+            <%= presentation_state(item[:estado]) %>
+            <span><%= item[:validacao].presence || "Validação da equipe pendente." %></span>
+          </p>
+          <% if item[:evidencias].present? %>
+            <%= render "presentations/shared/dialog_button", target: dialog_id, label: "Ver implementação", icon: "code" %>
           <% end %>
-          <div>
-            <dt>Testes</dt>
-            <dd>
-              <% if item[:testes].present? %>
-                <% item[:testes].each do |path| %><%= presentation_file_path(path) %> <% end %>
-              <% else %>
-                <%= presentation_state(:aguardando_evidencia) %>
-              <% end %>
-            </dd>
-          </div>
-          <div><dt>Validação</dt><dd><%= item[:validacao].presence || presentation_state(:aguardando_evidencia) %></dd></div>
-        </dl>
+        </div>
+        <% if item[:evidencias].present? %>
+          <p class="apr-print-only apr-journey__print">
+            <strong>Código:</strong> <%= item[:evidencias].map { |evidence| File.basename(evidence[:caminho]) }.join(" · ") %>
+            <br><strong>Testes:</strong> <%= Array(item[:testes]).map { |path| File.basename(path) }.join(" · ") %>
+          </p>
+          <%= render "presentations/shared/evidence_dialog", presentation: presentation, item: item, number: number, id: dialog_id %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= presentation_group slide, %w[repositorio criterios], class: "apr-repo-col" do %>
+    <%= presentation_item slide, "repositorio", :aside, class: "apr-repo-shot", aria: { label: "Repositório no GitHub" } do %>
+      <% if presentation_asset?(repo_shot[:captura]) %>
+        <%= render "presentations/shared/figure",
+              image: repo_shot[:captura], alt: repo_shot[:alt].presence || "Página do repositório no GitHub",
+              caption: repo_shot[:legenda].presence || "Repositório no GitHub", modifier: "apr-figure--github" %>
+      <% else %>
+        <div class="apr-shot-slot">
+          <%= render "presentations/shared/icon", name: "image" %>
+          <p class="apr-shot-slot__title">Captura do repositório</p>
+          <p class="apr-shot-slot__text"><%= repo_shot[:captura].present? ? "Arquivo configurado não encontrado." : "Será anexada pela equipe." %></p>
+        </div>
+        <%= presentation_update_note("funcionalidades.yml", "repositorio.captura (imagem em app/assets/images/presentation/github/).") %>
+      <% end %>
+      <p class="apr-repo-shot__actions">
+        <%= presentation_link("Abrir repositório", presentation.entrega.dig(:links, :github), class: "apr-btn apr-btn--primary") %>
+        <%= render "presentations/shared/dialog_button", target: "#{slide.dom_id}-repositorio", label: "Estrutura", icon: "folder" %>
+      </p>
+      <p class="apr-print-only apr-repo-shot__url"><%= presentation.entrega.dig(:links, :github) %></p>
+      <% repo = presentation.repository_overview %>
+      <%= render "presentations/shared/dialog", id: "#{slide.dom_id}-repositorio",
+            kicker: "GitHub criado e estruturado", title: "Estrutura do repositório" do %>
+        <p class="apr-sheet__lead">Código-fonte, migrações e testes versionados no GitHub. Contagens lidas do próprio repositório.</p>
+        <ul class="apr-sheet__facts" role="list">
+          <% repo[:folders].each do |folder| %>
+            <li><code class="apr-code"><%= folder[:path] %></code> <span><%= folder[:count] %> <%= folder[:label] %></span></li>
+          <% end %>
+        </ul>
+        <% if repo[:ci_jobs].any? %>
+          <p class="apr-sheet__note"><strong>Integração contínua:</strong> <%= repo[:ci_jobs].join(" · ") %>.</p>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= presentation_item slide, "criterios", class: "apr-criteria-btn" do %>
+      <%= render "presentations/shared/dialog_button", target: "#{slide.dom_id}-criterios", label: "Critérios de “completa”", icon: "check" %>
+      <%= render "presentations/shared/dialog", id: "#{slide.dom_id}-criterios",
+            kicker: "Funcionalidades completas", title: "O que conta como “completa”" do %>
+        <ul class="apr-criteria__list" role="list">
+          <% f[:criterios].each do |criterio| %><li><%= criterio %></li><% end %>
+        </ul>
+        <p class="apr-sheet__note">Os testes comprovam a implementação; o aceite final continua sendo da equipe.</p>
       <% end %>
     <% end %>
   <% end %>
 </div>
+
+<%= presentation_item slide, "extras", :section, class: "apr-extras", aria: { labelledby: "#{slide.dom_id}-extras" } do %>
+  <h3 id="<%= slide.dom_id %>-extras" class="apr-extras__label">Também no sistema</h3>
+  <ul class="apr-extras__list" role="list">
+    <% Array(f[:extras]).each_with_index do |extra, index| %>
+      <li class="apr-extra">
+        <span class="apr-extra__name"><%= extra[:nome] %></span>
+        <span class="apr-extra__meta">
+          <%= presentation_state(extra[:estado], short: true) %>
+          <%= render "presentations/shared/info", id: "#{slide.dom_id}-extra-#{index}",
+                label: "Sobre: #{extra[:nome]}", title: extra[:nome], text: extra[:nota],
+                print_text: (extra[:nota] if extra[:estado] != "implementado") %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+<%= presentation_update_note("funcionalidades.yml", "jornadas, evidências, captura do repositório e extras.") %>

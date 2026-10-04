@@ -1,25 +1,16 @@
 <% content_for :title, "Painel - SGU UFRPE" %>
 <% user = Current.user %>
-<section class="overflow-hidden rounded-3xl bg-brand-solid p-6 text-on-brand sm:p-8">
-  <p class="text-xs font-bold uppercase tracking-[0.16em] text-accent">Seu painel</p>
-  <h1 class="mt-2 text-2xl font-bold sm:text-3xl">Olá, <%= user.display_name.presence || user.email_address.split("@").first %>.</h1>
-  <p class="mt-2 max-w-2xl text-emerald-50/80">Registre o que precisa de atenção no campus, acompanhe o atendimento e leia os comunicados revisados.</p>
-  <div class="mt-6 grid gap-3 sm:grid-cols-3">
-    <%= link_to new_alert_path, class: "flex items-center gap-3 rounded-2xl bg-surface/10 p-4 !text-on-brand transition hover:bg-surface/15 sgu-focus-ring" do %>
-      <span class="grid size-10 place-items-center rounded-xl bg-accent text-on-accent"><%= sgu_icon("map-pin", "size-5") %></span>
-      <span><span class="block font-bold">Registrar ocorrência</span><span class="block text-xs text-emerald-50/75">Com categoria, local e fotos opcionais</span></span>
-    <% end %>
-    <%= link_to alerts_path, class: "flex items-center gap-3 rounded-2xl bg-surface/10 p-4 !text-on-brand transition hover:bg-surface/15 sgu-focus-ring" do %>
-      <span class="grid size-10 place-items-center rounded-xl bg-surface text-brand-link"><%= sgu_icon("inbox", "size-5") %></span>
-      <span><span class="block font-bold">Meus alertas</span><span class="block text-xs text-emerald-50/75">Protocolos e situação do atendimento</span></span>
-    <% end %>
-    <%= link_to new_panic_path, class: "flex items-center gap-3 rounded-2xl bg-negative-solid p-4 !text-on-brand transition hover:bg-negative-hover sgu-focus-ring" do %>
-      <span class="grid size-10 place-items-center rounded-xl bg-surface text-negative-ink"><%= sgu_icon("siren", "size-5") %></span>
-      <span><span class="block font-bold">Pânico</span><span class="block text-xs text-red-50/85">Pedido de ajuda rápido e restrito</span></span>
-    <% end %>
+<div class="social-feed">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="sgu-page-title">Seu campus</h1>
+    <%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar ocorrência<% end %>
   </div>
-</section>
-
+  <nav class="mt-4 flex flex-wrap gap-2" aria-label="Atalhos do painel">
+    <%= link_to "Meus alertas", alerts_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to "Salvos", saved_publications_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to "Meu perfil", profile_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger" do %><%= sgu_icon("siren") %> Pânico<% end %>
+  </nav>
 <% if @queue_counts %>
   <section class="mt-6 sgu-card p-5 sm:p-6" aria-labelledby="panel_queue">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -38,44 +29,17 @@
   </section>
 <% end %>
 
-<div class="mt-6 grid gap-6 lg:grid-cols-2">
-  <section class="sgu-card p-5 sm:p-6" aria-labelledby="panel_recent">
-    <div class="flex items-center justify-between gap-2">
-      <h2 id="panel_recent" class="sgu-section-title">Meus registros recentes</h2>
-      <%= link_to "Ver todos", alerts_path, class: "sgu-link text-sm" %>
-    </div>
-    <% if @recent_alerts.any? %>
-      <ul class="mt-4 space-y-3">
-        <% @recent_alerts.each do |alert| %>
-          <%= render "shared/alerts/list_item", alert: alert, path: alert_path(alert) %>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="mt-4 text-sm text-muted">Nenhum registro ainda. Quando você registrar uma ocorrência, o protocolo e a situação aparecem aqui.</p>
-    <% end %>
-    <% unless @locations_available %>
-      <p class="mt-4 rounded-xl bg-warning-soft p-3 text-xs text-warning-ink">Os locais oficiais do campus ainda não foram cadastrados. Por enquanto, a localização das ocorrências é informada pelo GPS do aparelho.</p>
-    <% end %>
-  </section>
-
-  <section class="sgu-card p-5 sm:p-6" aria-labelledby="panel_feed">
-    <div class="flex items-center justify-between gap-2">
-      <h2 id="panel_feed" class="sgu-section-title">No mural</h2>
-      <%= link_to "Abrir mural", publications_path, class: "sgu-link text-sm" %>
-    </div>
-    <% if @feed.any? %>
-      <ul class="mt-4 space-y-3">
-        <% @feed.each do |card| %>
-          <li>
-            <%= link_to publication_path(card[:id]), class: "block rounded-xl border border-line p-4 !text-ink hover:border-brand-link" do %>
-              <p class="text-xs font-semibold text-brand-link"><%= card[:kind_label] %> · <%= sgu_time(card[:published_at], format: "%d/%m/%Y") %></p>
-              <p class="mt-1 font-bold"><%= card[:title] %></p>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="mt-4 text-sm text-muted">Ainda não há comunicados publicados.</p>
-    <% end %>
-  </section>
+<section class="mt-6 space-y-5" aria-labelledby="panel_feed">
+  <div class="flex items-center justify-between gap-2">
+    <h2 id="panel_feed" class="sgu-section-title">No mural</h2>
+    <%= link_to "Abrir mural", publications_path, class: "sgu-link text-sm" %>
+  </div>
+  <% @feed.each do |card| %><%= render "publications/card", card: card %><% end %>
+  <% if @feed.empty? %><p class="sgu-empty">Ainda não há publicações. Compartilhe algo do campus.</p><% end %>
+</section>
+<details class="sgu-card mt-6 p-4">
+  <summary class="cursor-pointer font-semibold">Meus registros recentes</summary>
+  <ul class="mt-4 space-y-3"><% @recent_alerts.each do |alert| %><%= render "shared/alerts/list_item", alert: alert, path: alert_path(alert) %><% end %></ul>
+  <%= link_to "Ver todos", alerts_path, class: "sgu-link mt-3 inline-block text-sm" %>
+</details>
 </div>

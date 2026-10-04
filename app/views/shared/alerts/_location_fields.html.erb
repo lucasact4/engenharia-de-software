@@ -1,60 +1,38 @@
-<%# Localização da ocorrência: GPS do aparelho (pedido só após clique) ou local do catálogo.
-    As coordenadas de referência de um local nunca são copiadas para os campos de GPS. %>
-<% locations = options.locations %>
-<fieldset class="sgu-card space-y-4 p-5 sm:p-6" data-controller="geolocation"
-          data-geolocation-has-locations-value="<%= locations.any? %>">
-  <legend class="sr-only">Localização</legend>
-  <h2 class="sgu-section-title">Localização</h2>
-  <p class="text-sm text-muted">Ocorrências comuns precisam de localização: pelo GPS do aparelho ou escolhendo um local cadastrado. Coordenadas indicam onde o aparelho estava, não comprovam o local.</p>
-
-  <div class="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Como informar a localização">
-    <% options.location_sources.each do |option| %>
-      <label class="flex cursor-pointer items-start gap-2 rounded-xl border border-line bg-surface p-3 text-sm has-[:checked]:border-brand-link has-[:checked]:bg-positive-soft">
-        <%= f.radio_button :location_source, option.value, id: "#{form_id}_location_source_#{option.value}", class: "mt-1 accent-brand-solid",
-              data: { geolocation_target: "source", action: "geolocation#switch" } %>
-        <span><span class="block font-semibold text-ink"><%= option.label %></span><span class="block text-xs text-muted"><%= option.description %></span></span>
-      </label>
+<section class="composer-section" role="group" aria-labelledby="occurrence_location_label" data-controller="geolocation">
+  <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("map-pin", "size-5") %></span><h2 id="occurrence_location_label">Localização</h2><%= render "shared/tooltip", label: "Como informar a localização", items: [
+    {title: "Local do campus · opcional", text: "Selecione um prédio, rua ou área quando estiver cadastrado. Pode complementar o GPS ou o mapa."},
+    {title: "GPS", text: "Captura a posição atual somente após seu clique e autorização. Precisão e horário são registrados."},
+    {title: "Mapa", text: "Clique no local, arraste o marcador ou use as coordenadas de um link completo do Google Maps. Isso não é uma captura GPS."},
+    {title: "Privacidade", text: "Coordenadas e precisão são restritas ao atendimento; não aparecem no mural público."}
+  ] %></div>
+  <div>
+    <%= f.label :location_id, "Local do campus", class: "sgu-label" %>
+    <%= f.select :location_id, options_from_select_options(options.locations, alert.location_id, include_blank: "Nenhum local cadastrado selecionado"), {}, class: "sgu-input", data: {geolocation_target: "catalog", action: "change->geolocation#catalogChanged"} %>
+    <% if options.locations.empty? %><p class="composer-hint">Prédios, ruas e áreas serão cadastrados pela equipe. Use GPS, mapa ou descrição.</p><% end %>
+    <%= field_errors(alert, :location) %>
+  </div>
+  <div class="location-mode-grid">
+    <% [["gps", "Usar GPS", "locate"], ["map", "Marcar no mapa", "map-pin"], ["manual", "Informar o local", "square-pen"]].each do |value, label, icon| %>
+      <label class="location-mode"><%= f.radio_button :location_source, value, data: {geolocation_target: "source", action: "geolocation#switch"} %><span><%= sgu_icon(icon) %><%= label %></span></label>
     <% end %>
   </div>
-  <%= field_errors(alert, :location_source) %>
-  <% %i[base].each do |attribute| %>
-    <%= field_errors(alert, attribute) %>
-  <% end %>
-
-  <div data-geolocation-target="gpsPanel" class="space-y-3 rounded-xl bg-surface-muted p-4">
-    <noscript>
-      <p class="text-sm text-warning-ink">Sem JavaScript não é possível ler o GPS. Escolha um local cadastrado.</p>
-    </noscript>
-    <button type="button" class="sgu-btn sgu-btn-secondary hidden" data-geolocation-target="captureButton" data-action="geolocation#capture">
-      <%= sgu_icon("locate") %><span>Usar minha localização</span>
-    </button>
-    <p class="text-sm text-ink" data-geolocation-target="status" role="status" aria-live="polite">
-      <% if alert.latitude.present? && alert.longitude.present? %>
-        Localização informada: <%= format("%.5f", alert.latitude) %>, <%= format("%.5f", alert.longitude) %>.
-      <% else %>
-        O navegador só pedirá permissão quando você clicar no botão.
-      <% end %>
-    </p>
-    <%= f.hidden_field :latitude, id: "#{form_id}_latitude", data: { geolocation_target: "latitude" } %>
-    <%= f.hidden_field :longitude, id: "#{form_id}_longitude", data: { geolocation_target: "longitude" } %>
-    <%= f.hidden_field :location_accuracy_meters, id: "#{form_id}_accuracy", data: { geolocation_target: "accuracy" } %>
-    <%= f.hidden_field :location_captured_at, value: alert.location_captured_at&.iso8601, id: "#{form_id}_captured_at", data: { geolocation_target: "capturedAt" } %>
-    <% %i[latitude longitude location_accuracy_meters location_captured_at].each do |attribute| %>
-      <%= field_errors(alert, attribute) %>
-    <% end %>
+  <div data-geolocation-target="gpsPanel" class="location-panel">
+    <button type="button" class="sgu-btn sgu-btn-primary" data-geolocation-target="captureButton" data-action="geolocation#capture"><%= sgu_icon("locate") %> Usar minha localização</button>
+    <span class="text-xs text-muted">Permissão solicitada apenas ao clicar.</span>
   </div>
-
-  <div data-geolocation-target="manualPanel" class="space-y-2 rounded-xl bg-surface-muted p-4">
-    <% if locations.any? %>
-      <%= f.label :location_id, "Local do campus", class: "sgu-label", for: "#{form_id}_location_id" %>
-      <%= f.select :location_id, options_from_select_options(locations, alert.location_id, include_blank: "Selecione o local"), {},
-            id: "#{form_id}_location_id", class: "sgu-input", aria: { invalid: invalid?(alert, :location), describedby: "#{form_id}_location_error" } %>
-      <%= field_errors(alert, :location, id: "#{form_id}_location_error") %>
-    <% else %>
-      <p class="text-sm text-ink">
-        <strong>Ainda não há locais cadastrados.</strong> A lista oficial de prédios e áreas da UFRPE está pendente; enquanto isso, use o GPS do aparelho.
-      </p>
-      <%= field_errors(alert, :location) %>
-    <% end %>
+  <div data-geolocation-target="mapPanel" class="space-y-3" hidden>
+    <div class="composer-map" data-geolocation-target="map" aria-label="Mapa para selecionar o local da ocorrência"></div>
+    <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0">Clique para marcar ou arraste o pino.</p><button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="geolocation#useCenter">Usar centro do mapa</button></div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      <div><label for="map_latitude_<%= alert.id || 'new' %>" class="sgu-label">Latitude</label><input id="map_latitude_<%= alert.id || 'new' %>" type="number" step="any" min="-90" max="90" class="sgu-input" value="<%= alert.latitude %>" data-geolocation-target="mapLatitude" data-action="change->geolocation#coordinatesChanged"></div>
+      <div><label for="map_longitude_<%= alert.id || 'new' %>" class="sgu-label">Longitude</label><input id="map_longitude_<%= alert.id || 'new' %>" type="number" step="any" min="-180" max="180" class="sgu-input" value="<%= alert.longitude %>" data-geolocation-target="mapLongitude" data-action="change->geolocation#coordinatesChanged"></div>
+    </div>
+    <div><label for="google_map_url_<%= alert.id || 'new' %>" class="sgu-label">Link do Google Maps <span class="text-muted font-normal">· opcional</span></label><div class="flex flex-col gap-2 sm:flex-row"><input id="google_map_url_<%= alert.id || 'new' %>" type="text" inputmode="url" class="sgu-input" placeholder="https://www.google.com/maps/…" data-geolocation-target="googleUrl"><button type="button" class="sgu-btn sgu-btn-secondary shrink-0" data-action="geolocation#importGoogle">Usar ponto do link</button></div></div>
   </div>
-</fieldset>
+  <div data-geolocation-target="manualPanel" hidden><p class="composer-hint !mt-0">Escolha um local cadastrado ou descreva abaixo onde aconteceu.</p></div>
+  <div><%= f.label :location_description, "Descrição do local", class: "sgu-label" %><%= f.text_field :location_description, class: "sgu-input", maxlength: 160, placeholder: "Ex.: corredor da biblioteca, térreo" %><%= field_errors(alert, :location_description) %></div>
+  <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0" data-geolocation-target="status" role="status" aria-live="polite"><%= alert.latitude ? 'Localização informada. Confira antes de salvar.' : 'Nenhuma coordenada informada.' %></p><a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="sgu-link text-xs" data-geolocation-target="googleLink">Abrir no Google Maps ↗</a></div>
+  <%= f.hidden_field :latitude, data: {geolocation_target: "latitude"} %><%= f.hidden_field :longitude, data: {geolocation_target: "longitude"} %>
+  <%= f.hidden_field :location_accuracy_meters, data: {geolocation_target: "accuracy"} %><%= f.hidden_field :location_captured_at, value: alert.location_captured_at&.iso8601, data: {geolocation_target: "capturedAt"} %>
+  <% %i[latitude longitude location_accuracy_meters location_captured_at location_source base].each do |attribute| %><%= field_errors(alert, attribute) %><% end %>
+</section>

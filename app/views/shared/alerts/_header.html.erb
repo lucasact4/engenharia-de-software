@@ -2,8 +2,8 @@
 <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
   <div class="min-w-0">
     <p class="sgu-eyebrow"><%= alert.panic? ? "Pedido de pânico" : "Ocorrência" %> · <span class="font-mono normal-case tracking-normal"><%= alert.protocol %></span></p>
-    <h1 class="sgu-page-title mt-1 break-words"><%= alert.title.presence || "Pedido de ajuda (pânico)" %></h1>
-    <div class="mt-3 flex flex-wrap gap-2">
+    <h1 class="sgu-page-title mt-1 break-words"><%= local_assigns[:social] ? "Minha ocorrência" : alert.title.presence || "Pedido de ajuda (pânico)" %></h1>
+    <div class="mt-3 flex flex-wrap gap-2 <%= local_assigns[:social] ? 'sr-only' : '' %>">
       <%= alert_status_badge(alert) %>
       <% if detail.operational? %>
         <%= alert_priority_badge(alert) %>

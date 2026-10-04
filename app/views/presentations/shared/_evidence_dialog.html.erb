@@ -1,0 +1,50 @@
+<%#
+  Evidências técnicas de uma funcionalidade (catálogo explícito em funcionalidades.yml).
+  Somente caminhos relativos cadastrados; nenhum arquivo é lido a partir da URL.
+  locals: presentation, item, number, id
+%>
+<% publication = presentation.funcionalidades[:publicacao] || {} %>
+<%= render "presentations/shared/dialog", id: id, modifier: "apr-sheet--evidence",
+      kicker: "Funcionalidade #{number} · como foi implementada", title: item[:nome] do %>
+  <ol class="apr-sheet__steps" role="list" aria-label="Jornada">
+    <% Array(item[:jornada]).each do |step| %><li><%= step %></li><% end %>
+  </ol>
+
+  <h3 class="apr-sheet__heading">Arquivos principais</h3>
+  <ul class="apr-evidence-list" role="list">
+    <% item[:evidencias].each do |evidence| %>
+      <% url = presentation.evidence_url(evidence) %>
+      <li class="apr-evidence">
+        <div class="apr-evidence__main">
+          <span class="apr-evidence__type apr-evidence__type--<%= evidence[:tipo] %>"><%= Presentation::EVIDENCE_TYPES.fetch(evidence[:tipo]) %></span>
+          <p class="apr-evidence__role"><%= evidence[:papel] %></p>
+          <code class="apr-code apr-evidence__path"><%= evidence[:caminho] %></code>
+          <p class="apr-evidence__source">
+            <% if url %>
+              <%= presentation_link("Ver no GitHub", url, class: "apr-more") %>
+              <span>versão publicada (<%= publication[:rotulo].presence || publication[:commit].to_s.first(7) %>); a cópia local pode ter mudanças posteriores.</span>
+            <% else %>
+              <span class="apr-evidence__local">Somente na cópia local: ainda não publicado na main.</span>
+            <% end %>
+          </p>
+        </div>
+        <% if presentation_asset?(evidence[:captura]) %>
+          <%= render "presentations/shared/figure", image: evidence[:captura],
+                alt: "Trecho de código de #{evidence[:caminho]}", caption: File.basename(evidence[:caminho]),
+                modifier: "apr-figure--evidence" %>
+        <% else %>
+          <p class="apr-evidence__shot"><%= evidence[:captura].present? ? "Captura configurada não encontrada." : "Captura do código ainda será anexada." %></p>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+
+  <h3 class="apr-sheet__heading">Testes</h3>
+  <ul class="apr-sheet__tests" role="list">
+    <% Array(item[:testes]).each do |path| %><li><code class="apr-code"><%= path %></code></li><% end %>
+  </ul>
+  <p class="apr-sheet__note">
+    <strong>Validação:</strong> <%= item[:validacao].presence || "pendente" %>
+    <% if item[:requisitos].present? %> · <strong>Requisitos:</strong> <%= item[:requisitos].join(", ") %><% else %> · RFs do card #13 ainda não vinculados.<% end %>
+  </p>
+<% end %>

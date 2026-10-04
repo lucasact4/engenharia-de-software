@@ -2,8 +2,8 @@
   <section class="auth-main">
     <div class="flex items-center justify-between gap-4">
       <%= link_to root_path(locale: nil), class: "flex items-center gap-3 !text-ink", aria: { label: "Voltar para a página inicial" } do %>
-        <span class="grid size-10 place-items-center rounded-2xl bg-brand-solid text-on-brand"><%= icon("map-pin", class: "size-5", "aria-hidden": true) %></span>
-        <span><span class="block text-lg font-bold leading-none">SGU UFRPE</span><span class="mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted">Campus em conexão</span></span>
+        <%= sgu_brand(:horizontal, alt: "", class_name: "h-10") %>
+        <span class="hidden border-l border-line pl-3 text-[0.65rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted sm:block">UFRPE<br>Campus em conexão</span>
       <% end %>
       <%= render "shared/theme_toggle" %>
     </div>

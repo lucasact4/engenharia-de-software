@@ -24,6 +24,11 @@
           <% relation["points"].values_at(0, -1).each do |x, y| %>
             <span class="apr-data-port" style="left: <%= diagram.em(x) %>em; top: <%= diagram.em(y) %>em;"></span>
           <% end %>
+          <% if diagram.cardinality_labels? %>
+            <% diagram.cardinality_marks(relation).each do |mark| %>
+              <span class="apr-data-cardinality apr-data-cardinality--<%= mark[:side] %>" style="left: <%= diagram.em(mark[:x]) %>em; top: <%= diagram.em(mark[:y]) %>em;"><span><%= mark[:text] %></span></span>
+            <% end %>
+          <% end %>
         </div>
       <% end %>
       <% diagram.nodes.each do |node| %>
@@ -73,6 +78,9 @@
         </li>
       <% end %>
     </ul>
+    <% if diagram.notes.any? %>
+      <ul class="apr-data-notes" role="list"><% diagram.notes.each do |note| %><li><%= note %></li><% end %></ul>
+    <% end %>
     <p class="apr-data-legend">1 = obrigatório · 0..1 = opcional · 0..N = múltiplos. Tracejado = vínculo polimórfico; REF = entidade detalhada em outro apêndice.</p>
   </details>
 </figure>

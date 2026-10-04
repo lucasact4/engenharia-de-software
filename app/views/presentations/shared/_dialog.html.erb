@@ -1,0 +1,23 @@
+<%#
+  Janela de detalhes de um slide (evidências do código, repositório, critérios).
+  Abra com presentations/shared/dialog_button (commandfor + presentation#openDialog). O foco
+  inicial vai para o título, fica contido na janela, Esc fecha e o foco volta ao botão.
+  Fechada, não aparece na tela nem no PDF.
+  locals: id, title, kicker (opcional), modifier (opcional); bloco = conteúdo
+%>
+<dialog id="<%= id %>" class="apr-dialog apr-sheet <%= local_assigns[:modifier] %>" aria-labelledby="<%= id %>-titulo"
+        data-action="click->presentation#closeOnBackdrop close->presentation#dialogClosed">
+  <div class="apr-dialog__head apr-sheet__head">
+    <div>
+      <% if local_assigns[:kicker].present? %><p class="apr-label"><%= kicker %></p><% end %>
+      <h2 id="<%= id %>-titulo" class="apr-sheet__title" tabindex="-1" data-dialog-initial-focus><%= title %></h2>
+    </div>
+    <button type="button" class="apr-icon-btn" commandfor="<%= id %>" command="close"
+            data-action="presentation#closeDialog" aria-label="Fechar">
+      <%= render "presentations/shared/icon", name: "x" %>
+    </button>
+  </div>
+  <div class="apr-sheet__body" tabindex="0" role="region" aria-label="Conteúdo: <%= title %>">
+    <%= yield %>
+  </div>
+</dialog>

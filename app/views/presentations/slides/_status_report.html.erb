@@ -1,43 +1,63 @@
-<% r = presentation.retrospectiva %>
+<% retro = presentation.retrospective %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "primeiro status report",
-      title: "Lições da sprint e ações combinadas",
-      lead: "A imagem da dinâmica fica no item 3. Aqui entram os aprendizados registrados pela equipe." %>
+      kicker: "status report · aprendizados",
+      title: "O que a retrospectiva mostrou sobre esta sprint" %>
 
-<div class="apr-retro apr-fit">
-  <%= presentation_group slide, %w[aprendizados acoes], class: "apr-retro__notes" do %>
-    <% [ [ "aprendizados", "O que aprendemos", r[:licoes] ], [ "acoes", "O que vamos melhorar", r[:acoes] ] ].each do |id, title, entries| %>
-      <%= presentation_item slide, id, :section, class: "apr-retro__block", aria: { label: title } do %>
-        <h3 class="apr-retro__title"><%= title %></h3>
-        <% if entries.present? %>
-          <ul class="apr-retro__list" role="list">
-            <% entries.each do |entry| %>
-              <li>
-                <% if entry.is_a?(Hash) %>
-                  <%= entry[:acao] %>
-                  <span class="apr-retro__who"><%= [ entry[:responsavel], entry[:prazo] ].compact_blank.join(" · ") %></span>
-                <% else %><%= entry %><% end %>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: realizar a retrospectiva e registrar <%= id == "acoes" ? "as ações combinadas" : "as lições aprendidas" %> em <code>retrospectiva.yml</code>.</p>
+<div class="apr-lessons apr-fit">
+  <%= presentation_item slide, "aprendizados", :section, class: "apr-lessons__main", aria: { label: "O que aprendemos" } do %>
+    <% if retro.lessons.any? %>
+      <ol class="apr-lessons__list" role="list">
+        <% retro.lessons.each_with_index do |lesson, index| %>
+          <li class="apr-lesson">
+            <span class="apr-lesson__num" aria-hidden="true"><%= index + 1 %></span>
+            <div>
+              <% if lesson.title %><h3 class="apr-lesson__title"><%= lesson.title %></h3><% end %>
+              <p class="apr-lesson__text"><%= lesson.text %></p>
+            </div>
+          </li>
         <% end %>
+      </ol>
+      <p class="apr-lessons__source">Cartões da coluna “Aprendi”, transcritos do quadro sem alteração.</p>
+    <% else %>
+      <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: registrar as lições da retrospectiva em <code>retrospectiva.yml</code>.</p>
+    <% end %>
+  <% end %>
+
+  <%= presentation_group slide, %w[acoes registro], class: "apr-lessons__side" do %>
+    <%= presentation_item slide, "acoes", :section, class: "apr-lessons__gaps", aria: { labelledby: "#{slide.dom_id}-faltou" } do %>
+      <h3 id="<%= slide.dom_id %>-faltou" class="apr-label">Para melhorar (coluna “Faltou”)</h3>
+      <% if retro.gaps.any? %>
+        <ul class="apr-lessons__chips" role="list">
+          <% retro.gaps.each do |gap| %><li><%= gap.title || gap.text %></li><% end %>
+        </ul>
+      <% end %>
+      <% if retro.actions.any? %>
+        <ul class="apr-retro__list" role="list">
+          <% retro.actions.each do |action| %>
+            <li><%= action.text %><span class="apr-retro__who"><%= [ action.owner, action.deadline ].compact_blank.join(" · ") %></span></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="apr-lessons__note">Pontos levantados pela equipe; ainda sem ações, responsáveis ou prazos definidos.</p>
+      <% end %>
+    <% end %>
+
+    <%= presentation_item slide, "registro", :aside, class: "apr-lessons__ref", aria: { label: "Quadro da retrospectiva" } do %>
+      <% if retro.image? %>
+        <%= render "presentations/shared/figure",
+              image: retro.image, zoom_image: retro.zoom_image, alt: retro.image_alt,
+              caption: "Quadro completo", modifier: "apr-figure--board-thumb" %>
+      <% end %>
+      <p class="apr-lessons__links">
+        <% if retro.link %>
+          <%= link_to retro.link, class: "apr-more", target: "_blank", rel: "noopener noreferrer" do %>Abrir retrospectiva<span class="apr-sr-only"> (abre em nova aba)</span><% end %>
+        <% end %>
+        <%= presentation_slide_ref "retrospectiva" do %><a class="apr-more" href="#s-retrospectiva">Slide do quadro</a><% end %>
+      </p>
+      <% unless retro.image? %>
+        <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: anexar a imagem real da dinâmica.</p>
       <% end %>
     <% end %>
   <% end %>
-
-  <%= presentation_item slide, "registro", :aside, class: "apr-model-note" do %>
-    <h3 class="apr-label">Evidência da retrospectiva</h3>
-    <% if r[:imagem].present? %>
-      <p>Imagem anexada<%= " · #{presentation_date(r[:data])}" if r[:data].present? %>.</p>
-    <% else %>
-      <p><%= presentation_state(:aguardando_evidencia) %> Pendente: anexar foto ou captura real da dinâmica.</p>
-    <% end %>
-    <%= presentation_slide_ref "retrospectiva", :p do %>
-      <a class="apr-more" href="#s-retrospectiva">Ver imagem da retrospectiva (item 3)</a>
-    <% end %>
-    <p class="apr-source">A evidência é compartilhada pelos dois itens; os aprendizados não são preenchidos por suposição.</p>
-  <% end %>
 </div>
-<%= presentation_update_note("retrospectiva.yml", "licoes, acoes, imagem e data da dinâmica realizada pela equipe.") %>
+<%= presentation_update_note("retrospectiva.yml", "colunas do quadro (aprendi, faltou) e ações combinadas.") %>

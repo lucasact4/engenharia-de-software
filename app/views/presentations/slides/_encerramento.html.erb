@@ -1,6 +1,7 @@
 <%# Slide final obrigatório: aparece em todos os perfis, mesmo com todos os opcionais desmarcados. %>
 <% e = presentation.entrega %>
 <div class="apr-end">
+  <%= sgu_brand(:horizontal, tone: :dark_surface, alt: "SGU", class_name: "apr-end__brand") %>
   <p class="apr-end__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e.dig(:projeto, :sigla) %> · <%= @selection.delivery[:titulo] %></p>
   <h2 id="<%= slide.heading_id %>" class="apr-end__title">Obrigado! <span>Perguntas?</span></h2>
   <p class="apr-end__lead"><%= e.dig(:projeto, :nome) %> — <%= e.dig(:projeto, :recorte) %></p>

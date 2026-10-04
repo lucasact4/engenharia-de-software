@@ -1,28 +1,14 @@
-<%# Ações da publicação (estado vem de PublicationProjection). POST adiciona e DELETE remove:
-    repetir a mesma ação não alterna o estado. %>
 <% state = card[:viewer_state] %>
-<div id="publication_<%= card[:id] %>_actions" class="flex flex-wrap items-center gap-2">
+<div id="publication_<%= card[:id] %>_actions" class="social-actions">
   <% if state %>
-    <% [ [ :like, "heart", "Curtir", "Curtido", card[:likes_count] ], [ :bookmark, "bookmark", "Salvar", "Salvo", nil ], [ :subscription, "bell", "Acompanhar", "Acompanhando", nil ] ].each do |kind, icon_name, label, active_label, count| %>
-      <% active = state[{ like: :liked, bookmark: :bookmarked, subscription: :subscribed }[kind]] %>
-      <% path = send("publication_#{kind}_interaction_path", card[:id]) %>
-      <%= button_to path, method: (active ? :delete : :post), class: "sgu-btn sgu-btn-sm sgu-btn-secondary sgu-btn-toggle", form_class: "inline",
-            aria: { pressed: active, label: "#{active ? active_label : label}#{count ? " (#{count})" : ''}" },
-            title: { like: "Curtir publicação", bookmark: "Guardar em Salvos (privado)", subscription: "Acompanhar esta publicação e a conversa" }[kind] do %>
-        <%= sgu_icon(icon_name) %><span><%= active ? active_label : label %></span><% if count %><span class="text-muted"><%= count %></span><% end %>
-      <% end %>
+    <% [[ :like, "heart", "Curtir", "Curtido", :liked ], [ :subscription, "bell", "Acompanhar", "Acompanhando", :subscribed ]].each do |kind, glyph, label, selected, key| %>
+      <%= button_to send("publication_#{kind}_interaction_path", card[:id]), method: state[key] ? :delete : :post, class: "social-icon-button", form_class: "inline", aria: { pressed: state[key], label: "#{state[key] ? selected : label}#{kind == :like ? " (#{card[:likes_count]})" : ''}" }, title: state[key] ? selected : label do %><%= sgu_icon(glyph, "size-6") %><% end %>
     <% end %>
-  <% else %>
-    <span class="sgu-badge sgu-badge-slate"><%= sgu_icon("heart", "size-3") %> <%= pluralize(card[:likes_count], "curtida", plural: "curtidas") %></span>
-  <% end %>
-  <%= link_to publication_path(card[:id], anchor: "comentarios"), class: "sgu-btn sgu-btn-sm sgu-btn-ghost" do %>
-    <%= sgu_icon("message-circle") %><span><%= pluralize(card[:comments_count], "comentário", plural: "comentários") %></span>
-  <% end %>
-  <% if state && local_assigns[:show_report] %>
-    <%= link_to new_publication_content_report_path(card[:id]), class: "sgu-btn sgu-btn-sm sgu-btn-ghost ml-auto", title: "Denunciar à administração" do %>
-      <%= sgu_icon("flag") %><span>Denunciar</span>
-    <% end %>
-  <% elsif !state %>
-    <%= link_to "Entre para interagir", new_session_path(locale: nil, return_to: publication_path(card[:id], locale: nil)), class: "sgu-link ml-auto text-sm" %>
-  <% end %>
+  <% else %><%= link_to new_session_path(return_to: publication_path(card[:id])), class: "social-icon-button", aria: { label: "Entrar para curtir" } do %><%= sgu_icon("heart", "size-6") %><% end %><% end %>
+  <%= link_to publication_path(card[:id], anchor: "comentarios"), class: "social-icon-button", aria: { label: "#{card[:comments_count]} comentários" } do %><%= sgu_icon("message-circle", "size-6") %><% end %>
+  <span class="text-xs font-semibold text-muted"><%= pluralize(card[:likes_count], "curtida", plural: "curtidas") %> · <%= pluralize(card[:comments_count], "comentário", plural: "comentários") %></span>
+  <% if state %>
+    <%= button_to publication_bookmark_interaction_path(card[:id]), method: state[:bookmarked] ? :delete : :post, class: "social-icon-button", form_class: "ml-auto", aria: { pressed: state[:bookmarked], label: state[:bookmarked] ? "Salvo" : "Salvar" }, title: "Guardar em sua lista privada" do %><%= sgu_icon("bookmark", "size-6") %><% end %>
+    <% if local_assigns[:show_report] %><%= link_to new_publication_content_report_path(card[:id]), class: "social-icon-button", aria: { label: "Denunciar publicação" }, title: "Denunciar" do %><%= sgu_icon("flag") %><% end %><% end %>
+  <% else %><%= link_to "Entre para interagir", new_session_path(return_to: publication_path(card[:id])), class: "sgu-link ml-auto text-xs" %><% end %>
 </div>

@@ -1,21 +1,51 @@
-<% r = presentation.retrospectiva %>
-<% registered = r[:pontos].present? || r[:acoes].present? || r[:licoes].present? %>
+<% retro = presentation.retrospective %>
+<% first_delivery = @selection.delivery[:id] == "primeira" %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "retrospectiva",
-      title: (@selection.delivery[:id] == "primeira" ? "Reflexão da equipe sobre o período" : "Registro visual da retrospectiva da equipe"),
-      lead: [ presentation_date(r[:data]), r[:formato] ].compact_blank.join(" · ").presence %>
+      title: (first_delivery ? "Reflexão da equipe sobre o período" : "O que gostamos, aprendemos e sentimos falta nesta etapa") %>
 
-<div class="apr-retro apr-fit">
-  <%= presentation_item slide, "imagem", class: "apr-retro__photo" do %>
-    <% if r[:imagem].present? %>
-      <%= render "presentations/shared/figure",
-            image: r[:imagem], alt: r[:imagem_descricao].presence || "Registro da retrospectiva da equipe",
-            caption: "Retrospectiva#{" de #{presentation_date(r[:data])}" if r[:data].present?}" %>
+<div class="apr-retro-board apr-fit">
+  <%= presentation_item slide, "imagem", class: "apr-retro-board__main" do %>
+    <% if retro.image? %>
+      <div class="apr-retro-board__frame">
+        <%= render "presentations/shared/figure",
+              image: retro.image, zoom_image: retro.zoom_image, alt: retro.image_alt,
+              caption: [ "Quadro da retrospectiva", retro.tool, presentation_date(retro.date) ].compact_blank.join(" · "),
+              modifier: "apr-figure--board" %>
+      </div>
+      <aside class="apr-retro-board__side" aria-label="Sobre a retrospectiva">
+        <% if retro.format %><p class="apr-label">Formato</p><p class="apr-retro-board__format"><%= retro.format %></p><% end %>
+        <% if retro.columns.any? %>
+          <ul class="apr-retro-legend" role="list">
+            <% retro.columns.each do |column| %>
+              <li class="apr-retro-legend__item apr-retro-legend__item--<%= column.id %>">
+                <span class="apr-retro-legend__dot" aria-hidden="true"></span>
+                <strong><%= column.title %></strong>
+                <span><%= column.cards.size %> <%= column.cards.size == 1 ? "cartão" : "cartões" %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+        <% if retro.link %>
+          <p class="apr-retro-board__actions">
+            <%= link_to retro.link, class: "apr-btn apr-btn--primary", target: "_blank", rel: "noopener noreferrer" do %>
+              <%= render "presentations/shared/icon", name: "external" %><span>Abrir retrospectiva</span><span class="apr-sr-only"> (abre em nova aba)</span>
+            <% end %>
+          </p>
+          <p class="apr-retro-board__url"><%= link_to retro.link.delete_prefix("https://"), retro.link, target: "_blank", rel: "noopener noreferrer" %></p>
+        <% end %>
+        <% if retro.date.blank? %>
+          <p class="apr-retro-board__note">Captura real do quadro, sem edição. A data da dinâmica não foi registrada.</p>
+        <% end %>
+        <%= presentation_slide_ref "status-report", :p do %>
+          <a class="apr-more" href="#s-status-report">Aprendizados em destaque</a>
+        <% end %>
+      </aside>
     <% else %>
       <%= render "presentations/shared/pending",
             title: "Imagem da retrospectiva",
             state: :aguardando_evidencia,
-            text: "Exigida na 2ª entrega. Use uma foto ou captura real do quadro da retrospectiva.",
+            text: "Use uma foto ou captura real do quadro da retrospectiva.",
             file: "retrospectiva.yml",
             frame: true %>
     <% end %>
@@ -23,35 +53,26 @@
 
   <%= presentation_group slide, %w[pontos acoes licoes], class: "apr-retro__notes" do %>
     <% blocks = [
-      [ "pontos", "Pontos discutidos", r[:pontos] ],
-      [ "acoes", "Ações combinadas", r[:acoes] ],
-      [ "licoes", "O que aprendemos", r[:licoes] ]
+      [ "pontos", "Pontos discutidos", retro.points.map(&:to_s) ],
+      [ "acoes", "Ações combinadas", retro.actions.map { |action| [ action.text, [ action.owner, action.deadline ].compact_blank.join(" · ").presence ] } ],
+      [ "licoes", "O que aprendemos", retro.lessons.map(&:to_s) ]
     ] %>
     <% blocks.each do |item_id, titulo, itens| %>
-      <%= presentation_item slide, item_id, :section, class: ["apr-retro__block", ("apr-retro__block--empty" if itens.blank?)], aria: { label: titulo } do %>
+      <%= presentation_item slide, item_id, :section, class: [ "apr-retro__block", ("apr-retro__block--empty" if itens.blank?) ], aria: { label: titulo } do %>
         <h3 class="apr-retro__title"><%= titulo %></h3>
         <% if itens.present? %>
           <ul class="apr-retro__list" role="list">
-            <% itens.each do |item| %>
-              <li>
-                <% if item.is_a?(Hash) %>
-                  <%= item[:acao] %><% if item[:responsavel].present? || item[:prazo].present? %>
-                    <span class="apr-retro__who"><%= [ item[:responsavel], item[:prazo] ].compact_blank.join(" · ") %></span>
-                  <% end %>
-                <% else %>
-                  <%= item %>
-                <% end %>
-              </li>
+            <% itens.each do |text, detail| %>
+              <li><%= text %><% if detail %><span class="apr-retro__who"><%= detail %></span><% end %></li>
             <% end %>
           </ul>
+        <% elsif item_id == "acoes" %>
+          <p class="apr-retro__empty">Nenhuma ação com responsável e prazo foi formalizada.</p>
         <% else %>
           <p class="apr-retro__empty"><%= presentation_state(:aguardando_evidencia) %></p>
         <% end %>
       <% end %>
     <% end %>
-    <% unless registered %>
-      <p class="apr-source">Pendente: registrar a retrospectiva e as lições reais da equipe em retrospectiva.yml.</p>
-    <% end %>
   <% end %>
 </div>
-<%= presentation_update_note("retrospectiva.yml", "data, formato, imagem, pontos, ações e lições.") %>
+<%= presentation_update_note("retrospectiva.yml", "imagem, link, colunas e ações combinadas.") %>

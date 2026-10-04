@@ -2,21 +2,7 @@
 <div class="mx-auto max-w-3xl space-y-6">
   <%= link_to publications_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Mural<% end %>
 
-  <article class="sgu-card p-5 sm:p-8" aria-labelledby="publication_title">
-    <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
-      <span class="sgu-badge sgu-badge-teal"><%= @card[:kind_label] %></span>
-      <% if @card[:visibility] == "internal" %><span class="sgu-badge sgu-badge-slate"><%= sgu_icon("lock", "size-3") %> Interna: só para pessoas conectadas</span><% end %>
-    </div>
-    <h1 id="publication_title" class="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl"><%= @card[:title] %></h1>
-    <p class="mt-2 text-sm text-muted">
-      Por <strong class="text-ink"><%= @card[:editorial_identity] %></strong> · publicado em <%= sgu_time(@card[:published_at]) %>
-      <% if @card[:expires_at] %> · válido até <%= sgu_time(@card[:expires_at]) %><% end %>
-    </p>
-    <div class="sgu-prose mt-6 text-base"><%= @card[:body] %></div>
-    <div class="mt-6 border-t border-line pt-4">
-      <%= render "publications/actions", card: @card, show_report: true %>
-    </div>
-  </article>
+  <%= render "publications/card", card: @card, full: true %>
 
   <section id="comentarios" class="space-y-4" aria-labelledby="comments_title">
     <h2 id="comments_title" class="sgu-section-title"><%= pluralize(@card[:comments_count], "comentário", plural: "comentários") %></h2>
