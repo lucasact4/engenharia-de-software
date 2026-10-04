@@ -42,7 +42,7 @@ class AlertDetailPresenter
   def photos
     return [] unless policy.show_photos?
 
-    alert.photos_attachments.includes(:blob).order(:id).to_a
+    alert.ordered_photos
   end
 
   def author_label
@@ -62,14 +62,15 @@ class AlertDetailPresenter
 
   def location_label
     case alert.location_source
-    when "manual" then alert.location&.name
+    when "manual" then alert.location&.name || alert.location_description
+    when "map" then operational? ? "Ponto selecionado no mapa" : "Informada no mapa (coordenadas restritas)"
     when "gps" then operational? ? "GPS do aparelho" : "Informada por GPS (coordenadas restritas)"
     else I18n.t("enums.alert.location_source.unavailable.label")
     end
   end
 
   def coordinates
-    return unless operational? && alert.location_gps?
+    return unless operational? && (alert.location_gps? || alert.location_map?)
 
     { latitude: alert.latitude, longitude: alert.longitude, accuracy: alert.location_accuracy_meters,
       captured_at: alert.location_captured_at }

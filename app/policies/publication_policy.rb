@@ -22,19 +22,19 @@ class PublicationPolicy < ApplicationPolicy
   end
 
   def update?
-    active_admin?
+    active_admin? && !record.occurrence?
   end
 
   def submit?
-    active_admin?
+    active_admin? && !record.occurrence?
   end
 
   def review?
-    active_admin?
+    active_admin? && (!record.occurrence? || (record.alert.requested_public_external? && !record.alert.publication_blocked?))
   end
 
   def publish?
-    active_admin?
+    active_admin? && !record.occurrence?
   end
 
   def withdraw?
@@ -62,8 +62,8 @@ class PublicationPolicy < ApplicationPolicy
   class FeedScope < ApplicationPolicy::Scope
     def resolve
       visible = scope
-        .where(state: "published", review_status: "approved")
-        .where("publications.reviewed_content_version = publications.content_version")
+        .where(state: "published", moderation_blocked: false)
+        .where("(publications.kind = 'occurrence' AND publications.visibility = 'internal') OR (publications.review_status = 'approved' AND publications.reviewed_content_version = publications.content_version)")
         .where("publications.expires_at IS NULL OR publications.expires_at > ?", Time.current)
 
       relation = audience(visible, "public_external")

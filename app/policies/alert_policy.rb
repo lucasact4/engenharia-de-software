@@ -1,7 +1,5 @@
 # Acesso operacional provisório: autor, coordenação, segurança e administração.
 class AlertPolicy < ApplicationPolicy
-  AUTHOR_EDITABLE_STATUSES = %w[received awaiting_information].freeze
-
   def menu?
     active_admin?
   end
@@ -23,7 +21,7 @@ class AlertPolicy < ApplicationPolicy
   end
 
   def update_content?
-    author? && record.occurrence? && AUTHOR_EDITABLE_STATUSES.include?(record.status_in_database)
+    author? && record.occurrence?
   end
 
   # Correção administrativa do texto/categoria de outra pessoa: auditada, com motivo, e sem
@@ -79,13 +77,13 @@ class AlertPolicy < ApplicationPolicy
     show_photos?
   end
 
-  # Autor só reduz a audiência (para restricted); ampliar ou moderar é administrativo.
+  # O autor escolhe a audiência; bloqueios administrativos permanecem prioritários.
   def change_audience?
     record.occurrence? && (author? || active_admin?)
   end
 
   def expand_audience?
-    record.occurrence? && active_admin?
+    record.occurrence? && (active_admin? || (author? && !record.publication_blocked?))
   end
 
   def restrict?
