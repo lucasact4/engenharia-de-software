@@ -457,7 +457,51 @@
     box-shadow: 0 0 0 0.08em var(--apr-g-800) !important;
   }
 
+  /* Linhas mais leves no papel; as multiplicidades continuam com contraste total. */
   .apr-data-relation {
-    opacity: 0.65 !important;
+    opacity: 1 !important;
   }
+
+  .apr-data-line,
+  .apr-data-port {
+    opacity: 0.65;
+  }
+}
+
+/* Multiplicidades nas extremidades (modelo conceitual) ------------------------------- */
+
+/* A posição usa a fonte do diagrama; só o texto interno é menor. */
+.apr-data-cardinality {
+  position: absolute;
+  z-index: 3;
+  width: 0;
+  height: 0;
+}
+
+.apr-data-cardinality > span {
+  position: absolute;
+  bottom: 0.12em;
+  left: 0.3em;
+  padding: 0 0.25em;
+  border-radius: 0.35em;
+  background: var(--apr-surface);
+  color: var(--warning-ink);
+  font-family: var(--apr-mono);
+  font-size: 0.9em;
+  font-weight: 750;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.apr-data-cardinality--left > span {
+  right: 0.3em;
+  left: auto;
+}
+
+.apr-data-notes {
+  display: grid;
+  gap: 0.3em;
+  padding: 0.2em 0.85em 0.4em 1.9em !important;
+  color: var(--apr-ink-2);
+  list-style: disc !important;
 }

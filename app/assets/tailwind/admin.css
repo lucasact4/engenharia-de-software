@@ -77,6 +77,11 @@
       @apply inline-flex;
     }
 
+    /* Recolhida, a barra tem 4rem: símbolo e botão de expandir ficam empilhados. */
+    #admin-shell .admin-sidebar.minified .admin-sidebar-header {
+      @apply flex-col gap-2 px-2;
+    }
+
     #admin-shell .admin-sidebar.minified .admin-sidebar-label,
     #admin-shell .admin-sidebar.minified .admin-sidebar-caret,
     #admin-shell .admin-sidebar.minified .admin-sidebar-submenu {

@@ -93,6 +93,10 @@
 
 /* Encerramento ------------------------------------------------------------------ */
 
+.apr-end__brand {
+  height: 2.8em;
+}
+
 .apr-end {
   display: grid;
   gap: 1.1em;

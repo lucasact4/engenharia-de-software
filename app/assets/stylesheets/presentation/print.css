@@ -237,3 +237,15 @@
     border-color: #8a9a96;
   }
 }
+
+/* Revisão da 2ª entrega: controles de tela fora do papel; dependências legíveis no fundo branco. */
+@media print {
+  .apr-shots__hint,
+  .apr-model-diagram .apr-data-toolbar {
+    display: none !important;
+  }
+
+  .apr-slide--dark .apr-steps__dep {
+    color: var(--apr-amber) !important;
+  }
+}

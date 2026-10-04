@@ -113,7 +113,6 @@
   }
 
   /* O slide principal divide a página com cabeçalho e situação: escala reduzida da main. */
-  .apr-model-diagram:has(~ .apr-model-foot:not([hidden])) .apr-data-canvas,
   .apr-arch__diagram .apr-data-canvas {
     font-size: min(12px, var(--diagram-fit-font), var(--diagram-overview-print-font)) !important;
   }
@@ -157,15 +156,10 @@
 .apr-feature-repository > div { flex: 1 1 20em; }
 .apr-feature-repository p { font-size: 0.85em; }
 
-.apr-retro__photo .apr-pending__frame {
+.apr-retro-board__main .apr-pending__frame {
   aspect-ratio: auto;
   height: min(42vh, 24em);
 }
-.apr-retro__photo .apr-figure__img {
-  max-height: min(50vh, 28em);
-  object-fit: contain;
-}
 @media print {
-  .apr-retro__photo .apr-pending__frame { height: 85mm; }
-  .apr-retro__photo .apr-figure__img { max-height: 110mm; }
+  .apr-retro-board__main .apr-pending__frame { height: 85mm; }
 }

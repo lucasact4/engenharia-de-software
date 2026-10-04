@@ -42,6 +42,10 @@
   padding-top: 0.5em;
 }
 
+.apr-cover__mark {
+  height: 3.6em;
+}
+
 .apr-cover__eyebrow {
   display: inline-flex;
   align-items: center;
@@ -361,8 +365,14 @@
 
 .apr-timeline {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--apr-timeline-count, 4), minmax(0, 1fr));
   gap: 1em;
+}
+
+.apr-code--local {
+  background: transparent;
+  border: 1px dashed var(--apr-line-strong);
+  color: var(--apr-ink-3);
 }
 
 .apr-timeline__item {
@@ -414,14 +424,14 @@
 }
 
 .apr-timeline__title {
-  font-size: 0.95em;
+  font-size: 1.08em;
   font-weight: 750;
   line-height: 1.25;
 }
 
 .apr-timeline__text {
   color: var(--apr-ink-2);
-  font-size: 0.74em;
+  font-size: 0.86em;
   line-height: 1.35;
 }
 

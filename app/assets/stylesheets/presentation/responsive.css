@@ -81,7 +81,8 @@
     --apr-nav-h: 3.5rem;
   }
 
-  .apr-brand__text span {
+  /* Sem espaço para o nome: a barra mostra só o símbolo (o link mantém o nome acessível). */
+  .apr-brand__text {
     display: none;
   }
 

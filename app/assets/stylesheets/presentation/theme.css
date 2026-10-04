@@ -11,3 +11,15 @@
     background: var(--surface); color: var(--muted); border-color: var(--line);
   }
 }
+/* Versões por tema (capturas do conceito visual): na tela, só a do tema ativo; no papel, a clara. */
+@media screen {
+  :root:not([data-theme="light"]) .apr-theme-only--light,
+  :root[data-theme="light"] .apr-theme-only--dark {
+    display: none;
+  }
+}
+@media print {
+  .apr-body .apr-theme-only--dark {
+    display: none;
+  }
+}

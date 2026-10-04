@@ -53,3 +53,16 @@
     --violet-soft: #efebff; --violet-ink: #573b85; }
   .theme-toggle[data-theme-toggle] { display: none !important; }
 }
+/* Marca (BrandHelper#sgu_brand): no modo automático, só a versão do tema ativo aparece. */
+/* Visibilidade responsiva fica no elemento pai: esta folha não usa camadas e venceria utilitários. */
+.sgu-brand { flex: none; width: auto; max-width: none; }
+.sgu-brand--auto, .sgu-brand--dark-surface { display: inline-flex; }
+.sgu-brand--auto > img, .sgu-brand--dark-surface > img { display: block; width: auto; height: 100%; max-width: none; }
+.sgu-brand--dark-surface > .sgu-brand__on-light { display: none; }
+.sgu-brand--auto > .sgu-brand__on-light { display: none; }
+:root[data-theme="light"] .sgu-brand--auto > .sgu-brand__on-light { display: block; }
+:root[data-theme="light"] .sgu-brand--auto > .sgu-brand__on-dark { display: none; }
+@media print {
+  .sgu-brand--auto > .sgu-brand__on-light, .sgu-brand--dark-surface > .sgu-brand__on-light { display: block; }
+  .sgu-brand--auto > .sgu-brand__on-dark, .sgu-brand--dark-surface > .sgu-brand__on-dark { display: none; }
+}

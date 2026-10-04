@@ -22,10 +22,11 @@
   color: var(--apr-ink-3);
 }
 
+/* Cor fixa: no tema escuro, --apr-g-100 vira superfície e o selo sumia nos slides escuros. */
 .apr-slide--dark .apr-requirement {
   border-color: rgba(159, 200, 190, 0.45);
   background: rgba(255, 255, 255, 0.06);
-  color: var(--apr-g-100);
+  color: #e3efeb;
 }
 
 .apr-title {
@@ -371,4 +372,71 @@
 
 .apr-tech__credits {
   font-size: 0.68em;
+}
+
+/* Rodapé compacto do modelo conceitual: o diagrama fica com a maior área do slide. */
+.apr-model-foot--compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em 1.4em;
+}
+
+.apr-model-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 0.9em;
+}
+
+.apr-model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8em;
+}
+
+.apr-model-badge__label {
+  font-weight: 700;
+}
+
+.apr-model-distinction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 0.45em;
+  color: var(--apr-ink-2);
+  font-size: 0.78em;
+}
+
+/* Na tela grande, o conceitual cresce até 14px. Apresentando, a altura da janela também limita
+   a escala: o canvas tem 48,4em de altura e o restante do slide ocupa cerca de 500px em 1080p. */
+@media screen {
+  .apr-model-diagram .apr-data-canvas {
+    font-size: clamp(10px, var(--diagram-fit-font), 14px);
+  }
+
+  .apr--presenting .apr-model-diagram .apr-data-canvas {
+    font-size: clamp(10px, min(var(--diagram-fit-font), (100dvh - 500px) / 48.4), 14px);
+  }
+}
+
+.apr-model-diagram .apr-data-caption {
+  display: none;
+}
+
+/* O botão Ampliar fica sobre o canto do diagrama em vez de ocupar uma linha própria. */
+.apr-model-diagram .apr-data-figure {
+  position: relative;
+}
+
+.apr-model-diagram .apr-data-toolbar {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  z-index: 5;
+}
+
+.apr-model-diagram .apr-data-eyebrow {
+  display: none;
 }
