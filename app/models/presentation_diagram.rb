@@ -6,7 +6,7 @@ class PresentationDiagram
   ROW_HEIGHT = 18
   BODY_PADDING = 12
 
-  attr_reader :key, :title, :description, :width, :height, :nodes, :relations
+  attr_reader :key, :title, :description, :width, :height, :nodes, :relations, :notes
 
   def self.load_all
     content = YAML.safe_load_file(CONTENT_FILE)
@@ -19,6 +19,8 @@ class PresentationDiagram
     @description = definition.fetch("description")
     @width = definition.fetch("width")
     @height = definition.fetch("height")
+    @notes = definition.fetch("notes", [])
+    @cardinality_labels = definition["cardinality_labels"] == true
     @nodes = definition.fetch("nodes").map { |node| build_node(node, content.fetch("tables")) }
     @node_index = nodes.index_by { |node| node.fetch("id") }
     validate_layout!
@@ -37,12 +39,27 @@ class PresentationDiagram
     @relations = (foreign_keys + definition.fetch("relations", [])).map do |relation|
       relation.merge("id" => "#{relation.fetch('source')}-#{relation.fetch('column')}-#{relation.fetch('target')}")
     end
-    router = Router.new(nodes, relations, width, height)
+    router = Router.new(nodes, relations, width, height, distributed: definition["ports"] == "distributed")
     @relations.each { |relation| relation["points"] = router.route(relation) }
   end
 
   def node(id)
     @node_index.fetch(id)
+  end
+
+  def cardinality_labels? = @cardinality_labels
+
+  # Multiplicidades junto às extremidades: lado de fora da entidade, logo acima da linha.
+  def cardinality_marks(relation)
+    points = relation.fetch("points")
+    [
+      [ points[0], points[1], relation["source_cardinality"] ],
+      [ points[-1], points[-2], relation["target_cardinality"] ]
+    ].filter_map do |(x, y), (next_x, _), text|
+      next if text.blank?
+
+      { x: x, y: y, text: text, side: next_x >= x ? "right" : "left" }
+    end
   end
 
   def em(value)
@@ -100,9 +117,11 @@ class PresentationDiagram
     STUB = 6
     PADDING = 1.5
 
-    def initialize(nodes, relations, width, height)
+    def initialize(nodes, relations, width, height, distributed: false)
       @nodes = nodes.index_by { |node| node.fetch("id") }
       @boxes = nodes.map { |node| [ node["x"], node["y"], node["x"] + node["width"], node["y"] + node["height"] ] }
+      @distributed = distributed
+      @slots = distributed ? distribute(relations) : {}
       @ports = relations.to_h { |relation| [ relation.fetch("id"), ports(relation) ] }
       all_ports = @ports.values.flatten(1)
       @xs = ([ 8, width - 8 ] + @boxes.flat_map { |box| [ box[0] - STUB, box[2] + STUB ] } +
@@ -157,14 +176,38 @@ class PresentationDiagram
 
     private
 
-      def ports(relation)
+      def sides(relation)
         source = @nodes.fetch(relation.fetch("source"))
         target = @nodes.fetch(relation.fetch("target"))
         to_right = source["id"] == target["id"] || target["x"] + target["width"] / 2.0 > source["x"] + source["width"] / 2.0
         source_side = to_right ? 1 : -1
-        target_side = source["id"] == target["id"] ? 1 : -source_side
-        source_edge = edge(source, source_side, relation["column"])
-        target_edge = edge(target, target_side, "id")
+        stacked = @distributed && (target["x"] + target["width"] / 2.0 - source["x"] - source["width"] / 2.0).abs < 1
+        # Entidades empilhadas na mesma coluna se ligam pelo mesmo lado, sem cruzar o diagrama.
+        target_side = source["id"] == target["id"] || stacked ? source_side : -source_side
+        [ source, target, source_side, target_side ]
+      end
+
+      # Cada extremidade ganha uma altura própria na lateral da entidade, ordenada pela posição
+      # da outra ponta; assim as linhas não se sobrepõem na porta nem nas multiplicidades.
+      def distribute(relations)
+        ends = relations.flat_map do |relation|
+          source, target, source_side, target_side = sides(relation)
+          [ [ relation["id"], :source, source, source_side, target ], [ relation["id"], :target, target, target_side, source ] ]
+        end
+        ends.group_by { |_, _, node, side, _| [ node["id"], side ] }.each_with_object({}) do |(_, group), slots|
+          node = group.first[2]
+          ordered = group.sort_by { |id, role, _, _, other| [ other["y"] + other["height"] / 2.0, role == :source ? 0 : 1, id ] }
+          step = (node["height"] - HEADER_HEIGHT) / ordered.size.to_f
+          ordered.each_with_index do |(id, role, *), index|
+            slots[[ id, role ]] = (node["y"] + HEADER_HEIGHT + step * (index + 0.5)).round(2)
+          end
+        end
+      end
+
+      def ports(relation)
+        source, target, source_side, target_side = sides(relation)
+        source_edge = edge(source, source_side, relation["column"], @slots[[ relation["id"], :source ]])
+        target_edge = edge(target, target_side, "id", @slots[[ relation["id"], :target ]])
         [
           [ source_edge[0] + source_side * STUB, source_edge[1] ],
           [ target_edge[0] + target_side * STUB, target_edge[1] ],
@@ -172,9 +215,11 @@ class PresentationDiagram
         ]
       end
 
-      def edge(node, side, column)
+      def edge(node, side, column, slot = nil)
         column_index = node["columns"].index { |name, _| name == column }
-        y = if column_index
+        y = if slot
+          slot
+        elsif column_index
           node["y"] + HEADER_HEIGHT + BODY_PADDING / 2.0 + (column_index % node["rows"] + 0.5) * ROW_HEIGHT
         else
           node["y"] + HEADER_HEIGHT / 2.0

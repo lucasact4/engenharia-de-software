@@ -6,14 +6,14 @@ class AuditEvent < ApplicationRecord
     "Alert" => %w[status priority assessed_severity assigned_to_id visibility requested_visibility publication_blocked
                   closure_reason duplicate_of_id resolved_at closed_at],
     "Publication" => %w[state review_status visibility content_version reviewed_content_version
-                        expires_at comments_enabled published_at withdrawn_at source_changed_at],
+                        expires_at comments_enabled published_at withdrawn_at source_changed_at approval_method moderation_blocked],
     "Comment" => %w[removed_at removed_by_id],
     "ContentReport" => %w[state],
-    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id]
+    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id verified_at verified_by_id]
   }.freeze
 
   METADATA_KEYS = %w[kind fields role_code decision target_type source reopening system_reason
-                     protocol idempotent_replay photos_count].freeze
+                     protocol idempotent_replay photos_count removed_photo_ids photo_order].freeze
   MAX_STRING = 200
 
   belongs_to :actor, class_name: "User", optional: true

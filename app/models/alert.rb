@@ -1,6 +1,8 @@
-# Registro de ocorrência ou pânico; a divulgação editorial fica em Publication.
+# Relato operacional de ocorrência ou pânico; Publication controla a divulgação social.
 class Alert < ApplicationRecord
   include TextSearch
+  attribute :location_description, :string
+  attribute :photo_order, :json, default: -> { [] }
   TITLE_LENGTH = 5..160
   DESCRIPTION_LENGTH = 10..5000
   CATEGORY_DETAILS_MAX = 500
@@ -29,7 +31,7 @@ class Alert < ApplicationRecord
   CLOSURE_REASONS_REQUIRING_NOTES = %w[invalid out_of_scope other].freeze
 
   enum :kind, { occurrence: "occurrence", panic: "panic" }, validate: true
-  enum :location_source, { gps: "gps", manual: "manual", unavailable: "unavailable" },
+  enum :location_source, { gps: "gps", map: "map", manual: "manual", unavailable: "unavailable" },
        prefix: :location, validate: true
   enum :location_unavailable_reason,
        { permission_denied: "permission_denied", position_unavailable: "position_unavailable",
@@ -70,6 +72,7 @@ class Alert < ApplicationRecord
   validates :title, length: { maximum: TITLE_LENGTH.max }
   validates :description, length: { maximum: DESCRIPTION_LENGTH.max }
   validates :category_other_description, length: { maximum: CATEGORY_DETAILS_MAX }
+  validates :location_description, length: { maximum: 160 }, allow_nil: true
   validates :latitude, numericality: { in: -90..90 }, allow_nil: true
   validates :longitude, numericality: { in: -180..180 }, allow_nil: true
   validates :location_accuracy_meters,
@@ -93,8 +96,20 @@ class Alert < ApplicationRecord
   validate :duplicate_reference
   validate :assignee_active
   validate :photos_constraints
+  validate :photo_order_format
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
+
+  def ordered_photos
+    positions = Array(photo_order).each_with_index.to_h
+    photos.to_a.sort_by { |photo| [ positions.fetch(photo.id, positions.size), photo.id ] }
+  end
+
+  def self.title_from(description)
+    text = description.to_s.squish
+    text = "Ocorrência: #{text}" if text.present? && text.length < TITLE_LENGTH.min
+    text.truncate(TITLE_LENGTH.max)
+  end
 
   def self.allowed_transitions_from(status)
     TRANSITIONS.fetch(status.to_s, [])
@@ -140,10 +155,10 @@ class Alert < ApplicationRecord
       end
 
       case location_source
-      when "gps"
+      when "gps", "map"
         errors.add(:base, :gps_coordinates_required) if latitude.nil? || longitude.nil?
       when "manual"
-        errors.add(:location, :blank) if location.nil?
+        errors.add(:location_description, "informe o local (mínimo 3 caracteres)") if location.nil? && location_description.to_s.strip.length < 3
         errors.add(:base, :manual_without_coordinates) if latitude.present? || longitude.present?
       when "unavailable"
         errors.add(:base, :unavailable_without_location) if location.present? || latitude.present?
@@ -169,8 +184,7 @@ class Alert < ApplicationRecord
       errors.add(:location_captured_at, :too_old) if location_captured_at < now - CAPTURE_MAX_AGE
     end
 
-    # O registro operacional nunca é público. Pedido de divulgação externa mantém o
-    # registro restrito até existir uma Publication revisada.
+    # A audiência do relato operacional continua separada da divulgação externa do post.
     def visibility_consistency
       return if visibility.nil? || requested_visibility.nil?
 
@@ -228,6 +242,12 @@ class Alert < ApplicationRecord
       return unless assigned_to && will_save_change_to_assigned_to_id?
 
       errors.add(:assigned_to, :inactive) unless assigned_to.active?
+    end
+
+    def photo_order_format
+      unless photo_order.is_a?(Array) && photo_order.all? { |id| id.is_a?(Integer) && id.positive? } && photo_order.uniq == photo_order
+        errors.add(:photos, "ordem inválida")
+      end
     end
 
     def photos_constraints
