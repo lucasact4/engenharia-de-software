@@ -25,6 +25,8 @@
     </dl>
   </section>
 
+  <section class="sgu-card p-5"><h2 class="sgu-section-title">Selo de verificado</h2><p class="mt-2 text-sm text-muted">Permite divulgação pública sem aprovação manual. Não equivale à confirmação do e-mail.</p><div class="mt-4 flex items-center gap-3"><% if user.verified? %><%= render "shared/verified_badge" %><span class="text-sm">Verificado pela administração</span><% end %><% if UserVerificationPolicy.new(Current.user, user).update? %><%= button_to(user.verified? ? "Remover selo" : "Conceder selo", verification_admin_user_path(user), method: :patch, params: { verified: user.verified? ? "0" : "1" }, class: "sgu-btn sgu-btn-secondary") %><% end %></div></section>
+
   <section class="sgu-card p-5 sm:p-6" aria-labelledby="user_roles_title">
     <h2 id="user_roles_title" class="sgu-section-title">Papéis institucionais</h2>
     <p class="mt-1 text-sm text-muted">Uma pessoa pode ter vários papéis. Nenhum deles concede administração. Segurança e coordenação dão acesso à fila de atendimento.</p>
