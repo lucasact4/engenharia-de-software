@@ -1,9 +1,9 @@
 <% content_for :title, "Registrar ocorrência - SGU UFRPE" %>
-<div class="mx-auto max-w-3xl">
+<div class="mx-auto max-w-4xl">
   <%= link_to alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Meus alertas<% end %>
   <p class="sgu-eyebrow mt-4">Nova ocorrência</p>
-  <h1 class="sgu-page-title mt-1">Registrar ocorrência</h1>
-  <p class="mt-2 text-muted">Descreva o que está acontecendo no campus. Você recebe um protocolo para acompanhar o atendimento. Em risco imediato, use o <%= link_to "botão de pânico", new_panic_path, class: "sgu-link" %>.</p>
+  <h1 class="sgu-page-title mt-1">Publicar ocorrência</h1>
+  <p class="mt-2 text-sm text-muted">Compartilhe o que aconteceu e acompanhe o atendimento.</p>
 
   <% if @idempotency_conflict %>
     <%= render "alerts/idempotency_conflict", conflict: @conflict %>
