@@ -26,11 +26,13 @@ module Alerts
         @alert.lock!
         apply_lock_version(@alert, @lock_version)
         attachment.delete
+        @alert.update_columns(photo_order: Array(@alert.photo_order) - [ attachment.id ])
         @alert.touch
         AuditEvent.record!(
           actor: actor, action: "alert.photo_removed", subject: @alert, reason: @reason,
           metadata: { photos_count: @alert.photos_attachments.count }
         )
+        UpdateContent.flag_publication(actor, @alert)
       end
       blob.purge_later unless ActiveStorage::Attachment.exists?(blob_id: blob.id)
       @alert
