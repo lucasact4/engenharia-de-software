@@ -68,4 +68,4 @@ Fix failures before beginning feature development. This confirms that the new re
 - [Set up local development](development.md).
 - Complete the [first deployment checklist](first-deploy.md).
 - Complete the [new project delivery checklist](project-delivery.md).
-- Read the main [README](../README.md) for administrative CRUD generation and daily development commands.
+- Read [Local development](development.md) for [administrative CRUD generation](development.md#creating-an-administrative-crud) and daily development commands.

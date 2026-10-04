@@ -1,10 +1,10 @@
 # Upgrading an Existing Database to the SGU Data Model
 
-This guide explains how to apply the SGU data-model migrations and subsequent presentation/registration changes to an existing SQLite database, and what a rollback can and cannot undo. Legacy accounts and sessions are preserved; the demonstration table is intentionally removed. It covers local and shared non-production databases. Production backup policy stays in [Backing up and restoring SQLite production data](sqlite-backup-and-restore.md); never run this procedure against production as an experiment.
+This guide explains how to apply the SGU data-model migrations and subsequent presentation, registration, and occurrence-publication changes to an existing SQLite database, and what a rollback can and cannot undo. Legacy accounts and sessions are preserved; the demonstration table is intentionally removed. It covers local and shared non-production databases. Production backup policy stays in [Backing up and restoring SQLite production data](sqlite-backup-and-restore.md); never run this procedure against production as an experiment.
 
 ## What the upgrade changes
 
-The current upgrade consists of twelve migrations after baseline version `20260914150000`, applied in this order:
+The current upgrade consists of fourteen migrations after baseline version `20260914150000`, applied in this order:
 
 | Migration | Effect |
 | --- | --- |
@@ -20,6 +20,8 @@ The current upgrade consists of twelve migrations after baseline version `202609
 | `20261002120000_create_presentation_profiles.rb` | Creates saved presentation profiles. |
 | `20261003100000_remove_legacy_dogs.rb` | Removes the demonstration table and its rows. Its rollback recreates an empty table; it cannot recover the removed data. |
 | `20261003100100_add_registration_review_to_users.rb` | Adds registration status, requested role, review metadata, reviewer foreign key, and nullable `email_verified_at`. Existing accounts default to `approved`; CHECK constraints restrict registration statuses and public signup roles. |
+| `20261003120000_unify_occurrence_publications.rb` | Adds descriptive locations, administrator-granted verification metadata, approval origin, moderation blocking, and canonical-content constraints. Occurrence posts read text/photos from `alerts`. Legacy occurrence editorial snapshots are audited privately and those posts are withdrawn; news/notice content and interaction IDs remain intact. |
+| `20261003180000_add_occurrence_photo_order_and_map_location.rb` | Adds required JSON `alerts.photo_order` (default `[]`), allows `map` location sources, and requires coordinates for GPS/map sources. Existing accounts, alerts, and attachments remain intact. Rollback refuses map rows before changing the schema. |
 
 Existing account data is preserved: `users` (`id`, `email_address`, `password_digest`, `admin`, `deleted_at`) and `sessions`. The former `dogs` table is intentionally removed by a later migration; back it up before upgrading if its demonstration rows matter. The historical creation migration and legacy schema fixture remain so existing databases can be upgraded faithfully. New profile fields start as `NULL` and `public_profile` starts as `false`. No roles are inferred from existing accounts; `users.admin` remains the only source of administrator access. The `locations` catalog intentionally starts empty because no official campus locations have been provided.
 
@@ -71,7 +73,13 @@ Use an absolute path in `DATABASE_URL`. Run the checks from step 4 against `tmp/
 bin/rails db:migrate
 ```
 
-A database already at `20261001120700` applies the publication block migration and all later pending migrations. A database at `20261002120000` applies the demonstration-table removal and registration-review migrations. The publication block migration leaves existing publication states unchanged: the publication policy scope excludes content whose source is blocked from non-administrator reads, preserving the historical state. Through the application, `Alerts::Restrict` preserves the author's requested audience, sets the block, and withdraws any published projection. Releasing the block through `Alerts::ChangeAudience` requires an administrator and a reason; publication still follows the usual editorial approval flow.
+A database already at `20261001120700` applies the publication block migration and all later pending migrations. A database at `20261002120000` applies the demonstration-table removal, registration-review, occurrence-publication, and photo-order/map migrations. A database at `20261003100100` applies occurrence unification and the photo-order/map migration; a database at `20261003120000` applies only photo-order/map changes. The publication block migration leaves existing publication states unchanged: the publication policy scope excludes content whose source is blocked from non-administrator reads, preserving the historical state. Through the application, `Alerts::Restrict` preserves the author's requested audience, sets the block, and withdraws any published projection. Releasing the block through `Alerts::ChangeAudience` requires an administrator and a reason; occurrence posts then follow the same-post visibility review described in the [occurrence publication guide](occurrence-social-flow.md). News and notices keep their editorial approval flow.
+
+The occurrence-publication migration deliberately withdraws legacy occurrence posts. Their old title, body, author, and review/publication state are retained under `audit_events.metadata.legacy_editorial` with action `system.occurrence_unified`. It does not silently expose the canonical alert text or original photos. Review each legacy post before any new disclosure; never bulk-republish as part of setup. New verification fields start empty, so neither existing accounts nor new registrations receive the badge automatically.
+
+The photo-order/map migration starts legacy photo ordering as `[]`; the model falls back to attachment ID order until an author saves a chosen cover/order. GPS remains distinct from manually selected map coordinates: map points have no capture time or GPS accuracy. The composer uses locally packaged Leaflet and lazy browser tile loading; no Maps API key or server URL fetching is required. See [GPS, catalog locations, and the map](occurrence-social-flow.md#gps-catalog-locations-and-the-map).
+
+Install the image-processing dependencies before starting the updated application and restart `bin/dev` after migrating; see [Image processing and private media](occurrence-social-flow.md#image-processing-and-private-media).
 
 ## 4. Verify
 
@@ -88,7 +96,7 @@ With no preexisting catalogs, expect `7` roles, `7` categories, `ok` from the in
 sqlite3 storage/development.sqlite3 "select name from sqlite_master where type = 'table' and name = 'dogs';"
 ```
 
-`email_verified_at` remains `NULL`: adding the column does not verify email ownership. See the [registration guide](sgu-cadastro-temas-revisao.md) for temporary automatic approval and administrative review.
+`email_verified_at` remains `NULL`: adding the column does not verify email ownership. The separate `verified_at`/`verified_by_id` pair records an administrator-granted publication badge, not email verification. See the [registration guide](sgu-cadastro-temas-revisao.md) for temporary automatic approval and administrative review.
 
 ## Catalogs outside migrations
 
@@ -112,7 +120,11 @@ A rollback is structural, not a restore. Run it only on disposable databases:
 bin/rails db:migrate VERSION=20260914150000
 ```
 
-From the current schema, this explicit target removes registration-review fields, saved presentation profiles, the publication block, SGU tables, and profile columns. Everything created after the baseline is lost: alerts, publications, comments, granted roles, audit events, attachment metadata, and profile data. Rolling back the demonstration-table removal recreates only its structure, with no rows. Active Storage files on disk are not deleted, and the bootstrap data migration's `down` does nothing. Do not use a fixed `STEP` count across versions: later migrations change what it would undo.
+From the current schema, this explicit target first rolls back photo-order/map changes and occurrence unification, then removes registration-review fields, saved presentation profiles, the publication block, SGU tables, and profile columns. Everything created after the baseline is lost: alerts, publications, comments, granted roles, audit events, attachment metadata, and profile data. Rolling back the demonstration-table removal recreates only its structure, with no rows. Active Storage files on disk are not deleted, and the bootstrap data migration's `down` does nothing. Do not use a fixed `STEP` count across versions: later migrations change what it would undo.
+
+For only the photo-order/map migration, the previous target is `VERSION=20261003120000`. Its rollback refuses existing `location_source = 'map'` rows before any schema change. If no map rows exist, it removes photo ordering and restores the earlier location-source constraints; photo attachments remain. A refusal leaves the current migration applied. Restore a matching backup for shared-data recovery rather than treating map coordinates as GPS. The local composer-upgrade backup is `tmp/backups/development-before-composer-20261003-231735.sqlite3` and passed its SQLite integrity check before development/test migration.
+
+After rolling back photo-order/map changes, the occurrence-publication migration can be rolled back to the previous schema target `VERSION=20261003100100`. Its `down` restores legacy editorial snapshots when available and fills newer occurrence copies from their alerts. It cannot preserve the new verification or approval metadata. If any manually described location has no catalog ID, rollback raises `ActiveRecord::IrreversibleMigration`: the old schema cannot represent that location. The SQLite migration transaction should leave the current schema intact when this happens; verify the schema version afterward. Prefer restoring the pre-upgrade backup and its matching storage files when recovering a shared database, rather than deleting locations or posts to force rollback.
 
 To recover data, restore the backup taken before migrating, together with the matching storage files. Stop all application processes first, then run:
 
@@ -124,10 +136,10 @@ Repeat the integrity check and row counts from step 1 after restoring.
 
 ## Idempotency compatibility
 
-Alert creation now preserves leading zeros in numeric-looking titles and descriptions when calculating the request digest; numeric normalization applies only to numeric attributes. Replaying an older key whose digest used the previous normalization can return a conservative idempotency conflict. It does not create a duplicate alert; check the existing record before using another key.
+Alert creation now preserves leading zeros in numeric-looking titles and descriptions when calculating the request digest; numeric normalization applies only to numeric attributes. Replaying an older key whose digest used the previous normalization can return a conservative idempotency conflict. The new digest also preserves upload order because cover/order are meaningful: replaying a historical multi-photo key may conflict if its digest was computed from sorted photos. It does not create a duplicate alert; check the existing record before using another key.
 
 ## Operational notes for attachments
 
 - Default Active Storage routes are disabled (`config.active_storage.draw_routes = false` in `config/application.rb`). Alert photos are served only through `GET /alertas/:alert_id/fotos/:id` (`AlertPhotosController`), which re-checks authorization and returns 404 when access is denied. `DELETE` on the same path (`Alerts::RemovePhoto`) removes one attachment of that alert: the attachment row is deleted and audited in a transaction, and the file is purged by a background job only after the commit.
-- Alert photos accept PNG or JPEG, verified by file signature, with at most 5 photos of 5 MiB (5 × 1024 × 1024 bytes) each. The `image_processing` gem is not installed, so no variants are generated.
+- Alert photos accept PNG or JPEG, verified by file signature, with at most 5 photos of 5 MiB (5 × 1024 × 1024 bytes) each. The `image_processing` and `ruby-vips` gems, plus the system libvips library, are required for feed variants. Feed photos use `GET /mural/:publication_id/fotos/:id`: authorization is checked again and the response is a resized JPEG with metadata stripped, with `Cache-Control: private, no-store`. Original alert evidence remains protected by its own endpoint; see the [media guide](occurrence-social-flow.md#image-processing-and-private-media).
 - Because attachment metadata lives in the database and the files live under `storage/`, back up and restore both together.

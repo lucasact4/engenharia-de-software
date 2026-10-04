@@ -1,5 +1,7 @@
 # Alertas, atendimento, mural e experiência social: implementação
 
+> Occurrence-publication follow-up: [Occurrence posts, public review, and verification](occurrence-social-flow.md) describes the current same-post workflow, administrator badge, descriptive locations, and private feed media. Earlier test counts and occurrence editorial rules in this document describe the previous delivery.
+
 > Registro histórico da implementação de 02/10/2026. A revisão posterior acrescentou cadastro público, revisão administrativa, migrações e temas, além de remover o exemplo do template. Consulte [Cadastro, temas e revisão do SGU](sgu-cadastro-temas-revisao.md) para o estado atual. Os resultados de testes e as limitações abaixo pertencem à entrega original.
 
 Documento de entrega e roteiro de revisão. Registra o estado em 02/10/2026, na branch local `feat/alertas-crud-social`, criada a partir de `main` (`658bfde`, merge da card-11). Nada foi commitado, enviado ou publicado. O diretório não rastreado `docs/prompts/` já existia e foi preservado.

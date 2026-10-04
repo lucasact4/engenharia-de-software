@@ -1,5 +1,7 @@
 # Cadastro, temas e revisão do SGU
 
+> Occurrence-publication follow-up: [Occurrence posts, public review, and verification](occurrence-social-flow.md) describes the current same-post workflow, administrator badge, descriptive locations, and private feed media. Earlier test counts and occurrence editorial rules in this document describe the previous delivery.
+
 Revisão de 03/10/2026 da implementação iniciada em `feat/alertas-crud-social`. Este documento complementa o [registro original do CRUD](alertas-crud-implementacao.md): as verificações de 02/10 não representam a validação das mudanças descritas aqui.
 
 ## Cadastro e acesso
