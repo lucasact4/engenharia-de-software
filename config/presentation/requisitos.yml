@@ -45,23 +45,23 @@ dimensoes:
   - nome: "Categoria"
     pergunta: "Sobre o quê?"
     exemplos: ["Infraestrutura", "Mobilidade e acesso", "Segurança"]
-    estado: planejado
-    nota: "Exemplos usados na landing."
+    estado: implementado
+    nota: "Catálogo administrável, com descrições e exemplos no formulário."
   - nome: "Severidade"
     pergunta: "Qual a gravidade/impacto?"
-    exemplos: ["Leve", "Comum", "Moderado", "Grave"]
+    exemplos: ["Leve", "Moderada", "Alta", "Crítica", "Não sei avaliar"]
     estado: aguardando_decisao
     nota: "Escala proposta pelo responsável; falta consolidar os critérios com a equipe. Não confundir com prioridade de atendimento."
   - nome: "Status"
     pergunta: "Em que etapa?"
     exemplos: ["Recebida", "Em análise", "Resolvida"]
-    estado: planejado
-    nota: "Etapas usadas na landing."
+    estado: implementado
+    nota: "Recebimento, análise, encaminhamento e resolução no atendimento."
   - nome: "Visibilidade"
     pergunta: "Quem pode ver?"
     exemplos: ["Público", "Interno", "Privado"]
     estado: aguardando_decisao
-    nota: "Proposta: interno para autenticados; privado para administração; público só após aprovação administrativa. Falta validar com a equipe."
+    nota: "Regra implementada: post interno para autenticados; externo direto para verificados ou após aprovação; pânico e detalhes operacionais restritos. Aceite da equipe pendente."
 
 regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgente pode ser privada, e uma ocorrência resolvida pode continuar pública."
 
@@ -108,5 +108,5 @@ conflitos:
   - id: "Cadastro"
     tema: "Cadastro e verificação institucional"
     anterior: "Regras não consolidadas."
-    proposta: "Estudante valida e-mail ufrpe.br; funcionários, segurança e visitantes dependem da aprovação administrativa."
+    proposta: "Cadastro exige @ufrpe.br e perfil estudante, professor ou visitante. Revisão administrativa disponível; liberação automática e confirmação de e-mail pendente em desenvolvimento."
     estado: aguardando_decisao

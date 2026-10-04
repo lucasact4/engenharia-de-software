@@ -24,7 +24,7 @@ class Presentation
     "diagramas" => %w[itens],
     "tecnologias" => %w[stack mudancas],
     "gestao" => %w[cards ambientes praticas reunioes],
-    "retrospectiva" => %w[pontos acoes licoes],
+    "retrospectiva" => %w[],
     "planejamento" => %w[marco proximos_passos riscos dependencias]
   }.freeze
 
@@ -211,6 +211,36 @@ class Presentation
 
   def schema_version = self.class.schema_version
 
+  # Fonte única dos slides "retrospectiva" e "status-report" (formato atual e anterior).
+  def retrospective
+    @retrospective ||= Retrospective.new(retrospectiva)
+  end
+
+  CAPTURE_THEMES = { "dark" => "escuro", "light" => "claro" }.freeze
+
+  # Versões de uma captura do conceito visual: escura (campos principais) e clara (bloco "claro").
+  # Sem bloco "claro", a mesma imagem serve aos dois temas (formato anterior).
+  def capture_variants(capture)
+    dark = { theme: "dark", image: capture[:imagem], zoom: capture[:imagem_ampliada].presence || capture[:imagem], alt: capture[:alt] }
+    light = capture[:claro]
+    return [ dark.merge(theme: "any") ] if light.blank?
+
+    [ dark, { theme: "light", image: light[:imagem], zoom: light[:imagem_ampliada].presence || light[:imagem], alt: light[:alt].presence || capture[:alt] } ]
+  end
+
+  EVIDENCE_TYPES = {
+    "controller" => "Controller", "model" => "Model", "view" => "View", "service" => "Serviço", "policy" => "Policy"
+  }.freeze
+  REPOSITORY_PATH = %r{\A(?:app|config|db|lib|spec)/[A-Za-z0-9_./-]+\z}
+
+  # Link para a versão publicada do arquivo (commit de funcionalidades.yml → publicacao).
+  def evidence_url(evidence)
+    commit = funcionalidades.dig(:publicacao, :commit)
+    return unless evidence[:publicado] == true && commit.present?
+
+    "#{entrega.dig(:links, :github)}/blob/#{commit}/#{evidence[:caminho]}"
+  end
+
   REPOSITORY_FOLDERS = [
     [ "app/models", "app/models/**/*.rb", "models e concerns" ],
     [ "app/controllers", "app/controllers/**/*.rb", "controllers" ],
@@ -282,6 +312,9 @@ class Presentation
       validate_slides!
       validate_deliveries!
       validate_stack!
+      validate_functionalities!
+      validate_captures!
+      retrospective.validate!
 
       unknown = states_in_use - STATES.keys
       raise ArgumentError, "Estados desconhecidos: #{unknown.join(', ')}" if unknown.any?
@@ -405,6 +438,35 @@ class Presentation
           raise ArgumentError, "tecnologias.yml: #{item[:nome].inspect} precisa de logo (arquivo, fonte, licença) " \
             "ou simbolo e de versoes com rotulo e uma única fonte (gem, ruby_version_file, sqlite_engine ou texto)."
         end
+      end
+    end
+
+    # Catálogo explícito de evidências: caminhos relativos do repositório, nunca absolutos.
+    def validate_functionalities!
+      commit = funcionalidades.dig(:publicacao, :commit)
+      unless commit.blank? || commit.to_s.match?(/\A\h{40}\z/)
+        raise ArgumentError, "funcionalidades.yml: publicacao.commit deve ser um SHA completo (40 caracteres)."
+      end
+
+      funcionalidades.fetch(:itens).each do |item|
+        Array(item[:evidencias]).each do |evidence|
+          valid = EVIDENCE_TYPES.key?(evidence[:tipo]) && evidence[:papel].present? &&
+            evidence[:caminho].to_s.match?(REPOSITORY_PATH) && !evidence[:caminho].include?("..") &&
+            [ true, false ].include?(evidence[:publicado])
+          raise ArgumentError, "funcionalidades.yml: evidência inválida em #{item[:id]}: #{evidence[:caminho].inspect}" unless valid
+        end
+        unless Array(item[:testes]).all? { |path| path.to_s.match?(%r{\Aspec/[A-Za-z0-9_./-]+_spec\.rb\z}) }
+          raise ArgumentError, "funcionalidades.yml: testes de #{item[:id]} devem ser caminhos relativos em spec/."
+        end
+      end
+    end
+
+    def validate_captures!
+      conceito_visual.fetch(:capturas).each do |capture|
+        light = capture[:claro]
+        next if light.nil? || (light.is_a?(Hash) && light[:imagem].present?)
+
+        raise ArgumentError, "conceito_visual.yml: claro da captura #{capture[:id]} precisa de imagem."
       end
     end
 

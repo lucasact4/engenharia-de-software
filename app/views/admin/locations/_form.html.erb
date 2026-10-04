@@ -1,0 +1,21 @@
+<%= form_with model: [ :admin, @instance ], scope: :location, class: "sgu-card space-y-5 p-5 sm:p-6", html: { novalidate: true } do |f| %>
+  <%= render "admin/catalogs/form_fields", f: f, entry: @instance, name_max: 120 %>
+  <fieldset class="grid gap-4 rounded-xl bg-surface-muted p-4 sm:grid-cols-2">
+    <legend class="sgu-label">Coordenadas de referência (opcionais)</legend>
+    <p class="text-xs text-muted sm:col-span-2">Informe as duas ou nenhuma. Use apenas coordenadas verificadas do local real.</p>
+    <div>
+      <%= f.label :reference_latitude, "Latitude", class: "sgu-label" %>
+      <%= f.number_field :reference_latitude, step: "any", min: -90, max: 90, class: "sgu-input", aria: { invalid: invalid?(@instance, :reference_latitude) } %>
+      <%= field_errors(@instance, :reference_latitude) %>
+    </div>
+    <div>
+      <%= f.label :reference_longitude, "Longitude", class: "sgu-label" %>
+      <%= f.number_field :reference_longitude, step: "any", min: -180, max: 180, class: "sgu-input", aria: { invalid: invalid?(@instance, :reference_longitude) } %>
+      <%= field_errors(@instance, :reference_longitude) %>
+    </div>
+  </fieldset>
+  <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <%= link_to "Cancelar", admin_locations_path, class: "sgu-btn sgu-btn-secondary" %>
+    <%= f.button "Salvar local", type: "submit", class: "sgu-btn sgu-btn-primary" %>
+  </div>
+<% end %>

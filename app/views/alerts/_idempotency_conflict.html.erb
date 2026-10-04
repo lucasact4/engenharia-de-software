@@ -1,0 +1,12 @@
+<section class="mt-6 rounded-2xl border border-warning-line bg-warning-soft p-5 text-sm text-warning-ink" role="alert">
+  <p class="font-bold">Este envio já foi usado com outros dados.</p>
+  <p class="mt-1">Para evitar registros duplicados, cada envio tem uma chave. A chave deste formulário já gerou um registro diferente do que você enviou agora, por isso nada foi gravado.</p>
+  <% if conflict %>
+    <p class="mt-2">Registro existente: <%= link_to conflict.protocol, alert_path(conflict), class: "sgu-link font-mono" %>.</p>
+  <% end %>
+  <p class="mt-2">Confira “Meus alertas”. Se esta é mesmo uma <strong>nova</strong> ocorrência, marque a opção abaixo e envie de novo.</p>
+  <label class="mt-3 flex items-center gap-2 font-semibold">
+    <input type="checkbox" name="new_intent" value="1" form="alert_form_new" class="size-4 accent-brand-solid">
+    É uma nova ocorrência (usar uma nova chave de envio)
+  </label>
+</section>

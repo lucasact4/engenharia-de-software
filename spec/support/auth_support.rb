@@ -13,7 +13,7 @@ module AuthSupport
     fill_in "email_address", with: user.email_address
     fill_in "password", with: (user.password || "123")
     click_button "Entrar"
-    expect(page).to have_current_path(admin_path, ignore_query: true)
+    expect(page).to have_current_path(user.admin? ? admin_path : panel_path, ignore_query: true)
   end
 
   def sign_out

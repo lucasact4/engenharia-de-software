@@ -1,0 +1,21 @@
+<% content_for :title, "Denúncia - SGU UFRPE" %>
+<div class="mx-auto max-w-2xl space-y-4">
+  <%= link_to content_reports_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Minhas denúncias<% end %>
+  <h1 class="sgu-page-title">Denúncia de <%= @report.comment_id ? "comentário" : "publicação" %></h1>
+  <dl class="sgu-card sgu-dl p-5">
+    <dt>Situação</dt><dd><%= enum_badge("content_report.state", @report.state_in_database, PortalHelper::REPORT_STATE_BADGES) %></dd>
+    <dt>Motivo</dt><dd><%= enum_label("content_report.reason", @report.reason) %></dd>
+    <dt>Detalhes</dt><dd class="sgu-prose"><%= @report.details_in_database.presence || "—" %></dd>
+    <dt>Enviada em</dt><dd><%= sgu_time(@report.created_at) %></dd>
+    <% if @report.reviewed_at %><dt>Analisada em</dt><dd><%= sgu_time(@report.reviewed_at) %></dd><% end %>
+  </dl>
+  <% if policy(@report).reopen? %>
+    <%= form_with url: reopen_content_report_path(@report), method: :patch, class: "sgu-card space-y-3 p-5" do %>
+      <h2 class="sgu-section-title">Pedir nova análise</h2>
+      <%= label_tag :details, "Novas informações (obrigatório)", class: "sgu-label" %>
+      <%= text_area_tag :details, params[:details], rows: 3, maxlength: ContentReport::DETAILS_MAX, class: "sgu-input", aria: { invalid: @report.errors.any? } %>
+      <% if @report.errors.any? %><p class="sgu-field-error">Informe o que mudou para a nova análise.</p><% end %>
+      <button type="submit" class="sgu-btn sgu-btn-secondary">Reabrir denúncia</button>
+    <% end %>
+  <% end %>
+</div>

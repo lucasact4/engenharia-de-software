@@ -1,5 +1,5 @@
 module Alerts
-  # O autor pode restringir; ampliar ou liberar a divulgação exige administrador e motivo.
+  # Audiência escolhida pelo autor; a divulgação pública segue o fluxo da publicação.
   class ChangeAudience < ApplicationService
     attr_reader :actor
 
@@ -15,15 +15,14 @@ module Alerts
       authorize!(@alert, :change_audience?)
       unless @requested == "restricted"
         authorize!(@alert, :expand_audience?)
-        require_reason!(@reason, @alert)
+        require_reason!(@reason, @alert) if actor.id != @alert.author_id
       end
 
       apply_lock_version(@alert, @lock_version)
       @alert.requested_visibility = @requested
       @alert.visibility = @requested == "internal" ? "internal" : "restricted"
-      @alert.publication_blocked = false unless @requested == "restricted"
+      @alert.publication_blocked = false if actor.admin? && @requested != "restricted"
       changes = @alert.changes.slice("requested_visibility", "visibility", "publication_blocked")
-      return @alert if changes.empty?
 
       Alert.transaction do
         @alert.save!

@@ -1,6 +1,17 @@
-# Conteúdo editorial revisado (ocorrência divulgada, aviso ou notícia).
+# Post de ocorrência com conteúdo canônico no Alert; avisos e notícias conservam texto próprio.
 
 class Publication < ApplicationRecord
+  include TextSearch
+  attribute :approval_method, :string
+  enum :approval_method, { administrator: "administrator", verified_author: "verified_author" }, prefix: :approval, validate: { allow_nil: true }
+  has_many_attached :photos
+  before_validation :clear_occurrence_copy
+
+  def title = occurrence? && alert ? alert.title : super
+  def body = occurrence? && alert ? alert.description : super
+  def feed_photos = occurrence? ? alert.photos : photos
+  def ordered_feed_photos = occurrence? ? alert.ordered_photos : photos.to_a
+
   TITLE_LENGTH = 5..160
   BODY_LENGTH = 10..10_000
   RELEVANT_ATTRIBUTES = %w[title body visibility expires_at].freeze
@@ -25,8 +36,9 @@ class Publication < ApplicationRecord
   normalizes :title, with: ->(title) { title.squish }
   normalizes :body, with: ->(body) { body.strip }
 
-  validates :title, presence: true, length: { in: TITLE_LENGTH }
-  validates :body, presence: true, length: { in: BODY_LENGTH }
+  validates :title, presence: true, length: { in: TITLE_LENGTH }, unless: :occurrence?
+  validates :body, presence: true, length: { in: BODY_LENGTH }, unless: :occurrence?
+  validate :photos_constraints
   validates :alert_id, uniqueness: true, allow_nil: true
   validate :source_rules
   validate :review_consistency
@@ -36,7 +48,7 @@ class Publication < ApplicationRecord
   def self.compatible_sources_for(visibility)
     case visibility.to_s
     when "internal"
-      Alert.occurrence.where(publication_blocked: false).where(requested_visibility: "internal", visibility: "internal")
+      Alert.occurrence.where(publication_blocked: false, requested_visibility: %w[internal public_external])
     when "public_external"
       Alert.occurrence.where(publication_blocked: false).where(requested_visibility: "public_external")
     else
@@ -64,13 +76,31 @@ class Publication < ApplicationRecord
 
   private
 
+    def clear_occurrence_copy
+      self.author = alert.author if occurrence? && alert && new_record?
+      self[:title] = nil if occurrence?
+      self[:body] = nil if occurrence?
+    end
+
+    def photos_constraints
+      return unless photos.attached? || attachment_changes["photos"]
+
+      errors.add(:photos, "devem pertencer ao relato original") if occurrence? && photos.attached?
+      errors.add(:photos, :too_many, count: Alert::MAX_PHOTOS) if photos.size > Alert::MAX_PHOTOS
+      photos.each do |attachment|
+        errors.add(:photos, :content_type) unless Alert::PHOTO_CONTENT_TYPES.include?(attachment.blob.content_type)
+        errors.add(:photos, :too_large, megabytes: 5) if attachment.blob.byte_size > Alert::MAX_PHOTO_BYTES
+      end
+      Alerts::PhotoUpload.validate_pending(self)
+    end
+
     def source_rules
       if occurrence?
         if alert.nil?
           errors.add(:alert, :blank)
         elsif alert.panic?
           errors.add(:alert, :panic_not_publishable)
-        elsif (new_record? || will_save_change_to_visibility?) && !source_compatible?
+        elsif !withdrawn? && (new_record? || will_save_change_to_visibility?) && !source_compatible?
           errors.add(:alert, :incompatible_audience)
         end
       elsif alert_id.present?
@@ -84,7 +114,7 @@ class Publication < ApplicationRecord
     def review_consistency
       return unless review_approved? || review_rejected?
 
-      errors.add(:reviewed_by, :blank) if reviewed_by.nil?
+      errors.add(:reviewed_by, :blank) if reviewed_by.nil? && !approval_verified_author?
       errors.add(:reviewed_at, :blank) if reviewed_at.nil?
       errors.add(:reviewed_content_version, :blank) if reviewed_content_version.nil?
       errors.add(:review_reason, :blank) if review_rejected? && review_reason.blank?
@@ -92,7 +122,7 @@ class Publication < ApplicationRecord
 
     def publication_consistency
       if published?
-        errors.add(:state, :requires_current_approval) unless approved_for_current_content?
+        errors.add(:state, :requires_current_approval) unless (occurrence? && internal?) || approved_for_current_content?
         errors.add(:published_at, :blank) if published_at.nil?
         errors.add(:expires_at, :blank) if notice? && expires_at.nil?
       end

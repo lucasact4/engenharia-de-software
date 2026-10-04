@@ -1,0 +1,33 @@
+<%# Campos de perfil. A própria pessoa decide o opt-in público; a administração só pode retirá-lo. %>
+<div class="grid gap-4 sm:grid-cols-2">
+  <div>
+    <%= f.label :display_name, "Nome de exibição", class: "sgu-label" %>
+    <%= f.text_field :display_name, class: "sgu-input", maxlength: 80, aria: { invalid: invalid?(user, :display_name) } %>
+    <p class="sgu-hint">Até 80 caracteres.</p>
+    <%= field_errors(user, :display_name) %>
+  </div>
+  <div>
+    <%= f.label :username, "Nome de usuário (opcional)", class: "sgu-label" %>
+    <%= f.text_field :username, class: "sgu-input font-mono", maxlength: 30, pattern: "[a-z0-9_]{3,30}", autocomplete: "off", aria: { invalid: invalid?(user, :username) } %>
+    <p class="sgu-hint">3 a 30 caracteres: letras minúsculas, números e _. Único no SGU.</p>
+    <%= field_errors(user, :username) %>
+  </div>
+</div>
+<div>
+  <%= f.label :bio, "Apresentação", class: "sgu-label" %>
+  <%= f.text_area :bio, rows: 3, class: "sgu-input", maxlength: 500, aria: { invalid: invalid?(user, :bio) } %>
+  <p class="sgu-hint">Até 500 caracteres. Aparece no perfil público, se ele estiver ativo.</p>
+  <%= field_errors(user, :bio) %>
+</div>
+<% if local_assigns[:admin_editing] && !user.public_profile_in_database %>
+  <p class="rounded-xl bg-surface-muted p-3 text-sm text-muted">Perfil privado. Só a própria pessoa pode torná-lo público.</p>
+<% else %>
+  <div class="flex items-start gap-2 rounded-xl bg-surface-muted p-3">
+    <%= f.check_box :public_profile, class: "mt-1 size-4 accent-brand-solid" %>
+    <div>
+      <%= f.label :public_profile, (local_assigns[:admin_editing] ? "Perfil público (desmarque para retirar do ar)" : "Tornar meu perfil público"), class: "text-sm font-semibold text-ink" %>
+      <p class="sgu-hint !mt-0">Mostra nome, nome de usuário e apresentação em /pessoas e permite que outras pessoas sigam você. Seu e-mail, papéis, alertas e salvos nunca aparecem.</p>
+      <%= field_errors(user, :public_profile) %>
+    </div>
+  </div>
+<% end %>

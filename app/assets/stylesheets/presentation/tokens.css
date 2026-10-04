@@ -1,0 +1,33 @@
+/*
+ * Apresentação da segunda entrega (/apresentacao).
+ * Sem JavaScript: modo leitura (slides empilhados). Com JavaScript: .apr--presenting.
+ * Impressão/PDF: bloco @media print no fim do arquivo.
+ */
+
+:root {
+  --apr-g-950: #0a211d;
+  --apr-g-900: #0d2925;
+  --apr-g-800: #153c36;
+  --apr-g-700: #1b4d45;
+  --apr-g-600: #277d6e;
+  --apr-g-300: #9fc8be;
+  --apr-g-100: #e3efeb;
+  --apr-g-50: #f0f6f3;
+  --apr-paper: #f4f7f5;
+  --apr-surface: #fff;
+  --apr-heading: var(--apr-g-800);
+  --apr-link: var(--apr-g-600);
+  --apr-ink: #0f1f1c;
+  --apr-ink-2: #3c4d49;
+  --apr-ink-3: #5d6f6a;
+  --apr-gold: #f2bd57;
+  --apr-amber: #c9861a;
+  --apr-line: rgba(21, 60, 54, 0.14);
+  --apr-line-strong: rgba(21, 60, 54, 0.28);
+  --apr-radius: 14px;
+  --apr-bar-h: 3.5rem;
+  --apr-nav-h: 3.75rem;
+  --apr-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --apr-font: "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+  --apr-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}

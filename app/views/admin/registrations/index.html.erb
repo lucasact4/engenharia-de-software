@@ -1,0 +1,37 @@
+<% content_for :title, "Cadastros" %>
+<div class="mx-auto max-w-6xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", eyebrow: "Acesso à comunidade", title: "Cadastros", description: "Aprove, reprove e consulte os cadastros feitos pela página pública." %>
+  <%= render "shared/auth/development_notice" %>
+  <%= form_with url: admin_registrations_path, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-[1fr_14rem_auto]" do |form| %>
+    <div><%= form.label :q, "Nome ou e-mail", class: "sgu-label" %><%= form.search_field :q, value: params[:q], class: "sgu-input", placeholder: "Buscar cadastro" %></div>
+    <div><%= form.label :status, "Situação", class: "sgu-label" %><%= form.select :status, [["Pendente", "pending"], ["Aprovado", "approved"], ["Reprovado", "rejected"]], { include_blank: "Todas", selected: params[:status] }, class: "sgu-input" %></div>
+    <%= form.submit "Filtrar", class: "sgu-btn sgu-btn-secondary self-end" %>
+  <% end %>
+  <% if @registrations.empty? %>
+    <div class="sgu-empty"><h2 class="sgu-section-title">Nenhum cadastro encontrado</h2><p class="mt-2 text-sm text-muted">Os novos cadastros aparecerão aqui, inclusive os aprovados automaticamente.</p></div>
+  <% else %>
+    <ul class="space-y-3 md:hidden" aria-label="Cadastros encontrados">
+      <% @registrations.each do |user| %>
+        <li class="sgu-card p-4">
+          <div class="flex items-start justify-between gap-3"><%= link_to user.display_name, admin_registration_path(user), class: "sgu-link" %><%= render "status", user: user %></div>
+          <p class="mt-2 break-all text-sm text-muted"><%= user.email_address %></p>
+          <p class="mt-2 text-sm"><%= { "visitor" => "Visitante", "professor" => "Professor", "student" => "Estudante" }.fetch(user.registration_role_code) %> · <%= sgu_time(user.created_at) %></p>
+          <%= link_to "Revisar cadastro", admin_registration_path(user), class: "sgu-btn sgu-btn-sm sgu-btn-secondary mt-3" %>
+        </li>
+      <% end %>
+    </ul>
+    <div class="sgu-card hidden overflow-x-auto md:block">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-line bg-surface-muted text-muted"><tr><% ["Pessoa", "Perfil solicitado", "Situação", "Criado em", "Revisão"].each do |label| %><th class="px-5 py-3 font-semibold" scope="col"><%= label %></th><% end %></tr></thead>
+        <tbody class="divide-y divide-line"><% @registrations.each do |user| %>
+          <tr><td class="px-5 py-4"><%= link_to user.display_name, admin_registration_path(user), class: "sgu-link" %><p class="mt-1 text-xs text-muted"><%= user.email_address %></p></td>
+            <td class="px-5 py-4"><%= { "visitor" => "Visitante", "professor" => "Professor", "student" => "Estudante" }.fetch(user.registration_role_code) %></td>
+            <td class="px-5 py-4"><%= render "status", user: user %></td>
+            <td class="whitespace-nowrap px-5 py-4 text-muted"><%= sgu_time(user.created_at) %></td>
+            <td class="px-5 py-4 text-muted"><%= user.registration_reviewed_by&.display_name.presence || (user.registration_reviewed_at ? "Aprovação automática" : "Aguardando revisão") %></td></tr>
+        <% end %></tbody>
+      </table>
+    </div>
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% end %>
+</div>

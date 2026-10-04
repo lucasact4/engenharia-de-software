@@ -1,0 +1,55 @@
+<% content_for :title, "Meus alertas - SGU UFRPE" %>
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="sgu-eyebrow">Área autenticada</p>
+    <h1 class="sgu-page-title mt-1">Alertas</h1>
+    <p class="mt-2 max-w-2xl text-muted">Acompanhe o atendimento dos seus registros e das ocorrências internas do campus.</p>
+  </div>
+  <%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Registrar ocorrência<% end %>
+</div>
+
+<nav class="mt-6 flex gap-1 overflow-x-auto border-b border-line" aria-label="Listas de alertas">
+  <% { "meus" => "Meus registros", "internos" => "Ocorrências internas", "acompanhados" => "Acompanhados" }.each do |tab, label| %>
+    <%= link_to label, alerts_path(aba: tab), class: "sgu-tab", aria: { current: (@tab == tab ? "page" : nil) } %>
+  <% end %>
+</nav>
+
+<%= form_with url: alerts_path, method: :get, class: "mt-4 grid gap-2 sm:grid-cols-[1fr_14rem_auto]", data: { turbo_frame: "_top" } do %>
+  <%= hidden_field_tag :aba, @tab %>
+  <%= label_tag :q, "Buscar por protocolo ou título", class: "sr-only" %>
+  <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Protocolo ou título" %>
+  <%= label_tag :status, "Situação", class: "sr-only" %>
+  <%= select_tag :status, options_from_select_options(AlertOptionsPresenter.new(actor: Current.user).statuses, params[:status], include_blank: "Todas as situações"), class: "sgu-input" %>
+  <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("search") %> Filtrar</button>
+<% end %>
+
+<% if @tab == "acompanhados" && @unavailable_subscriptions.to_i.positive? %>
+  <div class="mt-4 flex flex-col gap-2 rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink sm:flex-row sm:items-center sm:justify-between">
+    <p><%= pluralize(@unavailable_subscriptions, "acompanhamento", plural: "acompanhamentos") %> deixou de estar acessível para você (registro restrito ou fora do seu acesso).</p>
+    <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "alertas"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+  </div>
+<% end %>
+
+<% if @alerts.any? %>
+  <ul class="mt-5 space-y-3">
+    <% @alerts.each do |alert| %>
+      <%= render "shared/alerts/list_item", alert: alert, path: alert_path(alert) %>
+    <% end %>
+  </ul>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% else %>
+  <div class="sgu-empty mt-5">
+    <p class="font-semibold text-ink">
+      <%= { "meus" => "Você ainda não registrou ocorrências.", "internos" => "Nenhuma ocorrência interna encontrada.", "acompanhados" => "Você não acompanha nenhuma ocorrência." }.fetch(@tab) %>
+    </p>
+    <p class="mt-1 text-sm text-muted">
+      <% if params[:q].present? || params[:status].present? %>
+        Nenhum resultado para os filtros escolhidos. <%= link_to "Limpar filtros", alerts_path(aba: @tab), class: "sgu-link" %>
+      <% elsif @tab == "meus" %>
+        Viu algo que precisa de atenção no campus? <%= link_to "Registre uma ocorrência", new_alert_path, class: "sgu-link" %>.
+      <% elsif @tab == "acompanhados" %>
+        Abra uma ocorrência interna e use “Acompanhar atendimento”.
+      <% end %>
+    </p>
+  </div>
+<% end %>

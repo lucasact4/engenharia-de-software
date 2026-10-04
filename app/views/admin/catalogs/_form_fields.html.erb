@@ -1,0 +1,39 @@
+<% in_use = entry.persisted? && entry.in_use? %>
+<% if entry.errors.any? %>
+  <div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-sm text-negative-ink" role="alert">
+    <ul class="list-disc space-y-1 pl-5"><% entry.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+  </div>
+<% end %>
+<div class="grid gap-4 sm:grid-cols-2">
+  <div>
+    <%= f.label :name, "Nome", class: "sgu-label" %>
+    <%= f.text_field :name, class: "sgu-input", required: true, maxlength: name_max, aria: { invalid: invalid?(entry, :name) } %>
+    <%= field_errors(entry, :name) %>
+  </div>
+  <div>
+    <%= f.label :code, "Código estável", class: "sgu-label" %>
+    <%= f.text_field :code, class: "sgu-input font-mono", required: true, maxlength: 40, readonly: in_use, aria: { invalid: invalid?(entry, :code), describedby: "#{f.object_name}_code_hint" } %>
+    <p class="sgu-hint" id="<%= f.object_name %>_code_hint">
+      <%= in_use ? "Travado: já há alertas com este item. Para mudar o significado, desative-o e crie outro." : "Minúsculas, números e _ (2 a 40). Depois do primeiro uso não pode mudar." %>
+    </p>
+    <%= field_errors(entry, :code) %>
+  </div>
+  <div class="sm:col-span-2">
+    <%= f.label :description, "Descrição", class: "sgu-label" %>
+    <%= f.text_area :description, rows: 2, class: "sgu-input", maxlength: 500 %>
+    <%= field_errors(entry, :description) %>
+  </div>
+  <div>
+    <%= f.label :position, "Posição na lista", class: "sgu-label" %>
+    <%= f.number_field :position, class: "sgu-input", step: 1 %>
+    <p class="sgu-hint">Menor aparece primeiro; empates seguem o nome.</p>
+    <%= field_errors(entry, :position) %>
+  </div>
+  <div class="flex items-start gap-2 pt-7">
+    <%= f.check_box :active, class: "mt-1 size-4 accent-brand-solid" %>
+    <div>
+      <%= f.label :active, "Ativo para novas escolhas", class: "text-sm font-semibold text-ink" %>
+      <p class="sgu-hint !mt-0">Desativar não altera registros antigos.</p>
+    </div>
+  </div>
+</div>

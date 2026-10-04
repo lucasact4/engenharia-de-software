@@ -40,12 +40,12 @@ export default class extends Controller {
     const over = Boolean(limit && total > limit)
     if (this.hasEstimateTarget) this.estimateTarget.textContent = estimateText(total, selection.mainSlides().length, limit)
     if (this.hasEstimateBoxTarget) {
-      this.estimateBoxTarget.classList.toggle("border-red-200", over)
-      this.estimateBoxTarget.classList.toggle("bg-red-50", over)
-      this.estimateBoxTarget.classList.toggle("text-red-800", over)
-      this.estimateBoxTarget.classList.toggle("border-slate-200", !over)
-      this.estimateBoxTarget.classList.toggle("bg-slate-50", !over)
-      this.estimateBoxTarget.classList.toggle("text-slate-700", !over)
+      this.estimateBoxTarget.classList.toggle("border-negative-line", over)
+      this.estimateBoxTarget.classList.toggle("bg-negative-soft", over)
+      this.estimateBoxTarget.classList.toggle("text-negative-ink", over)
+      this.estimateBoxTarget.classList.toggle("border-line", !over)
+      this.estimateBoxTarget.classList.toggle("bg-surface-muted", !over)
+      this.estimateBoxTarget.classList.toggle("text-ink", !over)
     }
   }
 
@@ -62,7 +62,7 @@ export default class extends Controller {
     const extra = Boolean(text?.endsWith("omplementar"))
     label.hidden = !text
     label.textContent = text || ""
-    ;[["border-emerald-200", "bg-emerald-50", "text-emerald-800"], ["border-slate-200", "bg-slate-50", "text-slate-500"]]
+    ;[["border-positive-line", "bg-positive-soft", "text-positive-ink"], ["border-line", "bg-surface-muted", "text-muted"]]
       .forEach((classes, index) => classes.forEach((name) => label.classList.toggle(name, index === 0 ? !extra : extra)))
   }
 

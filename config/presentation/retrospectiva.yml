@@ -1,13 +1,66 @@
-# Retrospectiva do período. Registre somente o que foi discutido de fato.
+# Retrospectiva da sprint. Fonte única dos slides "Imagem de uma retrospectiva" (retrospectiva)
+# e "O que aprendemos nesse sprint" (status-report). Registre somente o que foi discutido de fato.
+# Guia: config/presentation/LEIAME.md → "Retrospective".
 #
-# imagem: foto ou print real da retrospectiva, em app/assets/images/presentation/
-#         (ex.: "presentation/retrospectiva.jpg")
+# data:             data real da dinâmica. Vazia enquanto não houver comprovação
+#                   (a reunião de 03/10/2026 está em gestao.yml e não é a retrospectiva).
+# ferramenta:       onde o quadro foi feito.
+# formato:          colunas usadas na dinâmica.
+# link:             endereço público da sessão (https://...). Abre em nova aba; não é incorporado.
+# imagem:           captura real do quadro, relativa a app/assets/images.
+# imagem_ampliada:  opcional; outra resolução para a ampliação (vazio usa "imagem").
+# imagem_descricao: texto alternativo da imagem.
+# colunas:          transcrição fiel dos cartões, na ordem do quadro. O id "aprendi" alimenta o
+#                   slide de aprendizados e o id "faltou" aparece como pontos a melhorar.
 
 data:
-formato:          # ex.: "Manter / Melhorar / Experimentar"
-imagem:
-imagem_descricao: # texto alternativo da imagem
+ferramenta: "FunRetrospectives"
+formato: "Gostei · Aprendi · Faltou"
+link: "https://app.funretrospectives.com/session/-P348lsyv9l5kgdtJO7_"
+imagem: "presentation/retrospectiva/quadro-gostei-aprendi-faltou.png"
+imagem_ampliada:
+imagem_descricao: "Quadro da retrospectiva no FunRetrospectives com três colunas de cartões. Gostei: tecnologia completa, alinhamento da equipe, organização do projeto e ideia tomando forma. Aprendi: experiência prática, escolhas técnicas, da ideia à prática e evolução contínua. Faltou: base antes do código, requisitos mais claros, ordem das tarefas e tempo e organização."
 
-pontos: []        # ex.: ["Divisão de tarefas por card funcionou", "..."]
-acoes: []         # ex.: [{ acao: "...", responsavel: "...", prazo: "..." }]
-licoes: []        # o que a equipe aprendeu no período
+colunas:
+  - id: gostei
+    titulo: "Gostei"
+    cartoes:
+      - titulo: "Tecnologia completa"
+        texto: "Trabalhar com Rails e seus recursos para desenvolver o sistema."
+      - titulo: "Alinhamento da equipe"
+        texto: "Compartilhar ideias, esclarecer dúvidas e discutir melhorias nas reuniões."
+      - titulo: "Organização do projeto"
+        texto: "Estruturar requisitos, tarefas e documentação para orientar o desenvolvimento."
+      - titulo: "Ideia tomando forma"
+        texto: "Ver o que planejamos se transformar em um sistema funcionando."
+  - id: aprendi
+    titulo: "Aprendi"
+    cartoes:
+      - titulo: "Experiência prática"
+        texto: "Desenvolver um projeto com desafios mais próximos de um cenário real."
+      - titulo: "Escolhas técnicas"
+        texto: "Entender como arquitetura, padrões de projeto e tecnologias impactam o desenvolvimento e a manutenção."
+      - titulo: "Da ideia à prática"
+        texto: "Transformar ideias em requisitos, modelos, tarefas e funcionalidades."
+      - titulo: "Evolução contínua"
+        texto: "Perceber que implementar, testar e revisar são partes essenciais do desenvolvimento."
+  - id: faltou
+    titulo: "Faltou"
+    cartoes:
+      - titulo: "Base antes do código"
+        texto: "Priorizar artefatos essenciais, como o diagrama de casos de uso, para orientar as primeiras decisões."
+      - titulo: "Requisitos mais claros"
+        texto: "Refinar a lista inicial, que já reunia boa parte das ideias, para definir melhor o escopo e os critérios de aceitação."
+      - titulo: "Ordem das tarefas"
+        texto: "Planejar os cards considerando prioridades e dependências entre as atividades."
+      - titulo: "Tempo e organização"
+        texto: "Distribuir melhor o trabalho e reservar tempo para testes, revisão e ajustes."
+
+# Ações combinadas pela equipe, com responsável e prazo reais. Vazio: nenhuma ação foi formalizada.
+#   - { acao: "...", responsavel: "...", prazo: "..." }
+acoes: []
+
+# Formato anterior (1ª entrega), ainda aceito. Quando "colunas" existe, estes campos ficam vazios:
+#   pontos: lista de pontos discutidos; licoes: lista de lições (substituída pela coluna "aprendi").
+pontos: []
+licoes: []

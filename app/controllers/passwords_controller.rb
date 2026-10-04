@@ -17,10 +17,11 @@ class PasswordsController < ApplicationController
   end
 
   def update
-    if @user.update(params.permit(:password, :password_confirmation))
+    @user.assign_attributes(params.permit(:password, :password_confirmation))
+    if @user.save(context: :password_change)
       redirect_to new_session_path, notice: t("authentication.passwords.reset_success")
     else
-      redirect_to edit_password_path(params[:token]), alert: t("authentication.passwords.mismatch")
+      render :edit, status: :unprocessable_content
     end
   end
 

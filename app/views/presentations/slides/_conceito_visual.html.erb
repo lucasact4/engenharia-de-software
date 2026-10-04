@@ -3,8 +3,7 @@
 <% proto = cv[:prototipo] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "conceito visual",
-      title: "Telas reais, construídas no próprio Rails",
-      lead: "Capturas do ambiente local em #{presentation_date(cv[:capturado_em])}. O que é exemplo está sinalizado." %>
+      title: "A identidade SGU nas telas implementadas, nos temas claro e escuro" %>
 
 <%= presentation_item slide, "prototipo", class: "apr-proto" do %>
   <% if proto[:imagem].present? %>
@@ -21,54 +20,73 @@
     <% else %>
       <p class="apr-inline-pending">
         <%= presentation_state(proto[:estado]) %>
-        <span>Nenhum protótipo separado das telas foi anexado. As capturas abaixo mostram o conceito visual implementado.</span>
+        <span>Nenhum protótipo separado foi anexado; as capturas abaixo são das telas implementadas.</span>
       </p>
     <% end %>
   </div>
 <% end %>
 
-<%= presentation_group slide, %w[landing login mobile paleta], class: "apr-shots apr-fit" do %>
+<%= presentation_group slide, %w[landing login mobile paleta marca], class: "apr-shots apr-fit" do %>
   <% main = capturas.fetch("landing") %>
   <%= presentation_item slide, "landing", class: "apr-shots__hero" do %>
     <%= render "presentations/shared/figure",
-          image: main[:imagem], zoom_image: main[:imagem_ampliada], alt: main[:alt],
+          image: main[:imagem], alt: main[:alt], variants: presentation.capture_variants(main),
           caption: "#{main[:titulo]} · #{main[:rota]}", state: main[:estado],
           tag_text: ("Alertas demonstrativos" if main[:demonstrativo]),
           modifier: "apr-figure--hero" %>
   <% end %>
 
-  <%= presentation_group slide, %w[login paleta], class: "apr-shots__side" do %>
+  <%= presentation_group slide, %w[login paleta marca], class: "apr-shots__side" do %>
     <% login = capturas.fetch("entrar") %>
     <%= presentation_item slide, "login" do %>
       <%= render "presentations/shared/figure",
-            image: login[:imagem], alt: login[:alt],
+            image: login[:imagem], alt: login[:alt], variants: presentation.capture_variants(login),
             caption: login[:titulo], state: login[:estado] %>
     <% end %>
 
-    <%= presentation_item slide, "paleta", :ul, class: "apr-palette", role: "list", aria: { label: "Paleta do SGU" } do %>
+    <%= presentation_item slide, "paleta", :ul, class: "apr-palette", role: "list", aria: { label: "Cores essenciais do SGU" } do %>
       <% cv[:paleta].each do |cor| %>
         <li>
           <span class="apr-palette__swatch" style="background: <%= cor[:hex] %>" aria-hidden="true"></span>
-          <span class="apr-palette__name"><%= cor[:nome] %></span>
-          <code class="apr-palette__hex"><%= cor[:hex] %></code>
+          <span class="apr-palette__name"><%= cor[:nome] %> <code class="apr-palette__hex"><%= cor[:hex] %></code></span>
+          <span class="apr-palette__use"><%= cor[:uso] %></span>
         </li>
       <% end %>
+    <% end %>
+
+    <%= presentation_item slide, "marca", class: "apr-brand-card" do %>
+      <%= sgu_brand(:horizontal, alt: "Marca SGU: escudo com broto e semente dourada ao lado das letras SGU", class_name: "apr-brand-card__logo") %>
+      <p class="apr-brand-card__text">Escudo acadêmico, broto do campus e semente do conhecimento.</p>
+      <%= render "presentations/shared/info", id: "#{slide.dom_id}-marca",
+            label: "Sobre a marca SGU", title: "Marca SGU",
+            text: "Símbolo próprio do projeto, inspirado na linguagem visual de uma universidade federal rural: o escudo traz o caráter acadêmico; o broto sobre o campo, o campus e a comunidade; a semente dourada, o conhecimento. Não é o brasão oficial da UFRPE." %>
     <% end %>
   <% end %>
 
   <% mobile = capturas.fetch("landing-mobile") %>
   <%= presentation_item slide, "mobile", class: "apr-shots__phone" do %>
     <%= render "presentations/shared/figure",
-          image: mobile[:imagem], alt: mobile[:alt],
+          image: mobile[:imagem], alt: mobile[:alt], variants: presentation.capture_variants(mobile),
           caption: mobile[:titulo], modifier: "apr-figure--phone" %>
   <% end %>
 <% end %>
 
-<%= presentation_item slide, "notas", :p, class: "apr-source" do %>
-  <%= safe_join(cv[:capturas].map { |captura| "#{captura[:titulo]}: #{captura[:nota]}" }, " · ") %>
-<% end %>
 <% requirement = presentation.slide_requirements(slide, @selection.delivery).find { |entry| entry.group == "item" } %>
-<% if requirement && !requirement.confirmed %>
-  <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: a equipe validar estas capturas como evidência do conceito visual. Os alertas da landing são demonstrativos.</p>
-<% end %>
-<%= presentation_update_note("conceito_visual.yml", "protótipo, capturas e paleta.") %>
+<div class="apr-shots__foot">
+  <p class="apr-shots__theme">
+    Tema exibido:
+    <strong class="apr-theme-only--dark">escuro</strong><strong class="apr-theme-only--light">claro</strong>
+    <span class="apr-shots__hint">· o botão de tema no topo alterna as capturas</span>
+  </p>
+  <% if requirement && !requirement.confirmed %>
+    <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia, short: true) %> Validação da equipe pendente</p>
+  <% end %>
+  <%= presentation_item slide, "notas", :div, class: "apr-shots__notes" do %>
+    <% details = cv[:capturas].map { |captura| "#{captura[:titulo]} (#{captura[:rota]}, #{captura[:largura]}): #{captura[:nota]}" } %>
+    <%= render "presentations/shared/info", id: "#{slide.dom_id}-capturas",
+          label: "Sobre as capturas", title: "Capturas de #{presentation_date(cv[:capturado_em])}",
+          text: safe_join([ cv[:ambiente], *details ].compact_blank, tag.br),
+          print_text: "Capturas de #{presentation_date(cv[:capturado_em])} no ambiente local; alertas da landing são exemplos." %>
+  <% end %>
+</div>
+<%= presentation_update_note("conceito_visual.yml", "capturas claro/escuro, paleta e protótipo; regenerar com script/capturar_conceito_visual.rb.") %>

@@ -88,6 +88,6 @@ RSpec.describe Alerts::CreatePanic do
 
     expect { Social::Interactions.subscribe_alert(actor: author, alert: alert) }.to raise_error(Pundit::NotAuthorizedError)
     expect { Publications::Create.call(actor: create(:user, :admin), alert: alert, attributes: { title: "Título qualquer", body: "Texto editorial qualquer", visibility: "internal" }) }
-      .to raise_error(ActiveRecord::RecordInvalid, /pânico/)
+      .to raise_error(Pundit::NotAuthorizedError)
   end
 end

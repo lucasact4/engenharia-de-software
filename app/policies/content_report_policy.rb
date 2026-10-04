@@ -1,5 +1,13 @@
 # Denúncias são visíveis apenas para quem denunciou e para a administração.
 class ContentReportPolicy < ApplicationPolicy
+  def menu?
+    active_admin?
+  end
+
+  def index?
+    active_admin?
+  end
+
   def show?
     active_admin? || reporter?
   end

@@ -1,0 +1,9 @@
+<%#
+  Botão que abre uma janela de presentations/shared/dialog.
+  locals: target (id da janela), label, icon (opcional), modifier (opcional)
+%>
+<button type="button" class="apr-btn apr-btn--outline apr-dialog-btn <%= local_assigns[:modifier] %>"
+        commandfor="<%= target %>" command="show-modal" aria-haspopup="dialog"
+        data-action="presentation#openDialog">
+  <%= render "presentations/shared/icon", name: local_assigns[:icon] || "info" %><span><%= label %></span>
+</button>

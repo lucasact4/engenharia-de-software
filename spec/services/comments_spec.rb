@@ -85,7 +85,7 @@ RSpec.describe "Comment services" do
     public_author = create(:user, :public_profile, display_name: "Pessoa Pública")
     public_comment = comment!("Olá", actor: public_author)
 
-    expect(CommentProjection.new(root, viewer: nil).as_json[:author]).to eq(display_name: "Pessoa usuária", username: nil, public_profile: false)
+    expect(CommentProjection.new(root, viewer: nil).as_json[:author]).to eq(display_name: "Pessoa usuária", username: nil, public_profile: false, id: nil, verified: false)
     expect(CommentProjection.new(public_comment, viewer: nil).as_json[:author]).to include(display_name: "Pessoa Pública")
     expect(CommentProjection.new(public_comment, viewer: nil).as_json.to_s).not_to include(public_author.email_address)
   end

@@ -24,6 +24,22 @@ tables:
       - ''
     - - updated_at
       - ''
+    - - registration_status
+      - ''
+    - - registration_role_code
+      - ''
+    - - registration_reviewed_at
+      - ''
+    - - registration_review_reason
+      - ''
+    - - email_verified_at
+      - ''
+    - - registration_reviewed_by_id
+      - FK users
+    - - verified_at
+      - ''
+    - - verified_by_id
+      - FK users
   user_roles:
     columns:
     - - id
@@ -90,6 +106,8 @@ tables:
       - ''
     - - description
       - ''
+    - - photo_order
+      - json
     - - category_id
       - FK categories
     - - category_other_description
@@ -145,6 +163,8 @@ tables:
     - - created_at
       - ''
     - - updated_at
+      - ''
+    - - location_description
       - ''
   categories:
     columns:
@@ -233,6 +253,10 @@ tables:
     - - created_at
       - ''
     - - updated_at
+      - ''
+    - - approval_method
+      - ''
+    - - moderation_blocked
       - ''
   comments:
     columns:
@@ -416,20 +440,6 @@ tables:
       - ''
     - - updated_at
       - ''
-  dogs:
-    columns:
-    - - id
-      - PK
-    - - name
-      - ''
-    - - age
-      - ''
-    - - deleted_at
-      - ''
-    - - created_at
-      - ''
-    - - updated_at
-      - ''
   presentation_profiles:
     columns:
     - - id
@@ -449,6 +459,11 @@ tables:
     - - updated_at
       - ""
 foreign_keys:
+- source: users
+  target: users
+  column: registration_reviewed_by_id
+  required: false
+  unique: false
 - source: active_storage_attachments
   target: active_storage_blobs
   column: blob_id
@@ -624,6 +639,11 @@ foreign_keys:
   column: granted_by_id
   required: false
   unique: false
+- source: users
+  target: users
+  column: verified_by_id
+  required: false
+  unique: false
 diagrams:
   core:
     title: DER físico — núcleo do SGU
@@ -739,7 +759,7 @@ diagrams:
     description: Todas as colunas e chaves estrangeiras operacionais. Alvo polimórfico
       da auditoria é indicado em tracejado.
     width: 1080
-    height: 730
+    height: 810
     nodes:
     - table: users
       x: 30
@@ -754,7 +774,7 @@ diagrams:
       split: 1
     - table: roles
       x: 790
-      "y": 560
+      "y": 630
       width: 260
       split: 2
     - table: audit_events
@@ -764,24 +784,24 @@ diagrams:
       split: 1
     - table: alerts
       x: 30
-      "y": 300
+      "y": 366
       width: 1020
       split: 4
       variant: core
     - table: categories
       x: 30
-      "y": 560
+      "y": 630
       width: 330
       split: 2
     - table: locations
       x: 375
-      "y": 560
+      "y": 630
       width: 400
       split: 2
     - id: audit_subject
       title: Registros auditados
       x: 30
-      "y": 212
+      "y": 280
       width: 480
       lines:
       - Alert · Publication · Comment · ContentReport · User
@@ -858,9 +878,9 @@ diagrams:
       "y": 20
       width: 240
   infrastructure:
-    title: Infraestrutura e exemplo do template
+    title: Infraestrutura e autenticação
     description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
-      Fotos usam vínculo polimórfico com alertas. Dogs permanece isolado. presentation_profiles
+      Fotos usam vínculo polimórfico com alertas, publicações e usuários. presentation_profiles
       guarda só a seleção de slides da apresentação, sem chave estrangeira.
     width: 1080
     height: 590
@@ -889,12 +909,6 @@ diagrams:
       width: 290
       split: 1
       variant: infra
-    - table: dogs
-      x: 350
-      "y": 340
-      width: 340
-      split: 1
-      variant: example
     - table: presentation_profiles
       x: 30
       "y": 370
@@ -911,6 +925,11 @@ diagrams:
       x: 350
       "y": 20
       width: 340
+    - table: publications
+      reference: true
+      x: 30
+      "y": 20
+      width: 260
     relations:
     - source: active_storage_attachments
       target: alerts
@@ -919,18 +938,38 @@ diagrams:
       source_cardinality: 0..5
       target_cardinality: '1'
       kind: polymorphic
+    - source: active_storage_attachments
+      target: publications
+      column: record_id
+      label: Foto de comunicado · polimórfico
+      source_cardinality: 0..5
+      target_cardinality: '1'
+      kind: polymorphic
+    - source: active_storage_attachments
+      target: users
+      column: record_id
+      label: Avatar · polimórfico
+      source_cardinality: 0..1
+      target_cardinality: '1'
+      kind: polymorphic
   conceptual:
     title: Modelo conceitual do SGU
     description: Conceitos e multiplicidades. Denúncia tem exatamente um alvo; pânico
       não gera publicação nem interações sociais.
-    width: 1340
-    height: 920
+    width: 1350
+    height: 580
+    # Portas distribuídas pela lateral de cada conceito e multiplicidades nas extremidades.
+    ports: distributed
+    cardinality_labels: true
+    notes:
+    - "Dimensões distintas: categoria = assunto; severidade = impacto; prioridade = triagem; situação = atendimento; audiência = autorização."
+    - "Premissas provisórias (propostas, ainda sem aprovação da equipe): foto opcional; restrita = autor + gestão; acesso de coordenação e segurança a validar; identidade pública neutra, sem perfil público."
     nodes:
     - id: role
       title: Papel
-      x: 46.0
-      "y": 62.0
-      width: 260.0
+      x: 24
+      "y": 24
+      width: 240
       lines:
       - Segurança · Coordenação
       - Professor · Estudante
@@ -938,20 +977,21 @@ diagrams:
       - Morador · multiperfil · não é admin
     - id: person
       title: Pessoa usuária
-      x: 358.0
-      "y": 62.0
-      width: 286.0
+      x: 354
+      "y": 24
+      width: 280
       lines:
       - conta por e-mail e senha
       - 'administração: booleano admin'
-      - perfil público opcional (opt-in)
+      - perfil público e avatar por opt-in
+      - selo administrativo para divulgação
       - desativação preserva o histórico
       variant: core
     - id: interactions
       title: Interações sociais
-      x: 700
-      "y": 62.0
-      width: 286.0
+      x: 724
+      "y": 24
+      width: 262
       lines:
       - curtir · salvar (privado)
       - acompanhar publicação ou alerta
@@ -959,80 +999,57 @@ diagrams:
       - nenhuma interação concede acesso
     - id: audit
       title: Evento de auditoria
-      x: 1030
-      "y": 62.0
-      width: 260.0
+      x: 1076
+      "y": 24
+      width: 250
       lines:
       - ator · ação · data · motivo
       - antes/depois (allowlist)
       - append-only na aplicação
-      - sem GPS, senha ou texto pessoal
+      - sem GPS ou senha; legado privado
     - id: category
       title: Categoria
-      x: 46.0
-      "y": 310
-      width: 260.0
+      x: 24
+      "y": 208
+      width: 240
       lines:
       - assunto (7 categorias propostas)
       - '"Outro" exige explicação'
     - id: location
       title: Local do campus
-      x: 46.0
-      "y": 460
-      width: 260.0
+      x: 24
+      "y": 326
+      width: 240
       lines:
       - prédio ou área (catálogo)
       - não é o GPS de quem reporta
     - id: alert
       title: Alerta
-      x: 358.0
-      "y": 310
-      width: 286.0
+      x: 354
+      "y": 208
+      width: 280
       lines:
       - 'tipo: Ocorrência | Pânico'
       - protocolo opaco do servidor
-      - 'local: GPS · manual · indisponível'
-      - severidade percebida / avaliada
-      - prioridade (somente na triagem)
-      - situação do atendimento
+      - 'local: GPS · mapa · descrição'
+      - severidade, prioridade e situação
       - audiência solicitada / efetiva
       - 'pânico: restrito, sem circuito social'
       variant: core
     - id: photo
       title: Foto (anexo)
-      x: 700
-      "y": 310
-      width: 260.0
+      x: 724
+      "y": 208
+      width: 262
       lines:
       - PNG ou JPEG, até 5 MiB
-      - privada; entrega autorizada
-      - nunca reaproveitada como pública
-    - id: dimensions
-      title: Dimensões distintas
-      x: 1030
-      "y": 310
-      width: 260.0
-      lines:
-      - categoria = assunto
-      - severidade = impacto
-      - prioridade = triagem
-      - situação = atendimento
-      - audiência = autorização
-      - Premissas provisórias
-      - foto opcional
-      - 'restrita: autor + gestão'
-      - acesso de coordenação e
-      - segurança a validar
-      - identidade pública neutra
-      - sem perfil público
-      - propostas, não aprovação
-      - da equipe
-      variant: note
+      - original restrito; capa/ordem editáveis
+      - 'mural: JPEG sem EXIF, acesso atual'
     - id: report
       title: Denúncia
-      x: 46.0
-      "y": 740
-      width: 260.0
+      x: 1076
+      "y": 410
+      width: 250
       lines:
       - motivo · situação da análise
       - uma por pessoa e alvo
@@ -1040,21 +1057,22 @@ diagrams:
       - não oculta conteúdo sozinha
     - id: publication
       title: Publicação
-      x: 358.0
-      "y": 740
-      width: 286.0
+      x: 354
+      "y": 410
+      width: 280
       lines:
       - ocorrência · aviso · notícia
-      - texto e audiência próprios
-      - aprovada não é publicada
-      - aviso expira; fonte pode ser nula
-      - Bloqueio da fonte impede divulgação
+      - 'ocorrência: título, relato e fotos'
+      - 'interna direta; externa: selo ou revisão'
+      - um post, mesmas interações
+      - 'aviso/notícia: revisão editorial'
+      - bloqueio impede divulgação
       variant: core
     - id: comment
       title: Comentário
-      x: 700
-      "y": 740
-      width: 260.0
+      x: 724
+      "y": 410
+      width: 262
       lines:
       - raiz + 1 nível de respostas
       - acesso herdado da publicação
@@ -1119,7 +1137,7 @@ diagrams:
     - source: publication
       target: alert
       column: fonte
-      label: Projeção revisada
+      label: Mesmo post / audiência
       source_cardinality: 0..1
       target_cardinality: 0..1
       kind: conceptual

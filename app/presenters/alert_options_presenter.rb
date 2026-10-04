@@ -14,6 +14,30 @@ class AlertOptionsPresenter
     catalog_options(Category, @alert&.category)
   end
 
+  # Categorias cujo detalhamento é obrigatório (ex.: "Outro"); o servidor valida de novo.
+  def category_ids_requiring_details
+    Category.where(requires_details: true).pluck(:id)
+  end
+
+  CATEGORY_EXAMPLES = {
+    "infrastructure" => "Lâmpada apagada, rampa danificada ou infiltração no prédio.",
+    "security" => "Ameaça, furto ou situação suspeita. Em risco imediato, use o canal de emergência.",
+    "climate_environment" => "Alagamento, galho com risco de queda ou descarte ambiental inadequado.",
+    "mobility_traffic" => "Via bloqueada, estacionamento irregular ou dificuldade na circulação.",
+    "services_utilities" => "Falta de água, queda de energia ou internet indisponível.",
+    "cleaning_sanitation" => "Acúmulo de lixo, vazamento de esgoto ou banheiro sem limpeza.",
+    "other" => "Situação que não se encaixa nas demais opções; descreva o assunto no detalhamento."
+  }.freeze
+
+  def category_guidance
+    entries = Category.active.ordered.to_a
+    entries << @alert.category if @alert&.category && !@alert.category.active?
+    entries.map do |entry|
+      { title: entry.name, text: entry.description.presence || "Selecione quando o assunto corresponder a esta categoria.",
+        example: CATEGORY_EXAMPLES.fetch(entry.code, "Descreva a situação e indique o impacto observado no campus.") }
+    end
+  end
+
   def locations
     catalog_options(Location, @alert&.location)
   end

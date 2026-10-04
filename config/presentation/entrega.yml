@@ -110,21 +110,21 @@ entregas:
         texto: "Protótipo com o conceito visual do projeto."
         slides: [ { id: conceito-visual } ]
         estado: parcial
-        observacao: "Landing e login implementados no Rails; alertas da landing são demonstrativos. Protótipo separado não anexado."
+        observacao: "Capturas de 04/10 nos temas claro e escuro, já com a nova marca SGU; alertas da landing são demonstrativos. Protótipo separado não anexado; aceite da equipe pendente."
         confirmado_pela_equipe: false
       - numero: 2
         grupo: item
         texto: "GitHub criado e estruturado com código fonte total ou parcial, contemplando as 2 funcionalidades do sistema proposto (Completas)."
         slides: [ { id: funcionalidades } ]
         estado: parcial
-        observacao: "Repositório com CI e backend do card #6; as duas funcionalidades completas ainda não foram escolhidas nem validadas."
+        observacao: "Duas jornadas implementadas com testes de navegador e catálogo de evidências de código. Captura do GitHub, aceite final da equipe e vínculo aos RFs do #13 pendentes."
         confirmado_pela_equipe: false
       - numero: 3
         grupo: item
         texto: "Imagem de uma retrospectiva."
         slides: [ { id: retrospectiva } ]
-        estado: aguardando_evidencia
-        observacao: "Adicionar a imagem real da retrospectiva."
+        estado: implementado
+        observacao: "Quadro real no FunRetrospectives (Gostei · Aprendi · Faltou) anexado, com link da sessão. Data da dinâmica não registrada."
         confirmado_pela_equipe: false
       - numero: 4
         grupo: item
@@ -137,26 +137,26 @@ entregas:
         grupo: item
         texto: "Evidência de reuniões de monitoramento do projeto."
         slides: [ { id: reunioes } ]
-        estado: aguardando_evidencia
-        observacao: "Registrar data, participantes, pauta e decisões de cada reunião."
+        estado: implementado
+        observacao: "Reunião de 03/10/2026, aproximadamente às 18h20, com quatro capturas e pauta. Encaminhamentos ainda não formalizados."
         confirmado_pela_equipe: false
       - grupo: status_report
         texto: "O que foi feito desde a última entrega."
         slides: [ { id: evolucao } ]
         estado: parcial
-        observacao: "Linha do tempo baseada nos commits."
+        observacao: "Marcos publicados com link de commit; trabalho local identificado como local. Sem novo merge ou deploy."
         confirmado_pela_equipe: false
       - grupo: status_report
         texto: "O que será feito até a próxima entrega."
         slides: [ { id: proximos-passos } ]
         estado: parcial
-        observacao: "Próximos passos listados; o marco demonstrável aguarda decisão."
+        observacao: "Quatro prioridades com dependências; marco, datas e responsáveis a definir com a equipe."
         confirmado_pela_equipe: false
       - grupo: status_report
         texto: "O que aprendemos nesse sprint (Imagem de uma retrospectiva)."
         slides: [ { id: status-report } ]
-        estado: aguardando_evidencia
-        observacao: "Depende do registro da retrospectiva."
+        estado: implementado
+        observacao: "Aprendizados da coluna Aprendi do quadro real; nenhuma ação combinada formalizada."
         confirmado_pela_equipe: false
       - grupo: condicao
         texto: "Apresentação de no máximo 7 minutos."

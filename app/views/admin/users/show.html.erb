@@ -1,0 +1,60 @@
+<% content_for :title, @instance.email_address %>
+<% user = @instance %>
+<div class="mx-auto max-w-4xl space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { back: admin_users_path, back_label: "Usuários", eyebrow: user.admin? ? "Conta administradora" : "Conta", title: user.display_name.presence || user.email_address } do %>
+    <%= link_to edit_admin_user_path(user), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("square-pen") %> Editar conta e perfil<% end %>
+  <% end %>
+
+  <section class="sgu-card p-5 sm:p-6">
+    <h2 class="sgu-section-title">Conta</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>E-mail</dt><dd><%= user.email_address %></dd>
+      <dt>Administração</dt><dd><%= user.admin? ? "Sim (users.admin)" : "Não" %> <span class="text-xs text-muted">— não é alterado por estas telas</span></dd>
+      <dt>Situação</dt><dd><%= user.deleted_at ? "Desativada em #{l(user.deleted_at, format: '%d/%m/%Y')}" : { "approved" => "Ativa", "pending" => "Aguardando aprovação", "rejected" => "Cadastro reprovado" }.fetch(user.registration_status) %></dd>
+      <dt>Criada em</dt><dd><%= sgu_time(user.created_at) %></dd>
+    </dl>
+  </section>
+
+  <section class="sgu-card p-5 sm:p-6">
+    <h2 class="sgu-section-title">Perfil</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>Nome de exibição</dt><dd><%= user.display_name.presence || "—" %></dd>
+      <dt>Nome de usuário</dt><dd><%= user.username ? "@#{user.username}" : "—" %></dd>
+      <dt>Apresentação</dt><dd class="sgu-prose"><%= user.bio.presence || "—" %></dd>
+      <dt>Perfil público</dt><dd><%= user.public_profile? ? "Sim (opt-in da própria pessoa)" : "Não" %></dd>
+    </dl>
+  </section>
+
+  <section class="sgu-card p-5"><h2 class="sgu-section-title">Selo de verificado</h2><p class="mt-2 text-sm text-muted">Permite divulgação pública sem aprovação manual. Não equivale à confirmação do e-mail.</p><div class="mt-4 flex items-center gap-3"><% if user.verified? %><%= render "shared/verified_badge" %><span class="text-sm">Verificado pela administração</span><% end %><% if UserVerificationPolicy.new(Current.user, user).update? %><%= button_to(user.verified? ? "Remover selo" : "Conceder selo", verification_admin_user_path(user), method: :patch, params: { verified: user.verified? ? "0" : "1" }, class: "sgu-btn sgu-btn-secondary") %><% end %></div></section>
+
+  <section class="sgu-card p-5 sm:p-6" aria-labelledby="user_roles_title">
+    <h2 id="user_roles_title" class="sgu-section-title">Papéis institucionais</h2>
+    <p class="mt-1 text-sm text-muted">Uma pessoa pode ter vários papéis. Nenhum deles concede administração. Segurança e coordenação dão acesso à fila de atendimento.</p>
+    <% if user == Current.user %>
+      <p class="mt-3 rounded-xl bg-surface-muted p-3 text-sm text-ink">Você não pode alterar os próprios papéis.</p>
+    <% end %>
+    <% if @role_options.any? %>
+      <ul class="mt-4 divide-y divide-line">
+        <% @role_options.each do |option| %>
+          <li class="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between" id="role_<%= option[:value] %>">
+            <div>
+              <p class="font-semibold text-ink"><%= option[:label] %> <% if option[:selected] %><span class="sgu-badge sgu-badge-green">concedido</span><% end %><% if option[:disabled] %><span class="sgu-badge sgu-badge-slate">papel inativo</span><% end %></p>
+              <p class="text-xs text-muted"><%= option[:description] %></p>
+            </div>
+            <% if option[:selected] %>
+              <%= button_to "Revogar", admin_user_role_path(user, code: option[:value]), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-danger-outline",
+                    data: { turbo_confirm: "Revogar o papel “#{option[:label]}”?" } %>
+            <% elsif !option[:disabled] %>
+              <%= button_to "Conceder", admin_user_roles_path(user), method: :post, params: { code: option[:value] }, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <ul class="mt-4 flex flex-wrap gap-2">
+        <% user.roles.ordered.each do |role| %><li class="sgu-badge sgu-badge-teal"><%= role.name %></li><% end %>
+        <% if user.roles.empty? %><li class="text-sm text-muted">Nenhum papel concedido.</li><% end %>
+      </ul>
+    <% end %>
+  </section>
+</div>

@@ -18,6 +18,7 @@
   </svg>
 
   <div class="apr-cover__main">
+    <%= sgu_brand(:symbol, tone: :dark_surface, alt: "", class_name: "apr-cover__mark") %>
     <p class="apr-cover__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e[:disciplina] %> · <%= d[:titulo] %></p>
     <h1 id="<%= slide.heading_id %>" class="apr-cover__title">
       <span class="apr-cover__sigla"><%= e.dig(:projeto, :sigla) %></span>

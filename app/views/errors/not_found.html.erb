@@ -1,0 +1,12 @@
+<% content_for :title, "Não encontrado - SGU UFRPE" %>
+<section class="sgu-card mx-auto max-w-xl p-6 text-center sm:p-10">
+  <p class="text-sm font-bold uppercase tracking-[0.16em] text-brand-link">Erro 404</p>
+  <h1 class="mt-3 text-2xl font-bold text-ink">Conteúdo não encontrado</h1>
+  <p class="mt-3 text-muted">O endereço não existe ou você não tem acesso a ele. Conteúdos retirados, expirados ou restritos também aparecem assim.</p>
+  <div class="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
+    <%= link_to "Ir para o mural", publications_path, class: "sgu-btn sgu-btn-secondary" %>
+    <% if authenticated? %>
+      <%= link_to "Abrir meu painel", panel_path, class: "sgu-btn sgu-btn-primary" %>
+    <% end %>
+  </div>
+</section>

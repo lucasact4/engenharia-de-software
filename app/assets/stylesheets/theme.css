@@ -1,0 +1,68 @@
+/* Paleta compartilhada por landing, autenticação, portal, administração e apresentação. */
+:root {
+  color-scheme: dark;
+  --canvas: #0d171a; --surface: #152327; --surface-muted: #1d3035;
+  --ink: #edf5f3; --muted: #b0c4c1; --subtle: #92aaa6; --line: #37514f;
+  --brand-link: #93dbc4; --brand-solid: #226a5c; --brand-hover: #195348;
+  --on-brand: #ffffff; --accent: #f2bd57; --accent-hover: #ffd47c; --on-accent: #18362f;
+  --positive-soft: #173d32; --positive-ink: #a0e5bb; --positive-line: #357752;
+  --warning-soft: #3c301a; --warning-ink: #f4d590; --warning-line: #886e34;
+  --negative-soft: #43252b; --negative-ink: #ffb5bb; --negative-line: #a55861;
+  --negative-solid: #b4233b; --negative-hover: #941b30;
+  --info-soft: #1b3547; --info-ink: #abd9ff; --info-line: #4a7999;
+  --violet-soft: #332c4f; --violet-ink: #d6c5ff; --violet-line: #79649e;
+  --primary: var(--brand-solid); --primary-dark: var(--brand-hover);
+  --sgu-green: var(--brand-link); --sgu-green-dark: var(--brand-hover);
+  --sgu-teal: var(--brand-link); --sgu-mint: var(--positive-soft);
+  --sgu-gold: var(--accent); --sgu-gold-dark: var(--on-accent); --sgu-surface: var(--canvas);
+  --white: var(--surface); --black: var(--ink); --table: var(--surface-muted);
+  --table-btn: var(--muted); --bg-footer: var(--surface); --disabled: var(--subtle);
+  --success: var(--positive-ink); --info: var(--info-ink); --warning: var(--warning-ink); --danger: var(--negative-ink);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #f4f7f5; --surface: #ffffff; --surface-muted: #eaf0ed;
+  --ink: #152823; --muted: #465f58; --subtle: #526b64; --line: #c1d0ca;
+  --brand-link: #176653; --brand-solid: #153c36; --brand-hover: #0f2f2a;
+  --positive-soft: #e4f3e9; --positive-ink: #185736; --positive-line: #87b49a;
+  --warning-soft: #fff1d0; --warning-ink: #79520c; --warning-line: #d1ac56;
+  --negative-soft: #ffebee; --negative-ink: #9c2035; --negative-line: #d8969f;
+  --info-soft: #e5f2fd; --info-ink: #205574; --info-line: #8eb5cd;
+  --violet-soft: #efebff; --violet-ink: #573b85; --violet-line: #afa0cf;
+}
+.theme-toggle[data-theme-toggle] {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 2.5rem; height: 2.5rem; border: 1px solid var(--line); border-radius: 0.75rem;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.theme-toggle:hover { background: var(--surface-muted); }
+.theme-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.theme-toggle svg { width: 1.15rem; height: 1.15rem; }
+.theme-toggle [data-theme-icon="moon"] { display: none; }
+:root[data-theme="light"] .theme-toggle [data-theme-icon="sun"] { display: none; }
+:root[data-theme="light"] .theme-toggle [data-theme-icon="moon"] { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+/* As páginas impressas usam superfícies claras, independentemente da preferência salva. */
+@media print {
+  :root { color-scheme: light; --canvas: #fff; --surface: #fff; --surface-muted: #f1f5f3;
+    --ink: #152823; --muted: #465f58; --subtle: #526b64; --line: #c1d0ca; --brand-link: #176653;
+    --positive-soft: #e4f3e9; --positive-ink: #185736; --warning-soft: #fff1d0; --warning-ink: #79520c;
+    --negative-soft: #ffebee; --negative-ink: #9c2035; --info-soft: #e5f2fd; --info-ink: #205574;
+    --violet-soft: #efebff; --violet-ink: #573b85; }
+  .theme-toggle[data-theme-toggle] { display: none !important; }
+}
+/* Marca (BrandHelper#sgu_brand): no modo automático, só a versão do tema ativo aparece. */
+/* Visibilidade responsiva fica no elemento pai: esta folha não usa camadas e venceria utilitários. */
+.sgu-brand { flex: none; width: auto; max-width: none; }
+.sgu-brand--auto, .sgu-brand--dark-surface { display: inline-flex; }
+.sgu-brand--auto > img, .sgu-brand--dark-surface > img { display: block; width: auto; height: 100%; max-width: none; }
+.sgu-brand--dark-surface > .sgu-brand__on-light { display: none; }
+.sgu-brand--auto > .sgu-brand__on-light { display: none; }
+:root[data-theme="light"] .sgu-brand--auto > .sgu-brand__on-light { display: block; }
+:root[data-theme="light"] .sgu-brand--auto > .sgu-brand__on-dark { display: none; }
+@media print {
+  .sgu-brand--auto > .sgu-brand__on-light, .sgu-brand--dark-surface > .sgu-brand__on-light { display: block; }
+  .sgu-brand--auto > .sgu-brand__on-dark, .sgu-brand--dark-surface > .sgu-brand__on-dark { display: none; }
+}

@@ -61,8 +61,11 @@ module Alerts
             actor: actor, action: "alert.created", subject: alert,
             metadata: { kind: alert.kind, photos_count: @photos.size }
           )
+          after_persist(alert)
         end
       end
+
+      def after_persist(_alert); end
 
       def find_existing
         return if @client_request_id.nil?
@@ -93,7 +96,7 @@ module Alerts
       def request_digest
         payload = @attributes.to_h { |key, value| [ key, canonical(key, value) ] }.sort.to_h
         payload[:kind] = kind
-        payload[:photos] = @photos.map { |photo| photo_digest(photo) }.sort
+        payload[:photos] = @photos.map { |photo| photo_digest(photo) }
         Digest::SHA256.hexdigest(payload.to_json)
       end
 

@@ -1,0 +1,21 @@
+<% content_for :title, "Editar perfil - SGU UFRPE" %>
+<div class="mx-auto max-w-3xl space-y-5">
+  <%= link_to profile_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Meu perfil<% end %>
+  <h1 class="sgu-page-title">Editar perfil</h1>
+  <%= form_with model: @user, scope: :user, url: profile_path, method: :patch, class: "sgu-card space-y-4 p-5 sm:p-6", html: { novalidate: true } do |f| %>
+    <% if @user.errors.any? %>
+      <div class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink" role="alert">Revise os campos destacados.</div>
+    <% end %>
+    <div>
+      <%= f.label :avatar, "Foto de perfil", class: "sgu-label" %>
+      <%= f.file_field :avatar, accept: "image/png,image/jpeg", class: "sgu-input" %>
+      <p class="sgu-hint">PNG ou JPEG, até 5 MB. Visível aos outros quando seu perfil for público.</p>
+      <%= field_errors(@user, :avatar) %>
+    </div>
+    <%= render "shared/profile_fields", f: f, user: @user %>
+    <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <%= link_to "Cancelar", profile_path, class: "sgu-btn sgu-btn-secondary" %>
+      <%= f.button "Salvar perfil", type: "submit", class: "sgu-btn sgu-btn-primary" %>
+    </div>
+  <% end %>
+</div>

@@ -87,9 +87,16 @@ export default class extends Controller {
       slide.inert = this.presenting && !active
     })
 
+    this.closePopovers()
     this.updateChrome()
     if (updateHash) this.replaceUrl({ hash: this.slideTargets[index].id })
     if (this.presenting && (focus || leavingFocus)) this.slideTargets[index].focus({ preventScroll: true })
+  }
+
+  // Informações abertas (Popover API) ficam na camada superior: fecham ao trocar de slide.
+  closePopovers() {
+    if (!("hidePopover" in HTMLElement.prototype)) return
+    this.element.querySelectorAll("[popover]:popover-open").forEach((popover) => popover.hidePopover())
   }
 
   // Posições visíveis do mesmo grupo (sequência principal ou apêndices) do slide atual.
@@ -459,11 +466,34 @@ export default class extends Controller {
     if (Math.abs(dx) > 60 && Math.abs(dy) < 40) dx < 0 ? this.next() : this.previous()
   }
 
+  // Índice, ampliação, personalização e janelas de evidências: setas não trocam de slide.
   dialogOpen() {
-    return this.indexDialogTarget.open || this.lightboxTarget.open || (this.hasCustomDialogTarget && this.customDialogTarget.open)
+    return Boolean(this.element.querySelector("dialog[open]"))
   }
 
-  // Tela cheia e impressão
+// Janelas de detalhes (evidências do código, repositório). O botão também declara
+// commandfor/command="show-modal", que abre a janela sem JavaScript nos navegadores atuais.
+
+openDialog(event) {
+  event.preventDefault()
+  const dialog = document.getElementById(event.currentTarget.getAttribute("commandfor"))
+  if (!dialog || dialog.open) return
+
+  this.dialogOpener = event.currentTarget
+  dialog.showModal()
+  dialog.querySelector("[data-dialog-initial-focus]")?.focus()
+}
+
+closeDialog(event) {
+  event.currentTarget.closest("dialog")?.close()
+}
+
+dialogClosed() {
+  if (this.dialogOpener?.isConnected) this.dialogOpener.focus()
+  this.dialogOpener = null
+}
+
+// Tela cheia e impressão
 
   toggleFullscreen() {
     if (document.fullscreenElement) {
@@ -495,9 +525,14 @@ export default class extends Controller {
     let media
 
     if (trigger.dataset.zoomSrc) {
-      media = document.createElement("img")
-      media.src = trigger.dataset.zoomSrc
-      media.alt = trigger.querySelector("img")?.alt || ""
+      // Uma imagem por tema; o CSS mostra a do tema ativo, como na miniatura.
+      media = [...trigger.querySelectorAll("img[data-zoom-src]")].map((thumbnail) => {
+        const image = document.createElement("img")
+        image.src = thumbnail.dataset.zoomSrc
+        image.alt = thumbnail.alt
+        if (thumbnail.dataset.theme !== "any") image.className = `apr-theme-only--${thumbnail.dataset.theme}`
+        return image
+      })
     } else if (figure?.querySelector(".apr-data-viewport")) {
       media = figure.querySelector(".apr-data-viewport").cloneNode(true)
       media.classList.add("apr-data-viewport--zoomed")
@@ -515,7 +550,7 @@ export default class extends Controller {
       media.setAttribute("aria-label", label)
     }
 
-    this.lightboxMediaTarget.replaceChildren(media)
+    this.lightboxMediaTarget.replaceChildren(...[ media ].flat())
     this.lightboxCaptionTarget.textContent =
       figure?.querySelector(".apr-figure__title")?.textContent.trim() || trigger.getAttribute("aria-label")
     this.setActualSize(false)

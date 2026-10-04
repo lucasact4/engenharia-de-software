@@ -1,0 +1,45 @@
+<% content_for :title, "#{@card[:title]} - SGU UFRPE" %>
+<div class="mx-auto max-w-3xl space-y-6">
+  <%= link_to publications_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Mural<% end %>
+
+  <%= render "publications/card", card: @card, full: true %>
+
+  <section id="comentarios" class="space-y-4" aria-labelledby="comments_title">
+    <h2 id="comments_title" class="sgu-section-title"><%= pluralize(@card[:comments_count], "comentário", plural: "comentários") %></h2>
+
+    <% if @permissions.comment? %>
+      <div class="sgu-card p-5">
+        <%= render "comments/form", publication_id: @card[:id], parent_id: nil, body: nil, form_id: "new_comment_form" %>
+      </div>
+    <% elsif !@card[:comments_enabled] %>
+      <p class="rounded-xl bg-surface-muted p-4 text-sm text-muted">Comentários desativados para esta publicação.</p>
+    <% elsif !@permissions.signed_in? %>
+      <p class="rounded-xl bg-surface-muted p-4 text-sm text-muted"><%= link_to "Entre", new_session_path(locale: nil, return_to: publication_path(@card[:id], locale: nil)), class: "sgu-link" %> para comentar.</p>
+    <% end %>
+
+    <% if @comment_roots.any? %>
+      <ol class="space-y-3">
+        <% @comment_roots.each do |root| %>
+          <li class="space-y-2">
+            <%= render "comments/comment", comment: root, permissions: @permissions, publication_id: @card[:id] %>
+            <% replies = @comment_replies.fetch(root[:id], []) %>
+            <% if replies.any? %>
+              <ol class="space-y-2" aria-label="Respostas">
+                <% replies.each do |reply| %>
+                  <li><%= render "comments/comment", comment: reply, permissions: @permissions, publication_id: @card[:id] %></li>
+                <% end %>
+              </ol>
+            <% end %>
+            <% total = @reply_counts.fetch(root[:id], 0) %>
+            <% if total > replies.size %>
+              <%= link_to "Ver todas as #{total} respostas", comment_path(root[:id]), class: "sgu-link ml-4 inline-block text-sm sm:ml-10" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+      <%= render "shared/pagination", pagy: @comments_pagy %>
+    <% else %>
+      <p class="text-sm text-muted">Ninguém comentou ainda.</p>
+    <% end %>
+  </section>
+</div>

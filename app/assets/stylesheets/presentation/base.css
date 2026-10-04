@@ -1,0 +1,238 @@
+/* Base ----------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.apr-body {
+  margin: 0;
+  background: var(--apr-paper);
+  color: var(--apr-ink);
+  font-family: var(--apr-font);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.apr-body h1,
+.apr-body h2,
+.apr-body h3,
+.apr-body p,
+.apr-body ul,
+.apr-body ol,
+.apr-body dl,
+.apr-body dd,
+.apr-body figure {
+  margin: 0;
+}
+
+.apr-body ul,
+.apr-body ol {
+  padding: 0;
+  list-style: none;
+}
+
+.apr-body img,
+.apr-body svg {
+  display: block;
+  max-width: 100%;
+}
+
+.apr-body a {
+  color: inherit;
+}
+
+.apr-body button {
+  font: inherit;
+  color: inherit;
+}
+
+.apr-body code,
+.apr-body kbd {
+  font-family: var(--apr-mono);
+}
+
+.apr-body :focus-visible {
+  outline: 3px solid var(--apr-gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.apr-slide:focus {
+  outline: none;
+}
+
+.apr-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.apr-skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--apr-gold);
+  color: var(--apr-g-900) !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.apr-skip:focus {
+  top: 0.6rem;
+}
+
+/* Barra superior -------------------------------------------------------- */
+
+.apr-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--apr-bar-h);
+  padding: 0.45rem clamp(0.75rem, 2vw, 1.5rem);
+  background: var(--apr-g-950);
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.apr-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.apr-brand__mark {
+  height: 2.3rem;
+}
+
+.apr-brand__text {
+  display: grid;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.apr-brand__text strong {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.apr-brand__text span {
+  overflow: hidden;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(227, 239, 235, 0.7);
+}
+
+.apr-bar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.apr-icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+}
+
+.apr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s var(--apr-ease), border-color 0.2s var(--apr-ease), transform 0.2s var(--apr-ease);
+}
+
+.apr-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.apr-btn[aria-pressed="true"] {
+  background: var(--apr-g-600);
+  border-color: var(--apr-g-300);
+}
+
+.apr-btn.apr-btn--primary,
+.apr-btn.apr-btn--gold {
+  background: var(--apr-gold);
+  border-color: var(--apr-gold);
+  color: var(--on-accent);
+}
+
+.apr-btn--primary:hover,
+.apr-btn--gold:hover {
+  background: #ffd47c;
+  border-color: #ffd47c;
+}
+
+.apr-btn--outline {
+  background: transparent;
+  border-color: var(--apr-line-strong);
+  color: var(--apr-heading);
+}
+
+.apr-btn--outline:hover {
+  background: var(--apr-g-100);
+  border-color: var(--apr-link);
+}
+
+.apr-btn--ghost {
+  background: transparent;
+  border-color: var(--apr-line-strong);
+  color: var(--apr-heading);
+}
+
+.apr-btn--ghost:hover {
+  background: var(--apr-g-100);
+}
+
+.apr-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--apr-line-strong);
+  border-radius: 999px;
+  background: var(--apr-surface);
+  color: var(--apr-heading);
+  cursor: pointer;
+}
+
+.apr-icon-btn:hover {
+  background: var(--apr-g-100);
+}

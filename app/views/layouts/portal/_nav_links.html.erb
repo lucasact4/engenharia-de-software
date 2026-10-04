@@ -1,0 +1,9 @@
+<%= nav_link "Mural", publications_path, "newspaper", active: controller_name == "publications" %>
+<% if user %>
+  <%= nav_link "Painel", panel_path, "layout-dashboard", active: controller_name == "panel" %>
+  <%= nav_link "Registrar ocorrência", new_alert_path, "map-pin", active: controller_name == "alerts" && action_name.in?(%w[new create]) %>
+  <%= nav_link "Meus alertas", alerts_path, "inbox", active: controller_path == "alerts" && !action_name.in?(%w[new create]) %>
+  <% if handling_queue_available? %>
+    <%= nav_link "Atendimento", handling_alerts_path, "clipboard-list", active: controller_path.start_with?("handling") %>
+  <% end %>
+<% end %>

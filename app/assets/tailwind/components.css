@@ -1,0 +1,34 @@
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-solid px-4 py-2 text-sm font-medium text-on-brand transition hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand-link/30;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium text-ink transition hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-line/50;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-lg bg-negative-solid px-4 py-2 text-sm font-medium text-on-brand transition hover:bg-negative-solid focus:outline-none focus:ring-2 focus:ring-negative-line/40;
+  }
+
+  .btn-icon {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md text-[var(--table-btn)] transition hover:bg-surface-muted hover:text-brand-link;
+  }
+
+  .btn-icon.disabled {
+    @apply pointer-events-none cursor-not-allowed opacity-40;
+  }
+
+  .form-label {
+    @apply mb-2 block text-sm font-medium text-ink;
+  }
+
+  .form-control {
+    @apply block w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink shadow-sm outline-none transition focus:border-brand-link focus:ring-2 focus:ring-brand-link/20;
+  }
+
+  .flash-close {
+    @apply ml-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-current/70 hover:bg-black/5 hover:text-current;
+  }
+}
+

@@ -1,7 +1,7 @@
 <% plan = presentation.planejamento %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "até a próxima entrega",
-      title: "Próximos passos" %>
+      title: "Quatro prioridades, na ordem em que dependem umas das outras" %>
 
 <div class="apr-next apr-fit">
   <%= presentation_group slide, %w[marco passos], class: "apr-next__plan" do %>
@@ -23,6 +23,7 @@
           <div>
             <p class="apr-steps__title"><%= passo[:titulo] %><% if passo[:card] %> <span class="apr-tag">#<%= passo[:card] %></span><% end %></p>
             <p class="apr-steps__text"><%= passo[:texto] %></p>
+            <% if passo[:depende_de].present? %><p class="apr-steps__dep">Depende de: <%= passo[:depende_de] %></p><% end %>
           </div>
         </li>
       <% end %>

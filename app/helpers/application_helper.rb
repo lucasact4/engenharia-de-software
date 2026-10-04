@@ -98,15 +98,15 @@ module ApplicationHelper
   def flash_banner_class(type)
     case flash_type(type)
     when "success"
-      "border-emerald-200 bg-emerald-50 text-emerald-800"
+      "border-positive-line bg-positive-soft text-positive-ink"
     when "warning"
-      "border-amber-200 bg-amber-50 text-amber-800"
+      "border-warning-line bg-warning-soft text-warning-ink"
     when "danger"
-      "border-red-200 bg-red-50 text-red-800"
+      "border-negative-line bg-negative-soft text-negative-ink"
     when "primary"
-      "border-blue-200 bg-blue-50 text-blue-800"
+      "border-info-line bg-info-soft text-info-ink"
     else
-      "border-slate-200 bg-slate-50 text-slate-800"
+      "border-line bg-surface-muted text-ink"
     end
   end
 

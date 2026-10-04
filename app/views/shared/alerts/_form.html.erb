@@ -1,0 +1,77 @@
+<% mode = local_assigns.fetch(:mode, :create); correcting = mode == :correct %>
+<% form_id = "alert_form_#{alert.id || 'new'}" %>
+<%= form_with model: alert, scope: :alert, url: url, method: method, multipart: true, id: form_id, class: "occurrence-composer", data: {controller: "category-details", category_details_ids_value: options.category_ids_requiring_details} do |f| %>
+  <% if mode == :create %><%= hidden_field_tag :client_request_id, client_request_id %><% else %><%= hidden_field_tag :lock_version, alert.lock_version %><% end %>
+  <% if alert.errors.any? %>
+    <div class="composer-errors" role="alert"><p class="font-bold">Confira seu relato</p><ul class="mt-2 list-disc pl-5"><% alert.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
+  <% end %>
+  <% if local_assigns[:photos_dropped] %><p class="text-sm text-warning-ink" role="status">Selecione as fotos novamente antes de enviar.</p><% end %>
+  <section class="composer-section">
+    <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("square-pen", "size-5") %></span><h2>Seu relato</h2></div>
+    <div>
+      <div class="composer-label-row"><%= f.label :title, "Título", class: "sgu-label" %><%= render "shared/tooltip", label: "Como escrever o título", text: "Resuma a situação em 5 a 160 caracteres. Ex.: Poste apagado perto da biblioteca. Os detalhes ficam na descrição." %></div>
+      <%= f.text_field :title, class: "sgu-input composer-title", minlength: 5, maxlength: 160, required: true, placeholder: "Dê um título ao que aconteceu", aria: {invalid: invalid?(alert, :title)} %>
+      <%= field_errors(alert, :title) %>
+    </div>
+    <div>
+      <div class="composer-label-row"><%= f.label :description, "Descrição", class: "sgu-label" %><%= render "shared/tooltip", label: "Orientações do relato", items: [
+        {title: "O que aconteceu?", text: "Descreva a situação e o impacto observado, em 10 a 5.000 caracteres.", example: "O poste está apagado há duas noites e dificulta a passagem."},
+        {title: "Cuide da privacidade", text: "Evite nomes, contatos ou outros dados pessoais de terceiros. O texto acompanha a audiência escolhida."}
+      ] %></div>
+      <%= f.text_area :description, rows: 4, class: "sgu-input", minlength: 10, maxlength: 5000, required: true, placeholder: "Conte os detalhes que ajudam a entender a situação…", aria: {invalid: invalid?(alert, :description)} %>
+      <%= field_errors(alert, :description) %>
+    </div>
+  </section>
+  <% unless correcting %>
+    <% existing_photos = alert.persisted? ? alert.ordered_photos.map { |photo| {id: photo.id, url: alert_photo_path(alert_id: alert.id, id: photo.id)} } : [] %>
+    <section class="composer-section" data-controller="photo-preview" data-photo-preview-existing-value="<%= existing_photos.to_json %>">
+      <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("camera", "size-5") %></span><h2>Fotos <span class="composer-optional">opcional</span></h2><%= render "shared/tooltip", label: "Organizar as fotos", items: [
+        {title: "Capa e ordem", text: "A primeira foto é a capa do post. Use os botões para escolher a capa e mudar a ordem."},
+        {title: "Adicionar ou remover", text: "Até 5 imagens PNG/JPEG, de 5 MB cada. Alterações nas fotos existentes só são aplicadas ao salvar."},
+        {title: "Visibilidade", text: "As fotos acompanham o post; no mural são usadas versões sem metadados. Os originais são restritos ao atendimento."}
+      ] %></div>
+      <label class="photo-dropzone" for="alert_photos"><%= sgu_icon("image", "size-7") %><span class="font-bold">Adicionar fotos ao relato</span><span class="text-xs text-muted">PNG ou JPEG · até 5 fotos de 5 MB</span></label>
+      <%= f.label :photos, "Fotos", class: "sr-only" %>
+      <%= f.file_field :photos, multiple: true, include_hidden: false, accept: "image/png,image/jpeg", class: "photo-file-input", data: {action: "change->photo-preview#update", photo_preview_target: "input"} %>
+      <div class="photo-preview photo-editor" data-photo-preview-target="preview" aria-label="Organizar fotos da publicação"></div>
+      <div data-photo-preview-target="fields"></div>
+      <p class="composer-hint" data-photo-preview-target="status" role="status" aria-live="polite">A primeira foto será a capa. Fotos são opcionais.</p>
+      <%= field_errors(alert, :photos) %>
+    </section>
+  <% end %>
+  <section class="composer-section">
+    <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("tag", "size-5") %></span><h2>Categoria<% unless correcting %> e gravidade<% end %></h2></div>
+    <div>
+      <div class="composer-label-row"><%= f.label :category_id, "Categoria", class: "sgu-label" %><%= render "shared/tooltip", label: "Categorias e exemplos de uso", heading: "Qual categoria escolher?", items: options.category_guidance %></div>
+      <%= f.select :category_id, options_from_select_options(options.categories, alert.category_id, include_blank: "Escolha a categoria"), {}, class: "sgu-input", required: true, data: {category_details_target: "select", action: "category-details#toggle"} %>
+      <%= field_errors(alert, :category) %>
+    </div>
+    <div data-category-details-target="details"><%= f.label :category_other_description, "Qual situação?", class: "sgu-label" %><%= f.text_area :category_other_description, rows: 2, maxlength: 500, class: "sgu-input" %><%= field_errors(alert, :category_other_description) %></div>
+    <% unless correcting %>
+      <fieldset class="severity-picker"><legend class="sgu-label"><span class="inline-flex items-center gap-2">Gravidade percebida <%= render "shared/tooltip", label: "Como avaliar a gravidade", text: "É sua percepção da situação, não a prioridade do atendimento. A equipe faz sua própria avaliação. Em risco imediato, procure os serviços de emergência." %></span></legend>
+        <div class="severity-grid">
+          <% options.reported_severities.each do |option| %><label class="severity-choice severity-<%= option.value %>"><%= f.radio_button :reported_severity, option.value %><span><strong><%= option.label %></strong><small><%= option.description %></small></span></label><% end %>
+        </div>
+        <label class="severity-unsure"><%= f.radio_button :reported_severity, "", checked: alert.reported_severity.blank? %> Não sei avaliar</label>
+        <%= field_errors(alert, :reported_severity) %>
+      </fieldset>
+    <% end %>
+  </section>
+  <% unless correcting %>
+    <%= render "shared/alerts/location_fields", f: f, alert: alert, options: options, form_id: form_id %>
+    <section class="composer-section">
+      <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("globe", "size-5") %></span><h2>Quem pode ver</h2><%= render "shared/tooltip", label: "Como funciona a visibilidade", items: [
+        {title: "Comunidade UFRPE", text: "Publicado imediatamente para contas conectadas."},
+        {title: "Todos · pública", text: "O mesmo post aparece também sem login. Verificados publicam diretamente; os demais aguardam aprovação interna."},
+        {title: "Somente eu e o atendimento", text: "O relato não aparece no mural."}
+      ] %></div>
+      <%= f.label :requested_visibility, "Quem pode ver", class: "sr-only" %>
+      <%= f.select :requested_visibility, [["Comunidade UFRPE (interna)", "internal"], ["Todos (pública)", "public_external"], ["Somente eu e o atendimento", "restricted"]], {}, class: "sgu-input" %>
+      <% if Current.user&.verified? %><p class="composer-hint flex items-center gap-1 text-info-ink"><%= render "shared/verified_badge" %> Você pode publicar publicamente sem aprovação.</p><% else %><p class="composer-hint">Pedidos públicos ficam internos até a aprovação.</p><% end %>
+      <%= field_errors(alert, :requested_visibility) %>
+    </section>
+  <% end %>
+  <% if correcting %><section class="composer-section"><%= label_tag :reason, "Motivo da correção", class: "sgu-label" %><%= text_area_tag :reason, params[:reason], rows: 2, required: true, maxlength: 1000, class: "sgu-input" %></section><% end %>
+  <%= yield if block_given? %>
+  <div class="composer-submit"><span class="text-xs text-muted"><%= mode == :create ? 'Seu relato e suas fotos formam uma única publicação.' : 'As alterações serão aplicadas ao mesmo post.' %></span><div class="flex gap-2"><%= link_to "Cancelar", cancel_path, class: "sgu-btn sgu-btn-secondary" %><%= f.button({create: "Publicar ocorrência", edit: "Salvar e atualizar publicação", correct: "Salvar correção"}.fetch(mode), type: "submit", class: "sgu-btn sgu-btn-primary", data: {turbo_submits_with: "Enviando…"}) %></div></div>
+<% end %>

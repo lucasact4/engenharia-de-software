@@ -1,0 +1,13 @@
+<% content_for :title, @instance.name %>
+<div class="mx-auto max-w-3xl space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { back: admin_categories_path, back_label: "Categorias", eyebrow: "Categoria", title: @instance.name } do %>
+    <%= link_to "Editar", edit_admin_category_path(@instance), class: "sgu-btn sgu-btn-secondary" %>
+  <% end %>
+  <dl class="sgu-card sgu-dl p-5">
+    <dt>Código</dt><dd class="font-mono"><%= @instance.code %></dd>
+    <dt>Descrição</dt><dd><%= @instance.description.presence || "—" %></dd>
+    <dt>Exige detalhamento</dt><dd><%= @instance.requires_details? ? "Sim" : "Não" %></dd>
+    <dt>Situação</dt><dd><%= @instance.active? ? "Ativa" : "Inativa" %></dd>
+    <dt>Alertas</dt><dd><%= @instance.alerts.count %></dd>
+  </dl>
+</div>

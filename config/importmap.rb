@@ -8,3 +8,5 @@ pin "preline", to: "preline.js", preload: true
 
 pin_all_from "app/javascript/lib/", under: "lib"
 pin_all_from "app/javascript/controllers", under: "controllers"
+
+pin "leaflet", to: "leaflet.js", preload: false # @1.9.4

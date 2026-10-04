@@ -13,7 +13,7 @@ RSpec.describe "Regressões da revisão do card 6" do
     expect(PublicationPolicy::Scope.new(nil, Publication.all).resolve).not_to include(publication)
     expect {
       Publications::Publish.call(actor: admin, publication: publication)
-    }.to raise_error(ActiveRecord::RecordInvalid)
+    }.to raise_error(Pundit::NotAuthorizedError)
     expect(alert.reload.requested_visibility).to eq("public_external")
     expect(AuditEvent.for_subject(alert).last.changeset).to include("publication_blocked" => [ false, true ])
 

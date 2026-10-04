@@ -13,7 +13,7 @@
 
   <header class="apr-bar">
     <%= link_to root_path(locale: nil), class: "apr-brand", aria: { label: "Abrir a página inicial do SGU" } do %>
-      <span class="apr-brand__mark" aria-hidden="true"><%= render "presentations/shared/pin_icon" %></span>
+      <%= sgu_brand(:symbol, tone: :on_dark, alt: "", class_name: "apr-brand__mark") %>
       <span class="apr-brand__text">
         <strong>SGU</strong>
         <span><%= delivery[:rotulo] %> · <%= entrega[:disciplina] %></span>
@@ -21,6 +21,7 @@
     <% end %>
 
     <nav class="apr-bar__actions" aria-label="Ações da apresentação">
+      <%= render "shared/theme_toggle" %>
       <button type="button" class="apr-btn" hidden
               data-presentation-target="enhanced"
               data-action="presentation#openIndex"

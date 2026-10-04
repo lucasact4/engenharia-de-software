@@ -1,0 +1,24 @@
+<% identity = PublicIdentity.for(@person) %>
+<% content_for :title, "#{identity[:display_name]} - SGU UFRPE" %>
+<div class="mx-auto max-w-2xl space-y-5">
+  <%= link_to people_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Pessoas<% end %>
+  <section class="sgu-card p-6 text-center sm:p-8">
+    <span class="mx-auto grid size-16 place-items-center rounded-full bg-brand-solid text-xl font-bold text-on-brand" aria-hidden="true"><% if @person.avatar.attached? %><%= image_tag profile_photo_path(@person), alt: "", class: "size-full rounded-full object-cover" %><% else %><%= initials_for(identity[:display_name]) %><% end %></span>
+    <h1 class="mt-4 text-2xl font-bold text-ink"><%= identity[:display_name] %> <% if @person.verified? %><%= render "shared/verified_badge" %><% end %></h1>
+    <% if identity[:username] %><p class="text-muted">@<%= identity[:username] %></p><% end %>
+    <% if @person.bio.present? %><p class="sgu-prose mx-auto mt-4 max-w-md text-ink"><%= @person.bio %></p><% end %>
+    <p class="mt-4 text-sm text-muted"><%= link_to pluralize(@followers_count, "seguidor", plural: "seguidores"), followers_person_path(@person), class: "sgu-link" %></p>
+    <div class="mt-5">
+      <% if Current.user.nil? %>
+        <%= link_to "Entre para seguir", new_session_path(locale: nil, return_to: person_path(@person, locale: nil)), class: "sgu-btn sgu-btn-secondary" %>
+      <% elsif Current.user.id == @person.id %>
+        <%= link_to "Editar meu perfil", edit_profile_path, class: "sgu-btn sgu-btn-secondary" %>
+      <% elsif @following %>
+        <%= button_to person_follow_path(@person), method: :delete, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: true } do %><%= sgu_icon("user-minus") %> Seguindo — deixar de seguir<% end %>
+      <% elsif @can_follow %>
+        <%= button_to person_follow_path(@person), method: :post, class: "sgu-btn sgu-btn-primary", aria: { pressed: false } do %><%= sgu_icon("user-plus") %> Seguir<% end %>
+      <% end %>
+    </div>
+  </section>
+  <p class="text-center text-xs text-muted">Perfis mostram só o que a pessoa escolheu tornar público. Ocorrências são assinadas pelo autor; avisos e notícias, pela equipe do SGU.</p>
+</div>

@@ -47,12 +47,17 @@ en:
       single_target: "A report must have exactly one target (publication or comment)."
       reference_coordinates_pair: "Reference latitude and longitude must be provided together."
       unavailable: "is not available to grant"
+      in_use: "cannot change because the entry is already in use; deactivate it and create another"
+      in_future: "is in the future; check the device clock and capture again"
+      too_old: "is too old (over 24 hours); capture the location again"
+      opt_in_only: "can only be enabled by the person themselves"
   enums:
     alert:
       kind:
         occurrence: { label: "Occurrence", description: "Campus situation with title, description, category and location." }
         panic: { label: "Panic", description: "Simplified help request. No monitoring team has been defined yet." }
       location_source:
+        map: { label: "Map point", description: "Coordinates selected on a map, not a GPS capture." }
         gps: { label: "Device GPS", description: "Coordinates reported by the device. They do not prove the location." }
         manual: { label: "Building or area", description: "Location selected from the campus catalog." }
         unavailable: { label: "Location unavailable", description: "Accepted for panic requests only." }
@@ -117,3 +122,7 @@ en:
         privacy: { label: "Privacy", description: "Exposure of personal data." }
         inappropriate: { label: "Inappropriate", description: "Offensive or unsuitable content." }
         other: { label: "Other", description: "Other reason; requires details." }
+      state:
+        pending: { label: "Pending", description: "Awaiting administrative review." }
+        actioned: { label: "Upheld", description: "The administration upheld the report." }
+        dismissed: { label: "Dismissed", description: "No violation found." }

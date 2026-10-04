@@ -1,0 +1,25 @@
+/* O tema de tela não interfere nas cores e no encaixe dos slides impressos. */
+@media screen {
+  :root:not([data-theme="light"]) {
+    --apr-paper: var(--canvas); --apr-surface: var(--surface);
+    --apr-ink: var(--ink); --apr-ink-2: var(--muted); --apr-ink-3: var(--subtle);
+    --apr-heading: var(--brand-link); --apr-link: var(--brand-link);
+    --apr-g-100: var(--surface-muted); --apr-g-50: var(--surface-muted);
+    --apr-line: var(--line); --apr-line-strong: var(--line); --apr-amber: var(--warning-ink);
+  }
+  :root:not([data-theme="light"]) .apr-state--aguardando-evidencia {
+    background: var(--surface); color: var(--muted); border-color: var(--line);
+  }
+}
+/* Versões por tema (capturas do conceito visual): na tela, só a do tema ativo; no papel, a clara. */
+@media screen {
+  :root:not([data-theme="light"]) .apr-theme-only--light,
+  :root[data-theme="light"] .apr-theme-only--dark {
+    display: none;
+  }
+}
+@media print {
+  .apr-body .apr-theme-only--dark {
+    display: none;
+  }
+}

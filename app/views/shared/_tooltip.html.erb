@@ -1,0 +1,12 @@
+<% tooltip_id = "tip_#{SecureRandom.hex(4)}" %>
+<span class="sgu-tooltip" data-controller="tooltip" data-action="mouseenter->tooltip#show mouseleave->tooltip#leave">
+  <button type="button" class="sgu-tooltip-trigger" aria-label="<%= local_assigns.fetch(:label, 'Saiba mais') %>" aria-describedby="<%= tooltip_id %>" aria-expanded="false" data-tooltip-target="trigger" data-action="focus->tooltip#show blur->tooltip#blur click->tooltip#toggle keydown.esc->tooltip#dismiss keydown->tooltip#navigate"><%= sgu_icon("info") %></button>
+  <span id="<%= tooltip_id %>" role="tooltip" class="sgu-tooltip-content" data-tooltip-target="content">
+    <span class="tooltip-heading"><%= local_assigns.fetch(:heading, local_assigns.fetch(:label, 'Saiba mais')) %></span>
+    <% if local_assigns[:items] %>
+      <span class="tooltip-items"><% items.each do |item| %>
+        <span class="tooltip-item"><strong><%= item[:title] %></strong><span><%= item[:text] %></span><% if item[:example] %><span class="tooltip-example">Ex.: <%= item[:example] %></span><% end %></span>
+      <% end %></span>
+    <% else %><span class="tooltip-body"><%= text %></span><% end %>
+  </span>
+</span>

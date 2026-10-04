@@ -1,0 +1,24 @@
+<% content_for :title, "Atendimento - SGU UFRPE" %>
+<div>
+  <p class="sgu-eyebrow">Equipe</p>
+  <h1 class="sgu-page-title mt-1">Fila de atendimento</h1>
+  <p class="mt-2 max-w-3xl text-muted">Mostra apenas o que você pode atender: coordenação vê ocorrências; segurança vê pedidos de pânico e o que foi atribuído a ela. Por padrão, só registros em aberto.</p>
+</div>
+
+<div class="mt-5">
+  <%= render "shared/alerts/filters", url: handling_alerts_path, filter_options: @filter_options %>
+</div>
+
+<% if @alerts.any? %>
+  <ul class="mt-5 space-y-3">
+    <% @alerts.each do |alert| %>
+      <%= render "shared/alerts/list_item", alert: alert, path: handling_alert_path(alert), show_priority: true %>
+    <% end %>
+  </ul>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% else %>
+  <div class="sgu-empty mt-5">
+    <p class="font-semibold text-ink">Nenhum registro nesta fila com os filtros atuais.</p>
+    <p class="mt-1 text-sm text-muted">Altere os filtros ou <%= link_to "veja todas as situações", handling_alerts_path(status: "todas"), class: "sgu-link" %>.</p>
+  </div>
+<% end %>

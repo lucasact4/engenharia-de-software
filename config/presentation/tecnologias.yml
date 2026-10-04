@@ -42,6 +42,12 @@ stack:
         logo: { arquivo: "presentation/logos/stimulus.svg", fonte: "https://stimulus.hotwired.dev (via Simple Icons)", licenca: "Marca do projeto Hotwire; uso nominativo", fundo: escuro }
         versoes:
           - { rotulo: "gem stimulus-rails (integração)", gem: "stimulus-rails" }
+      - nome: "Leaflet"
+        funcao: "seleção de um ponto no mapa (OpenStreetMap)"
+        evidencia: "vendor/javascript/leaflet.js"
+        simbolo: "package"
+        versoes:
+          - { rotulo: "biblioteca local", texto: "1.9.4 — cabeçalho de vendor/javascript/leaflet.js" }
       - nome: "Importmap"
         funcao: "JavaScript sem bundler"
         evidencia: "config/importmap.rb"

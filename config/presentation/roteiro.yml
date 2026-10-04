@@ -69,9 +69,9 @@ slides:
     padrao: true
     responsavel:
     conteudos:
-      - { id: aprendizados, titulo: "Lições aprendidas pela equipe", padrao: true }
-      - { id: acoes, titulo: "Ações combinadas para a próxima sprint", padrao: true }
-      - { id: registro, titulo: "Referência à imagem da retrospectiva", padrao: true }
+      - { id: aprendizados, titulo: "Aprendizados do quadro (coluna Aprendi)", padrao: true }
+      - { id: acoes, titulo: "Pontos a melhorar e ações combinadas", padrao: true }
+      - { id: registro, titulo: "Referência ao quadro da retrospectiva", padrao: true }
 
   - id: evolucao
     titulo: "Evolução no período"
@@ -94,7 +94,8 @@ slides:
       - { id: login, titulo: "Captura do login", padrao: true }
       - { id: mobile, titulo: "Captura no celular", padrao: true }
       - { id: paleta, titulo: "Paleta de cores", padrao: true }
-      - { id: notas, titulo: "Notas sobre as capturas", padrao: true }
+      - { id: marca, titulo: "Marca SGU", padrao: true }
+      - { id: notas, titulo: "Informações sobre as capturas", padrao: true }
 
   - id: repositorio
     titulo: "Estrutura detalhada do repositório"
@@ -112,10 +113,11 @@ slides:
     padrao: true
     responsavel:
     conteudos:
-      - { id: repositorio, titulo: "GitHub e estrutura do código", padrao: true }
-      - { id: criterios, titulo: "Critérios de “completa”", padrao: true }
+      - { id: repositorio, titulo: "GitHub: captura e estrutura do código", padrao: true }
+      - { id: criterios, titulo: "Critérios de “completa” (nos detalhes)", padrao: true }
       - { id: funcionalidade-1, titulo: "Funcionalidade 1", padrao: true }
       - { id: funcionalidade-2, titulo: "Funcionalidade 2", padrao: true }
+      - { id: extras, titulo: "Outras partes do sistema", padrao: true }
 
   - id: modelo-conceitual
     titulo: "Modelo conceitual"
@@ -175,10 +177,10 @@ slides:
     padrao: true
     responsavel:
     conteudos:
-      - { id: imagem, titulo: "Imagem da retrospectiva", padrao: true }
-      - { id: pontos, titulo: "Pontos discutidos", padrao: false }
+      - { id: imagem, titulo: "Quadro e link da retrospectiva", padrao: true }
+      - { id: pontos, titulo: "Pontos discutidos (Gostei e Faltou)", padrao: false }
       - { id: acoes, titulo: "Ações combinadas", padrao: false }
-      - { id: licoes, titulo: "Lições aprendidas", padrao: false }
+      - { id: licoes, titulo: "Lições aprendidas (Aprendi)", padrao: false }
 
   - id: proximos-passos
     tema: escuro

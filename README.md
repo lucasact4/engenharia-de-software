@@ -1,234 +1,150 @@
-# Rails Base
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="app/assets/images/brand/sgu-logo-horizontal-negativo.png">
+    <img src="app/assets/images/brand/sgu-logo-horizontal.png" alt="SGU" height="76">
+  </picture>
+</p>
 
-![Propósito Digital logo](app/assets/images/logo-proposito.png)
+<h1 align="center">SGU — Sistema de Gerenciamento Urbano</h1>
 
-A reusable Ruby on Rails foundation for starting new Propósito Digital applications. It includes authentication, an administrative area, authorization, internationalization, testing, a Hotwire/Tailwind interface, and a quality pipeline integrated with GitHub Actions.
+<p align="center">Communication and follow-up of occurrences on the UFRPE campus.</p>
 
-## Table of contents
+<p align="center">
+  Software Engineering course (Engenharia de Software) · Universidade Federal Rural de Pernambuco (UFRPE)<br>
+  Equipe UFRPE de Engenharia de Software · Academic project; not an official UFRPE service.
+</p>
 
-- [Included](#included)
-- [Prerequisites](#prerequisites)
-- [Quick start](#quick-start)
-- [Bootstrap a new project](docs/bootstrap.md)
-- [Rename a project](docs/renaming.md)
-- [Configure credentials and email](docs/configuration.md)
-- [Set up local development](docs/development.md)
-- [Decide whether SQLite is suitable for production](docs/sqlite-production.md)
-- [Back up and restore SQLite production data](docs/sqlite-backup-and-restore.md)
-- [Upgrade an existing database to the SGU data model](docs/data-model-upgrade.md)
-- [Migrate from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
-- [First deployment checklist](docs/first-deploy.md)
-- [New project delivery checklist](docs/project-delivery.md)
-- [Development](#development)
+## Contents
+
+- [Features](#features)
+- [Technologies](#technologies)
+- [Getting started](#getting-started)
 - [Local access](#local-access)
-- [Creating an administrative CRUD](#creating-an-administrative-crud)
-- [Icons](#icons)
-- [Quality and local validation](#quality-and-local-validation)
+- [Tests and quality](#tests-and-quality)
+- [Documentation](#documentation)
+- [Brand](#brand)
 - [Infrastructure and deployment](#infrastructure-and-deployment)
-- [Updating dependencies and version](#updating-dependencies-and-version)
-- [References](#references)
+- [License and credits](#license-and-credits)
 
-## Included
+## Features
 
-- Ruby 3.4.8 and Rails 8.1.3.
-- SQLite, Solid Cache, Solid Queue, and Solid Cable.
-- Session-based authentication and password reset.
-- An administrative area with CRUD, pagination, search, and sorting.
-- Pundit for authorization and Pagy for pagination.
-- RSpec, FactoryBot, Capybara, and SimpleCov for testing.
-- Hotwire, Importmap, Tailwind CSS, Preline, and Lucide icons.
-- Dev Container, Docker, Kamal, GitHub Actions, Dependabot, RuboCop, and Brakeman.
+- **Occurrence registration:** title, description, category, severity, and photos with a chosen cover and order. Location by GPS, a point on the map, or a campus location.
+- **Handling and follow-up:** coordination assesses, assigns, and resolves occurrences. The author follows the status but does not see internal notes.
+- **Social board (mural):** comments, replies, likes, saves, and follows.
+- **Public posts:** verified authors publish directly. Posts from other authors go through approval of the same post, and a rejection requires a reason.
+- **Panic alert:** restricted registration. Its operation has not been institutionally validated yet.
+- **Administration and moderation:** content reports, post withdrawal, comment removal, and an audit trail.
+- **Registration:** requires an `@ufrpe.br` email and includes an account review. Email confirmation is **not** implemented yet.
+- **Light and dark themes.** Dark is the default.
+- **Academic presentation** at `/apresentacao`.
 
-## Prerequisites
+## Technologies
 
-The recommended way to work on this project is with the VS Code Dev Container. It installs Ruby, system dependencies, SQLite, and Selenium.
+| Area | Tools |
+| --- | --- |
+| Language and framework | Ruby 3.4.8 (`.ruby-version`), Rails 8.1.3.1 |
+| Data | SQLite, Solid Cache, Solid Queue, Solid Cable |
+| Interface | Hotwire (Turbo, Stimulus), Importmap, Tailwind CSS, Preline, Lucide icons via `rails_icons` |
+| Authorization and pagination | Pundit, Pagy |
+| Files and images | Active Storage with `image_processing` and libvips |
+| Maps | Leaflet (vendored in `vendor/javascript/leaflet.js`) with OpenStreetMap tiles |
+| Tests | RSpec, Capybara, Selenium, FactoryBot, SimpleCov |
+| Quality and security | RuboCop, Brakeman, GitHub Actions, Dependabot |
+| Environments | Dev Container, Docker, Kamal |
 
-1. Open the project folder in VS Code.
-2. Select **Reopen in Container** when VS Code prompts you.
-3. Wait for `bin/setup --skip-server` to finish.
+The exact gem versions are listed in `Gemfile.lock`.
 
-> Without the Dev Container, install the Ruby version specified in `.ruby-version`, Bundler, SQLite, Google Chrome, and the dependencies required to compile native gems.
+## Getting started
 
-## Quick start
+### First setup (Dev Container, recommended)
 
-Inside the Dev Container, prepare or update the environment:
+1. Open the project folder in VS Code with the **Dev Containers** extension.
+2. Select **Reopen in Container**.
+3. Wait for the `postCreateCommand` to finish. It runs `bin/setup --skip-server`, which installs gems with `bundle install`, runs `bin/rails db:prepare`, and clears logs and temporary files.
 
-```bash
-bin/setup --skip-server
-```
+On a new database, `db:prepare` also runs the seeds, so the [demo accounts](#demo-accounts-development-only) become available.
 
-Start the development server and the CSS watcher:
+The container includes a Selenium Chrome service named `selenium`. It is configured through `SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub` in `.devcontainer/devcontainer.json` and `.devcontainer/compose.yaml`.
+
+**Without the Dev Container**, install:
+
+- the Ruby version in `.ruby-version`;
+- Bundler;
+- SQLite;
+- libvips, which is needed for image variants;
+- Google Chrome and Selenium, which are needed for JavaScript feature specs.
+
+Then run `bin/setup --skip-server`. See [Local development](docs/development.md) for details.
+
+### Start an environment that is already prepared
 
 ```bash
 bin/dev
 ```
 
-The command runs `Procfile.dev`:
+`bin/dev` runs `Procfile.dev`:
 
 ```text
 web: bin/rails server -p 3000
 css: bin/rails tailwindcss:watch
 ```
 
-The application is available at `http://localhost:3000`.
+The application is available at <http://localhost:3000>.
 
-## Development
+### Update the database without losing data
 
-### Database and sample data
-
-To create, migrate, and seed the development database:
-
-```bash
-bin/rails rails_base:db:init
-```
-
-In development, seeds create or reset the demo accounts listed below, including their passwords, administrator flag, and active status. In every environment, seeds also create missing SGU catalogs and the initial presentation profiles without changing edited records. To run only one of those steps without changing accounts, use `bin/rails sgu:catalogs:bootstrap` or `bin/rails sgu:presentation:profiles`; presentation profiles are described in [config/presentation/LEIAME.md](config/presentation/LEIAME.md). To apply migrations only, run:
+After pulling changes or switching branches, apply pending migrations:
 
 ```bash
 bin/rails db:migrate
 ```
 
-### Local access
+Do not use `bin/rails db:reset` or `bin/rails rails_base:db:reset` for this. Both commands drop the local data.
 
-The administrative area is available at `http://localhost:3000/admin`.
+Optional targeted tasks:
+
+- `bin/rails sgu:catalogs:bootstrap` creates missing roles and categories. You can run it more than once. It does not change accounts, edited names, or deactivated items.
+- `bin/rails sgu:presentation:profiles` creates missing presentation profiles. It does not overwrite profiles edited in the administration area.
+
+Seeds (`bin/rails db:seed`, or `bin/rails rails_base:db:init`, which runs `db:create`, `db:migrate`, and `db:seed`) run both steps above. In development, they also **reset the demo accounts**: the passwords, the administrator flag, and the active status. Use the targeted tasks if you have changed those accounts.
+
+### Rebuild CSS
+
+```bash
+bin/rails tailwindcss:build
+```
+
+Run this command before tests or screenshots. A long-running `bin/dev` watcher can keep an outdated build, so restart `bin/dev` after CSS changes.
+
+## Local access
+
+- After signing in, administrators land on `/admin` and other accounts land on their panel at `/painel`.
+- The public board is at `/mural`.
+- Public registration is at `/criar-conta`. It requires an email ending exactly in `@ufrpe.br` and a visitor, professor, or student profile.
+- By default, new registrations are approved automatically. This default is not limited to development. To require approval, set `SGU_AUTO_APPROVE_REGISTRATIONS=false` before you start the application. Administrators review accounts at `/admin/cadastros`.
+- The catalog of campus locations starts empty on purpose. Register only real, verified locations at `/admin/locais`.
+
+### Demo accounts (development only)
 
 | Email | Password | Access |
 | --- | --- | --- |
 | `test@test.com` | `test@123` | Regular account |
 | `dev@dev.com` | `test@123` | Administrator |
 
-These credentials exist only in development. Never use them in production.
+These accounts exist only in development. Never use them in production. The `@ufrpe.br` requirement applies to public registration, so these existing accounts still work.
 
-## Creating an administrative CRUD
+For routes, permissions, and flows, see the [occurrence and social guide](docs/alertas-crud-implementacao.md) (Portuguese). For registration limits and themes, see the [registration and themes guide](docs/sgu-cadastro-temas-revisao.md) (Portuguese).
 
-The project automatically configures the `my_scaffold_controller` generator, which creates controllers in the administrative area and their related test files.
+## Tests and quality
 
-### 1. Generate the entity
-
-Use only the entity name, without a namespace:
+Run these checks inside the Dev Container. They match the GitHub Actions workflow in `.github/workflows/ci.yml`.
 
 ```bash
-bin/rails generate scaffold Bird name:string age:integer deleted_at:datetime:index
-```
-
-Avoid `admin/bird`: it creates namespaced models and factories and adds unnecessary maintenance. The command above generates, among other files:
-
-- a migration and model;
-- an `Admin` controller and helper;
-- a Pundit policy;
-- factory and model, policy, feature, request, helper, and routing specs.
-
-### 2. Run the migration
-
-```bash
-bin/rails db:migrate
-```
-
-The generator normalizes the route into the administrative area:
-
-```ruby
-namespace :admin do
-  resources :birds
-end
-```
-
-### 3. Add translations
-
-Add the entity name and its attributes in `config/locales/pt-BR.yml` and `config/locales/en.yml`:
-
-```yml
-# config/locales/pt-BR.yml
-pt-br:
-  birds:
-    single: "Pássaro"
-    plural: "Pássaros"
-  activerecord:
-    attributes:
-      bird:
-        name: "Nome"
-        age: "Idade"
-```
-
-```yml
-# config/locales/en.yml
-en:
-  birds:
-    single: "Bird"
-    plural: "Birds"
-  activerecord:
-    attributes:
-      bird:
-        name: "Name"
-        age: "Age"
-```
-
-Sidebar labels use `birds.plural`; form and table fields use `activerecord.attributes.bird.<attribute>`.
-
-### 4. Add the menu item
-
-Edit `app/controllers/concerns/sidebar_concerns.rb`:
-
-```ruby
-{
-  name: t("birds.plural"),
-  icon: "bird",
-  policy: :bird,
-  url: { controller: "birds", action: "index" },
-  active: controller_path == "admin/birds"
-}
-```
-
-The policy must exist because the menu checks `policy(menu_item[:policy]).menu?` before rendering the item.
-
-### 5. Review generated files
-
-Before finishing, review the factory, policy, permitted parameters, feature specs, and translations. Feature templates include `#change_here` markers for form-specific adjustments.
-
-## Icons
-
-The project uses `rails_icons` with the Lucide library:
-
-```erb
-<%= icon "search", class: "size-4" %>
-```
-
-To add a single icon, download its SVG to the local library:
-
-```bash
-ICON=circle-check
-curl -Ls "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/${ICON}.svg" \
-  -o "app/assets/svg/icons/lucide/outline/${ICON}.svg"
-```
-
-The icon preview is available at `/rails_icons`. To synchronize the entire Lucide library, run:
-
-```bash
-bin/rails generate rails_icons:sync --library=lucide
-```
-
-## Quality and local validation
-
-Run the following commands inside the Dev Container before opening a pull request. They mirror the GitHub Actions checks.
-
-### Code style
-
-```bash
-bin/rubocop
-```
-
-### Security
-
-```bash
-bin/brakeman --no-pager
-bin/importmap audit
-```
-
-### Build assets and run tests
-
-```bash
-bin/rails tailwindcss:build
-bin/rails db:prepare
-bundle exec rspec
+bin/rubocop                   # code style
+bin/brakeman --no-pager       # static security analysis
+bin/importmap audit           # JavaScript dependency audit
+bin/rails tailwindcss:build   # build CSS before tests
+bundle exec rspec             # JavaScript feature specs need Selenium
 ```
 
 ### Run every check
@@ -242,57 +158,48 @@ bin/rubocop && \
   bundle exec rspec
 ```
 
-GitHub Actions runs security, lint, and test checks for pull requests and pushes to `main`. Confirm all checks pass before merging.
+## Documentation
+
+- [Bootstrap a new project](docs/bootstrap.md)
+- [Credentials, environment variables, and email](docs/configuration.md)
+- [Local development](docs/development.md), including [administrative CRUD generation](docs/development.md#creating-an-administrative-crud), [icons](docs/development.md#icons), and [dependency updates](docs/development.md#updating-dependencies-and-version)
+- [Upgrading an existing database to the SGU data model](docs/data-model-upgrade.md)
+- [Registration, themes, and review](docs/sgu-cadastro-temas-revisao.md) (Portuguese)
+- [Occurrence posts, public review, and verification](docs/occurrence-social-flow.md)
+- [Occurrences, handling, board, and social features: implementation](docs/alertas-crud-implementacao.md) (Portuguese)
+- [SQLite in production](docs/sqlite-production.md)
+- [Backing up and restoring SQLite production data](docs/sqlite-backup-and-restore.md)
+- [Migrating from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
+- [First deployment checklist](docs/first-deploy.md)
+- [Project delivery checklist](docs/project-delivery.md)
+- [Renaming the base project](docs/renaming.md)
+- [Presentation maintenance](config/presentation/LEIAME.md)
+- [Review of the presentation and brand update](docs/apresentacao-identidade-sgu-revisao.md) and the [earlier presentation review](docs/presentation-upgrade-review.md) (Portuguese)
+
+## Brand
+
+The logo files are in `app/assets/images/brand/`:
+
+- `sgu-simbolo.png`: the symbol only.
+- `sgu-logo-horizontal.png`: the symbol with "SGU" beside it.
+- `sgu-logo-vertical.png`: the symbol with "SGU" below it.
+
+Files ending in `-negativo` are for dark backgrounds. Every file has an SVG source, and `sgu-marca-fonte.svg` is an editable artboard. To regenerate the files, run:
+
+```bash
+bundle exec ruby script/gerar_marca_sgu.rb
+```
+
+The lettering is drawn as geometric strokes, so no third-party font is used. The SGU mark belongs to this project. It is not the official UFRPE coat of arms.
 
 ## Infrastructure and deployment
 
 - `Dockerfile` defines the production image.
-- `.devcontainer/` contains the reproducible development environment.
-- `config/deploy.yml` contains the Kamal configuration.
-- `.kamal/secrets` defines the secret names required for deployment.
+- `config/deploy.yml` and `.kamal/secrets` hold the Kamal configuration and the names of the required secrets. The configuration still contains template placeholders.
+- No SGU deployment has been recorded yet. Before you deploy, follow the [first deployment checklist](docs/first-deploy.md) and decide on a [SQLite backup strategy](docs/sqlite-backup-and-restore.md).
 
-Before the first deployment, configure the service name, image, servers, and domain in `config/deploy.yml`. Configure `RAILS_MASTER_KEY` and any other credentials through the production environment's secret manager.
+## License and credits
 
-The default configuration uses SQLite on a persistent volume. Before deploying, define a backup and restore strategy; for applications needing higher concurrency or high availability, evaluate PostgreSQL. See [SQLite in production](docs/sqlite-production.md) for decision criteria, backup expectations, and migration signals.
-
-## Updating dependencies and version
-
-To install the versions declared in the Gemfile:
-
-```bash
-bundle install
-```
-
-To update a specific dependency:
-
-```bash
-bundle update gem-name
-```
-
-### Dependabot pull request policy
-
-Dependabot checks Bundler and GitHub Actions dependencies every Monday at 09:00 in the America/Sao_Paulo time zone. Each ecosystem can have up to five open Dependabot pull requests.
-
-- Treat security updates as urgent: review and merge them on the same business day when the quality checks pass.
-- Review non-security updates at least weekly. Close or defer a pull request only with a short explanation so that the remaining risk is visible.
-- Dependabot groups patch and minor version updates per ecosystem. Review each group's release notes and compatibility impact before merging.
-- Major version updates remain individual pull requests and require review of release notes and any Rails, Ruby, database, or deployment changes.
-- Before merging, confirm the GitHub Actions security, lint, and test checks pass. For application dependencies, also run the [local quality checks](#quality-and-local-validation) when the change needs investigation.
-- Do not merge an update simply because it is automated. Resolve failing checks, compatibility notes, and configuration changes in a dedicated follow-up pull request when they are outside the dependency update's scope.
-
-To create a new semantic version, update `CHANGES`, and create a Git tag:
-
-```bash
-. bumpversion.sh
-```
-
-## References
-
-- [Ruby](https://www.ruby-lang.org/)
-- [Ruby on Rails](https://rubyonrails.org/)
-- [Hotwire](https://hotwired.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Importmap](https://github.com/rails/importmap-rails)
-- [Kamal](https://kamal-deploy.org/)
-
-Questions: contact@proposito.digital.
+- This project started from a reusable Rails base. It is distributed under the MIT License in [`LICENSE`](LICENSE), which keeps the copyright notice of the original base.
+- Leaflet is distributed under its own license, in [`vendor/javascript/leaflet.LICENSE`](vendor/javascript/leaflet.LICENSE).
+- Map tiles and data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors. The map displays this attribution.

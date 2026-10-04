@@ -1,0 +1,39 @@
+<% person = card[:author] %>
+<article class="social-post" aria-labelledby="post_title_<%= card[:id] %>">
+  <header class="social-post-header">
+    <span class="social-avatar" aria-hidden="true"><% if person[:avatar_id] %><%= image_tag profile_photo_path(person[:avatar_id]), alt: "", class: "size-full rounded-full object-cover", loading: "lazy" %><% else %><%= initials_for(person[:display_name]) %><% end %></span>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-1.5">
+        <% if person[:public_profile] %><%= link_to person[:display_name], person_path(person[:id]), class: "social-author" %><% else %><span class="social-author"><%= person[:display_name] %></span><% end %>
+        <% if person[:verified] %><%= render "shared/verified_badge" %><% end %>
+      </div>
+      <p class="text-xs text-muted"><%= card[:kind_label] %> · <%= sgu_time(card[:published_at], format: "%d/%m · %H:%M") %></p>
+    </div>
+    <span class="social-visibility" title="<%= card[:visibility] == 'internal' ? 'Visível somente para contas conectadas' : 'Visível também sem login' %>"><%= sgu_icon(card[:visibility] == 'internal' ? "lock" : "globe") %><span class="sr-only"><%= card[:visibility] == 'internal' ? 'Publicação interna' : 'Publicação pública' %></span></span>
+    <% if card[:own_review] %><%= link_to edit_alert_path(card[:own_review][:alert_id]), class: "social-icon-button", aria: { label: "Editar minha ocorrência" } do %><%= sgu_icon("square-pen", "size-5") %><% end %><% end %>
+  </header>
+  <% if card[:photos].any? %>
+    <div class="post-gallery" data-controller="post-gallery" aria-label="Fotos da publicação">
+      <div class="post-gallery-track" data-post-gallery-target="track" data-action="scroll->post-gallery#update">
+        <% card[:photos].each_with_index do |photo, index| %>
+          <figure class="post-gallery-slide" data-post-gallery-target="slide"><%= image_tag publication_media_path(publication_id: card[:id], id: photo[:id]), alt: "Foto #{index + 1} de #{card[:photos].size}: #{card[:title]}", loading: "lazy", decoding: "async" %></figure>
+        <% end %>
+      </div>
+      <% if card[:photos].size > 1 %>
+        <button type="button" class="post-gallery-prev" data-action="post-gallery#previous" aria-label="Foto anterior"><%= sgu_icon("chevron-left") %></button>
+        <button type="button" class="post-gallery-next" data-action="post-gallery#next" aria-label="Próxima foto"><%= sgu_icon("chevron-right") %></button>
+        <span class="post-gallery-count" data-post-gallery-target="count" aria-live="polite">1 / <%= card[:photos].size %></span>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="social-post-content">
+    <% unless local_assigns[:preview] %><%= render "publications/actions", card: card, show_report: true %><% end %>
+    <% unless card[:kind] == 'occurrence' && card[:title] == card[:body] %><h2 id="post_title_<%= card[:id] %>" class="social-post-title"><%= card[:title] %></h2><% else %><h2 id="post_title_<%= card[:id] %>" class="sr-only"><%= card[:title] %></h2><% end %>
+    <div class="social-caption"><strong><%= person[:display_name] %></strong> <%= local_assigns[:full] ? card[:body] : excerpt(card[:body], length: 320) %></div>
+    <% if card[:own_review] && card[:own_review][:requested] == 'public_external' && card[:own_review][:status] != 'approved' %>
+      <p class="mt-3 text-xs text-warning-ink"><%= card[:own_review][:status] == 'rejected' ? 'Publicação pública não aprovada' : 'Aguardando aprovação para aparecer publicamente' %></p>
+      <% if card[:own_review][:reason].present? %><p class="mt-1 text-sm text-muted">Motivo: <%= card[:own_review][:reason] %></p><% end %>
+    <% end %>
+    <% unless local_assigns[:preview] %><%= link_to "Ver publicação e comentários", publication_path(card[:id], anchor: 'comentarios'), class: "mt-3 inline-block text-sm text-muted hover:text-brand-link" %><% end %>
+  </div>
+</article>

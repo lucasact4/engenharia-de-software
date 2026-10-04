@@ -1,16 +1,22 @@
-# As duas funcionalidades completas exigidas na segunda entrega.
-# A escolha é da equipe. Landing e login NÃO foram selecionados automaticamente.
+# Item 2 da 2ª entrega: GitHub estruturado e as duas funcionalidades completas.
+# Guia: config/presentation/LEIAME.md → "Functionalities and code evidence".
 #
-# Para cada funcionalidade, preencha quando houver evidência:
-#   id:          identificador estável usado pelo catálogo (roteiro.yml); não altere
-#   nome:        nome curto da funcionalidade
-#   estado:      implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
-#   requisitos:  ["RF001", ...] vindos do card #13
-#   jornada:     passos que a pessoa usuária executa, do início ao fim
-#   codigo:      caminhos no repositório (ex.: "app/controllers/occurrences_controller.rb")
-#   testes:      specs que validam a funcionalidade (ex.: "spec/requests/occurrences_spec.rb")
-#   captura:     imagem em app/assets/images/presentation/ (ex.: "presentation/ocorrencia.png")
-#   validacao:   como a equipe validou (teste manual, revisão, demonstração)
+# A escolha das jornadas é da equipe. Landing e login NÃO são as funcionalidades escolhidas.
+# Código e testes comprovam a implementação; o aceite final da equipe é registrado à parte.
+
+# Captura manual da página do repositório no GitHub (miniatura ampliável no slide).
+# Enquanto "captura" estiver vazio, o slide mostra um espaço reservado discreto.
+#   captura: "presentation/github/repositorio.png"   (relativo a app/assets/images)
+repositorio:
+  captura:
+  alt: "Página do repositório SGU no GitHub com a lista de pastas e o README."
+  legenda: "Repositório no GitHub"
+
+# Referência publicada usada nos links de código: commit real de origin/main.
+# Atualize junto com "publicado" de cada evidência quando novas mudanças chegarem à main.
+publicacao:
+  commit: "658bfde07f9fb7f619768538a1c8648e669c0204"
+  rotulo: "main · 02/10/2026"
 
 criterios:
   - "Jornada completa na interface, do início ao resultado"
@@ -19,22 +25,129 @@ criterios:
   - "Testes automatizados da funcionalidade"
   - "Evidência: captura ou demonstração"
 
+# id:          identificador estável usado pelo catálogo (roteiro.yml); não altere.
+# nome:        título visível da funcionalidade.
+# resumo:      frase curta exibida no slide.
+# fluxo:       três etapas curtas (rótulos do mini fluxo do slide).
+# jornada:     passos detalhados (janela "Ver implementação").
+# requisitos:  RFs aprovados no card #13 (vazio até a aprovação).
+# evidencias:  catálogo explícito de arquivos exibidos na janela. Somente caminhos relativos.
+#   tipo:      controller | model | view | service | policy
+#   caminho:   arquivo do repositório (verificado pelos testes).
+#   papel:     o que o arquivo faz nesta jornada.
+#   publicado: true quando o arquivo existe no commit de "publicacao" (gera link para o GitHub);
+#              false para arquivos que, por enquanto, só existem localmente.
+#   captura:   opcional; imagem manual do trecho de código (relativa a app/assets/images).
+# testes:      specs que exercitam a jornada no navegador ou nas requisições.
+# validacao:   situação da validação humana.
 itens:
   - id: funcionalidade-1
-    nome:
-    estado: aguardando_decisao
+    nome: "Registrar ocorrência e acompanhar o atendimento"
+    resumo: "A pessoa registra a ocorrência; a equipe atende; o autor acompanha a situação."
+    estado: implementado
+    fluxo: [ "Registrar", "Atender", "Acompanhar" ]
     requisitos: []
-    jornada: []
-    codigo: []
-    testes: []
-    captura:
-    validacao:
+    jornada:
+      - "Título, descrição, categoria, gravidade e fotos com capa e ordem; local por GPS, mapa ou descrição."
+      - "Coordenação classifica, atribui e resolve a ocorrência."
+      - "O autor acompanha a situação, sem ver notas internas."
+    evidencias:
+      - tipo: controller
+        caminho: "app/controllers/alerts_controller.rb"
+        papel: "Registro, edição e acompanhamento pelo autor."
+        publicado: false
+        captura:
+      - tipo: controller
+        caminho: "app/controllers/handling/alerts_controller.rb"
+        papel: "Fila de atendimento da coordenação e da segurança."
+        publicado: false
+        captura:
+      - tipo: model
+        caminho: "app/models/alert.rb"
+        papel: "Ocorrência: situação, gravidade, local e regras de validação."
+        publicado: true
+        captura:
+      - tipo: service
+        caminho: "app/services/alerts/create_occurrence.rb"
+        papel: "Cria a ocorrência, as fotos e o protocolo em uma única operação."
+        publicado: true
+        captura:
+      - tipo: view
+        caminho: "app/views/shared/alerts/_form.html.erb"
+        papel: "Formulário com fotos, capa, gravidade e localização."
+        publicado: false
+        captura:
+      - tipo: policy
+        caminho: "app/policies/alert_policy.rb"
+        papel: "Quem pode ver e atender cada ocorrência."
+        publicado: true
+        captura:
+    testes:
+      - "spec/features/alert_journey_spec.rb"
+      - "spec/features/occurrence_composer_spec.rb"
+      - "spec/requests/handling_alerts_request_spec.rb"
+    validacao: "Testes automatizados; aceite da equipe pendente."
   - id: funcionalidade-2
-    nome:
-    estado: aguardando_decisao
+    nome: "Publicar e interagir no mural"
+    resumo: "A comunidade publica, comenta, responde, curte, salva e acompanha."
+    estado: implementado
+    fluxo: [ "Publicar", "Interagir", "Moderar" ]
     requisitos: []
-    jornada: []
-    codigo: []
-    testes: []
-    captura:
-    validacao:
+    jornada:
+      - "A ocorrência pública vira post: direto para verificados ou após aprovação do mesmo post."
+      - "Leitores comentam, respondem, curtem, salvam e acompanham."
+      - "Moderação e retirada revogam a exposição e as interações."
+    evidencias:
+      - tipo: controller
+        caminho: "app/controllers/publications_controller.rb"
+        papel: "Mural e leitura de cada post, conforme o acesso."
+        publicado: false
+        captura:
+      - tipo: controller
+        caminho: "app/controllers/publication_interactions_controller.rb"
+        papel: "Curtir, salvar e acompanhar um post."
+        publicado: false
+        captura:
+      - tipo: controller
+        caminho: "app/controllers/admin/publications_controller.rb"
+        papel: "Revisão: aprovar, recusar com motivo e retirar."
+        publicado: false
+        captura:
+      - tipo: model
+        caminho: "app/models/publication.rb"
+        papel: "Post com audiência, estados de revisão e conteúdo da ocorrência."
+        publicado: true
+        captura:
+      - tipo: service
+        caminho: "app/services/publications/sync_occurrence.rb"
+        papel: "Mantém o mesmo post da ocorrência ao editar, aprovar ou recusar."
+        publicado: false
+        captura:
+      - tipo: view
+        caminho: "app/views/publications/show.html.erb"
+        papel: "Post com fotos, comentários, respostas e ações."
+        publicado: false
+        captura:
+    testes:
+      - "spec/features/social_occurrence_journey_spec.rb"
+      - "spec/features/editorial_journey_spec.rb"
+      - "spec/requests/social_occurrence_request_spec.rb"
+    validacao: "Testes automatizados; aceite da equipe pendente."
+
+# Outras partes do sistema, em faixa compacta. Descrições curtas e honestas.
+extras:
+  - nome: "Pânico"
+    estado: parcial
+    nota: "Registro restrito e sem duplicidade; a operação institucional ainda não foi homologada."
+  - nome: "Aprovação pública"
+    estado: implementado
+    nota: "Posts públicos de pessoas não verificadas passam pela aprovação do mesmo post; recusa exige motivo."
+  - nome: "Selo de verificado"
+    estado: implementado
+    nota: "Concedido pela administração; quem tem o selo publica direto no mural público."
+  - nome: "Moderação"
+    estado: implementado
+    nota: "Denúncias, retirada de posts e remoção de comentários com registro de auditoria."
+  - nome: "Cadastro e perfis"
+    estado: parcial
+    nota: "Cadastro com e-mail @ufrpe.br e revisão; a confirmação de e-mail ainda não foi implementada."

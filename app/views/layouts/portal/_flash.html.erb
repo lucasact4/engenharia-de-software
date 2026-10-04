@@ -1,0 +1,9 @@
+<div id="flash" class="space-y-3 empty:hidden">
+  <% flash.each do |type, message| %>
+    <% next if message.blank? %>
+    <div class="mb-4 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm <%= flash_banner_class(type) %>" role="<%= type.to_s == 'notice' || type.to_s == 'success' ? 'status' : 'alert' %>">
+      <%= sgu_icon(type.to_s == "alert" ? "triangle-alert" : "info", "mt-0.5 size-4") %>
+      <div class="flex-1"><%= message %></div>
+    </div>
+  <% end %>
+</div>

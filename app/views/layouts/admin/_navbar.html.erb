@@ -1,8 +1,8 @@
-<header class="admin-main-header sticky inset-x-0 top-0 z-40 flex w-full flex-wrap border-b border-slate-200 bg-white text-sm transition-all duration-300">
+<header class="admin-main-header sticky inset-x-0 top-0 z-40 flex w-full flex-wrap border-b border-line bg-surface text-sm transition-all duration-300">
   <nav class="flex basis-full items-center gap-2 px-3 py-2.5 sm:px-6">
     <div class="me-1 lg:hidden">
       <button type="button"
-              class="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+              class="inline-flex size-9 items-center justify-center rounded-lg border border-line text-muted transition hover:bg-surface-muted"
               aria-haspopup="dialog"
               aria-expanded="false"
               aria-controls="hs-application-sidebar"
@@ -18,10 +18,11 @@
     </div>
 
     <div class="min-w-0 flex-1 lg:hidden">
-      <p class="truncate text-sm font-semibold text-slate-900"><%= mobile_navbar_title %></p>
+      <p class="truncate text-sm font-semibold text-ink"><%= mobile_navbar_title %></p>
     </div>
 
     <div class="ms-auto flex items-center gap-1.5">
+      <%= render "shared/theme_toggle" %>
       <%= render partial: 'layouts/admin/language_select' %>
 
       <%= render 'layouts/admin/user_profile' %>

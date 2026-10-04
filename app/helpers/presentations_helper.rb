@@ -38,7 +38,13 @@ module PresentationsHelper
     presentation_link(sha.first(7), url, class: "apr-code apr-code--link")
   end
 
-  def presentation_path(path)
+# Imagem configurada que existe nos assets; evita imagem quebrada quando a captura manual
+# ainda não foi anexada.
+def presentation_asset?(path)
+  path.present? && Rails.application.assets.load_path.find(path).present?
+end
+
+  def presentation_file_path(path)
     tag.code(path, class: "apr-code") if path.present?
   end
 

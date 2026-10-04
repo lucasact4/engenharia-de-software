@@ -1,0 +1,14 @@
+<% if pagy.pages > 1 %>
+  <nav class="mt-6 flex flex-col items-center justify-between gap-3 text-sm text-muted sm:flex-row" aria-label="Paginação">
+    <p><%== pagy.info_tag %></p>
+    <div class="flex gap-2">
+      <% if pagy.previous %>
+        <%= link_to pagy.page_url(pagy.previous), class: "sgu-btn sgu-btn-sm sgu-btn-secondary", rel: "prev" do %><%= sgu_icon("chevron-left") %> Anterior<% end %>
+      <% end %>
+      <span class="sgu-btn sgu-btn-sm sgu-btn-ghost" aria-current="page">Página <%= pagy.page %> de <%= pagy.pages %></span>
+      <% if pagy.next %>
+        <%= link_to pagy.page_url(pagy.next), class: "sgu-btn sgu-btn-sm sgu-btn-secondary", rel: "next" do %>Próxima <%= sgu_icon("chevron-right") %><% end %>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

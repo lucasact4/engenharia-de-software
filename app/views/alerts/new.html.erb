@@ -1,0 +1,20 @@
+<% content_for :title, "Registrar ocorrência - SGU UFRPE" %>
+<div class="mx-auto max-w-4xl">
+  <%= link_to alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Meus alertas<% end %>
+  <p class="sgu-eyebrow mt-4">Nova ocorrência</p>
+  <h1 class="sgu-page-title mt-1">Publicar ocorrência</h1>
+  <p class="mt-2 text-sm text-muted">Compartilhe o que aconteceu e acompanhe o atendimento.</p>
+
+  <% if @idempotency_conflict %>
+    <%= render "alerts/idempotency_conflict", conflict: @conflict %>
+  <% end %>
+
+  <div class="mt-6">
+    <%= render "shared/alerts/form", alert: @alert, options: @options, url: alerts_path, method: :post,
+          client_request_id: @client_request_id, mode: :create, cancel_path: alerts_path, photos_dropped: @photos_dropped do %>
+      <% if @idempotency_conflict %>
+        <%= hidden_field_tag :replacement_client_request_id, SecureRandom.uuid %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

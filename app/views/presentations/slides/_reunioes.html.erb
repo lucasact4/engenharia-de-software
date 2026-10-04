@@ -1,8 +1,8 @@
 <% reunioes = presentation.gestao[:reunioes] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "monitoramento",
-      title: "Reuniões de monitoramento",
-      lead: "Somente reuniões que aconteceram, com data, participantes, pauta, decisões e evidência." %>
+      title: "Evidência de reuniões de monitoramento do projeto",
+      lead: "Demonstração do sistema, revisão técnica e discussão das próximas melhorias." %>
 
 <%= presentation_item slide, "registros", class: "apr-meetings-block" do %>
   <% if reunioes.blank? %>
@@ -12,30 +12,37 @@
           needs: [ "Data e tipo da reunião", "Participantes", "Pauta e decisões", "Ata, card comentado ou captura como evidência" ],
           file: "gestao.yml" %>
   <% else %>
-    <ol class="apr-meetings apr-meetings--grid" role="list">
+    <ol class="apr-meetings" role="list">
       <% reunioes.each do |reuniao| %>
-        <li class="apr-meetings__item">
-          <p class="apr-meetings__date"><%= presentation_date(reuniao[:data]) %> · <%= reuniao[:tipo] %></p>
-          <% if reuniao[:pauta].present? %>
-            <p class="apr-meetings__text"><strong>Pauta:</strong> <%= reuniao[:pauta].to_sentence %></p>
-          <% end %>
-          <% if reuniao[:decisoes].present? %>
-            <p class="apr-meetings__text"><%= reuniao[:decisoes].to_sentence %></p>
-          <% end %>
-          <% if reuniao[:participantes].present? %>
-            <p class="apr-meetings__people"><%= reuniao[:participantes].to_sentence %></p>
-          <% end %>
-          <% if reuniao[:evidencia_imagem].present? %>
-            <%= render "presentations/shared/figure", image: reuniao[:evidencia_imagem],
-                  alt: "Registro da reunião de #{presentation_date(reuniao[:data])}",
-                  caption: "Registro de #{presentation_date(reuniao[:data])}", modifier: "apr-figure--small" %>
-          <% end %>
-          <% if reuniao[:evidencia_url].present? %>
-            <%= presentation_link("Ver registro", reuniao[:evidencia_url], class: "apr-more") %>
+        <li class="apr-meeting">
+          <div class="apr-meeting__summary">
+            <p class="apr-meeting__date"><time datetime="<%= reuniao[:data] %>"><%= presentation_date(reuniao[:data]) %></time></p>
+            <% if reuniao[:horario].present? %><p class="apr-meeting__time"><%= reuniao[:horario] %><%= " · #{reuniao[:plataforma]}" if reuniao[:plataforma].present? %></p><% end %>
+            <h3 class="apr-meeting__title"><%= reuniao[:tipo] %></h3>
+            <% if reuniao[:pauta].present? %>
+              <h4 class="apr-label">Pauta:</h4>
+              <ul class="apr-meeting__agenda" role="list"><% reuniao[:pauta].each do |item| %><li><%= item %></li><% end %></ul>
+            <% end %>
+            <% if reuniao[:participantes].present? %><p class="apr-meeting__people"><strong>Participantes:</strong> <%= reuniao[:participantes].to_sentence %>.</p><% end %>
+            <% if reuniao[:participantes_nota].present? %><p class="apr-source"><%= reuniao[:participantes_nota] %></p><% end %>
+            <% if reuniao[:decisoes].present? %><p class="apr-meetings__text"><strong>Decisões:</strong> <%= reuniao[:decisoes].to_sentence %></p><% end %>
+            <% if reuniao[:nota].present? %><p class="apr-meeting__note"><%= reuniao[:nota] %></p><% end %>
+            <% if reuniao[:evidencia_url].present? %><%= presentation_link("Ver registro", reuniao[:evidencia_url], class: "apr-more") %><% end %>
+          </div>
+          <% evidencias = Array(reuniao[:evidencias]) %>
+          <% if evidencias.any? || reuniao[:evidencia_imagem].present? %>
+            <div class="apr-meeting__gallery" aria-label="Capturas da reunião de <%= presentation_date(reuniao[:data]) %>">
+              <% evidencias.each do |evidencia| %>
+                <%= render "presentations/shared/figure", image: evidencia[:imagem], alt: evidencia[:alt], caption: evidencia[:legenda], modifier: "apr-figure--meeting" %>
+              <% end %>
+              <% if reuniao[:evidencia_imagem].present? %>
+                <%= render "presentations/shared/figure", image: reuniao[:evidencia_imagem], alt: "Registro da reunião de #{presentation_date(reuniao[:data])}", caption: "Registro de #{presentation_date(reuniao[:data])}", modifier: "apr-figure--meeting" %>
+              <% end %>
+            </div>
           <% end %>
         </li>
       <% end %>
     </ol>
   <% end %>
 <% end %>
-<%= presentation_update_note("gestao.yml", "reunioes (data, tipo, participantes, pauta, decisões e evidência).") %>
+<%= presentation_update_note("gestao.yml", "reunioes (data, horário, participantes, pauta, decisões e evidencias ampliáveis).") %>

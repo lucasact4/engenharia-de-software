@@ -73,6 +73,7 @@ RSpec.describe "Database constraints" do
       create(:publication, kind: "occurrence", alert: alert)
       second = build(:publication, kind: "occurrence", alert: alert, author: create(:user, :admin))
 
+      second[:title] = second[:body] = nil
       expect { second.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
 

@@ -1,0 +1,32 @@
+/* O mesmo post serve ao feed, detalhe e prévia de moderação. */
+@layer components {
+  .social-feed { @apply mx-auto w-full max-w-2xl space-y-6; }
+  .social-post { @apply min-w-0 overflow-hidden rounded-2xl border border-line bg-surface; }
+  .social-post-header { @apply flex items-center gap-3 px-4 py-3; }
+  .social-avatar { @apply grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-positive-soft text-sm font-bold text-brand-link ring-1 ring-line; }
+  .social-avatar img { @apply size-full object-cover; }
+  .social-author { @apply truncate text-sm font-bold !text-ink; }
+  .verified-badge { @apply inline-flex shrink-0 text-info-ink; }
+  .social-visibility { @apply text-muted; }
+  .social-post-content { @apply space-y-3 p-4; }
+  .social-post-title { @apply text-xl font-bold tracking-tight; }
+  .social-caption { @apply whitespace-pre-line break-words text-sm leading-6; }
+  .social-actions { @apply flex flex-wrap items-center gap-1; }
+  .social-icon-button { @apply inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg !text-ink transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-link; }
+  .social-icon-button[aria-pressed="true"] { @apply !text-brand-link; }
+  .social-icon-button[aria-label^="Curtido"] { @apply !text-negative-ink; }
+  .post-gallery { @apply relative min-w-0 bg-canvas; }
+  .post-gallery-track { @apply flex w-full min-w-0 snap-x snap-mandatory overflow-x-auto; scrollbar-width: none; }
+  .post-gallery-track::-webkit-scrollbar { display: none; }
+  .post-gallery-slide { @apply flex aspect-[4/5] w-full shrink-0 snap-center items-center justify-center; max-height: 42rem; }
+  .post-gallery-slide img { @apply h-full w-full object-contain; }
+  .post-gallery-prev, .post-gallery-next { @apply absolute top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface/90 text-ink shadow-sm; }
+  .post-gallery-prev { @apply left-3; } .post-gallery-next { @apply right-3; }
+  .post-gallery-count { @apply absolute bottom-3 right-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-bold text-ink; }
+  .sgu-tooltip { @apply relative inline-flex align-middle; }
+  .sgu-tooltip-trigger { @apply inline-flex size-7 items-center justify-center rounded-full text-muted hover:text-brand-link focus-visible:outline-2 focus-visible:outline-brand-link; }
+  .sgu-tooltip-content { @apply invisible absolute right-0 top-full z-50 mt-2 w-64 max-w-[75vw] rounded-xl border border-line bg-surface p-3 text-left text-xs font-normal leading-5 text-ink shadow-xl; }
+  .sgu-tooltip[data-visible="true"] .sgu-tooltip-content { @apply visible; }
+  .photo-preview { @apply grid grid-cols-3 gap-2; }
+  .photo-preview img { @apply aspect-square w-full rounded-xl object-cover; }
+}

@@ -1,0 +1,45 @@
+<% content_for :title, "Painel - SGU UFRPE" %>
+<% user = Current.user %>
+<div class="social-feed">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="sgu-page-title">Seu campus</h1>
+    <%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar ocorrência<% end %>
+  </div>
+  <nav class="mt-4 flex flex-wrap gap-2" aria-label="Atalhos do painel">
+    <%= link_to "Meus alertas", alerts_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to "Salvos", saved_publications_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to "Meu perfil", profile_path, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger" do %><%= sgu_icon("siren") %> Pânico<% end %>
+  </nav>
+<% if @queue_counts %>
+  <section class="mt-6 sgu-card p-5 sm:p-6" aria-labelledby="panel_queue">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <h2 id="panel_queue" class="sgu-section-title flex items-center gap-2"><%= sgu_icon("clipboard-list") %> Fila de atendimento</h2>
+      <%= link_to "Abrir atendimento", handling_alerts_path, class: "sgu-btn sgu-btn-sm sgu-btn-primary" %>
+    </div>
+    <dl class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <% [ [ "Em aberto", :open, handling_alerts_path ], [ "Pânico em aberto", :panic, handling_alerts_path(kind: "panic") ],
+           [ "Sem responsável", :unassigned, handling_alerts_path(assigned: "none") ], [ "Comigo", :mine, handling_alerts_path(assigned: "me") ] ].each do |label, key, path| %>
+        <%= link_to path, class: "rounded-xl border border-line p-4 !text-ink hover:border-brand-link" do %>
+          <dt class="text-xs font-semibold text-muted"><%= label %></dt>
+          <dd class="mt-1 text-2xl font-bold <%= key == :panic && @queue_counts[key].positive? ? 'text-negative-ink' : '' %>"><%= @queue_counts[key] %></dd>
+        <% end %>
+      <% end %>
+    </dl>
+  </section>
+<% end %>
+
+<section class="mt-6 space-y-5" aria-labelledby="panel_feed">
+  <div class="flex items-center justify-between gap-2">
+    <h2 id="panel_feed" class="sgu-section-title">No mural</h2>
+    <%= link_to "Abrir mural", publications_path, class: "sgu-link text-sm" %>
+  </div>
+  <% @feed.each do |card| %><%= render "publications/card", card: card %><% end %>
+  <% if @feed.empty? %><p class="sgu-empty">Ainda não há publicações. Compartilhe algo do campus.</p><% end %>
+</section>
+<details class="sgu-card mt-6 p-4">
+  <summary class="cursor-pointer font-semibold">Meus registros recentes</summary>
+  <ul class="mt-4 space-y-3"><% @recent_alerts.each do |alert| %><%= render "shared/alerts/list_item", alert: alert, path: alert_path(alert) %><% end %></ul>
+  <%= link_to "Ver todos", alerts_path, class: "sgu-link mt-3 inline-block text-sm" %>
+</details>
+</div>

@@ -1,0 +1,204 @@
+/* Responsivo ------------------------------------------------------------------ */
+
+@media screen and (max-width: 1100px) {
+  .apr-btn span {
+    font-size: 0.8rem;
+  }
+
+  .apr-bar__actions .apr-btn:not(.apr-btn--primary) span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .apr-bar__actions .apr-btn:not(.apr-btn--primary) {
+    width: 2.4rem;
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .apr-dimensions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .apr-dimension:nth-child(3) {
+    border-left: 0;
+  }
+
+  .apr-dimension:nth-child(n + 3) {
+    border-top: 1px solid var(--apr-line);
+  }
+
+  .apr-conflicts__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .apr-figure--phone {
+    max-width: 14em;
+  }
+
+  .apr-timeline__item:nth-child(2n)::after {
+    display: none;
+  }
+
+  .apr-shots,
+  .apr-arch,
+  .apr-retro,
+  .apr-next,
+  .apr-problem,
+  .apr-diagram,
+  .apr-status {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-fit:where(:has(> [hidden])) {
+    grid-auto-flow: row;
+  }
+
+  .apr-features,
+  .apr-diagrams,
+  .apr-mgmt,
+  .apr-evidence {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .apr-criteria {
+    grid-column: 1 / -1;
+  }
+
+  .apr-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1.8em;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  :root {
+    --apr-nav-h: 3.5rem;
+  }
+
+  /* Sem espaço para o nome: a barra mostra só o símbolo (o link mantém o nome acessível). */
+  .apr-brand__text {
+    display: none;
+  }
+
+  .apr-bar__actions .apr-btn--primary span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .apr-bar__actions .apr-btn--primary {
+    width: 2.4rem;
+    padding: 0;
+  }
+
+  .apr-bar__actions {
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+  }
+
+  .apr-cover {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-cover__map {
+    width: 80%;
+    opacity: 0.6;
+  }
+
+  .apr-cover__sigla {
+    font-size: 4.2em;
+  }
+
+  .apr-cover__name {
+    font-size: 1.5em;
+  }
+
+  .apr-cover__meta,
+  .apr-dimensions,
+  .apr-conflicts__list,
+  .apr-features,
+  .apr-diagrams,
+  .apr-mgmt,
+  .apr-evidence,
+  .apr-board,
+  .apr-stack,
+  .apr-reqs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-end__title {
+    font-size: 2.3em;
+  }
+
+  .apr-custom__items {
+    margin-left: 0.4rem !important;
+  }
+
+  .apr-change {
+    grid-template-columns: auto auto 1fr;
+  }
+
+  .apr-change__layer {
+    grid-column: 1 / -1;
+  }
+
+  .apr-dimension + .apr-dimension {
+    border-left: 0;
+    border-top: 1px solid var(--apr-line);
+  }
+
+  .apr-timeline {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.9em;
+  }
+
+  .apr-timeline__item {
+    padding-top: 0;
+    padding-left: 1.6em;
+  }
+
+  .apr-timeline__item::before {
+    top: 0.15em;
+  }
+
+  .apr-timeline__item::after,
+  .apr-timeline__item:nth-child(2n)::after {
+    display: block;
+    left: calc(0.45em - 1px);
+    right: auto;
+    top: 1.05em;
+    bottom: -0.9em;
+    width: 2px;
+    height: auto;
+    background: linear-gradient(180deg, var(--apr-g-600), var(--apr-gold));
+  }
+
+  .apr-timeline__item:last-child::after {
+    display: none;
+  }
+
+  .apr-title {
+    font-size: 1.75em;
+  }
+
+  .apr-nav__title {
+    display: none;
+  }
+
+  .apr-nav {
+    justify-content: center;
+  }
+
+  .apr-conflicts .apr-more {
+    margin-left: 0;
+  }
+}

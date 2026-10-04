@@ -1,0 +1,12 @@
+<% content_for :title, "Conversa - SGU UFRPE" %>
+<div class="mx-auto max-w-3xl space-y-4">
+  <%= link_to publication_path(@publication, anchor: "comment_#{@root.id}"), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> <%= @publication.title %><% end %>
+  <h1 class="sgu-page-title">Conversa</h1>
+  <%= render "comments/comment", comment: @root_projection, permissions: @permissions, publication_id: @publication.id %>
+  <ol class="space-y-2" aria-label="Respostas">
+    <% @replies.each do |reply| %>
+      <li><%= render "comments/comment", comment: reply, permissions: @permissions, publication_id: @publication.id %></li>
+    <% end %>
+  </ol>
+  <%= render "shared/pagination", pagy: @pagy %>
+</div>

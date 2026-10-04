@@ -42,6 +42,7 @@ en:
     twentyone: '21 min'
   pundit:
     default: 'You cannot make this action'
+    admin_area: "Administration is restricted to administrator accounts. Use your panel."
     entity_policy:
       update?: 'You cannot edit this post!'
       create?: 'You cannot create posts!'
@@ -311,11 +312,6 @@ en:
         last_sign_in_at: "Last sign in at"
         created_at: "Created at"
         updated_at: "Updated at"
-      dog:
-        name: "Name"
-        age: "Age"
-        created_at: "Created at"
-        updated_at: "Updated at"
       role:
         name: "Name"
       permission: 
@@ -497,6 +493,9 @@ en:
     single: "Presentation profile"
     plural: "Presentation profiles"
     menu: "Presentation"
-  dogs:
-    single: 'Dog'
-    plural: 'Dogs'
+  categories:
+    single: "Category"
+    plural: "Categories"
+  locations:
+    single: "Location"
+    plural: "Locations"

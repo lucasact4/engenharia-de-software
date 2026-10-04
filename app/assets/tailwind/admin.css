@@ -1,0 +1,119 @@
+#admin-shell header a,
+#admin-shell #hs-application-sidebar a {
+  color: inherit;
+}
+
+#admin-shell header a:hover,
+#admin-shell #hs-application-sidebar a:hover {
+  color: inherit;
+}
+
+#admin-shell .admin-main-content {
+  overflow-x: hidden;
+}
+
+.pagy {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.pagy a,
+.pagy button {
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0.375rem 0.625rem;
+}
+
+.pagy a:hover,
+.pagy button:hover {
+  background: var(--surface-muted);
+}
+
+.pagy .current {
+  border-radius: 0.5rem;
+  background: var(--brand-solid);
+  color: var(--on-brand);
+  padding: 0.375rem 0.625rem;
+}
+
+.pagy input {
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  padding: 0.25rem 0.5rem;
+}
+
+
+@layer components {
+  @media (min-width: 1024px) {
+    #admin-shell .admin-main-header,
+    #admin-shell .admin-main-content {
+      padding-inline-start: 16rem;
+    }
+
+    #admin-shell.admin-shell-sidebar-minified .admin-main-header,
+    #admin-shell.admin-shell-sidebar-minified .admin-main-content {
+      padding-inline-start: 4rem;
+    }
+
+    #admin-shell .admin-sidebar.minified {
+      @apply w-16;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-logo-full {
+      @apply hidden;
+    }
+
+    #admin-shell .admin-sidebar:not(.minified) .admin-sidebar-logo-mini {
+      @apply hidden;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-logo-mini {
+      @apply inline-flex;
+    }
+
+    /* Recolhida, a barra tem 4rem: símbolo e botão de expandir ficam empilhados. */
+    #admin-shell .admin-sidebar.minified .admin-sidebar-header {
+      @apply flex-col gap-2 px-2;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-label,
+    #admin-shell .admin-sidebar.minified .admin-sidebar-caret,
+    #admin-shell .admin-sidebar.minified .admin-sidebar-submenu {
+      @apply hidden;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-item,
+    #admin-shell .admin-sidebar.minified .admin-sidebar-subitem {
+      @apply justify-center px-2;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-minifier-expand {
+      @apply block;
+    }
+
+    #admin-shell .admin-sidebar.minified .admin-sidebar-minifier-collapse {
+      @apply hidden;
+    }
+
+  }
+}
+
+@layer components {
+  /* A navegação móvel precisa ficar acima do fundo do diálogo. */
+  @media (max-width: 1023px) {
+    #hs-application-sidebar.mobile-sidebar-open {
+      display: block !important;
+      visibility: visible !important;
+      z-index: 60 !important;
+      --tw-translate-x: 0;
+      translate: var(--tw-translate-x) var(--tw-translate-y) !important;
+    }
+  }
+}
+

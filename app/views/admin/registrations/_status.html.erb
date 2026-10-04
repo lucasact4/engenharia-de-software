@@ -1,0 +1,2 @@
+<% label, color = { "pending" => ["Pendente", "amber"], "approved" => ["Aprovado", "green"], "rejected" => ["Reprovado", "red"] }.fetch(user.registration_status) %>
+<span class="sgu-badge sgu-badge-<%= color %>"><%= label %></span>

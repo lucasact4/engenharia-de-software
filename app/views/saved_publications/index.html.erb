@@ -1,0 +1,16 @@
+<% content_for :title, "Salvos - SGU UFRPE" %>
+<p class="sgu-eyebrow">Lista privada</p>
+<h1 class="sgu-page-title mt-1">Salvos</h1>
+<p class="mt-2 text-muted">Só você vê o que salvou. Se uma publicação sair do ar ou deixar de estar disponível para você, ela some daqui.</p>
+<% if @unavailable.positive? %>
+  <div class="mt-4 flex flex-col gap-2 rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink sm:flex-row sm:items-center sm:justify-between">
+    <p><%= pluralize(@unavailable, "item salvo não está mais disponível", plural: "itens salvos não estão mais disponíveis") %>.</p>
+    <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "salvos"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+  </div>
+<% end %>
+<% if @cards.any? %>
+  <div class="mt-5 space-y-4"><% @cards.each do |card| %><%= render "publications/card", card: card %><% end %></div>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% else %>
+  <div class="sgu-empty mt-5"><p class="text-sm text-muted">Nada salvo. Use <strong>Salvar</strong> em uma publicação do <%= link_to "mural", publications_path, class: "sgu-link" %>.</p></div>
+<% end %>

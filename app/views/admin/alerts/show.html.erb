@@ -1,0 +1,20 @@
+<% content_for :title, @alert.protocol %>
+<div class="space-y-5 py-2">
+  <%= link_to admin_alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Ocorrências<% end %>
+  <%= render "shared/alerts/header", detail: @detail do %>
+    <% if policy(@alert).correct_content? %>
+      <%= link_to edit_admin_alert_path(@alert), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("square-pen") %> Corrigir relato<% end %>
+    <% end %>
+    <% if @publication %>
+      <%= link_to admin_publication_path(@publication), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("newspaper") %> Publicação vinculada<% end %>
+    <% end %>
+  <% end %>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: admin_alert_path(@alert) %>
+    <%= render "shared/alerts/handling_panel", alert: @alert, options: @options, assignees: @assignees, submitted: @submitted || {},
+          urls: { assessment: assessment_admin_alert_path(@alert), assignment: assignment_admin_alert_path(@alert), transition: transition_admin_alert_path(@alert) } do %>
+      <%= render "admin/alerts/audience_panel", alert: @alert, options: @options, submitted: @submitted || {} %>
+    <% end %>
+  </div>
+</div>

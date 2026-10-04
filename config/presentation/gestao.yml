@@ -37,7 +37,7 @@ ambientes:
 
 praticas:
   - titulo: "Branch por card"
-    texto: "Trabalho do card #11 isolado na branch card-11."
+    texto: "Branches por atividade; melhorias atuais em feat/alertas-crud-social, ainda em revisão local."
   - titulo: "Integração contínua"
     texto: "RSpec, RuboCop, Brakeman e auditoria do Importmap a cada pull request."
   - titulo: "Dependências monitoradas"
@@ -52,4 +52,36 @@ praticas:
 #     decisoes: ["..."]
 #     evidencia_imagem: "presentation/reunioes/2026-10-06.png"   # opcional
 #     evidencia_url:                                              # opcional, link público
-reunioes: []
+# evidencias: lista de { imagem, legenda, alt }; ampliações usam os arquivos originais.
+reunioes:
+  - data: 2026-10-03
+    horario: "18h20 (aproximadamente)"
+    tipo: "Monitoramento e demonstração do SGU"
+    plataforma: "Google Meet"
+    participantes:
+      - "Lucas Vitor Ferreira Santos"
+      - "Victor Novais"
+      - "Alisson Honorato"
+      - "Guilherme Santiago"
+      - "José de Lemos"
+    participantes_nota: "Nomes exibidos nas capturas; alguns sobrenomes estão truncados."
+    pauta:
+      - "Bugs ao iniciar o projeto e diagnóstico do ambiente de desenvolvimento."
+      - "Funcionamento do Rails, organização MVC e práticas de código."
+      - "Tecnologias utilizadas e demonstração do painel e da administração."
+      - "Evolução do projeto e oportunidades de melhoria."
+    decisoes: []
+    nota: "As capturas registram a versão demonstrada na reunião, anterior às melhorias atuais. Encaminhamentos e responsáveis ainda precisam ser formalizados."
+    evidencias:
+      - imagem: "presentation/reunioes/2026-10-03/01-painel.png"
+        legenda: "18h21 · Painel e ocorrência registrada"
+        alt: "Reunião no Google Meet com participantes e demonstração do painel do SGU, incluindo um registro recente."
+      - imagem: "presentation/reunioes/2026-10-03/02-administracao.png"
+        legenda: "18h23 · Administração de usuários"
+        alt: "Participantes acompanham a tela administrativa de usuários do SGU; um cabeçalho mostra uma tradução ausente."
+      - imagem: "presentation/reunioes/2026-10-03/03-rails.png"
+        legenda: "18h24 · Código Rails e Dev Container"
+        alt: "Tela compartilhada do VS Code com estrutura de pastas Rails, template da ocorrência e terminal no Dev Container."
+      - imagem: "presentation/reunioes/2026-10-03/04-ambiente.png"
+        legenda: "18h37 · Diagnóstico do ambiente"
+        alt: "Google Meet com compartilhamento da landing e terminais de desenvolvimento; o log registra um erro ao acessar a apresentação."

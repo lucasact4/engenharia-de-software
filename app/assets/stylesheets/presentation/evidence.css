@@ -1,0 +1,524 @@
+/* GitHub e duas funcionalidades: jornadas, captura do repositório, extras e janelas de
+   evidências do código. Detalhes técnicos ficam nas janelas; o slide mostra só a jornada. */
+
+.apr-print-only {
+  display: none;
+}
+
+/* Jornadas ----------------------------------------------------------------------- */
+
+.apr-journeys {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.78fr);
+  gap: 1.1em;
+  align-items: stretch;
+}
+
+.apr-journey {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  padding: 1.15em 1.25em;
+  border: 1px solid var(--apr-line);
+  border-top: 4px solid var(--apr-g-600);
+  border-radius: var(--apr-radius);
+  background: var(--apr-surface);
+}
+
+.apr-journey + .apr-journey {
+  border-top-color: var(--apr-gold);
+}
+
+.apr-journey--empty {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.apr-journey__num {
+  color: var(--apr-link);
+  font-size: 0.68em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.apr-journey__name {
+  font-size: 1.3em;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.apr-journey__summary {
+  color: var(--apr-ink-2);
+  font-size: 0.95em;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.apr-journey__flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: 0.2em !important;
+}
+
+.apr-journey__flow li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.apr-journey__flow li:not(:last-child)::after {
+  content: "→";
+  color: var(--apr-amber);
+}
+
+.apr-journey__flow li::before {
+  content: "";
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  background: var(--apr-g-600);
+}
+
+.apr-journey__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  margin-top: auto !important;
+  padding-top: 0.7em;
+  border-top: 1px solid var(--apr-line);
+}
+
+.apr-journey__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 0.5em;
+  color: var(--apr-ink-3);
+  font-size: 0.72em;
+}
+
+.apr-journey__status .apr-state {
+  font-size: 0.95em;
+}
+
+.apr-dialog-btn {
+  flex: none;
+}
+
+/* Captura manual do repositório ------------------------------------------------------- */
+
+.apr-repo-shot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+  min-width: 0;
+}
+
+.apr-figure--github .apr-figure__img {
+  max-height: 11em;
+  object-fit: contain;
+  object-position: top;
+}
+
+.apr-shot-slot {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.3em;
+  min-height: 8.5em;
+  padding: 1em;
+  border: 1.5px dashed var(--apr-line-strong);
+  border-radius: var(--apr-radius);
+  background: var(--apr-g-50);
+  color: var(--apr-ink-3);
+  text-align: center;
+}
+
+.apr-shot-slot .apr-icon {
+  width: 1.8em;
+  height: 1.8em;
+  stroke-width: 1.5;
+}
+
+.apr-shot-slot__title {
+  color: var(--apr-ink-2);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.apr-shot-slot__text {
+  font-size: 0.72em;
+}
+
+.apr-repo-shot__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* Coluna do repositório, extras e critérios ----------------------------------------- */
+
+.apr-repo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  min-width: 0;
+}
+
+.apr-extras {
+  display: grid;
+  gap: 0.45em;
+}
+
+.apr-extras__label {
+  color: var(--apr-ink-3);
+  font-size: 0.66em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apr-extras__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5em, 1fr));
+  gap: 0.5em;
+}
+
+.apr-extra {
+  display: grid;
+  gap: 0.15em;
+  padding: 0.45em 0.7em;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-extra__name {
+  font-size: 0.8em;
+  font-weight: 750;
+}
+
+.apr-extra__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3em;
+}
+
+.apr-extra .apr-state {
+  font-size: 0.6em;
+}
+
+/* Botão de informações (Popover API) ------------------------------------------------ */
+
+.apr-info-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.apr-info {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7em;
+  height: 1.7em;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--apr-link);
+  cursor: pointer;
+}
+
+.apr-info:hover,
+.apr-info:focus-visible {
+  border-color: var(--apr-line-strong);
+  background: var(--apr-g-100);
+}
+
+.apr-info .apr-icon {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.apr-info__pop {
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: min(22rem, calc(100dvh - 2rem));
+  padding: 0.85rem 1rem;
+  overflow: auto;
+  border: 1px solid var(--apr-line-strong);
+  border-radius: 14px;
+  background: var(--apr-surface);
+  color: var(--apr-ink);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.apr-info__pop:popover-open {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.apr-info__pop::backdrop {
+  background: transparent;
+}
+
+/* Perto do botão quando o navegador posiciona por âncora; senão, centralizado na tela. */
+@supports (position-area: bottom) {
+  .apr-info__pop {
+    margin: 0.4rem 0;
+    inset: auto;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
+
+.apr-info__title {
+  color: var(--apr-heading);
+  font-weight: 750;
+}
+
+.apr-info__body {
+  color: var(--apr-ink-2);
+}
+
+/* Janelas de detalhes --------------------------------------------------------------- */
+
+.apr-sheet {
+  width: min(100% - 2rem, 58rem);
+  max-height: calc(100dvh - 2rem);
+}
+
+.apr-sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.apr-sheet__head {
+  align-items: flex-start;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--apr-line);
+}
+
+.apr-sheet__title {
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.apr-sheet__title:focus {
+  outline: none;
+}
+
+.apr-sheet__body {
+  display: grid;
+  gap: 0.85rem;
+  min-height: 0;
+  padding: 1rem 1.25rem 1.35rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-size: 0.95rem;
+}
+
+.apr-sheet__lead,
+.apr-sheet__note {
+  color: var(--apr-ink-2);
+}
+
+.apr-sheet__note {
+  font-size: 0.88rem;
+}
+
+.apr-sheet__heading {
+  margin-top: 0.3rem !important;
+  color: var(--apr-link);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.apr-sheet__steps {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem !important;
+  border-left: 3px solid var(--apr-gold);
+  border-radius: 0 10px 10px 0;
+  background: var(--apr-g-50);
+  counter-reset: sheet-step;
+}
+
+.apr-sheet__steps li {
+  counter-increment: sheet-step;
+}
+
+.apr-sheet__steps li::before {
+  content: counter(sheet-step) ". ";
+  color: var(--apr-link);
+  font-weight: 800;
+}
+
+.apr-sheet__facts,
+.apr-sheet__tests {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.apr-sheet__facts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--apr-ink-2);
+}
+
+.apr-sheet .apr-code {
+  font-size: 0.85rem;
+}
+
+.apr-sheet .apr-criteria__list {
+  font-size: 1rem;
+}
+
+.apr-sheet .apr-criteria__list li::before {
+  color: var(--apr-link);
+}
+
+.apr-evidence-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.apr-evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 11rem);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--apr-line);
+  border-radius: 12px;
+  background: var(--apr-surface);
+}
+
+.apr-evidence__main {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: start;
+}
+
+.apr-evidence__type {
+  padding: 0.05rem 0.5rem;
+  border-radius: 6px;
+  background: var(--apr-g-100);
+  color: var(--apr-heading);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.apr-evidence__type--model { background: var(--info-soft); color: var(--info-ink); }
+.apr-evidence__type--view { background: var(--warning-soft); color: var(--warning-ink); }
+.apr-evidence__type--service,
+.apr-evidence__type--policy { background: var(--violet-soft); color: var(--violet-ink); }
+
+.apr-evidence__role {
+  font-weight: 650;
+}
+
+.apr-evidence__source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  color: var(--apr-ink-3);
+  font-size: 0.8rem;
+}
+
+.apr-evidence__local {
+  color: var(--warning-ink);
+  font-weight: 650;
+}
+
+.apr-evidence__shot {
+  padding: 0.6rem;
+  border: 1px dashed var(--apr-line-strong);
+  border-radius: 10px;
+  color: var(--apr-ink-3);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.apr-figure--evidence .apr-figure__img {
+  max-height: 8rem;
+  object-fit: contain;
+}
+
+/* Telas menores e impressão --------------------------------------------------------- */
+
+@media screen and (max-width: 900px) {
+  .apr-journeys {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apr-evidence {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .apr-print-only {
+    display: block;
+  }
+
+  .apr-dialog-btn,
+  .apr-info,
+  .apr-repo-shot__actions,
+  .apr-criteria-btn {
+    display: none !important;
+  }
+
+  .apr-journeys {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+    gap: 4mm;
+  }
+
+  .apr-journey {
+    break-inside: avoid;
+  }
+
+  .apr-journey__print,
+  .apr-repo-shot__url,
+  .apr-info__print {
+    color: var(--apr-ink-3);
+    font-size: 7.5pt;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .apr-info__print::before {
+    content: " — ";
+  }
+
+  .apr-extra__meta {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .apr-extra .apr-info-wrap,
+  .apr-extra .apr-info__print {
+    flex-basis: 100%;
+  }
+
+  .apr-shot-slot {
+    min-height: 30mm;
+  }
+}

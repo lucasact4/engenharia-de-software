@@ -1,0 +1,5 @@
+<% content_for :title, "Editar publicação" %>
+<div class="mx-auto max-w-3xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_publication_path(@publication), back_label: "Publicação", eyebrow: "Editorial · versão #{@publication.content_version}", title: "Editar publicação" %>
+  <%= render "form" %>
+</div>

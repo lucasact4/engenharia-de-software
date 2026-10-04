@@ -1,4 +1,9 @@
-# O que será feito até a próxima entrega.
+# O que será feito até a próxima entrega. Sem datas nem responsáveis enquanto a equipe não decidir.
+#
+# proximos_passos: poucas prioridades, na ordem em que dependem umas das outras.
+#   titulo, texto: o que fazer.
+#   card:          número do card no Trello, quando existir.
+#   depende_de:    texto curto com a dependência (opcional).
 
 # Marco demonstrável da próxima entrega (definir com a equipe).
 marco:
@@ -7,31 +12,30 @@ marco:
   estado: aguardando_decisao
 
 proximos_passos:
-  - titulo: "Consolidar requisitos"
-    texto: "Resolver os conflitos de RF005, RF007, RF009, RF012, visibilidade e cadastro."
+  - titulo: "Validar jornadas e requisitos"
+    texto: "Revisar com a equipe as duas jornadas e ligar cada uma aos RFs aprovados."
     card: 13
-  - titulo: "Fechar os diagramas"
-    texto: "Modelo conceitual, casos de uso (#14) e fluxo revisado (#5)."
+    depende_de:
+  - titulo: "Fechar os diagramas pendentes"
+    texto: "Concluir casos de uso e fluxo de ocorrências; revisar as premissas do modelo conceitual."
     card: 14
-  - titulo: "Implementar a ocorrência"
-    texto: "Telas de registro e acompanhamento sobre o backend do card #6, após validar as premissas."
-    card: 6
-  - titulo: "Concluir duas funcionalidades"
-    texto: "Escolher, implementar e validar ponta a ponta."
+    depende_de: "requisitos validados"
+  - titulo: "Completar o cadastro e os locais"
+    texto: "Implementar a confirmação de e-mail e cadastrar os locais oficiais do campus."
     card:
-  - titulo: "Limpar herança do template"
-    texto: "Remover o exemplo Dog e a marca da base na área administrativa."
+    depende_de: "dados reais dos locais"
+  - titulo: "Publicar e ensaiar"
+    texto: "Integrar a branch local à main, preparar o ambiente de homologação e ensaiar em até 7 minutos."
     card:
+    depende_de: "itens anteriores"
 
 riscos:
   - titulo: "Requisitos em aberto"
-    texto: "Sem as decisões do #13, a modelagem da ocorrência pode precisar ser refeita."
-  - titulo: "Dependência em cadeia"
-    texto: "Requisitos, diagramas e implementação dependem uns dos outros: um atraso se propaga."
-  - titulo: "Escopo de emergência"
-    texto: "Pânico e localização em tempo real exigem regras e testes próprios."
+    texto: "Sem as decisões do #13, telas e modelo podem precisar de ajustes."
+  - titulo: "Trabalho ainda local"
+    texto: "Boa parte da evolução recente ainda não está na main nem publicada."
 
 dependencias:
   - "#13 — Refinar RFs e RNFs"
-  - "#5 — Revisar fluxo de ocorrências e emergências"
   - "#14 — Diagrama de casos de uso"
+  - "#5 — Fluxo de ocorrências e emergências"

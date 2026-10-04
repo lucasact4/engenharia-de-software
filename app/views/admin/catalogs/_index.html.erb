@@ -1,0 +1,66 @@
+<%# Listagem de catálogo (categorias/locais). instances, usage: { id => quantidade de alertas }. %>
+<div class="space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { eyebrow: "Catálogo", title: title, description: description } do %>
+    <%= link_to new_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> <%= new_label %><% end %>
+  <% end %>
+
+  <%= yield %>
+
+  <%= form_with url: index_path, method: :get, class: "flex gap-2", data: { turbo_action: "advance" } do %>
+    <%= label_tag :term, "Buscar por código, nome ou descrição", class: "sr-only" %>
+    <%= search_field_tag :term, params[:term], class: "sgu-input", placeholder: "Código, nome ou descrição" %>
+    <button type="submit" class="sgu-btn sgu-btn-secondary"><%= sgu_icon("search") %> Buscar</button>
+  <% end %>
+
+  <% if instances.any? %>
+    <div class="sgu-card overflow-x-auto">
+      <table class="min-w-full divide-y divide-line text-sm">
+        <thead class="bg-surface-muted text-left text-xs font-semibold uppercase tracking-wide text-muted">
+          <tr>
+            <th scope="col" class="px-4 py-3"><%= sort_link("position", "Posição") %></th>
+            <th scope="col" class="px-4 py-3"><%= sort_link("name", "Nome") %></th>
+            <th scope="col" class="px-4 py-3"><%= sort_link("code", "Código") %></th>
+            <th scope="col" class="px-4 py-3"><%= sort_link("active", "Situação") %></th>
+            <th scope="col" class="px-4 py-3">Uso</th>
+            <th scope="col" class="px-4 py-3 text-right">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          <% instances.each do |entry| %>
+            <tr id="catalog_<%= entry.class.name.underscore %>_<%= entry.id %>">
+              <td class="px-4 py-3 text-muted"><%= entry.position %></td>
+              <td class="px-4 py-3">
+                <p class="font-semibold text-ink"><%= entry.name %></p>
+                <% if entry.respond_to?(:requires_details) && entry.requires_details? %><p class="text-xs text-muted">Exige detalhamento</p><% end %>
+              </td>
+              <td class="px-4 py-3 font-mono text-xs text-ink"><%= entry.code %></td>
+              <td class="px-4 py-3"><%= entry.active? ? tag.span("Ativo", class: "sgu-badge sgu-badge-green") : tag.span("Inativo", class: "sgu-badge sgu-badge-slate") %></td>
+              <td class="px-4 py-3 text-muted"><%= pluralize(usage.fetch(entry.id, 0), "alerta", plural: "alertas") %></td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap justify-end gap-2">
+                  <%= link_to "Editar", edit_path.call(entry), class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+                  <% if entry.active? %>
+                    <%= button_to "Desativar", deactivate_path.call(entry), method: :patch, class: "sgu-btn sgu-btn-sm sgu-btn-danger-outline",
+                          title: "Some das novas escolhas; registros antigos continuam com este item.",
+                          data: { turbo_confirm: "Desativar “#{entry.name}”? Ele deixa de aparecer para novas escolhas, mas os registros antigos continuam com ele." } %>
+                  <% else %>
+                    <%= button_to "Ativar", activate_path.call(entry), method: :patch, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% elsif params[:term].present? %>
+    <div class="sgu-empty"><p class="text-sm text-ink">Nenhum resultado para “<%= params[:term] %>”. <%= link_to "Limpar busca", index_path, class: "sgu-link" %></p></div>
+  <% else %>
+    <div class="sgu-empty">
+      <p class="font-semibold text-ink"><%= empty_title %></p>
+      <p class="mx-auto mt-2 max-w-xl text-sm text-muted"><%= empty_description %></p>
+      <%= link_to new_label, new_path, class: "sgu-btn sgu-btn-primary mt-4" %>
+    </div>
+  <% end %>
+</div>

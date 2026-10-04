@@ -1,0 +1,14 @@
+@layer base {
+  body {
+    font-family: "Segoe UI", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  a {
+    color: var(--brand-link);
+  }
+
+  a:hover {
+    color: var(--brand-link);
+  }
+}
+

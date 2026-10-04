@@ -1,0 +1,37 @@
+<% content_for :title, "Revisar cadastro" %>
+<% user = @registration %>
+<div class="mx-auto max-w-4xl space-y-5 py-2">
+  <%= render layout: "admin/shared/page_header", locals: { back: admin_registrations_path, back_label: "Cadastros", eyebrow: "Revisão de acesso", title: user.display_name } do %>
+    <%= link_to "Ver conta e papéis", admin_user_path(user), class: "sgu-btn sgu-btn-secondary" %>
+  <% end %>
+  <%= render "shared/auth/development_notice" %>
+  <% if user.errors.any? %><div class="rounded-xl border border-negative-line bg-negative-soft p-4 text-negative-ink" role="alert"><ul class="list-disc pl-5"><% user.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+  <section class="sgu-card p-5 sm:p-6">
+    <h2 class="sgu-section-title">Dados do cadastro</h2>
+    <dl class="sgu-dl mt-4">
+      <dt>Nome</dt><dd><%= user.display_name %></dd>
+      <dt>E-mail</dt><dd><%= user.email_address %></dd>
+      <dt>Perfil solicitado</dt><dd><%= { "visitor" => "Visitante", "professor" => "Professor", "student" => "Estudante" }.fetch(user.registration_role_code) %></dd>
+      <dt>Situação</dt><dd><%= render "status", user: user %></dd>
+      <dt>Confirmação de e-mail</dt><dd>Não implementada — endereço ainda não verificado</dd>
+      <dt>Criado em</dt><dd><%= sgu_time(user.created_at) %></dd>
+      <dt>Última revisão</dt><dd><%= user.registration_reviewed_at ? sgu_time(user.registration_reviewed_at) : "Ainda não revisado" %></dd>
+      <dt>Responsável</dt><dd><%= user.registration_reviewed_by&.display_name.presence || (user.registration_reviewed_at ? "Aprovação automática nesta fase" : "—") %></dd>
+      <% if user.registration_review_reason.present? %><dt>Motivo</dt><dd class="sgu-prose"><%= user.registration_review_reason %></dd><% end %>
+    </dl>
+  </section>
+  <% review_policy = RegistrationReviewPolicy.new(Current.user, user) %>
+  <% if review_policy.approve? %>
+    <section class="sgu-card p-5 sm:p-6">
+      <h2 class="sgu-section-title">Decisão da administração</h2>
+      <p class="mt-2 text-sm text-muted">Reprovar bloqueia o login e encerra as sessões existentes. Os alertas e comentários da pessoa permanecem no histórico.</p>
+      <div class="mt-5 grid gap-6 sm:grid-cols-2">
+        <div><h3 class="font-semibold">Aprovar cadastro</h3><p class="mt-1 text-sm text-muted">Libera o acesso com o perfil já registrado.</p><%= button_to "Aprovar cadastro", approve_admin_registration_path(user), method: :patch, class: "sgu-btn sgu-btn-primary mt-4", disabled: user.registration_approved? %></div>
+        <%= form_with url: reject_admin_registration_path(user), method: :patch, class: "space-y-3" do |form| %>
+          <div><%= form.label :reason, "Motivo da reprovação", class: "sgu-label" %><%= form.text_area :reason, required: true, maxlength: 2000, rows: 3, value: @reason, class: "sgu-input" %></div>
+          <%= form.submit "Reprovar cadastro", class: "sgu-btn sgu-btn-danger", data: { turbo_confirm: "Reprovar o cadastro e encerrar todas as sessões desta pessoa?" } %>
+        <% end %>
+      </div>
+    </section>
+  <% else %><p class="text-sm text-muted">Você não pode revisar o próprio cadastro.</p><% end %>
+</div>

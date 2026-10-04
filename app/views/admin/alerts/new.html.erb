@@ -1,0 +1,7 @@
+<% content_for :title, "Registrar ocorrência" %>
+<div class="mx-auto max-w-3xl space-y-5 py-2">
+  <%= render "admin/shared/page_header", back: admin_alerts_path, back_label: "Ocorrências", eyebrow: "Nova ocorrência", title: "Registrar ocorrência",
+        description: "A ocorrência fica com a sua autoria. Para registrar em nome de outra pessoa não há fluxo aprovado." %>
+  <%= render "shared/alerts/form", alert: @alert, options: @options, url: admin_alerts_path, method: :post,
+        client_request_id: @client_request_id, mode: :create, cancel_path: admin_alerts_path, photos_dropped: @photos_dropped %>
+</div>

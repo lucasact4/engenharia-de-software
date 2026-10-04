@@ -15,13 +15,13 @@ RSpec.describe Translations::TranslationsViewHelper do
   end
 
   before do
-    context.controller = Admin::DogsController.new
+    context.controller = Admin::UsersController.new
   end
 
   describe "#base_translate_view_controller_path" do
     it "builds translation path using controller namespace" do
-      allow(context).to receive(:translation_view_path).and_return("admin.dogs")
-      expect(context).to receive(:base_translate_view).with("admin.dogs.actions.index.title", {}).and_return("ok")
+      allow(context).to receive(:translation_view_path).and_return("admin.users")
+      expect(context).to receive(:base_translate_view).with("admin.users.actions.index.title", {}).and_return("ok")
 
       expect(context.base_translate_view_controller_path("actions.index.title")).to eq("ok")
     end
@@ -71,7 +71,7 @@ RSpec.describe Translations::TranslationsViewHelper do
 
   describe "#translation_view_path" do
     it "builds dotted path from controller class name" do
-      expect(context.translation_view_path).to eq("admin.dogs")
+      expect(context.translation_view_path).to eq("admin.users")
     end
   end
 end

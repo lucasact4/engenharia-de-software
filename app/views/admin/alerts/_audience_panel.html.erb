@@ -1,0 +1,30 @@
+<% if alert.occurrence? %>
+  <% audience_values = submitted[:audience] || {} %>
+  <section class="sgu-card p-5" aria-labelledby="admin_audience_title">
+    <h2 id="admin_audience_title" class="sgu-section-title">Audiência e divulgação</h2>
+    <p class="mt-1 text-xs text-muted">Solicitada: <strong><%= enum_label("alert.requested_visibility", alert.requested_visibility) %></strong> · visibilidade <%= enum_label("alert.visibility", alert.visibility).downcase %><%= " · divulgação bloqueada" if alert.publication_blocked? %>. Pedir divulgação externa mantém o registro restrito; só uma publicação revisada vai ao mural.</p>
+    <%= form_with url: audience_admin_alert_path(alert), method: :patch, id: "admin_audience_form", class: "mt-4 space-y-3" do %>
+      <%= hidden_field_tag :lock_version, alert.lock_version, id: "admin_audience_lock_version" %>
+      <div>
+        <%= label_tag "admin_requested_visibility", "Audiência solicitada", class: "sgu-label" %>
+        <%= select_tag :requested_visibility, options_from_select_options(options.requested_visibilities, audience_values.fetch("requested_visibility", alert.requested_visibility)), id: "admin_requested_visibility", class: "sgu-input" %>
+      </div>
+      <div>
+        <%= label_tag "admin_audience_reason", "Motivo", class: "sgu-label" %>
+        <%= text_area_tag :reason, audience_values["reason"], id: "admin_audience_reason", rows: 2, maxlength: 1000, class: "sgu-input" %>
+        <p class="sgu-hint">Obrigatório para ampliar ou liberar o bloqueio. Uma publicação incompatível é retirada ou volta para revisão.</p>
+      </div>
+      <button type="submit" class="sgu-btn sgu-btn-secondary w-full"><%= sgu_icon("users") %> Alterar audiência</button>
+    <% end %>
+
+    <% if policy(alert).restrict? && !alert.publication_blocked? %>
+      <%= form_with url: restriction_admin_alert_path(alert), method: :patch, id: "admin_restriction_form", class: "mt-5 space-y-3 border-t border-line pt-4" do %>
+        <%= hidden_field_tag :lock_version, alert.lock_version, id: "admin_restriction_lock_version" %>
+        <%= label_tag "admin_restriction_reason", "Restringir e bloquear divulgação", class: "sgu-label" %>
+        <%= text_area_tag :reason, (submitted[:restriction] || {})["reason"], id: "admin_restriction_reason", rows: 2, maxlength: 1000, class: "sgu-input", placeholder: "Motivo (obrigatório)" %>
+        <p class="sgu-hint">Mantém o pedido original do autor, torna o registro restrito e retira do ar qualquer publicação vinculada.</p>
+        <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full" data-turbo-confirm="Restringir o registro e retirar publicações vinculadas?"><%= sgu_icon("lock") %> Restringir</button>
+      <% end %>
+    <% end %>
+  </section>
+<% end %>

@@ -14,3 +14,10 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+# Plurais regulares em português usados nas telas do SGU (pluralize com locale pt-br).
+# Palavras irregulares recebem o plural explícito na própria chamada.
+ActiveSupport::Inflector.inflections(:"pt-br") do |inflect|
+  inflect.plural(/$/, "s")
+  inflect.plural(/(r|z)$/i, '\1es')
+end

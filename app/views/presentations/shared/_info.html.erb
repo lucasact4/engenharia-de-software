@@ -1,0 +1,17 @@
+<%#
+  Botão de informações com texto complementar (Popover API: abre por clique, teclado ou toque;
+  Esc ou clique fora fecha; funciona sem JavaScript). Use só para detalhes secundários: o que for
+  essencial precisa continuar visível no slide ou em print_text.
+  locals: id (único na página), label (nome acessível do botão), title, text,
+          print_text (opcional: versão curta impressa no PDF)
+%>
+<span class="apr-info-wrap">
+  <button type="button" class="apr-info" popovertarget="<%= id %>" aria-label="<%= label %>" style="anchor-name: --<%= id %>;">
+    <%= render "presentations/shared/icon", name: "info" %>
+  </button>
+  <span id="<%= id %>" popover class="apr-info__pop" role="note" aria-label="<%= title %>" style="position-anchor: --<%= id %>;">
+    <span class="apr-info__title"><%= title %></span>
+    <span class="apr-info__body"><%= text %></span>
+  </span>
+  <% if local_assigns[:print_text].present? %><span class="apr-print-only apr-info__print"><%= print_text %></span><% end %>
+</span>

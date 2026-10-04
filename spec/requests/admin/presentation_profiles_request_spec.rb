@@ -20,7 +20,7 @@ RSpec.describe "Admin presentation profiles", type: :request do
       sign_in(create(:user))
 
       get admin_presentation_profiles_path
-      expect(response).to redirect_to(root_path(locale: I18n.default_locale))
+      expect(response).to redirect_to(panel_path(locale: I18n.default_locale))
 
       patch admin_presentation_profile_path(profile), params: { presentation_profile: { selections: { "gestao" => "0" } } }
       expect(profile.reload.selections).to eq("gestao" => true)
@@ -30,13 +30,15 @@ RSpec.describe "Admin presentation profiles", type: :request do
     end
 
     it "lists the profiles for an admin and identifies the active one" do
-      create(:presentation_profile, :active, name: "Segunda entrega")
+      profile = create(:presentation_profile, :active, name: "Segunda entrega")
       sign_in(admin)
 
       get admin_presentation_profiles_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Perfil padrão da apresentação pública: <strong class=\"text-slate-900\">Segunda entrega</strong>")
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css('[role="status"]').text).to include("Perfil padrão da apresentação pública:", "Segunda entrega")
+      expect(document.css("a").map { |link| link["href"] }).to include(presentation_path(locale: nil, perfil: profile.id))
     end
 
     it "shows the menu item only to admins" do

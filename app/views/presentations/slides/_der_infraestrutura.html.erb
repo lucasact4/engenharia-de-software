@@ -1,12 +1,11 @@
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "DER físico · apêndice",
       title: "DER — infraestrutura (fora do domínio)",
-      lead: "Active Storage, sessões, o exemplo do template e os perfis desta apresentação, conforme db/schema.rb (versão #{presentation.schema_version})." %>
+      lead: "Active Storage, sessões e os perfis desta apresentação, conforme db/schema.rb (versão #{presentation.schema_version})." %>
 
 <%= render "presentations/shared/er_diagram", key: "infrastructure" %>
 
 <ul class="apr-footnotes" role="list">
   <li>As tabelas do Active Storage foram criadas por uma migração nova (as três migrações de 2024 só atualizavam tabelas inexistentes). As rotas padrão de blobs estão desativadas: fotos de alertas só saem por um endpoint que revalida a permissão.</li>
-  <li><code>dogs</code> é o CRUD de exemplo herdado da base Rails e foi preservado nesta etapa; não faz parte do domínio do SGU.</li>
   <li><code>presentation_profiles</code> é suporte da apresentação (admin → Apresentação): guarda nome, entrega e seleção de slides em JSON. UQ* = um único perfil ativo (índice único parcial em <code>active</code>). Não é conceito do domínio de ocorrências.</li>
 </ul>

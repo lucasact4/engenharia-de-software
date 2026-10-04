@@ -1,0 +1,14 @@
+<% post = alert.publication %>
+<section class="sgu-card p-5" aria-label="Publicação da ocorrência">
+  <div class="flex flex-wrap items-center justify-between gap-3"><h2 class="sgu-section-title">Sua publicação</h2><% if post&.published? && !post.moderation_blocked? %><%= link_to "Ver no mural", publication_path(post), class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %><% end %></div>
+  <% if alert.publication_blocked? || post&.moderation_blocked? %><p class="mt-3 text-sm text-warning-ink">Divulgação bloqueada pela administração. Editar não remove esse bloqueio.</p>
+  <% elsif post&.review_rejected? %>
+    <p class="mt-3 font-semibold text-negative-ink">Publicação pública não aprovada</p><p class="mt-1 text-sm">Motivo: <%= post.review_reason %></p><p class="mt-2 text-sm text-muted">Seu post continua interno. Você pode editar e solicitar novamente.</p>
+  <% elsif post&.review_pending? %><p class="mt-3 text-sm text-warning-ink">Interna · aguardando aprovação para aparecer publicamente.</p>
+  <% elsif alert.requested_restricted? %><p class="mt-3 text-sm text-muted">Privada · somente você e o atendimento.</p>
+  <% elsif post.nil? %><p class="mt-3 text-sm text-muted">Registro anterior ao novo mural. Confirme a audiência abaixo para criar sua publicação.</p>
+  <% else %><p class="mt-3 text-sm text-muted"><%= post&.public_external? ? 'Pública · também aparece sem login.' : 'Interna · visível para contas conectadas.' %></p><% end %>
+  <% unless alert.publication_blocked? || post&.moderation_blocked? %>
+    <%= form_with url: audience_alert_path(alert), method: :patch, class: "mt-4 flex flex-wrap gap-2" do %><%= hidden_field_tag :lock_version, alert.lock_version %><%= label_tag :requested_visibility, "Visibilidade da publicação", class: "sr-only" %><%= select_tag :requested_visibility, options_for_select([["Comunidade UFRPE", "internal"], ["Todos (pública)", "public_external"], ["Somente eu e o atendimento", "restricted"]], alert.requested_visibility), class: "sgu-input !w-auto max-w-full" %><button type="submit" class="sgu-btn sgu-btn-secondary">Atualizar visibilidade</button><% end %>
+  <% end %>
+</section>

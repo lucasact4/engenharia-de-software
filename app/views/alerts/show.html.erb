@@ -1,0 +1,33 @@
+<% content_for :title, "#{@alert.protocol} - SGU UFRPE" %>
+<div class="mx-auto max-w-4xl space-y-5">
+  <%= link_to alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Alertas<% end %>
+
+  <%= render "shared/alerts/header", detail: @detail, social: @post_card.present? do %>
+    <% if policy(@alert).update_content? %>
+      <%= link_to edit_alert_path(@alert), class: "sgu-btn sgu-btn-secondary" do %><%= sgu_icon("square-pen") %> Editar relato<% end %>
+    <% end %>
+    <% if policy(@alert).handle? %>
+      <%= link_to handling_alert_path(@alert), class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("clipboard-list") %> Abrir no atendimento<% end %>
+    <% end %>
+    <% if policy(@alert).subscribe? && !@detail.author? %>
+      <% if @subscribed %>
+        <%= button_to alert_subscription_path(@alert), method: :delete, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: true } do %><%= sgu_icon("bell") %> Acompanhando<% end %>
+      <% else %>
+        <%= button_to alert_subscription_path(@alert), method: :post, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: false } do %><%= sgu_icon("bell") %> Acompanhar atendimento<% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @detail.author? && @alert.occurrence? %><%= render "shared/alerts/publication_status", alert: @alert %><% end %>
+
+  <% if @post_card %>
+    <%= render "publications/card", card: @post_card, full: true %>
+    <details class="sgu-card p-4">
+      <summary class="flex cursor-pointer items-center gap-2 font-semibold">Atendimento e detalhes do registro <%= alert_status_badge(@alert) %></summary>
+      <div class="mt-5"><%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: alert_path(@alert) %></div>
+    </details>
+  <% else %>
+    <%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: alert_path(@alert) %>
+  <% end %>
+
+</div>

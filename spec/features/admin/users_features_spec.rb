@@ -51,7 +51,8 @@ describe "integration teste for user", type: :feature do
     within("#tr_User_#{user.id}") do
       click_link "Visualizar"
     end
-    expect(page).to have_field("user_email_address", with: user.email_address, disabled: true)
+    expect(page).to have_content(user.email_address)
+    expect(page).to have_content("Papéis institucionais")
   end
 
   it "deactivate user" do

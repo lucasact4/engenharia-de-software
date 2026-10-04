@@ -34,7 +34,7 @@ Start the development processes:
 bin/dev
 ```
 
-Open `http://localhost:3000` and confirm that the home page loads. The administrative area is available at `/admin`.
+Open `http://localhost:3000` and confirm that the home page loads. Administrators land on `/admin` after signing in; other accounts land on `/painel`.
 
 ## 3. Establish the project baseline
 
@@ -68,4 +68,4 @@ Fix failures before beginning feature development. This confirms that the new re
 - [Set up local development](development.md).
 - Complete the [first deployment checklist](first-deploy.md).
 - Complete the [new project delivery checklist](project-delivery.md).
-- Read the main [README](../README.md) for administrative CRUD generation and daily development commands.
+- Read [Local development](development.md) for [administrative CRUD generation](development.md#creating-an-administrative-crud) and daily development commands.
