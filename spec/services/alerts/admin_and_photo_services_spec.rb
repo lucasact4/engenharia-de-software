@@ -16,7 +16,7 @@ RSpec.describe "Alert correction and photo removal" do
       })
 
       expect(alert.reload).to have_attributes(title: "Título corrigido", location_source: "gps", reported_severity: nil, status: "received")
-      expect(publication.reload.source_changed_at).to be_present
+      expect(publication.reload).to have_attributes(review_status: "pending", visibility: "internal", content_version: 2)
       expect(AuditEvent.where(subject: alert, action: "alert.content_corrected").pick(:reason)).to eq("Dado pessoal")
     end
 
@@ -77,7 +77,9 @@ RSpec.describe "Alert correction and photo removal" do
       expect(alert.photos_attachments.count).to eq(2)
 
       alert.update_columns(status: "triaging")
-      expect { described_class.call(actor: author, alert: alert.reload, attachment_id: attachment.id) }.to raise_error(Pundit::NotAuthorizedError)
+      described_class.call(actor: author, alert: alert.reload, attachment_id: attachment.id)
+      expect(alert.reload.status).to eq("triaging")
+      expect(ActiveStorage::Attachment.exists?(attachment.id)).to be(false)
     end
   end
 end

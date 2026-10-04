@@ -40,6 +40,7 @@ RSpec.describe "Card #6 migrations on a legacy database" do
         reviewed_by_id: admin.id, reviewed_at: Time.current, published_at: Time.current
       }], returning: %w[id]).rows.first.first
       Comment.create!(publication_id: publication_id, author: author, body: "Comentário histórico")
+      PublicationLike.insert_all!([{ publication_id: publication_id, user_id: author.id }])
       [blocked, released].each do |alert|
         AuditEvent.record!(actor: admin, action: "alert.restricted", subject: alert, reason: "Dados pessoais")
       end
@@ -48,8 +49,11 @@ RSpec.describe "Card #6 migrations on a legacy database" do
 
     rails("db:migrate", schema: dir.join("after_block.rb"))
     expect(query("SELECT publication_blocked FROM alerts ORDER BY id")).to eq([ [ 1 ], [ 0 ], [ 0 ] ])
-    expect(query("SELECT state FROM publications")).to eq([ [ "published" ] ])
+    expect(query("SELECT state FROM publications")).to eq([ [ "withdrawn" ] ])
+    expect(query("SELECT title, body FROM publications")).to eq([ [ nil, nil ] ])
+    expect(query("SELECT count(*) FROM audit_events WHERE action = 'system.occurrence_unified'")).to eq([ [ 1 ] ])
     expect(query("SELECT count(*) FROM comments")).to eq([ [ 1 ] ])
+    expect(query("SELECT count(*) FROM publication_likes")).to eq([ [ 1 ] ])
     expect(rails("runner", "print PublicationPolicy::Scope.new(nil, Publication.all).resolve.count").strip).to eq("0")
     expect(query("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
     expect(query("PRAGMA foreign_key_check")).to be_empty
@@ -59,6 +63,8 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("SELECT count(*) FROM alerts")).to eq([ [ 3 ] ])
     expect(query("SELECT count(*) FROM publications")).to eq([ [ 1 ] ])
     expect(query("SELECT count(*) FROM comments")).to eq([ [ 1 ] ])
+    expect(query("SELECT count(*) FROM publication_likes")).to eq([ [ 1 ] ])
+    expect(query("SELECT title, body, author_id, state FROM publications")).to eq([ [ "Publicação histórica", "Conteúdo editorial histórico.", 2, "published" ] ])
     expect(dir.join("before_block_again.rb").read).to eq(dir.join("before_block.rb").read)
   end
 
@@ -100,5 +106,35 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query(snapshot)).to eq(before_users)
     strip_version = ->(text) { text.sub(/define\(version: [\d_]+\)/, "") }
     expect(strip_version.call(dir.join("rolled_back.rb").read)).to eq(strip_version.call(file_fixture("schema_before_card6.txt").read))
+  end
+  it "refuses a rollback with descriptive locations before changing the database" do
+    rails("db:migrate", schema: dir.join("current.rb"))
+    rails("runner", <<~RUBY)
+      user = User.create!(email_address: "rollback@example.test", password: "senha-ficticia")
+      Alerts::CreateOccurrence.call(actor: user, attributes: { description: "Relato de teste para o rollback seguro.", category_id: Category.where(requires_details: false).first.id,
+        location_source: "manual", location_description: "Biblioteca, térreo", requested_visibility: "internal" })
+    RUBY
+    output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=20261003100100", chdir: Rails.root.to_s)
+    expect(status).not_to be_success
+    expect(output).to include("há locais descritivos")
+    expect(query("SELECT max(version) FROM schema_migrations")).to eq([ [ "20261003120000" ] ])
+    expect(query("SELECT location_description FROM alerts")).to eq([ [ "Biblioteca, térreo" ] ])
+    expect(query("SELECT state, title, body FROM publications")).to eq([ [ "published", nil, nil ] ])
+    expect(query("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
+  end
+  it "refuses map rollback before changing the schema or losing photo order" do
+    rails("db:migrate")
+    rails("runner", <<~RUBY)
+      author = User.create!(email_address: "mapa@example.test", password: "senha-ficticia")
+      Alert.create!(author: author, kind: "occurrence", title: "Ponto no mapa", description: "Local escolhido manualmente no mapa.",
+                    category: Category.first, location_source: "map", latitude: -8, longitude: -34,
+                    requested_visibility: "restricted", visibility: "restricted")
+    RUBY
+    output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=20261003120000", chdir: Rails.root.to_s)
+    expect(status).not_to be_success
+    expect(output).to include("há pontos selecionados no mapa")
+    expect(query("SELECT location_source, photo_order FROM alerts")).to eq([ [ "map", "[]" ] ])
+    expect(query("SELECT max(version) FROM schema_migrations")).to eq([ [ "20261003180000" ] ])
+    expect(query("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
   end
 end

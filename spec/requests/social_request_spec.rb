@@ -30,7 +30,7 @@ RSpec.describe "Profiles, follows and private lists", type: :request do
 
     it "starts private" do
       get profile_path
-      expect(response.body).to include("Ninguém vê seu perfil")
+      expect(response.body).to include("Privado. Seu nome continua aparecendo nas publicações internas.")
       get person_path(user)
       expect(response).to have_http_status(:not_found)
     end

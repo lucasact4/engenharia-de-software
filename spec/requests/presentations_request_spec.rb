@@ -103,6 +103,28 @@ RSpec.describe "Presentation", type: :request do
     expect(document.at_css("#s-reunioes").text).to include("Pauta:", "Revisar os requisitos")
   end
 
+  it "renders the real monitoring meeting with four original, accessible images" do
+    get presentation_path
+
+    slide = document.at_css("#s-reunioes")
+    expect(slide.text).to include("03/10/2026", "18h20 (aproximadamente)", "Google Meet", "Funcionamento do Rails", "Encaminhamentos e responsáveis ainda precisam ser formalizados")
+    expect(slide.css(".apr-figure--meeting img").size).to eq(4)
+    expect(slide.css(".apr-figure--meeting img").map { |image| image["alt"] }).to all(be_present)
+    expect(slide.css(".apr-figure__zoom").map { |button| button["data-zoom-src"] }).to all(include("presentation/reunioes/2026-10-03/"))
+    expect(slide.text).not_to include("Nenhum registro de reunião anexado")
+  end
+
+  it "keeps the missing-evidence fallback when meeting records are removed" do
+    presentation = Presentation.load
+    presentation.gestao[:reunioes] = []
+    allow(Presentation).to receive(:load).and_return(presentation)
+
+    get presentation_path
+
+    expect(document.at_css("#s-reunioes").text).to include("Nenhum registro de reunião anexado")
+    expect(document.css("#s-reunioes .apr-figure--meeting")).to be_empty
+  end
+
   describe "slide selection" do
     let(:presentation) { Presentation.load }
 
@@ -202,10 +224,10 @@ RSpec.describe "Presentation", type: :request do
     get presentation_path
     expect(document.css("section.apr-slide:not([hidden])").map { |node| node["data-slide-id"] }).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report encerramento])
     expect(document.css("#s-evolucao .apr-timeline__title").map(&:text)).not_to include("Base Rails implantada", "Landing pública e /entrar")
-    expect(document.at_css("#s-conceito-visual").text).to include("Pendente: a equipe validar estas capturas")
-    expect(document.at_css("#s-funcionalidades [data-apr-item='funcionalidades.repositorio']").text).to include("GitHub criado e estruturado")
+    expect(document.at_css("#s-conceito-visual").text).to include("Validação da equipe pendente")
+    expect(document.at_css("#s-funcionalidades [data-apr-item='funcionalidades.repositorio']").text).to include("Captura do repositório", "Abrir repositório")
     expect(document.at_css("#s-status-report").text).not_to include("Feito desde a última entrega", "Até a próxima entrega")
-    expect(document.at_css("#s-status-report").text).to include("Pendente: realizar a retrospectiva", "Ver imagem da retrospectiva (item 3)")
+    expect(document.at_css("#s-status-report").text).to include("Experiência prática", "Evolução contínua", "Abrir retrospectiva", "Slide do quadro")
     expect(document.css("#s-retrospectiva [data-apr-item][hidden]").map { |node| node["data-apr-item"] }).to include("retrospectiva.licoes", "retrospectiva.acoes")
   end
 

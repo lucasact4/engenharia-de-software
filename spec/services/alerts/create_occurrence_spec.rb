@@ -23,7 +23,7 @@ RSpec.describe Alerts::CreateOccurrence do
     alert = described_class.call(actor: author, attributes: occurrence_attributes(requested_visibility: "public_external")).alert
 
     expect(alert.visibility).to eq("restricted")
-    expect(Publication.count).to eq(0)
+    expect(alert.publication).to have_attributes(state: "published", visibility: "internal", review_status: "pending")
     expect(PublicationPolicy::Scope.new(nil, Publication.all).resolve).to be_empty
   end
 

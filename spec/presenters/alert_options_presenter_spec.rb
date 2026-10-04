@@ -39,7 +39,7 @@ RSpec.describe AlertOptionsPresenter do
     presenter = described_class.new(actor: user)
 
     expect(presenter.requested_visibilities(kind: "panic").map(&:value)).to eq(%w[restricted])
-    expect(presenter.location_sources(kind: "occurrence").map(&:value)).to eq(%w[gps manual])
+    expect(presenter.location_sources(kind: "occurrence").map(&:value)).to eq(%w[gps map manual])
     expect(presenter.location_unavailable_reasons(kind: "occurrence")).to be_empty
   end
 

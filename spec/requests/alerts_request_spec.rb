@@ -31,12 +31,13 @@ RSpec.describe "Alerts (portal)", type: :request do
   describe "registration" do
     before { sign_in(author) }
 
-    it "renders the form with a stable submission key and explains an empty location catalog" do
+    it "renders the form with a stable submission key and allows describing a location without a catalog" do
       get new_alert_path
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('name="client_request_id"')
-      expect(response.body).to include("Ainda não há locais cadastrados")
+      expect(response.body).to include("Descrição do local")
+      expect(response.body).to include('name="alert[title]"')
       expect(response.body).not_to include("alert[author_id]")
       expect(response.body).not_to include("alert[status]")
       expect(response.body).not_to include("alert[priority]")
@@ -76,10 +77,10 @@ RSpec.describe "Alerts (portal)", type: :request do
 
     it "rejects an inactive location and keeps what the person typed" do
       location = create(:location, active: false)
-      create_alert(location_source: "manual", location_id: location.id, title: "Título preservado aqui")
+      create_alert(location_source: "manual", location_id: location.id, description: "Relato preservado aqui")
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("Título preservado aqui")
+      expect(response.body).to include("Relato preservado aqui")
       expect(response.body).to include("está inativo e não pode ser escolhido")
       expect(response.body).to include(key)
     end
@@ -111,7 +112,7 @@ RSpec.describe "Alerts (portal)", type: :request do
 
       create_alert({ category_id: other.id, category_other_description: "" }, client_request_id: SecureRandom.uuid)
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("Explicação da categoria")
+      expect(response.body).to include("Qual situação?")
 
       create_alert({ category_id: other.id, category_other_description: "Fiação exposta perto da quadra" }, client_request_id: SecureRandom.uuid)
       expect(Alert.last.category_other_description).to eq("Fiação exposta perto da quadra")
@@ -136,14 +137,14 @@ RSpec.describe "Alerts (portal)", type: :request do
       create_alert
       existing = Alert.last
 
-      expect { create_alert(title: "Outro título diferente") }.not_to change(Alert, :count)
+      expect { create_alert(description: "Outro relato diferente") }.not_to change(Alert, :count)
       expect(response).to have_http_status(:conflict)
-      expect(response.body).to include("Outro título diferente")
+      expect(response.body).to include("Outro relato diferente")
       expect(response.body).to include(existing.protocol)
 
       replacement = SecureRandom.uuid
       expect do
-        create_alert({ title: "Outro título diferente" }, extra: { new_intent: "1", replacement_client_request_id: replacement })
+        create_alert({ description: "Outro relato diferente" }, extra: { new_intent: "1", replacement_client_request_id: replacement })
       end.to change(Alert, :count).by(1)
       expect(Alert.last.client_request_id).to eq(replacement)
     end
@@ -155,7 +156,7 @@ RSpec.describe "Alerts (portal)", type: :request do
       fake = uploaded_photo(bytes: "GIF89a-not-png".b, filename: "x.png", content_type: "image/png")
       expect { create_alert({ photos: [ fake ] }, client_request_id: SecureRandom.uuid) }.not_to change(Alert, :count)
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("selecione as fotos de novo")
+      expect(response.body).to include("Selecione as fotos novamente")
 
       six = Array.new(6) { uploaded_photo }
       expect { create_alert({ photos: six }, client_request_id: SecureRandom.uuid) }.not_to change(Alert, :count)
@@ -236,17 +237,17 @@ RSpec.describe "Alerts (portal)", type: :request do
       stale = alert.lock_version
       alert.update!(description: "Mudado por outra aba desde a abertura.")
 
-      patch alert_path(alert), params: { lock_version: stale, alert: form_params(title: "Texto que não pode se perder") }
+      patch alert_path(alert), params: { lock_version: stale, alert: form_params(description: "Texto que não pode se perder") }
 
       expect(response).to have_http_status(:conflict)
       expect(response.body).to include("Texto que não pode se perder")
-      expect(alert.reload.title).not_to eq("Texto que não pode se perder")
+      expect(alert.reload.description).not_to eq("Texto que não pode se perder")
     end
 
-    it "forbids editing after triage and for other people" do
+    it "allows the author after triage and forbids other people" do
       alert.update_columns(status: "triaging")
       get edit_alert_path(alert)
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(:ok)
 
       sign_in(create(:user))
       patch alert_path(alert), params: { alert: form_params(title: "Invasão de edição") }
@@ -254,12 +255,13 @@ RSpec.describe "Alerts (portal)", type: :request do
       expect(alert.reload.title).not_to eq("Invasão de edição")
     end
 
-    it "lets the author restrict the audience but not expand it" do
+    it "lets the author request public visibility pending approval" do
       alert.update_columns(requested_visibility: "public_external", visibility: "restricted")
 
       patch audience_alert_path(alert), params: { lock_version: alert.lock_version, requested_visibility: "public_external" }
 
-      expect(alert.reload).to have_attributes(requested_visibility: "restricted", visibility: "restricted")
+      expect(alert.reload).to have_attributes(requested_visibility: "public_external", visibility: "restricted")
+      expect(alert.publication).to have_attributes(state: "published", visibility: "internal", review_status: "pending")
     end
 
     it "removes one of the author's photos with an audit and never another alert's attachment" do

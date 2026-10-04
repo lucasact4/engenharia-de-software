@@ -10,7 +10,7 @@ RSpec.describe "Editorial journey", type: :feature, js: true do
   it "goes from draft to publication, social interaction, moderation and withdrawal" do
     sign_in_via_ui admin
     visit new_admin_publication_path
-    choose "Notícia"
+    select "Notícia", from: "Tipo"
     fill_in "Título", with: "Restaurante universitário com novo horário"
     fill_in "Texto", with: "A partir de segunda-feira o restaurante abre às 11h e fecha às 14h30."
     click_button "Criar rascunho"
@@ -46,12 +46,12 @@ RSpec.describe "Editorial journey", type: :feature, js: true do
     expect(page).to have_content("Concordo, ajuda muito.")
 
     within("#publication_#{publication.id}_actions") do
-      click_button "Curtir"
-      expect(page).to have_button("Curtido")
-      click_button "Salvar"
-      expect(page).to have_button("Salvo")
-      click_button "Acompanhar"
-      expect(page).to have_button("Acompanhando")
+      find("button[aria-label='Curtir (0)']").click
+      expect(page).to have_css("button[aria-label='Curtido (1)']")
+      find("button[aria-label='Salvar']").click
+      expect(page).to have_css("button[aria-label='Salvo']")
+      find("button[aria-label='Acompanhar']").click
+      expect(page).to have_css("button[aria-label='Acompanhando']")
     end
     expect(PublicationLike.where(user: reader).count).to eq(1)
 

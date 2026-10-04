@@ -83,14 +83,10 @@ RSpec.describe "Publication editorial workflow" do
     }.to raise_error(ActiveRecord::StaleObjectError)
   end
 
-  it "requires a compatible occurrence source and never accepts restricted alerts" do
-    expect { create_publication(kind: "occurrence", alert: create(:alert, :restricted)) }
-      .to raise_error(ActiveRecord::RecordInvalid)
-    expect { create_publication(kind: "occurrence", alert: create(:alert), visibility: "public_external") }
-      .to raise_error(ActiveRecord::RecordInvalid)
-
-    publication = create_publication(kind: "occurrence", alert: source)
-    expect(publication.body).not_to eq(source.description)
+  it "forbids the editorial service from duplicating occurrences" do
+    [ create(:alert, :restricted), create(:alert), source ].each do |alert|
+      expect { create_publication(kind: "occurrence", alert: alert) }.to raise_error(Pundit::NotAuthorizedError)
+    end
   end
 
   it "hides notices after expiration even without a scheduled job" do
@@ -113,8 +109,7 @@ RSpec.describe "Publication editorial workflow" do
   end
 
   it "hides withdrawn and rejected publications; rejection keeps the alert untouched" do
-    publication = create_publication(kind: "occurrence", alert: source)
-    Publications::Submit.call(actor: admin, publication: publication)
+    publication = Publications::SyncOccurrence.call(actor: source.author, alert: source, request_external: true)
     Publications::Review.call(actor: admin, publication: publication, decision: "reject", reason: "Texto expõe pessoas",
                               reviewed_content_version: publication.content_version)
 
@@ -129,9 +124,8 @@ RSpec.describe "Publication editorial workflow" do
   end
 
   it "revalidates the source link at query time" do
-    publication = create_publication(kind: "occurrence", alert: source)
-    approve(publication)
-    Publications::Publish.call(actor: admin, publication: publication)
+    publication = Publications::SyncOccurrence.call(actor: source.author, alert: source, request_external: true)
+    Publications::Review.call(actor: admin, publication: publication, decision: "approve", reviewed_content_version: publication.content_version)
     expect(public_scope).to include(publication)
 
     source.update_columns(requested_visibility: "restricted")

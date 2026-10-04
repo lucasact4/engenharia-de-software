@@ -82,46 +82,43 @@ RSpec.describe "Admin publications", type: :request do
     expect(notice.reload).to be_draft
   end
 
-  describe "occurrence sources" do
-    let!(:public_request) { create(:alert, :public_request, title: "Fonte compatível externa") }
-    let!(:restricted) { create(:alert, :restricted, title: "Fonte restrita") }
-    let!(:panic) { create(:alert, :panic) }
+  describe "occurrences authored by students" do
+    let(:student) { create(:user) }
+    let(:source) { Alerts::CreateOccurrence.call(actor: student, attributes: occurrence_attributes(requested_visibility: "public_external")).alert }
 
-    it "only offers compatible sources and never panics, restricted or already published alerts" do
+    it "never offers an occurrence duplication form" do
       get new_admin_publication_path
-
-      expect(response.body).to include("Fonte compatível externa")
-      expect(response.body).not_to include("Fonte restrita")
-      expect(response.body).not_to include(panic.protocol)
+      expect(response.body).not_to include('name="publication[alert_id]"', 'value="occurrence"')
+      get new_admin_publication_path(alert_id: source.id)
+      expect(response).to redirect_to(admin_publication_path(source.publication, locale: I18n.locale))
     end
 
-    it "creates a derived publication without copying the operational description" do
-      post admin_publications_path, params: { publication: news_params(kind: "occurrence", alert_id: public_request.id, title: "Queda de árvore no estacionamento") }
-
-      publication = Publication.last
-      expect(publication).to have_attributes(kind: "occurrence", alert: public_request)
-      expect(publication.body).not_to eq(public_request.description)
-
-      post admin_publications_path, params: { publication: news_params(kind: "occurrence", alert_id: public_request.id) }
-      expect(response).to have_http_status(:unprocessable_entity)
+    it "forbids recreating student posts and panic sources" do
+      [ source, create(:alert, :restricted), create(:alert, :panic) ].each do |alert|
+        expect { post admin_publications_path, params: { publication: news_params(kind: "occurrence", alert_id: alert.id) } }.not_to change(Publication, :count)
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
-    it "rejects incompatible audiences and panic sources" do
-      post admin_publications_path, params: { publication: news_params(kind: "occurrence", alert_id: restricted.id) }
-      expect(response).to have_http_status(:unprocessable_entity)
-
-      post admin_publications_path, params: { publication: news_params(kind: "occurrence", alert_id: panic.id) }
-      expect(response).to have_http_status(:unprocessable_entity)
+    it "previews the existing content and approves it in one action" do
+      publication = source.publication
+      get admin_publication_path(publication)
+      expect(response.body).to include(source.description, "Não aprovar")
+      expect(response.body).not_to include('name="publication[title]"', 'name="publication[body]"')
+      patch review_admin_publication_path(publication), params: { decision: "approve", reviewed_content_version: 1, lock_version: publication.lock_version }
+      expect(publication.reload).to have_attributes(state: "published", visibility: "public_external")
     end
 
-    it "blocks publication after the source changes until a new review" do
-      publication = create(:publication, :approved, kind: "occurrence", alert: public_request)
-      Alerts::UpdateContent.call(actor: public_request.author, alert: public_request, attributes: { title: "Fonte editada pelo autor" })
-
-      patch publish_admin_publication_path(publication), params: { lock_version: publication.reload.lock_version }
-
+    it "requires a rejection reason and keeps a revised post internal pending another review" do
+      publication = source.publication
+      patch review_admin_publication_path(publication), params: { decision: "reject", reviewed_content_version: 1 }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(publication.reload).not_to be_published
+      patch review_admin_publication_path(publication), params: { decision: "reject", reason: "Remova os dados pessoais", reviewed_content_version: 1 }
+      expect(publication.reload).to have_attributes(state: "published", visibility: "internal", review_status: "rejected")
+      Alerts::UpdateContent.call(actor: student, alert: source, attributes: { description: "Novo relato sem dados pessoais de terceiros." })
+      expect(publication.reload).to have_attributes(state: "published", visibility: "internal", review_status: "pending", content_version: 2)
+      patch publish_admin_publication_path(publication)
+      expect(response).to have_http_status(:forbidden)
     end
   end
 

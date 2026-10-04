@@ -36,13 +36,13 @@ RSpec.describe "Mural (publications)", type: :request do
   end
 
   it "never exposes operational data of the source alert" do
-    source = create(:alert, :public_request, description: "Texto operacional secreto do autor")
+    source = create(:alert, :public_request, description: "Relato aprovado para a comunidade")
     publication = create(:publication, :published, kind: "occurrence", alert: source, title: "Ocorrência divulgada", body: "Texto editorial revisado sobre a ocorrência.")
 
     get publication_path(publication)
 
-    expect(response.body).to include("Equipe do SGU")
-    expect(response.body).not_to include("Texto operacional secreto do autor")
+    expect(response.body).to include("Relato aprovado para a comunidade")
+    expect(response.body).not_to include(source.latitude.to_s, source.longitude.to_s)
     expect(response.body).not_to include(source.protocol)
     expect(response.body).not_to include(source.author.email_address)
     expect(response.body).not_to include("/fotos/")

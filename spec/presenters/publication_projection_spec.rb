@@ -9,9 +9,11 @@ RSpec.describe PublicationProjection do
     json = described_class.new(publication).as_json
 
     expect(json.keys).to eq(%i[id kind kind_label title body visibility published_at expires_at comments_enabled
-                               editorial_identity likes_count comments_count viewer_state])
+                               editorial_identity author photos own_review likes_count comments_count viewer_state])
+    expect(json[:body]).to eq(alert.description)
+    expect(json[:own_review]).to be_nil
     serialized = json.to_json
-    [ alert.author.email_address, alert.protocol, "Descrição operacional privada", "-8.1234567", "-34.7654321",
+    [ alert.author.email_address, alert.protocol, "-8.1234567", "-34.7654321",
       publication.author.email_address, "alert_id", "spam", "admin" ].each do |secret|
       expect(serialized).not_to include(secret)
     end

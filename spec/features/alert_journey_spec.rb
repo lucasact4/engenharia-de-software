@@ -19,20 +19,20 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
 
   it "registers with GPS, is handled by coordination and followed by the author" do
     sign_in_via_ui author
-    click_link "Registrar ocorrência", match: :first
+    visit new_alert_path
 
-    fill_in "Título", with: "Poste apagado na entrada"
+    fill_in "Título", with: "Poste apagado perto da guarita"
     fill_in "Descrição", with: "O poste ao lado da guarita está apagado há duas noites."
     select "Iluminação", from: "Categoria"
     expect(page).to have_no_field("Detalhamento da categoria")
 
-    choose "GPS do aparelho"
+    choose "Usar GPS", allow_label_click: true
     mock_geolocation(:success)
     click_button "Usar minha localização"
     expect(page).to have_content("Localização capturada (precisão aproximada de 18 m)")
 
-    choose "Restrita"
-    click_button "Registrar ocorrência"
+    select "Somente eu e o atendimento", from: "Quem pode ver"
+    click_button "Publicar ocorrência"
 
     expect(page).to have_content("Ocorrência registrada. Protocolo SGU-")
     alert = Alert.last
@@ -42,7 +42,7 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
     Capybara.reset_sessions!
     sign_in_via_ui coordinator
     click_link "Atendimento", match: :first
-    click_link "Poste apagado na entrada"
+    click_link "Poste apagado perto da guarita"
     select "Alta", from: "Prioridade do atendimento"
     fill_in "handling_assessment_reason", with: "Nota interna: avisar manutenção elétrica"
     click_button "Salvar classificação"
@@ -71,17 +71,17 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
     sign_in_via_ui author
     visit new_alert_path
 
-    choose "GPS do aparelho"
+    choose "Usar GPS", allow_label_click: true
     mock_geolocation(:denied)
     click_button "Usar minha localização"
-    expect(page).to have_content("Permissão de localização negada. Escolha um local cadastrado")
+    expect(page).to have_content("Permissão de localização negada. Você também pode descrever o local")
 
-    choose "Escolha de prédio ou área"
+    choose "Informar o local", allow_label_click: true
     select "Prédio de demonstração (fictício)", from: "Local do campus"
-    fill_in "Título", with: "Bebedouro quebrado"
+    fill_in "Título", with: "Bebedouro sem funcionar"
     fill_in "Descrição", with: "Bebedouro do térreo sem funcionar desde segunda."
     select "Iluminação", from: "Categoria"
-    click_button "Registrar ocorrência"
+    click_button "Publicar ocorrência"
 
     expect(page).to have_content("Ocorrência registrada")
     expect(Alert.last).to have_attributes(location_source: "manual", latitude: nil)
@@ -91,13 +91,13 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
     sign_in_via_ui author
     visit new_alert_path
 
-    fill_in "Título", with: "Abc"
-    fill_in "Descrição", with: "Texto curto"
-    click_button "Registrar ocorrência"
+    fill_in "Descrição", with: "curto"
+    page.execute_script("document.querySelector('form#alert_form_new').noValidate = true")
+    click_button "Publicar ocorrência"
 
-    expect(page).to have_content("Revise")
-    expect(page).to have_field("Título", with: "Abc")
-    expect(page).to have_css("#alert_form_new_title[aria-invalid='true']")
+    expect(page).to have_content("Confira seu relato")
+    expect(page).to have_field("Descrição", with: "curto")
+    expect(page).to have_css("#alert_description[aria-invalid='true']")
     expect(Alert.count).to eq(0)
   end
 end

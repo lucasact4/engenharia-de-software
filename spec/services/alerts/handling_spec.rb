@@ -130,24 +130,24 @@ RSpec.describe "Alert handling services" do
   end
 
   describe Alerts::UpdateContent do
-    it "lets the author edit while received and flags the linked publication without rewriting it" do
+    it "lets the author edit while received and flags the linked publication using the same canonical content" do
       public_alert = create(:alert, :public_request)
       publication = create(:publication, :published, kind: "occurrence", alert: public_alert)
 
       Alerts::UpdateContent.call(actor: public_alert.author, alert: public_alert, attributes: { description: "Descrição corrigida pelo autor." })
 
-      expect(publication.reload.body).to eq("Texto editorial revisado para os testes.")
-      expect(publication.source_changed_at).to be_present
+      expect(publication.reload.body).to eq("Descrição corrigida pelo autor.")
+      expect(publication).to have_attributes(review_status: "pending", visibility: "internal", content_version: 2)
       expect(publication).to be_published
-      expect { Publications::Publish.call(actor: admin, publication: publication) }.to raise_error(ActiveRecord::RecordInvalid)
+      expect { Publications::Publish.call(actor: admin, publication: publication) }.to raise_error(Pundit::NotAuthorizedError)
     end
 
-    it "is denied after triage started or to other people" do
+    it "allows the author after triage while denying other people" do
       expect { Alerts::UpdateContent.call(actor: create(:user), alert: alert, attributes: { title: "Outro título" }) }
         .to raise_error(Pundit::NotAuthorizedError)
       Alerts::Transition.call(actor: admin, alert: alert, to: "triaging")
-      expect { Alerts::UpdateContent.call(actor: alert.author, alert: alert, attributes: { title: "Outro título" }) }
-        .to raise_error(Pundit::NotAuthorizedError)
+      Alerts::UpdateContent.call(actor: alert.author, alert: alert, attributes: { title: "Outro título" })
+      expect(alert.reload.status).to eq("triaging")
     end
   end
 
@@ -160,14 +160,14 @@ RSpec.describe "Alert handling services" do
 
       expect(publication.reload).to be_withdrawn
       expect(PublicationPolicy::Scope.new(nil, Publication.all).resolve).to be_empty
-      expect(AuditEvent.for_subject(publication).last.metadata).to include("system_reason" => "source_audience_changed")
+      expect(AuditEvent.for_subject(publication).last.metadata).to include("source" => "canonical_alert")
     end
 
-    it "does not let the author expand the audience" do
+    it "lets the author request a wider audience while respecting moderation" do
       restricted = create(:alert, :restricted)
 
-      expect { Alerts::ChangeAudience.call(actor: restricted.author, alert: restricted, requested_visibility: "internal") }
-        .to raise_error(Pundit::NotAuthorizedError)
+      Alerts::ChangeAudience.call(actor: restricted.author, alert: restricted, requested_visibility: "internal")
+      expect(restricted.publication).to be_published
       Alerts::ChangeAudience.call(actor: admin, alert: restricted, requested_visibility: "internal", reason: "Pedido do autor")
       expect(restricted.reload).to have_attributes(visibility: "internal", requested_visibility: "internal")
     end

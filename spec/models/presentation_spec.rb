@@ -249,4 +249,74 @@ RSpec.describe Presentation do
     expect(overview[:folders].map { |folder| folder[:count] }).to all(be_positive)
     expect(overview[:ci_jobs]).to include("test", "lint")
   end
+
+  describe "visual concept captures" do
+    it "offers matching dark and light versions of every capture, with existing files" do
+      presentation.conceito_visual[:capturas].each do |capture|
+        variants = presentation.capture_variants(capture)
+        expect(variants.map { |variant| variant[:theme] }).to eq(%w[dark light])
+        variants.each do |variant|
+          expect(variant[:alt]).to be_present
+          [ variant[:image], variant[:zoom] ].each { |path| expect(Rails.root.join("app/assets/images", path)).to exist }
+        end
+        expect(variants.last[:alt]).to include("tema claro")
+      end
+    end
+
+    it "falls back to the single image of the previous format" do
+      capture = { imagem: "presentation/landing-desktop.png", alt: "Landing" }.with_indifferent_access
+
+      expect(presentation.capture_variants(capture)).to eq([ { theme: "any", image: "presentation/landing-desktop.png", zoom: "presentation/landing-desktop.png", alt: "Landing" } ])
+    end
+
+    it "rejects a light version without an image" do
+      data = content_data
+      data.fetch("conceito_visual")[:capturas].first[:claro] = { alt: "sem imagem" }
+
+      expect { described_class.new(data) }.to raise_error(ArgumentError, /claro da captura landing/)
+    end
+  end
+
+  describe "code evidence catalog" do
+    let(:items) { presentation.funcionalidades[:itens] }
+    let(:commit) { presentation.funcionalidades.dig(:publicacao, :commit) }
+
+    it "lists only existing repository files and tests for each journey" do
+      items.each do |item|
+        expect(item[:resumo]).to be_present
+        expect(item[:evidencias].map { |evidence| evidence[:tipo] }).to include("controller", "model", "view")
+        item[:evidencias].each { |evidence| expect(Rails.root.join(evidence[:caminho])).to exist }
+        item[:testes].each { |path| expect(Rails.root.join(path)).to exist }
+      end
+    end
+
+    it "links to GitHub only the files that exist in the published commit" do
+      unless system("git", "cat-file", "-e", "#{commit}^{commit}", chdir: Rails.root.to_s, out: File::NULL, err: File::NULL)
+        skip "commit #{commit} indisponível neste clone"
+      end
+
+      items.flat_map { |item| item[:evidencias] }.each do |evidence|
+        published = system("git", "cat-file", "-e", "#{commit}:#{evidence[:caminho]}", chdir: Rails.root.to_s, out: File::NULL, err: File::NULL)
+        expect(evidence[:publicado]).to eq(published), "publicado incorreto para #{evidence[:caminho]}"
+        url = presentation.evidence_url(evidence)
+        expect(url).to(published ? eq("https://github.com/lucasact4/engenharia-de-software/blob/#{commit}/#{evidence[:caminho]}") : be_nil)
+      end
+    end
+
+    it "rejects absolute, traversing or unknown evidence entries" do
+      [ "/home/user/app/models/alert.rb", "app/../config/master.key", "README.md" ].each do |path|
+        data = content_data
+        data.fetch("funcionalidades")[:itens].first[:evidencias].first[:caminho] = path
+        expect { described_class.new(data) }.to raise_error(ArgumentError, /evidência inválida/)
+      end
+
+      data = content_data
+      data.fetch("funcionalidades")[:itens].first[:evidencias].first[:tipo] = "patch"
+      expect { described_class.new(data) }.to raise_error(ArgumentError, /evidência inválida/)
+
+      data = content_data
+      data.fetch("funcionalidades")[:publicacao][:commit] = "658bfde"
+      expect { described_class.new(data) }.to raise_error(ArgumentError, /SHA completo/)
+    end
+  end
 end

@@ -58,4 +58,35 @@ RSpec.describe PresentationDiagram do
     expect(diagrams["infrastructure"].relations).to include(include("kind" => "polymorphic", "source" => "active_storage_attachments"))
     expect(diagrams["infrastructure"].nodes.map { |node| node["table"] }).to include("sessions", "presentation_profiles")
   end
+
+  describe "conceptual model" do
+    let(:diagram) { diagrams.fetch("conceptual") }
+
+    it "keeps every concept and relation of the model, with the explanatory note outside the canvas" do
+      expect(diagram.nodes.map { |node| node["id"] }).to match_array(%w[role person interactions audit category location alert photo report publication comment])
+      expect(diagram.relations.size).to eq(20)
+      expect(diagram.notes.join).to include("Dimensões distintas", "Premissas provisórias")
+      expect(diagram.relations.find { |relation| relation.values_at("source", "target") == %w[photo alert] }).to include("source_cardinality" => "0..5", "target_cardinality" => "1")
+      expect(diagram.relations.find { |relation| relation.values_at("source", "target") == %w[publication alert] }).to include("source_cardinality" => "0..1", "target_cardinality" => "0..1")
+    end
+
+    it "gives each connection its own port and labels both multiplicities at the ends" do
+      ports = diagram.relations.flat_map { |relation| relation["points"].values_at(0, -1) }
+      expect(ports.uniq.size).to eq(ports.size)
+
+      diagram.relations.each do |relation|
+        marks = diagram.cardinality_marks(relation)
+        expect(marks.map { |mark| mark[:text] }).to eq([ relation["source_cardinality"], relation["target_cardinality"] ])
+        expect(marks.map { |mark| [ mark[:x], mark[:y] ] }).to eq(relation["points"].values_at(0, -1))
+      end
+    end
+
+    it "fits a wide canvas so the slide does not need to scroll at 1920×1080" do
+      expect(diagram.height.to_f / diagram.width).to be < 0.45
+    end
+  end
+
+  it "keeps the physical diagrams on column ports without multiplicity labels" do
+    diagrams.except("conceptual").each_value { |diagram| expect(diagram).not_to be_cardinality_labels }
+  end
 end

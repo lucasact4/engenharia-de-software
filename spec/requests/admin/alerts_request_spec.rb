@@ -34,7 +34,7 @@ RSpec.describe "Admin alerts", type: :request do
     get admin_alert_path(alert)
 
     expect(response.body).to include(author.email_address)
-    expect(response.body).to include("Preparar publicação")
+    expect(response.body).not_to include("Preparar publicação")
     expect(response.body).to include("Audiência e divulgação")
   end
 
