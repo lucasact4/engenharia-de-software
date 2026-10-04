@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -66,11 +66,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
     t.decimal "latitude", precision: 10, scale: 7
     t.decimal "location_accuracy_meters", precision: 10, scale: 2
     t.datetime "location_captured_at"
+    t.string "location_description"
     t.integer "location_id"
     t.string "location_source", null: false
     t.string "location_unavailable_reason"
     t.integer "lock_version", default: 0, null: false
     t.decimal "longitude", precision: 10, scale: 7
+    t.json "photo_order", default: [], null: false
     t.string "priority"
     t.string "protocol", null: false
     t.boolean "publication_blocked", default: false, null: false
@@ -106,10 +108,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
     t.check_constraint "latitude IS NULL OR (latitude >= -90 AND latitude <= 90)", name: "alerts_latitude_range"
     t.check_constraint "location_accuracy_meters IS NULL OR (location_accuracy_meters >= 0 AND location_source = 'gps')", name: "alerts_location_accuracy"
     t.check_constraint "location_captured_at IS NULL OR location_source = 'gps'", name: "alerts_location_captured_at"
-    t.check_constraint "location_source <> 'gps' OR latitude IS NOT NULL", name: "alerts_gps_coordinates"
-    t.check_constraint "location_source <> 'manual' OR (location_id IS NOT NULL AND latitude IS NULL)", name: "alerts_manual_location"
+    t.check_constraint "location_source <> 'manual' OR (latitude IS NULL AND (location_id IS NOT NULL OR (location_description IS NOT NULL AND length(trim(location_description)) BETWEEN 3 AND 160)))", name: "alerts_manual_location"
     t.check_constraint "location_source <> 'unavailable' OR (location_id IS NULL AND latitude IS NULL)", name: "alerts_unavailable_location"
-    t.check_constraint "location_source IN ('gps', 'manual', 'unavailable')", name: "alerts_location_source"
+    t.check_constraint "location_source IN ('gps', 'map', 'manual', 'unavailable')", name: "alerts_location_source"
+    t.check_constraint "location_source NOT IN ('gps', 'map') OR latitude IS NOT NULL", name: "alerts_gps_coordinates"
     t.check_constraint "location_unavailable_reason IS NULL OR location_source = 'unavailable'", name: "alerts_location_unavailable_reason_source"
     t.check_constraint "location_unavailable_reason IS NULL OR location_unavailable_reason IN ('permission_denied', 'position_unavailable', 'timeout', 'not_supported', 'not_shared')", name: "alerts_location_unavailable_reason"
     t.check_constraint "lock_version >= 0", name: "alerts_lock_version"
@@ -276,14 +278,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
 
   create_table "publications", force: :cascade do |t|
     t.integer "alert_id"
+    t.string "approval_method"
     t.integer "author_id", null: false
-    t.text "body", null: false
+    t.text "body"
     t.boolean "comments_enabled", default: true, null: false
     t.integer "content_version", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "kind", null: false
     t.integer "lock_version", default: 0, null: false
+    t.boolean "moderation_blocked", default: false, null: false
     t.datetime "published_at"
     t.text "review_reason"
     t.string "review_status", default: "not_submitted", null: false
@@ -292,7 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
     t.integer "reviewed_content_version"
     t.datetime "source_changed_at"
     t.string "state", default: "draft", null: false
-    t.string "title", null: false
+    t.string "title"
     t.datetime "updated_at", null: false
     t.string "visibility", null: false
     t.datetime "withdrawn_at"
@@ -301,16 +305,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
     t.index ["reviewed_by_id"], name: "index_publications_on_reviewed_by_id"
     t.index ["state", "visibility", "published_at"], name: "index_publications_on_state_and_visibility_and_published_at"
     t.check_constraint "(kind = 'occurrence' AND alert_id IS NOT NULL) OR (kind <> 'occurrence' AND alert_id IS NULL)", name: "publications_alert_source"
+    t.check_constraint "(kind = 'occurrence' AND title IS NULL AND body IS NULL) OR (kind <> 'occurrence' AND title IS NOT NULL AND length(trim(title)) BETWEEN 5 AND 160 AND body IS NOT NULL AND length(trim(body)) BETWEEN 10 AND 10000)", name: "publications_canonical_content"
+    t.check_constraint "approval_method IS NULL OR approval_method IN ('administrator', 'verified_author')", name: "publications_approval_method"
     t.check_constraint "content_version >= 1 AND lock_version >= 0", name: "publications_versions"
     t.check_constraint "expires_at IS NULL OR published_at IS NULL OR expires_at > published_at", name: "publications_expires_after_publication"
     t.check_constraint "kind <> 'notice' OR state <> 'published' OR expires_at IS NOT NULL", name: "publications_notice_expires"
     t.check_constraint "kind IN ('occurrence', 'notice', 'news')", name: "publications_kind"
-    t.check_constraint "length(trim(body)) BETWEEN 10 AND 10000", name: "publications_body_length"
-    t.check_constraint "length(trim(title)) BETWEEN 5 AND 160", name: "publications_title_length"
     t.check_constraint "review_status <> 'rejected' OR (review_reason IS NOT NULL AND length(trim(review_reason)) > 0)", name: "publications_rejection_reason"
     t.check_constraint "review_status IN ('not_submitted', 'pending', 'approved', 'rejected')", name: "publications_review_status"
-    t.check_constraint "review_status NOT IN ('approved', 'rejected') OR (reviewed_by_id IS NOT NULL AND reviewed_at IS NOT NULL AND reviewed_content_version IS NOT NULL)", name: "publications_review_fields"
-    t.check_constraint "state <> 'published' OR (review_status = 'approved' AND reviewed_content_version IS NOT NULL AND reviewed_content_version = content_version AND published_at IS NOT NULL)", name: "publications_published_requires_approval"
+    t.check_constraint "review_status NOT IN ('approved', 'rejected') OR (reviewed_at IS NOT NULL AND reviewed_content_version IS NOT NULL AND (reviewed_by_id IS NOT NULL OR (review_status = 'approved' AND approval_method = 'verified_author')))", name: "publications_review_fields"
+    t.check_constraint "state <> 'published' OR (published_at IS NOT NULL AND ((kind = 'occurrence' AND visibility = 'internal') OR (review_status = 'approved' AND reviewed_content_version = content_version)))", name: "publications_published_requires_approval"
     t.check_constraint "state <> 'withdrawn' OR withdrawn_at IS NOT NULL", name: "publications_withdrawn_at"
     t.check_constraint "state IN ('draft', 'published', 'withdrawn')", name: "publications_state"
     t.check_constraint "visibility IN ('internal', 'public_external')", name: "publications_visibility"
@@ -376,11 +380,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
     t.string "registration_status", default: "approved", null: false
     t.datetime "updated_at", null: false
     t.string "username"
+    t.datetime "verified_at"
+    t.integer "verified_by_id"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
     t.index ["username"], name: "index_users_on_username", unique: true
+    t.index ["verified_by_id"], name: "index_users_on_verified_by_id"
+    t.check_constraint "(verified_at IS NULL AND verified_by_id IS NULL) OR (verified_at IS NOT NULL AND verified_by_id IS NOT NULL)", name: "users_verification_pair"
     t.check_constraint "bio IS NULL OR length(bio) <= 500", name: "users_bio_length"
     t.check_constraint "display_name IS NULL OR length(display_name) BETWEEN 1 AND 80", name: "users_display_name_length"
     t.check_constraint "registration_role_code IS NULL OR registration_role_code IN ('visitor', 'professor', 'student')", name: "users_registration_role_valid"
@@ -424,4 +432,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_100100) do
   add_foreign_key "user_roles", "users"
   add_foreign_key "user_roles", "users", column: "granted_by_id"
   add_foreign_key "users", "users", column: "registration_reviewed_by_id"
+  add_foreign_key "users", "users", column: "verified_by_id"
 end
