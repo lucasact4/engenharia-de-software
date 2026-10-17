@@ -13,7 +13,7 @@
 # apendice:    true => fica fora da sequência das setas; acessível pelo índice,
 #              pelo modo leitura e incluído na impressão/PDF quando selecionado.
 # responsavel: quem apresenta o slide (preencher após o ensaio).
-# tema:        escuro => fundo verde profundo (capa e slides de impacto); padrão é claro.
+# tema:        escuro => variante de impacto; as cores acompanham o tema do sistema.
 # conteudos:   blocos do slide que podem ser ocultados. A chave salva é "<id do slide>.<id do conteúdo>"
 #              (ex.: gestao.reunioes). "dentro_de" indica um bloco que só aparece com o bloco pai.
 #              Cada conteúdo precisa estar marcado na partial com presentation_item.
@@ -64,13 +64,12 @@ slides:
       - { id: documento, titulo: "Documento e card de refinamento", padrao: true }
 
   - id: status-report
-    titulo: "O que aprendemos nesse sprint (Imagem de uma retrospectiva)"
+    titulo: "O que aprendemos nesse sprint"
     tempo: 35
     padrao: true
     responsavel:
     conteudos:
       - { id: aprendizados, titulo: "Aprendizados do quadro (coluna Aprendi)", padrao: true }
-      - { id: acoes, titulo: "Pontos a melhorar e ações combinadas", padrao: true }
       - { id: registro, titulo: "Referência ao quadro da retrospectiva", padrao: true }
 
   - id: evolucao
@@ -126,7 +125,7 @@ slides:
     responsavel:
     conteudos:
       - { id: diagrama, titulo: "Diagrama do modelo conceitual", padrao: true }
-      - { id: situacao, titulo: "Produção, revisão da equipe e premissas", padrao: true }
+      - { id: situacao, titulo: "Produção e regras do modelo", padrao: true }
       - { id: distincao, titulo: "Diferença para o modelo físico do banco", padrao: true }
 
   - id: casos-de-uso
@@ -191,8 +190,6 @@ slides:
     conteudos:
       - { id: marco, titulo: "Marco demonstrável", padrao: true }
       - { id: passos, titulo: "Lista de próximos passos", padrao: true }
-      - { id: riscos, titulo: "Riscos", padrao: true }
-      - { id: dependencias, titulo: "Dependências", padrao: true }
 
   - id: encerramento
     tema: escuro
@@ -235,6 +232,6 @@ slides:
       - { id: arquivos, titulo: "Onde verificar cada capacidade", padrao: true }
       - { id: testes, titulo: "Testes e integração contínua", padrao: true }
   - id: roteiro
-    titulo: "Roteiro e tempo"
+    titulo: "Roteiro de apresentação"
     apendice: true
     padrao: false

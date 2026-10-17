@@ -1,0 +1,35 @@
+<%# Galeria de reunião: destaque na tela, todas as evidências originais no PDF. %>
+<% photos = evidencias.dup %>
+<% if legacy_image.present? %>
+  <% photos << { imagem: legacy_image, legenda: "Registro de #{date}", alt: "Registro da reunião de #{date}" } %>
+<% end %>
+<% initial = photos.index { |photo| photo[:imagem] == principal } || 0 %>
+<% featured = photos.fetch(initial) %>
+<div class="apr-meeting__gallery" data-controller="meeting-gallery" data-meeting-gallery-index-value="<%= initial %>" aria-label="Capturas da reunião de <%= date %>">
+  <div class="apr-meeting__featured" data-meeting-gallery-target="featured">
+    <%= render "presentations/shared/figure", image: featured[:imagem], alt: featured[:alt], caption: featured[:legenda], modifier: "apr-figure--meeting-featured" %>
+  </div>
+  <div class="apr-meeting__strip" data-action="keydown->meeting-gallery#keydown">
+    <button type="button" class="apr-icon-btn apr-meeting__arrow" hidden data-meeting-gallery-target="control" data-action="meeting-gallery#previous" aria-label="Captura anterior"><%= render "presentations/shared/icon", name: "chevron-left" %></button>
+    <div class="apr-meeting__thumbnails" data-meeting-gallery-target="strip">
+      <% photos.each_with_index do |photo, index| %>
+        <figure class="apr-meeting__thumb">
+          <a href="<%= image_path(photo[:imagem]) %>" class="apr-meeting__thumbnail <%= 'is-selected' if index == initial %>"
+             data-meeting-gallery-target="thumbnail" data-gallery-index="<%= index %>" data-caption="<%= photo[:legenda] %>"
+             data-action="meeting-gallery#select presentation#zoom" data-zoom-src="<%= image_path(photo[:imagem]) %>"
+             aria-current="<%= index == initial %>" aria-label="Ampliar imagem: <%= photo[:legenda] %>">
+            <%= image_tag photo[:imagem], alt: photo[:alt], decoding: "async", data: { zoom_src: image_path(photo[:imagem]), theme: "any" } %>
+          </a>
+          <figcaption class="apr-sr-only"><span class="apr-figure__title"><%= photo[:legenda] %></span></figcaption>
+        </figure>
+      <% end %>
+    </div>
+    <button type="button" class="apr-icon-btn apr-meeting__arrow" hidden data-meeting-gallery-target="control" data-action="meeting-gallery#next" aria-label="Próxima captura"><%= render "presentations/shared/icon", name: "chevron-right" %></button>
+  </div>
+  <p class="apr-meeting__position" data-meeting-gallery-target="position" aria-live="polite" aria-atomic="true"><%= initial + 1 %> / <%= photos.size %></p>
+  <div class="apr-meeting__print">
+    <% photos.each do |photo| %>
+      <%= render "presentations/shared/figure", image: photo[:imagem], alt: photo[:alt], caption: photo[:legenda], modifier: "apr-figure--meeting" %>
+    <% end %>
+  </div>
+</div>

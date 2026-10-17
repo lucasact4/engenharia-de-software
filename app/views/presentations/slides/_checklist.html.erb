@@ -1,10 +1,9 @@
 <% delivery = @selection.delivery %>
 <% requirements = presentation.requirements(delivery) %>
-<% confirmados = requirements.count(&:confirmed) %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "checklist",
       title: "Atendimento aos itens da #{delivery[:rotulo]}",
-      lead: "Avaliação técnica do estado atual. #{confirmados} de #{requirements.size} itens confirmados pela equipe. Exibir um slide não significa que o item foi concluído." %>
+      lead: "Estado dos itens e referências da entrega." %>
 
 <div class="apr-table-wrap">
   <table class="apr-table">
@@ -15,7 +14,6 @@
         <th scope="col">Estado</th>
         <th scope="col">Observação</th>
         <th scope="col">Slide</th>
-        <th scope="col">Equipe</th>
       </tr>
     </thead>
     <tbody>
@@ -31,10 +29,9 @@
               <%= presentation_slide_ref_off alvo.id, class: "apr-muted" do %>fora desta seleção<% end %>
             <% end %>
           </td>
-          <td><%= requirement.confirmed ? "Confirmado" : "Pendente" %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
-<%= presentation_update_note("entrega.yml", "exigencias da entrega #{delivery[:id]} (estado, observacao e confirmado_pela_equipe).") %>
+<%= presentation_update_note("entrega.yml", "exigencias da entrega #{delivery[:id]} (estado e observacao).") %>

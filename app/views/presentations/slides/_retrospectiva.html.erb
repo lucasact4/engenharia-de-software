@@ -34,9 +34,6 @@
           </p>
           <p class="apr-retro-board__url"><%= link_to retro.link.delete_prefix("https://"), retro.link, target: "_blank", rel: "noopener noreferrer" %></p>
         <% end %>
-        <% if retro.date.blank? %>
-          <p class="apr-retro-board__note">Captura real do quadro, sem edição. A data da dinâmica não foi registrada.</p>
-        <% end %>
         <%= presentation_slide_ref "status-report", :p do %>
           <a class="apr-more" href="#s-status-report">Aprendizados em destaque</a>
         <% end %>

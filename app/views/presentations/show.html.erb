@@ -1,4 +1,5 @@
 <% entrega = @presentation.entrega %>
+<% appendix_return = @selection.visible_main_slides.find { |item| item.id == "modelo-conceitual" } || @selection.visible_main_slides.first %>
 <% delivery = @selection.delivery %>
 <% content_for :title, "SGU — #{delivery[:titulo]}" %>
 <% content_for :description, "Apresentação do SGU (Sistema de Gerenciamento Urbano) para a disciplina de #{entrega[:disciplina]} da UFRPE." %>
@@ -74,6 +75,9 @@
                data-title="<%= @selection.slide_title(slide) %>"
                <%= "hidden" unless @selection.slide_visible?(slide) %>>
         <div class="apr-slide__inner">
+          <% if slide.appendix %>
+            <p class="apr-appendix-return apr-local-only"><a href="#<%= appendix_return.dom_id %>" class="apr-more" data-action="presentation#returnToMain"><%= render "presentations/shared/icon", name: "chevron-left" %> Voltar à apresentação</a></p>
+          <% end %>
           <%= render slide.partial, presentation: @presentation, slide: slide %>
         </div>
         <p class="apr-slide__folio" aria-hidden="true">
@@ -99,8 +103,12 @@
       <%= render "presentations/shared/icon", name: "chevron-right" %>
     </button>
     <p class="apr-nav__title" data-presentation-target="currentTitle"></p>
+    <button class="apr-nav__btn apr-share-button" type="button" data-action="presentation#zoom" data-zoom-src="<%= image_path(entrega.dig(:links, :qr_code)) %>" aria-label="Ampliar QR Code da apresentação"><%= render "presentations/shared/icon", name: "scan" %></button>
+    <%= render "presentations/shared/timer" %>
     <div class="apr-nav__progress" aria-hidden="true"><span data-presentation-target="progress"></span></div>
   </footer>
+
+  <aside class="apr-share-rail apr-local-only" aria-label="Acessar a apresentação no celular"><%= render "presentations/shared/share_code" %></aside>
 
   <p class="apr-sr-only" aria-live="polite" aria-atomic="true" data-presentation-target="announcer"></p>
 
@@ -114,7 +122,6 @@
       </button>
     </div>
     <%= render "presentations/shared/slide_list", presentation: @presentation, linked: true %>
-    <p class="apr-index__estimate" data-presentation-target="estimate"><%= presentation_estimate_text(@selection) %></p>
     <div class="apr-index__foot">
       <dl class="apr-shortcuts">
         <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>slide anterior / próximo</dd></div>

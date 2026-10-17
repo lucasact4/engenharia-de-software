@@ -1,9 +1,9 @@
 <% retro = presentation.retrospective %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "status report · aprendizados",
-      title: "O que a retrospectiva mostrou sobre esta sprint" %>
+      title: "Quatro aprendizados para a próxima etapa" %>
 
-<div class="apr-lessons apr-fit">
+<div class="apr-lessons apr-lessons--organized apr-fit">
   <%= presentation_item slide, "aprendizados", :section, class: "apr-lessons__main", aria: { label: "O que aprendemos" } do %>
     <% if retro.lessons.any? %>
       <ol class="apr-lessons__list" role="list">
@@ -17,36 +17,17 @@
           </li>
         <% end %>
       </ol>
-      <p class="apr-lessons__source">Cartões da coluna “Aprendi”, transcritos do quadro sem alteração.</p>
     <% else %>
       <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: registrar as lições da retrospectiva em <code>retrospectiva.yml</code>.</p>
     <% end %>
   <% end %>
 
-  <%= presentation_group slide, %w[acoes registro], class: "apr-lessons__side" do %>
-    <%= presentation_item slide, "acoes", :section, class: "apr-lessons__gaps", aria: { labelledby: "#{slide.dom_id}-faltou" } do %>
-      <h3 id="<%= slide.dom_id %>-faltou" class="apr-label">Para melhorar (coluna “Faltou”)</h3>
-      <% if retro.gaps.any? %>
-        <ul class="apr-lessons__chips" role="list">
-          <% retro.gaps.each do |gap| %><li><%= gap.title || gap.text %></li><% end %>
-        </ul>
-      <% end %>
-      <% if retro.actions.any? %>
-        <ul class="apr-retro__list" role="list">
-          <% retro.actions.each do |action| %>
-            <li><%= action.text %><span class="apr-retro__who"><%= [ action.owner, action.deadline ].compact_blank.join(" · ") %></span></li>
-          <% end %>
-        </ul>
-      <% else %>
-        <p class="apr-lessons__note">Pontos levantados pela equipe; ainda sem ações, responsáveis ou prazos definidos.</p>
-      <% end %>
-    <% end %>
-
-    <%= presentation_item slide, "registro", :aside, class: "apr-lessons__ref", aria: { label: "Quadro da retrospectiva" } do %>
-      <% if retro.image? %>
+  <%= presentation_group slide, %w[registro], class: "apr-lessons__side" do %>
+    <%= presentation_item slide, "registro", :aside, class: "apr-lessons__ref", aria: { label: "Cartões de aprendizados" } do %>
+      <% if retro.lessons_image.present? %>
         <%= render "presentations/shared/figure",
-              image: retro.image, zoom_image: retro.zoom_image, alt: retro.image_alt,
-              caption: "Quadro completo", modifier: "apr-figure--board-thumb" %>
+              image: retro.lessons_image, alt: retro.lessons_image_alt,
+              caption: "Aprendi", modifier: "apr-figure--lessons" %>
       <% end %>
       <p class="apr-lessons__links">
         <% if retro.link %>
@@ -54,10 +35,10 @@
         <% end %>
         <%= presentation_slide_ref "retrospectiva" do %><a class="apr-more" href="#s-retrospectiva">Slide do quadro</a><% end %>
       </p>
-      <% unless retro.image? %>
+      <% unless retro.lessons_image.present? %>
         <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: anexar a imagem real da dinâmica.</p>
       <% end %>
     <% end %>
   <% end %>
 </div>
-<%= presentation_update_note("retrospectiva.yml", "colunas do quadro (aprendi, faltou) e ações combinadas.") %>
+<%= presentation_update_note("retrospectiva.yml", "coluna Aprendi, sua captura e link da retrospectiva.") %>

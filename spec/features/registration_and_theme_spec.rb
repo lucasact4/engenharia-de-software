@@ -43,7 +43,8 @@ RSpec.describe "Registration and shared themes", type: :feature, js: true do
       visit path
       expect(page.evaluate_script("document.documentElement.dataset.theme")).to eq("light")
       expect(page).to have_button("Ativar modo escuro")
-      expect(page.evaluate_script("getComputedStyle(document.querySelector('[data-theme-toggle]')).color")).to eq("rgb(21, 40, 35)")
+      expected_ink = path == presentation_path ? "rgb(23, 56, 46)" : "rgb(21, 40, 35)"
+      expect(page.evaluate_script("getComputedStyle(document.querySelector('[data-theme-toggle]')).color")).to eq(expected_ink)
     end
     page.driver.browser.navigate.refresh
     expect(page.evaluate_script("document.documentElement.dataset.theme")).to eq("light")

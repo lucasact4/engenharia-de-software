@@ -440,3 +440,7 @@
 .apr-model-diagram .apr-data-eyebrow {
   display: none;
 }
+
+.apr-title-row { display: flex; align-items: center; gap: .6em; min-width: 0; }
+.apr-title-row .apr-title { min-width: 0; }
+.apr-title-row .apr-info-wrap { flex: 0 0 auto; }

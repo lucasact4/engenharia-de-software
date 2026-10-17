@@ -5,13 +5,19 @@
 %>
 <% heading = @selection.slide_title(slide) %>
 <% requirement = @selection.requirement_label(slide) %>
+<% full_requirement = @selection.presentation.slide_requirements(slide, @selection.delivery).first&.title %>
 <header class="apr-head">
   <p class="apr-kicker">
     <%= presentation_slide_label slide, class: "apr-kicker__num" %>
     <span class="apr-kicker__text"><%= kicker %></span>
     <% if requirement %><span class="apr-requirement <%= 'apr-requirement--extra' if requirement.end_with?("omplementar") %>"><%= requirement %></span><% end %>
   </p>
-  <h2 id="<%= slide.heading_id %>" class="apr-title <%= "apr-title--long" if heading.length > 60 %>"><%= heading %></h2>
+  <div class="apr-title-row">
+    <h2 id="<%= slide.heading_id %>" class="apr-title <%= "apr-title--long" if heading.length > 60 %>"><%= heading %></h2>
+    <% if full_requirement.present? && full_requirement != heading %>
+      <%= render "presentations/shared/info", id: "#{slide.dom_id}-exigencia", label: "Ver exigência completa", title: "Exigência da entrega", text: full_requirement %>
+    <% end %>
+  </div>
   <% if local_assigns[:title].present? && title != heading %>
     <p class="apr-subtitle"><%= title %></p>
   <% end %>

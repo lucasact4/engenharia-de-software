@@ -65,7 +65,7 @@ RSpec.describe PresentationDiagram do
     it "keeps every concept and relation of the model, with the explanatory note outside the canvas" do
       expect(diagram.nodes.map { |node| node["id"] }).to match_array(%w[role person interactions audit category location alert photo report publication comment])
       expect(diagram.relations.size).to eq(20)
-      expect(diagram.notes.join).to include("Dimensões distintas", "Premissas provisórias")
+      expect(diagram.notes.join).to include("Dimensões distintas", "Regras atuais")
       expect(diagram.relations.find { |relation| relation.values_at("source", "target") == %w[photo alert] }).to include("source_cardinality" => "0..5", "target_cardinality" => "1")
       expect(diagram.relations.find { |relation| relation.values_at("source", "target") == %w[publication alert] }).to include("source_cardinality" => "0..1", "target_cardinality" => "0..1")
     end

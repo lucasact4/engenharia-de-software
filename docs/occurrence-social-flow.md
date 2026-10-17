@@ -119,7 +119,7 @@ Migration `20261003180000_add_occurrence_photo_order_and_map_location.rb` adds `
 | Photo selection/order/removal and content version synchronization | `app/services/alerts/photo_selection.rb`, `update_content.rb`, `remove_photo.rb` |
 | Photo selection controls | `app/javascript/controllers/photo_preview_controller.js` |
 | GPS, map, and Google URL extraction | `app/javascript/controllers/geolocation_controller.js`, `app/views/shared/alerts/_location_fields.html.erb` |
-| Locally packaged map resources | `vendor/javascript/leaflet.js`, `leaflet.LICENSE`, `app/assets/stylesheets/leaflet.css`, `app/assets/images/leaflet/` |
+| Locally packaged map resources | `vendor/javascript/leaflet.js`, `vendor/javascript/leaflet.js.map`, `vendor/javascript/leaflet.LICENSE`, `app/assets/stylesheets/leaflet.css`, `app/assets/images/leaflet/` |
 | Shared feed card and review preview | `app/views/publications/_card.html.erb`, `app/views/admin/publications/_occurrence_review.html.erb` |
 | Composer and author review state | `app/views/shared/alerts/_form.html.erb`, `_publication_status.html.erb` |
 | Feed styling, gallery, and accessible help | `app/assets/tailwind/social.css`, `app/javascript/controllers/post_gallery_controller.js`, `tooltip_controller.js` |

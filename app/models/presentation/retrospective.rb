@@ -11,13 +11,15 @@ class Presentation::Retrospective
   GAPS_COLUMN = "faltou"
   POINTS_COLUMNS = %w[gostei faltou].freeze
 
-  attr_reader :date, :tool, :format, :link, :image, :zoom_image, :image_alt, :columns, :actions
+  attr_reader :date, :tool, :format, :link, :image, :zoom_image, :image_alt, :columns, :actions, :lessons_image, :lessons_image_alt
 
   def initialize(data)
     @date = data[:data]
     @tool = data[:ferramenta].presence
     @format = data[:formato].presence
     @link = data[:link].presence
+    @lessons_image = data[:aprendizados_imagem].presence
+    @lessons_image_alt = data[:aprendizados_imagem_descricao].presence || "Cartões de aprendizados da sprint"
     @image = data[:imagem].presence
     @zoom_image = data[:imagem_ampliada].presence || @image
     @image_alt = data[:imagem_descricao].presence || "Registro da retrospectiva da equipe"

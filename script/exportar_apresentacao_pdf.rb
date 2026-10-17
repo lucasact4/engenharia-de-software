@@ -13,6 +13,8 @@ require "fileutils"
 require "selenium-webdriver"
 
 url = ENV.fetch("APRESENTACAO_URL", "http://rails-app:3100/apresentacao?modo=leitura")
+theme = ENV.fetch("APRESENTACAO_TEMA", "dark")
+abort "APRESENTACAO_TEMA deve ser dark ou light." unless %w[dark light].include?(theme)
 output = File.expand_path(ARGV[0] || "tmp/apresentacao/sgu-segunda-entrega.pdf")
 FileUtils.mkdir_p(File.dirname(output))
 
@@ -31,6 +33,7 @@ begin
         getComputedStyle(document.documentElement).getPropertyValue("--apr-g-800").trim() !== "";
     JS
   end
+  driver.execute_script("document.documentElement.dataset.theme = arguments[0]", theme)
   # A impressão inclui slides fora da área visível; seus logos também precisam carregar.
   driver.execute_script("document.querySelectorAll('.apr-slide img').forEach(image => { image.loading = 'eager'; })")
   wait.until do

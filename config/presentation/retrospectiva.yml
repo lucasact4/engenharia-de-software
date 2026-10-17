@@ -19,6 +19,8 @@ formato: "Gostei · Aprendi · Faltou"
 link: "https://app.funretrospectives.com/session/-P348lsyv9l5kgdtJO7_"
 imagem: "presentation/retrospectiva/quadro-gostei-aprendi-faltou.png"
 imagem_ampliada:
+aprendizados_imagem: "presentation/retrospectiva/aprendi.png"
+aprendizados_imagem_descricao: "Quatro cartões da coluna Aprendi: experiência prática, escolhas técnicas, da ideia à prática e evolução contínua."
 imagem_descricao: "Quadro da retrospectiva no FunRetrospectives com três colunas de cartões. Gostei: tecnologia completa, alinhamento da equipe, organização do projeto e ideia tomando forma. Aprendi: experiência prática, escolhas técnicas, da ideia à prática e evolução contínua. Faltou: base antes do código, requisitos mais claros, ordem das tarefas e tempo e organização."
 
 colunas:

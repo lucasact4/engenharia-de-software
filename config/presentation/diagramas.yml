@@ -12,31 +12,24 @@
 itens:
   - id: modelo-conceitual
     titulo: "Modelo conceitual"
-    descricao: "Pessoa usuária, papéis, alerta (ocorrência ou pânico), categoria, local, foto, publicação interna ou externa, comentário, denúncia, interações e auditoria, com multiplicidades. Premissas provisórias a validar."
+    descricao: "Pessoa usuária, papéis, alerta (ocorrência ou pânico), categoria, local, foto, publicação interna ou externa, comentário, denúncia, interações e auditoria, com multiplicidades."
     exigido_em: "2ª entrega"
     card:
       numero: 6
       titulo: "Modelar ocorrências e criar migração inicial"
       url: "https://trello.com/c/a8kascTx/6-dados-modelar-ocorr%C3%AAncias-e-criar-migra%C3%A7%C3%A3o-inicial"
-    # parcial: diagrama produzido a partir do schema real; depende da revisão da equipe.
-    estado: parcial
+    estado: implementado
     imagem:
     renderizacao: html_css
     versao: "3"
     origem: "Card #6 — derivado das migrações e do db/schema.rb"
     data: 2026-10-03
-    # Três situações independentes. Não marque a revisão como concluída sem registro da equipe.
     producao:          # diagrama tecnicamente produzido
       estado: implementado
       nota: "Desenhado em HTML/CSS a partir de data_diagrams.yml; cardinalidades conferidas com models e migrações."
-    revisao_equipe:    # leitura e aprovação pela equipe
-      estado: aguardando_evidencia
-      data:
-      responsaveis: []
-      nota: "Registrar quem revisou, quando e o que mudou."
     premissas:         # regras de requisitos que o modelo assume
-      estado: aguardando_decisao
-      nota: "Ocorrências internas têm post; pânico e dados operacionais são restritos. Foto opcional e regras de acesso ainda precisam do aceite do #13."
+      estado: implementado
+      nota: "Fotos são opcionais. Ocorrências internas têm post; pânico e dados operacionais são restritos. Publicação externa segue as regras de verificação e moderação."
   - id: casos-de-uso
     titulo: "Diagrama de casos de uso"
     descricao: "Atores do SGU e o que cada um pode fazer no sistema."

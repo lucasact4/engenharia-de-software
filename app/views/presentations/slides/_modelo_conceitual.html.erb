@@ -9,7 +9,7 @@
 
 <%= presentation_group slide, %w[situacao distincao], class: "apr-model-foot apr-model-foot--compact" do %>
   <%= presentation_item slide, "situacao", :ul, class: "apr-model-badges", role: "list", aria: { label: "Situação do diagrama" } do %>
-    <% [ [ "producao", "Diagrama produzido", item[:producao] ], [ "revisao", "Revisão da equipe", item[:revisao_equipe] ], [ "premissas", "Premissas de requisitos", item[:premissas] ] ].each do |key, rotulo, info| %>
+    <% [ [ "producao", "Diagrama produzido", item[:producao] ], [ "premissas", "Regras do modelo", item[:premissas] ] ].each do |key, rotulo, info| %>
       <% next if info.blank? %>
       <% note = [ info[:nota], presentation_date(info[:data]), Array(info[:responsaveis]).to_sentence.presence ].compact_blank.join(" · ") %>
       <li class="apr-model-badge">
@@ -23,10 +23,10 @@
   <% end %>
 
   <%= presentation_item slide, "distincao", :p, class: "apr-model-distinction" do %>
-    <strong>Conceitual ≠ físico.</strong>
-    <span>Não substitui o fluxo (#5) nem os casos de uso (#14); as tabelas reais ficam no DER<%= presentation_slide_ref "modelo-dados" do %> (<a class="apr-more" href="#s-modelo-dados">apêndices</a>)<% end %>.</span>
-    <%= render "presentations/shared/info", id: "#{slide.dom_id}-distincao", label: "Sobre conceitual e físico", title: "Conceitual e físico",
-          text: "As multiplicidades refletem as restrições do banco (ex.: alerta com 0..1 publicação; comentário com 0..1 comentário pai). #{[ item[:origem], ("versão #{item[:versao]}" if item[:versao].present?), presentation_date(item[:data]) ].compact_blank.join(' · ')}." %>
+    <span>DER nos apêndices</span>
+    <%= presentation_slide_ref "modelo-dados" do %><a class="apr-btn apr-btn--ghost" href="#s-modelo-dados">Ver DER <%= render "presentations/shared/icon", name: "arrow" %></a><% end %>
+    <%= render "presentations/shared/info", id: "#{slide.dom_id}-der", label: "O que é DER e o que há nos apêndices", title: "Diagrama Entidade-Relacionamento",
+          text: "O DER mostra tabelas, campos, chaves e relações do banco. Os apêndices detalham o núcleo, os dados operacionais, as interações sociais e a infraestrutura." %>
   <% end %>
 <% end %>
-<%= presentation_update_note("diagramas.yml", "producao, revisao_equipe e premissas; estrutura do modelo em data_diagrams.yml.") %>
+<%= presentation_update_note("diagramas.yml", "producao e premissas; estrutura do modelo em data_diagrams.yml.") %>

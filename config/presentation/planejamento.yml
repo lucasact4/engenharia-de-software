@@ -1,41 +1,26 @@
-# O que será feito até a próxima entrega. Sem datas nem responsáveis enquanto a equipe não decidir.
-#
-# proximos_passos: poucas prioridades, na ordem em que dependem umas das outras.
-#   titulo, texto: o que fazer.
-#   card:          número do card no Trello, quando existir.
-#   depende_de:    texto curto com a dependência (opcional).
-
-# Marco demonstrável da próxima entrega (definir com a equipe).
+# Próxima etapa: o mural já demonstra a experiência; a lista define a evolução seguinte.
 marco:
-  titulo:
-  descricao:
-  estado: aguardando_decisao
-
+  titulo: "Posts com interação no mural"
+  descricao: "A base de postagem já funciona: fotos, comentários, curtidas, salvos e acompanhamento. Agora vamos tornar essa experiência mais simples e convidativa."
+  estado: implementado
+  captura:
+    imagem: "presentation/mural/post-escuro.png"
+    alt: "Mural do SGU em tema escuro com post, foto e ações de rede social."
+    claro:
+      imagem: "presentation/mural/post-claro.png"
+      alt: "O mesmo mural do SGU em tema claro com post, foto e ações de rede social."
 proximos_passos:
-  - titulo: "Validar jornadas e requisitos"
-    texto: "Revisar com a equipe as duas jornadas e ligar cada uma aos RFs aprovados."
+  - titulo: "Mapear requisitos e evolução"
+    texto: "Conferir o que foi concluído e o que falta; organizar um mapa do antes, agora e próximos passos."
     card: 13
-    depende_de:
-  - titulo: "Fechar os diagramas pendentes"
-    texto: "Concluir casos de uso e fluxo de ocorrências; revisar as premissas do modelo conceitual."
-    card: 14
-    depende_de: "requisitos validados"
-  - titulo: "Completar o cadastro e os locais"
-    texto: "Implementar a confirmação de e-mail e cadastrar os locais oficiais do campus."
-    card:
-    depende_de: "dados reais dos locais"
-  - titulo: "Publicar e ensaiar"
-    texto: "Integrar a branch local à main, preparar o ambiente de homologação e ensaiar em até 7 minutos."
-    card:
-    depende_de: "itens anteriores"
+  - titulo: "Simular os e-mails de desenvolvimento"
+    texto: "Integrar letter_opener para visualizar envios localmente e testar o fluxo de confirmação."
+  - titulo: "Cadastrar os locais da UFRPE"
+    texto: "Criar seeds com prédios, ruas e outros locais; incluir fotos e informações úteis."
+  - titulo: "Testar e refinar a experiência"
+    texto: "Buscar e corrigir bugs; melhorar design e usabilidade com ajustes simples."
+  - titulo: "Melhorar usabilidade e participação"
+    texto: "Simplificar publicar e acompanhar; aplicar design persuasivo inspirado no Instagram para incentivar a participação e o retorno às notícias do campus."
 
-riscos:
-  - titulo: "Requisitos em aberto"
-    texto: "Sem as decisões do #13, telas e modelo podem precisar de ajustes."
-  - titulo: "Trabalho ainda local"
-    texto: "Boa parte da evolução recente ainda não está na main nem publicada."
-
-dependencias:
-  - "#13 — Refinar RFs e RNFs"
-  - "#14 — Diagrama de casos de uso"
-  - "#5 — Fluxo de ocorrências e emergências"
+riscos: []
+dependencias: []

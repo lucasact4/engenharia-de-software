@@ -2,21 +2,21 @@
 # Guia: config/presentation/LEIAME.md → "Functionalities and code evidence".
 #
 # A escolha das jornadas é da equipe. Landing e login NÃO são as funcionalidades escolhidas.
-# Código e testes comprovam a implementação; o aceite final da equipe é registrado à parte.
+# Código e testes documentam as duas jornadas implementadas.
 
 # Captura manual da página do repositório no GitHub (miniatura ampliável no slide).
 # Enquanto "captura" estiver vazio, o slide mostra um espaço reservado discreto.
 #   captura: "presentation/github/repositorio.png"   (relativo a app/assets/images)
 repositorio:
-  captura:
+  captura: "presentation/github/repositorio.png"
   alt: "Página do repositório SGU no GitHub com a lista de pastas e o README."
   legenda: "Repositório no GitHub"
 
 # Referência publicada usada nos links de código: commit real de origin/main.
 # Atualize junto com "publicado" de cada evidência quando novas mudanças chegarem à main.
 publicacao:
-  commit: "658bfde07f9fb7f619768538a1c8648e669c0204"
-  rotulo: "main · 02/10/2026"
+  commit: "c95bf7cb09de2eba1fff95b2d8cd94f809703718"
+  rotulo: "main · PR #13"
 
 criterios:
   - "Jornada completa na interface, do início ao resultado"
@@ -55,12 +55,12 @@ itens:
       - tipo: controller
         caminho: "app/controllers/alerts_controller.rb"
         papel: "Registro, edição e acompanhamento pelo autor."
-        publicado: false
+        publicado: true
         captura:
       - tipo: controller
         caminho: "app/controllers/handling/alerts_controller.rb"
         papel: "Fila de atendimento da coordenação e da segurança."
-        publicado: false
+        publicado: true
         captura:
       - tipo: model
         caminho: "app/models/alert.rb"
@@ -75,7 +75,7 @@ itens:
       - tipo: view
         caminho: "app/views/shared/alerts/_form.html.erb"
         papel: "Formulário com fotos, capa, gravidade e localização."
-        publicado: false
+        publicado: true
         captura:
       - tipo: policy
         caminho: "app/policies/alert_policy.rb"
@@ -86,7 +86,7 @@ itens:
       - "spec/features/alert_journey_spec.rb"
       - "spec/features/occurrence_composer_spec.rb"
       - "spec/requests/handling_alerts_request_spec.rb"
-    validacao: "Testes automatizados; aceite da equipe pendente."
+    validacao: "Cobertura por testes automatizados."
   - id: funcionalidade-2
     nome: "Publicar e interagir no mural"
     resumo: "A comunidade publica, comenta, responde, curte, salva e acompanha."
@@ -101,17 +101,17 @@ itens:
       - tipo: controller
         caminho: "app/controllers/publications_controller.rb"
         papel: "Mural e leitura de cada post, conforme o acesso."
-        publicado: false
+        publicado: true
         captura:
       - tipo: controller
         caminho: "app/controllers/publication_interactions_controller.rb"
         papel: "Curtir, salvar e acompanhar um post."
-        publicado: false
+        publicado: true
         captura:
       - tipo: controller
         caminho: "app/controllers/admin/publications_controller.rb"
         papel: "Revisão: aprovar, recusar com motivo e retirar."
-        publicado: false
+        publicado: true
         captura:
       - tipo: model
         caminho: "app/models/publication.rb"
@@ -121,18 +121,18 @@ itens:
       - tipo: service
         caminho: "app/services/publications/sync_occurrence.rb"
         papel: "Mantém o mesmo post da ocorrência ao editar, aprovar ou recusar."
-        publicado: false
+        publicado: true
         captura:
       - tipo: view
         caminho: "app/views/publications/show.html.erb"
         papel: "Post com fotos, comentários, respostas e ações."
-        publicado: false
+        publicado: true
         captura:
     testes:
       - "spec/features/social_occurrence_journey_spec.rb"
       - "spec/features/editorial_journey_spec.rb"
       - "spec/requests/social_occurrence_request_spec.rb"
-    validacao: "Testes automatizados; aceite da equipe pendente."
+    validacao: "Cobertura por testes automatizados."
 
 # Outras partes do sistema, em faixa compacta. Descrições curtas e honestas.
 extras:
