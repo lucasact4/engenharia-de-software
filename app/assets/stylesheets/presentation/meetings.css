@@ -1,29 +1,33 @@
-/* Evidências de reuniões: as imagens originais ficam disponíveis na ampliação. */
-.apr-meeting {
-  display: grid;
-  grid-template-columns: minmax(0, .9fr) minmax(0, 1.6fr);
-  gap: 1.5em;
-  align-items: start;
-}
-.apr-meeting__summary { display: grid; gap: .45em; }
+/* Tela: imagem em destaque; impressão: galeria completa de evidências. */
+.apr-meeting { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.65fr); gap: 1.5em; align-items: start; }
+.apr-meeting__summary { display: grid; gap: .5em; }
 .apr-meeting__date { color: var(--apr-link); font-family: var(--apr-mono); font-weight: 800; font-size: 1.1em; }
 .apr-meeting__time { color: var(--apr-ink-3); font-size: .8em; }
 .apr-meeting__title { font-size: 1.05em; line-height: 1.3; }
-.apr-meeting__agenda { display: grid; gap: .4em; font-size: .85em; color: var(--apr-ink-2); }
+.apr-meeting__agenda { display: grid; gap: .55em; font-size: .85em; color: var(--apr-ink-2); }
 .apr-meeting__agenda li { padding-left: .7em; border-left: 2px solid var(--apr-gold); }
-.apr-meeting__people { font-size: .78em; color: var(--apr-ink-2); }
-.apr-meeting__note { padding: .65em .8em; background: var(--apr-g-50); border-left: 3px solid var(--apr-gold); border-radius: 0 8px 8px 0; font-size: .73em; color: var(--apr-ink-2); }
-.apr-meeting__gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8em; }
-.apr-figure--meeting .apr-figure__img { display: block; width: 100%; height: 10em; object-fit: contain; background: #111; }
-.apr-figure--meeting .apr-figure__caption { font-size: .72em; }
-@media (max-width: 700px) {
+.apr-meeting__gallery { display: grid; gap: .55em; min-width: 0; }
+.apr-figure--meeting-featured .apr-figure__img { width: 100%; height: min(21em, 43vh); object-fit: contain; background: #111; }
+.apr-figure--meeting-featured .apr-figure__caption { font-size: .75em; }
+.apr-meeting__strip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .5em; }
+.apr-meeting__thumbnails { display: flex; gap: .5em; overflow-x: auto; padding: .25em; min-width: 0; overscroll-behavior-x: contain; }
+.apr-meeting__thumb { margin: 0; flex: 1 0 4.5em; min-width: 0; }
+.apr-meeting__thumbnail { display: block; padding: .15em; border: 2px solid transparent; border-radius: .6em; background: var(--apr-surface); }
+.apr-meeting__thumbnail.is-selected { border-color: var(--apr-link); background: var(--apr-g-100); }
+.apr-meeting__thumbnail:focus-visible { outline: 3px solid var(--apr-gold); outline-offset: 2px; }
+.apr-meeting__thumbnail img { display: block; width: 100%; height: 3.8em; object-fit: contain; border-radius: .35em; background: #111; }
+.apr-meeting__arrow { color: var(--apr-link); background: var(--apr-surface); border: 1px solid var(--apr-line); }
+.apr-meeting__position { color: var(--apr-ink-3); font-size: .7em; text-align: center; }
+.apr-meeting__print { display: none; }
+@media screen and (max-width: 700px) {
   .apr-meeting { grid-template-columns: minmax(0, 1fr); gap: 1em; }
-  .apr-meeting__gallery { grid-template-columns: minmax(0, 1fr); }
-  .apr-figure--meeting .apr-figure__img { height: auto; max-height: 18em; }
+  .apr-figure--meeting-featured .apr-figure__img { height: auto; max-height: 18em; }
 }
 @media print {
-  .apr-meeting { grid-template-columns: minmax(0, .9fr) minmax(0, 1.6fr); gap: 6mm; break-inside: avoid; }
-  .apr-meeting__gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3mm; }
-  .apr-figure--meeting .apr-figure__zoom { outline: none !important; }
-  .apr-figure--meeting .apr-figure__img { height: 39mm; max-height: 39mm; }
+  .apr-meeting { grid-template-columns: minmax(0, .85fr) minmax(0, 1.65fr); gap: 6mm; break-inside: avoid; }
+  .apr-meeting__featured, .apr-meeting__strip, .apr-meeting__position { display: none; }
+  .apr-meeting__print { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3mm; }
+  .apr-figure--meeting .apr-figure__zoom { outline: none; }
+  .apr-figure--meeting .apr-figure__img { width: 100%; height: 45mm; object-fit: contain; background: #111; }
+  .apr-figure--meeting .apr-figure__caption { font-size: .72em; }
 }

@@ -257,3 +257,10 @@
     max-height: 40mm;
   }
 }
+
+.apr-figure--lessons { justify-self: center; width: min(100%, 13em); }
+.apr-figure--lessons .apr-figure__zoom { background: #fff; }
+.apr-figure--lessons .apr-figure__img { max-height: min(26em, 56vh); width: 100%; object-fit: contain; }
+@media print {
+  .apr-figure--lessons .apr-figure__img { max-height: 128mm; }
+}

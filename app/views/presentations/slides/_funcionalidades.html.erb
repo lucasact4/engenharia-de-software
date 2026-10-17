@@ -29,7 +29,6 @@
         <div class="apr-journey__foot">
           <p class="apr-journey__status">
             <%= presentation_state(item[:estado]) %>
-            <span><%= item[:validacao].presence || "Validação da equipe pendente." %></span>
           </p>
           <% if item[:evidencias].present? %>
             <%= render "presentations/shared/dialog_button", target: dialog_id, label: "Ver implementação", icon: "code" %>
@@ -37,7 +36,10 @@
         </div>
         <% if item[:evidencias].present? %>
           <p class="apr-print-only apr-journey__print">
-            <strong>Código:</strong> <%= item[:evidencias].map { |evidence| File.basename(evidence[:caminho]) }.join(" · ") %>
+            <strong>Código:</strong>
+            <% item[:evidencias].each_with_index do |evidence, evidence_index| %>
+              <%= " · " if evidence_index.positive? %><%= presentation_link(File.basename(evidence[:caminho]), presentation.evidence_url(evidence)) %>
+            <% end %>
             <br><strong>Testes:</strong> <%= Array(item[:testes]).map { |path| File.basename(path) }.join(" · ") %>
           </p>
           <%= render "presentations/shared/evidence_dialog", presentation: presentation, item: item, number: number, id: dialog_id %>
@@ -86,7 +88,6 @@
         <ul class="apr-criteria__list" role="list">
           <% f[:criterios].each do |criterio| %><li><%= criterio %></li><% end %>
         </ul>
-        <p class="apr-sheet__note">Os testes comprovam a implementação; o aceite final continua sendo da equipe.</p>
       <% end %>
     <% end %>
   <% end %>

@@ -1,52 +1,28 @@
 <% plan = presentation.planejamento %>
 <%= render "presentations/shared/heading", slide: slide,
-      kicker: "até a próxima entrega",
-      title: "Quatro prioridades, na ordem em que dependem umas das outras" %>
+      kicker: "até a próxima entrega", title: "O mural já funciona. O próximo passo é facilitar a participação." %>
 
-<div class="apr-next apr-fit">
-  <%= presentation_group slide, %w[marco passos], class: "apr-next__plan" do %>
-    <%= presentation_item slide, "marco", class: "apr-milestone" do %>
-      <p class="apr-label">Marco demonstrável</p>
-      <% if plan.dig(:marco, :titulo).present? %>
-        <p class="apr-milestone__title"><%= plan.dig(:marco, :titulo) %></p>
-        <p class="apr-milestone__text"><%= plan.dig(:marco, :descricao) %></p>
-      <% else %>
-        <p class="apr-milestone__title apr-milestone__title--empty">A definir com a equipe</p>
-      <% end %>
-      <%= presentation_state(plan.dig(:marco, :estado)) %>
-    <% end %>
-
-    <%= presentation_item slide, "passos", :ol, class: "apr-steps", role: "list" do %>
-      <% plan[:proximos_passos].each_with_index do |passo, index| %>
-        <li>
-          <span class="apr-steps__num" aria-hidden="true"><%= index + 1 %></span>
-          <div>
-            <p class="apr-steps__title"><%= passo[:titulo] %><% if passo[:card] %> <span class="apr-tag">#<%= passo[:card] %></span><% end %></p>
-            <p class="apr-steps__text"><%= passo[:texto] %></p>
-            <% if passo[:depende_de].present? %><p class="apr-steps__dep">Depende de: <%= passo[:depende_de] %></p><% end %>
-          </div>
-        </li>
-      <% end %>
+<div class="apr-next apr-next--showcase">
+  <%= presentation_item slide, "marco", :section, class: "apr-next__showcase apr-milestone-card", aria: { label: "Marco demonstrável" } do %>
+    <p class="apr-milestone-card__eyebrow"><%= render "presentations/shared/icon", name: "check" %> Já funciona</p>
+    <p class="apr-label">Marco demonstrável</p>
+    <h3 class="apr-milestone__title"><%= plan.dig(:marco, :titulo) %></h3>
+    <p class="apr-milestone__text"><%= plan.dig(:marco, :descricao) %></p>
+    <% capture = plan.dig(:marco, :captura) %>
+    <% if capture.present? %>
+      <%= render "presentations/shared/figure", image: capture[:imagem], alt: capture[:alt], variants: presentation.capture_variants(capture), caption: "Post no mural do campus", modifier: "apr-figure--social-post" %>
     <% end %>
   <% end %>
-
-  <%= presentation_group slide, %w[riscos dependencias], class: "apr-next__side" do %>
-    <%= presentation_item slide, "riscos", class: "apr-next__block" do %>
-      <p class="apr-label">Riscos</p>
-      <ul class="apr-risks" role="list">
-        <% plan[:riscos].each do |risco| %>
-          <li><strong><%= risco[:titulo] %>.</strong> <%= risco[:texto] %></li>
-        <% end %>
-      </ul>
-    <% end %>
-    <%= presentation_item slide, "dependencias", class: "apr-next__block" do %>
-      <p class="apr-label">Dependências</p>
-      <ul class="apr-chips" role="list">
-        <% plan[:dependencias].each do |dep| %>
-          <li class="apr-chip"><%= dep %></li>
-        <% end %>
-      </ul>
+  <%= presentation_item slide, "passos", :ol, class: "apr-steps apr-next__priorities", role: "list" do %>
+    <% plan[:proximos_passos].each_with_index do |passo, index| %>
+      <li>
+        <span class="apr-steps__num" aria-hidden="true"><%= index + 1 %></span>
+        <div>
+          <h3 class="apr-steps__title"><%= passo[:titulo] %></h3>
+          <p class="apr-steps__text"><%= passo[:texto] %></p>
+        </div>
+      </li>
     <% end %>
   <% end %>
 </div>
-<%= presentation_update_note("planejamento.yml", "marco, passos, riscos e dependências.") %>
+<%= presentation_update_note("planejamento.yml", "marco visual e próximos passos.") %>

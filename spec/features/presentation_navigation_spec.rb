@@ -160,7 +160,7 @@ RSpec.describe "Presentation navigation", type: :feature, js: true do
       expect(printed_pages).to eq(2)
     end
 
-    it "updates the estimate, the appendix labels and the printout" do
+    it "updates appendix labels and printout without per-slide estimates" do
       profile.update!(selections: profile.selections.merge("checklist" => true, "conflitos" => true))
       visit presentation_path
       expect(printed_pages).to eq(profile.selection(presentation).visible_slides.size)
@@ -168,8 +168,11 @@ RSpec.describe "Presentation navigation", type: :feature, js: true do
       open_customize
       toggle("checklist")
       toggle("funcionalidades")
-      expect(page.find(".apr-custom__estimate")).to have_text("em #{main_count - 1} slides principais")
+      expect(page).to have_no_css(".apr-custom__estimate", visible: :all)
+      expect(page).to have_no_css(".apr-custom__time", visible: :all)
       press(:escape)
+      expect(slide_counter).to have_text("/ #{main_count - 1}")
+      expect(page).to have_css(".apr-timer__display", text: "07:00")
 
       click_button "Índice"
       expect(page.find(".apr-index a[href='#s-conflitos'] .apr-slide-list__label")).to have_text("A")

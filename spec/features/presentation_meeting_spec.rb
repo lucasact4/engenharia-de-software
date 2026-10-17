@@ -20,10 +20,12 @@ RSpec.describe "Presentation meeting evidence", type: :feature, js: true do
     create(:presentation_profile, :active, selections: choices)
     visit "#{presentation_path}#s-reunioes"
     expect(page).to have_css("#s-reunioes.is-active")
-    expect(page).to have_css(".apr-figure--meeting img", count: 4)
+    expect(page).to have_css(".apr-meeting__thumbnail", count: 4)
+    expect(page).to have_css(".apr-meeting__featured img[src*='03-rails']")
+    expect(page).to have_no_content("Participantes:")
     expect(page).to have_content("18h20 (aproximadamente)")
     capture("meeting-desktop")
-    page.all("#s-reunioes .apr-figure__zoom").each do |trigger|
+    page.all("#s-reunioes .apr-meeting__thumbnail").each do |trigger|
       trigger.click
       expect(page).to have_css(".apr-lightbox[open] img") { |image| image["src"].end_with?(trigger["data-zoom-src"]) }
       page.driver.browser.action.send_keys(:escape).perform

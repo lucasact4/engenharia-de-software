@@ -1,6 +1,6 @@
 <%#
   Figura ampliável. Com JavaScript, o botão abre o lightbox; sem JavaScript, aparece o link
-  "Abrir imagem" (oculto na impressão, para o PDF não levar links para o servidor local).
+  "Abrir imagem" usa o endereço público para funcionar também no PDF.
   locals: image, alt, caption, zoom_image (opcional), state (opcional), tag_text (opcional), modifier (opcional)
           variants (opcional): versões por tema, de Presentation#capture_variants. Cada versão fica
           no HTML e o CSS mostra a do tema ativo, na miniatura e na ampliação.
@@ -25,7 +25,7 @@
     <% if local_assigns[:state].present? %><%= presentation_state(state) %><% end %>
     <% if local_assigns[:tag_text].present? %><span class="apr-tag apr-tag--warn"><%= tag_text %></span><% end %>
     <% variants.each do |variant| %>
-      <a class="apr-figure__open apr-more <%= "apr-theme-only--#{variant[:theme]}" unless variant[:theme] == "any" %>" href="<%= image_path(variant[:zoom]) %>">Abrir imagem</a>
+      <a class="apr-figure__open apr-more <%= "apr-theme-only--#{variant[:theme]}" unless variant[:theme] == "any" %>" href="<%= presentation_public_asset_url(variant[:zoom]) %>" target="_blank" rel="noopener noreferrer">Abrir imagem<span class="apr-sr-only"> (abre em nova aba)</span></a>
     <% end %>
   </figcaption>
 </figure>

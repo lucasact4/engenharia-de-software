@@ -61,7 +61,7 @@ dimensoes:
     pergunta: "Quem pode ver?"
     exemplos: ["Público", "Interno", "Privado"]
     estado: aguardando_decisao
-    nota: "Regra implementada: post interno para autenticados; externo direto para verificados ou após aprovação; pânico e detalhes operacionais restritos. Aceite da equipe pendente."
+    nota: "Regra implementada: post interno para autenticados; externo direto para verificados ou após aprovação; pânico e detalhes operacionais restritos."
 
 regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgente pode ser privada, e uma ocorrência resolvida pode continuar pública."
 

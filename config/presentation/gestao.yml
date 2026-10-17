@@ -37,7 +37,7 @@ ambientes:
 
 praticas:
   - titulo: "Branch por card"
-    texto: "Branches por atividade; melhorias atuais em feat/alertas-crud-social, ainda em revisão local."
+    texto: "Branches por atividade; ocorrências e apresentação integradas à main pelo PR #13."
   - titulo: "Integração contínua"
     texto: "RSpec, RuboCop, Brakeman e auditoria do Importmap a cada pull request."
   - titulo: "Dependências monitoradas"
@@ -64,14 +64,13 @@ reunioes:
       - "Alisson Honorato"
       - "Guilherme Santiago"
       - "José de Lemos"
-    participantes_nota: "Nomes exibidos nas capturas; alguns sobrenomes estão truncados."
     pauta:
       - "Bugs ao iniciar o projeto e diagnóstico do ambiente de desenvolvimento."
       - "Funcionamento do Rails, organização MVC e práticas de código."
       - "Tecnologias utilizadas e demonstração do painel e da administração."
       - "Evolução do projeto e oportunidades de melhoria."
     decisoes: []
-    nota: "As capturas registram a versão demonstrada na reunião, anterior às melhorias atuais. Encaminhamentos e responsáveis ainda precisam ser formalizados."
+    evidencia_principal: "presentation/reunioes/2026-10-03/03-rails.png"
     evidencias:
       - imagem: "presentation/reunioes/2026-10-03/01-painel.png"
         legenda: "18h21 · Painel e ocorrência registrada"

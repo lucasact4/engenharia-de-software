@@ -1,48 +1,48 @@
-# Evolução do produto no período. Cada afirmação precisa de evidência verificável
-# (commit publicado, arquivo do repositório ou captura).
-#
-# commit:     SHA completo de um commit publicado em origin/main (gera link para o GitHub).
-#             Deixe vazio para trabalho ainda não publicado.
-# referencia: texto exibido no lugar do link quando não há commit publicado (ex.: "alterações locais").
-# periodo:    rótulo opcional quando o marco cobre mais de um dia; "data" continua sendo o início.
-
-# Data da primeira entrega (prazo do Classroom: 23/09/2026, 19h30). Delimita "desde a última entrega"
-# no status report: entram os marcos posteriores a esta data.
+# Marcos em ordem cronológica; commits são referências internas.
 data_primeira_entrega: 2026-09-23
 
 marcos:
-  - data: 2026-08-19
-    titulo: "Base Rails implantada"
-    texto: "Autenticação, área administrativa, autorização, testes e CI herdados de uma base Rails reutilizada."
-    commit: "d4a61c75c58f4908808975023617446fc5574602"
   - data: 2026-09-14
-    titulo: "Landing pública e /entrar"
-    texto: "Página inicial pública, tela de login em português e rota /entrar."
+    titulo: "Landing e identidade SGU"
+    texto: "Primeira landing pública e tela de entrada."
     commit: "3e2735de87dbed43bfa9f8d414414184279ad01a"
-  - data: 2026-09-27
-    titulo: "Identidade SGU UFRPE"
-    texto: "Landing e login com textos, cores e traduções do SGU."
-    commit: "da70a47b97bd60b2f74046175efd633e9b33b91e"
+  - data: 2026-09-23
+    titulo: "Primeira entrega"
+    texto: "Requisitos, tecnologias e planejamento inicial."
+  - data: 2026-09-30
+    titulo: "Casos de uso atualizados"
+    texto: "Diagrama revisado para representar as jornadas."
+    estimada: true
+    nota_data: "Data estimada para organizar o marco; o dia da atualização não foi registrado."
+  - data: 2026-10-01
+    titulo: "Apresentação na web"
+    texto: "Primeira versão dos slides navegáveis."
+    commit: "ff7a567"
   - data: 2026-10-02
-    titulo: "Modelo de dados e apresentação"
-    texto: "Migrações, regras e testes das ocorrências (PR #11); perfis da apresentação (PR #12)."
-    commit: "658bfde07f9fb7f619768538a1c8648e669c0204"
+    titulo: "Modelo de dados e migração"
+    texto: "Banco, validações e regras das ocorrências."
+    commit: "025fb8b"
+  - data: 2026-10-02
+    titulo: "Modelo conceitual"
+    texto: "Conceitos e relações do projeto."
+    commit: "313828a"
+  - data: 2026-10-03
+    titulo: "Ocorrências, atendimento e mural"
+    texto: "Primeira jornada operacional; ampliada no dia 04."
+    commit: "6b9b1df"
   - data: 2026-10-03
     titulo: "Reunião de alinhamento"
-    texto: "Demonstração do sistema, código Rails e diagnóstico do ambiente, por volta das 18h20."
-    commit:
-    referencia: "registro da reunião · gestao.yml"
-  - data: 2026-10-03
-    periodo: "03–04/10/2026"
-    titulo: "Ocorrências, atendimento e mural"
-    texto: "Registro com fotos e mapa, atendimento, interações, selo e aprovação do mesmo post."
-    commit:
-    referencia: "commits locais e alterações não publicadas"
+    texto: "Demonstração e revisão técnica com a equipe."
   - data: 2026-10-04
-    titulo: "Retrospectiva, marca e apresentação"
-    texto: "Quadro da retrospectiva anexado, nova marca SGU e slides revisados."
-    commit:
-    referencia: "alterações locais desta revisão"
+    titulo: "Retrospectiva e planejamento"
+    texto: "O que gostamos, aprendemos e vamos melhorar."
+  - data: 2026-10-04
+    titulo: "Marca e logotipo"
+    texto: "Identidade própria para o SGU."
+    commit: "8966c1c"
+  - data: 2026-10-04
+    titulo: "Segunda entrega na web"
+    texto: "Apresentação revisada, evidências e interação."
 
 capacidades:
   - nome: "Landing, login e tema"
@@ -86,5 +86,4 @@ capacidades:
     nota: "Cadastrar locais oficiais e validar jornadas, requisitos, acessibilidade e deploy."
     evidencia: "config/presentation/planejamento.yml"
 
-observacoes:
-  - "Marcos sem link de commit ainda não estão na main. Não houve deploy; testes automatizados não substituem o aceite da equipe."
+observacoes: []

@@ -1,4 +1,4 @@
-/* O tema de tela não interfere nas cores e no encaixe dos slides impressos. */
+/* Paleta e capturas da apresentação por tema. */
 @media screen {
   :root:not([data-theme="light"]) {
     --apr-paper: var(--canvas); --apr-surface: var(--surface);
@@ -7,19 +7,18 @@
     --apr-g-100: var(--surface-muted); --apr-g-50: var(--surface-muted);
     --apr-line: var(--line); --apr-line-strong: var(--line); --apr-amber: var(--warning-ink);
   }
-  :root:not([data-theme="light"]) .apr-state--aguardando-evidencia {
-    background: var(--surface); color: var(--muted); border-color: var(--line);
-  }
-}
-/* Versões por tema (capturas do conceito visual): na tela, só a do tema ativo; no papel, a clara. */
-@media screen {
-  :root:not([data-theme="light"]) .apr-theme-only--light,
-  :root[data-theme="light"] .apr-theme-only--dark {
-    display: none;
-  }
-}
-@media print {
-  .apr-body .apr-theme-only--dark {
-    display: none;
-  }
+  :root:not([data-theme="light"]) .apr-state--aguardando-evidencia { background: var(--surface); color: var(--muted); border-color: var(--line); }
+  :root:not([data-theme="light"]) .apr-theme-only--light, :root[data-theme="light"] .apr-theme-only--dark { display: none; }
+  .apr-slide--dark { background: radial-gradient(ellipse at 85% 12%, rgba(39,125,110,.12), transparent 46%), var(--canvas); color: var(--apr-ink); }
+  .apr-slide--dark .apr-kicker, .apr-slide--dark .apr-subtitle { color: var(--apr-link); }
+  .apr-slide--dark .apr-lead, .apr-slide--dark .apr-source, .apr-slide--dark .apr-cover__lead, .apr-slide--dark .apr-cover__note, .apr-slide--dark .apr-pains__text, .apr-slide--dark .apr-flow__text, .apr-slide--dark .apr-steps__text, .apr-slide--dark .apr-milestone__text, .apr-slide--dark .apr-milestone__title--empty, .apr-slide--dark .apr-end__lead, .apr-slide--dark .apr-end__note { color: var(--apr-ink-2); }
+  .apr-slide--dark .apr-label, .apr-slide--dark .apr-cover__meta dt, .apr-slide--dark .apr-cover__team-label, .apr-slide--dark .apr-pains__num, .apr-slide--dark .apr-end__title span, .apr-slide--dark .apr-end .apr-label { color: var(--apr-link); }
+  .apr-slide--dark .apr-cover__team, .apr-slide--dark .apr-cover__eyebrow, .apr-slide--dark .apr-end__eyebrow, .apr-slide--dark .apr-milestone, .apr-slide--dark .apr-flow__step { border-color: var(--apr-line-strong); background: var(--apr-surface); color: var(--apr-ink); }
+  .apr-slide--dark .apr-cover__meta, .apr-slide--dark .apr-end__team { border-color: var(--apr-line-strong); }
+  .apr-slide--dark .apr-requirement, .apr-slide--dark .apr-tag { background: var(--apr-g-100); color: var(--apr-link); border-color: var(--apr-line-strong); }
+  .apr-slide--dark .apr-steps__num { color: #fff; }
+  .apr-slide--dark .apr-btn--outline { color: var(--apr-link); border-color: var(--apr-line-strong); }
+  .apr-slide--dark .apr-state--aguardando-evidencia { color: var(--apr-ink-2); border-color: var(--apr-line-strong); }
+  :root[data-theme="light"] .apr-cover__map { color: rgba(21,60,54,.13); }
+  :root[data-theme="light"] .apr-cover__code { fill: rgba(21,60,54,.26); }
 }

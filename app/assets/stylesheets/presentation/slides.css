@@ -42,8 +42,10 @@
   padding-top: 0.5em;
 }
 
-.apr-cover__mark {
-  height: 3.6em;
+.apr-cover__logo {
+  height: clamp(5rem, 9vh, 7em);
+  max-width: 100%;
+  margin-bottom: .2em;
 }
 
 .apr-cover__eyebrow {

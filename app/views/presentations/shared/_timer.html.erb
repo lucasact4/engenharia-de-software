@@ -1,0 +1,15 @@
+<div class="apr-timer" data-controller="presentation-timer" data-presentation-timer-duration-value="420" aria-label="Contador da apresentação">
+  <button type="button" class="apr-nav__btn" data-action="presentation-timer#toggle" data-presentation-timer-target="toggle" aria-label="Iniciar contador"><%= render "presentations/shared/icon", name: "play" %></button>
+  <button type="button" class="apr-nav__btn" data-action="presentation-timer#reset" aria-label="Resetar contador"><%= render "presentations/shared/icon", name: "rotate" %></button>
+  <button type="button" class="apr-nav__btn" data-action="presentation-timer#edit" aria-label="Modificar tempo" aria-haspopup="dialog"><%= render "presentations/shared/icon", name: "clock" %></button>
+  <output class="apr-timer__display" data-presentation-timer-target="display" aria-label="Tempo restante" role="timer" aria-live="off">07:00</output>
+  <span class="apr-sr-only" data-presentation-timer-target="announcer" role="status"></span>
+  <dialog class="apr-dialog apr-timer__editor" data-presentation-timer-target="editor" aria-labelledby="apr-timer-heading" data-action="click->presentation#closeOnBackdrop">
+    <form data-action="submit->presentation-timer#save">
+      <h2 id="apr-timer-heading">Tempo da apresentação</h2>
+      <label for="apr-timer-minutes">Minutos <input id="apr-timer-minutes" type="number" min="1" max="120" step="1" required value="7" data-presentation-timer-target="minutes"></label>
+      <p>Ao aplicar, o contador volta ao início e fica pausado.</p>
+      <div class="apr-timer__editor-actions"><button type="button" class="apr-btn apr-btn--ghost" data-action="presentation-timer#close">Cancelar</button><button type="submit" class="apr-btn apr-btn--primary">Aplicar tempo</button></div>
+    </form>
+  </dialog>
+</div>

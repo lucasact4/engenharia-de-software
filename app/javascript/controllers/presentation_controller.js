@@ -76,6 +76,7 @@ export default class extends Controller {
     if (index < 0 || index >= this.slideTargets.length) return
     if (!this.isVisible(index)) index = this.nearestVisible(index)
 
+    if (this.isAppendix(index) && !this.isAppendix(this.index)) this.mainReturnIndex = this.index
     this.element.dataset.direction = index >= this.index ? "forward" : "backward"
     this.index = index
 
@@ -147,6 +148,9 @@ export default class extends Controller {
     if (this.hasProgressTarget) this.progressTarget.style.width = `${((position + 1) / group.length) * 100}%`
     if (this.hasPrevButtonTarget) this.prevButtonTarget.setAttribute("aria-disabled", String(position === 0))
     if (this.hasNextButtonTarget) this.nextButtonTarget.setAttribute("aria-disabled", String(position === group.length - 1))
+
+    const returnSlide = this.slideTargets[this.appendixReturnIndex()]
+    this.element.querySelectorAll(".apr-appendix-return a").forEach((link) => { link.setAttribute("href", `#${returnSlide.id}`) })
 
     this.indexLinkTargets.forEach((link) => {
       if (link.dataset.slideId === slide.id) link.setAttribute("aria-current", "true")
@@ -304,7 +308,23 @@ export default class extends Controller {
 
   // Links internos (#s-...) e índice
 
+  appendixReturnIndex() {
+    const saved = this.mainReturnIndex
+    if (saved !== undefined && this.isVisible(saved) && !this.isAppendix(saved)) return saved
+    const fallback = this.slideTargets.findIndex((slide) => slide.dataset.slideId === "modelo-conceitual" && !slide.hidden)
+    return fallback >= 0 ? fallback : this.firstAvailable()
+  }
+
+  returnToMain(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const target = this.appendixReturnIndex()
+    this.show(target, { focus: true })
+    if (!this.presenting) this.slideTargets[target].scrollIntoView({ block: "start" })
+  }
+
   followSlideLink(event) {
+    if (event.defaultPrevented) return
     const link = event.target.closest?.('a[href^="#s-"]')
     if (!link || !this.element.contains(link)) return
 
@@ -451,7 +471,7 @@ export default class extends Controller {
 
   touchStart(event) {
     const touch = event.changedTouches[0]
-    const scrollsSideways = event.target.closest?.(".apr-table-wrap, .apr-data-viewport, .apr-lightbox")
+    const scrollsSideways = event.target.closest?.(".apr-table-wrap, .apr-data-viewport, .apr-lightbox, .apr-meeting__thumbnails")
     this.touchOrigin = scrollsSideways ? null : { x: touch.clientX, y: touch.clientY }
   }
 
@@ -533,6 +553,12 @@ dialogClosed() {
         if (thumbnail.dataset.theme !== "any") image.className = `apr-theme-only--${thumbnail.dataset.theme}`
         return image
       })
+      if (media.length === 0) {
+        const image = document.createElement("img")
+        image.src = trigger.dataset.zoomSrc
+        image.alt = trigger.getAttribute("aria-label") || "Imagem ampliada"
+        media = [image]
+      }
     } else if (figure?.querySelector(".apr-data-viewport")) {
       media = figure.querySelector(".apr-data-viewport").cloneNode(true)
       media.classList.add("apr-data-viewport--zoomed")

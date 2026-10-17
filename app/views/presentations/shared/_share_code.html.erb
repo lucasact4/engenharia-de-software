@@ -1,0 +1,7 @@
+<figure class="apr-access">
+  <button type="button" class="apr-access__code" data-action="presentation#zoom" data-zoom-src="<%= image_path(@presentation.entrega.dig(:links, :qr_code)) %>" aria-label="Ampliar QR Code da apresentação">
+    <%= image_tag @presentation.entrega.dig(:links, :qr_code), alt: "QR Code para acessar esta apresentação", data: { theme: "any", zoom_src: image_path(@presentation.entrega.dig(:links, :qr_code)) } %>
+  </button>
+  <figcaption class="apr-figure__title">Acompanhe no celular</figcaption>
+  <%= link_to "Abrir apresentação", @presentation.entrega.dig(:links, :apresentacao), class: "apr-access__link", target: "_blank", rel: "noopener noreferrer" %>
+</figure>

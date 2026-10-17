@@ -1,59 +1,21 @@
 <% ev = presentation.evolucao %>
-<% desde = ev[:data_primeira_entrega] %>
-<% marcos = desde.present? ? ev[:marcos].select { |marco| marco[:data] > desde } : [] %>
-<%= render "presentations/shared/heading", slide: slide,
-      kicker: "o que foi feito no período",
-      title: ("Avanços depois de #{presentation_date(desde)}" if desde.present?) || "Avanços desde a última entrega" %>
-
-<%= presentation_item slide, "linha-do-tempo", :ol, class: "apr-timeline", role: "list", style: "--apr-timeline-count: #{[ marcos.size, 1 ].max}" do %>
-  <% if marcos.empty? %>
-    <li class="apr-timeline__item apr-timeline__item--open">
-      <p class="apr-inline-pending"><%= presentation_state(:aguardando_evidencia) %> Pendente: informar a data da última entrega e registrar os avanços posteriores com evidências em <code>evolucao.yml</code>.</p>
-    </li>
-  <% end %>
-  <% marcos.each do |marco| %>
-    <li class="apr-timeline__item <%= 'apr-timeline__item--open' if marco[:commit].blank? %>">
-      <p class="apr-timeline__date"><time datetime="<%= marco[:data] %>"><%= marco[:periodo].presence || presentation_date(marco[:data]) %></time></p>
-      <p class="apr-timeline__title"><%= marco[:titulo] %></p>
-      <p class="apr-timeline__text"><%= marco[:texto] %></p>
-      <p class="apr-timeline__ref">
-        <% if marco[:commit].present? %>
-          <%= presentation_commit_link(marco[:commit]) %>
-        <% else %>
-          <span class="apr-code apr-code--local"><%= marco[:referencia].presence || (marco[:evidencia].present? ? "evidência no projeto · revisão local" : "sem referência de commit") %></span>
-        <% end %>
-      </p>
-    </li>
-  <% end %>
-<% end %>
-
-<% columns = [
-  [ "Pronto", %w[implementado] ],
-  [ "Em parte", %w[parcial] ],
-  [ "A fazer ou decidir", %w[planejado aguardando_decisao aguardando_evidencia] ]
-] %>
-<%= presentation_item slide, "capacidades", class: "apr-board" do %>
-  <% columns.each do |titulo, estados| %>
-    <% itens = ev[:capacidades].select { |c| estados.include?(c[:estado]) } %>
-    <section class="apr-board__col apr-board__col--<%= estados.first.dasherize %>" aria-label="<%= titulo %>">
-      <h3 class="apr-board__title"><%= titulo %> <span class="apr-board__count"><%= itens.size %></span></h3>
-      <ul class="apr-board__list" role="list">
-        <% itens.each do |item| %>
-          <li class="apr-board__item">
-            <p class="apr-board__name">
-              <%= item[:nome] %>
-              <span class="apr-origin apr-origin--<%= item[:origem] %>"><%= item[:origem] == "base" ? "herdado da base" : "SGU" %></span>
-              <% if estados.size > 1 %><%= presentation_state(item[:estado], short: true) %><% end %>
-            </p>
-            <p class="apr-board__note"><%= item[:nota] %></p>
+<%= render "presentations/shared/heading", slide: slide, kicker: "evolução do projeto", title: "Da primeira landing à segunda entrega" %>
+<%= presentation_item slide, "linha-do-tempo", class: "apr-history", aria: { label: "Linha do tempo do projeto" } do %>
+  <% ev[:marcos].each_slice(6).with_index do |marcos, row| %>
+    <section class="apr-history__band" aria-label="Etapa <%= row + 1 %>">
+      <p class="apr-history__stage"><%= row.zero? ? "Base, primeira entrega e modelagem" : "Produto, equipe e segunda entrega" %> <span aria-hidden="true">→</span></p>
+      <ol class="apr-history__row" start="<%= row * 6 + 1 %>">
+        <% marcos.each do |marco| %>
+          <li class="apr-history__item">
+            <span class="apr-history__dot" aria-hidden="true"></span>
+            <p class="apr-history__date"><time datetime="<%= marco[:data] %>" title="<%= marco[:nota_data] if marco[:estimada] %>"><%= "≈ " if marco[:estimada] %><%= presentation_date(marco[:data]) %></time><% if marco[:estimada] %><span class="apr-sr-only"> (data estimada)</span><% end %></p>
+            <h3 class="apr-history__title"><%= marco[:titulo] %></h3>
+            <p class="apr-history__text"><%= marco[:texto] %></p>
           </li>
         <% end %>
-      </ul>
+      </ol>
     </section>
   <% end %>
 <% end %>
-
+<%= presentation_item slide, "capacidades", :p, class: "apr-source" do %>Registro, atendimento e mural já funcionam; cadastro e catálogo seguem em evolução.<% end %>
 <%= presentation_item slide, "observacoes", :p, class: "apr-source" do %><%= ev[:observacoes].join(" ") %><% end %>
-<% if ev[:data_primeira_entrega].blank? %>
-  <%= presentation_update_note("evolucao.yml", "informar data_primeira_entrega para delimitar o período.") %>
-<% end %>

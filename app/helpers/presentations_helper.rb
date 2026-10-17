@@ -31,6 +31,15 @@ module PresentationsHelper
     end
   end
 
+  # Os links de imagens no PDF precisam abrir pelo endereço público, mesmo em uma exportação local.
+  def presentation_public_asset_url(path)
+    asset = image_path(path)
+    public_url = @presentation.entrega.dig(:links, :apresentacao)
+    return asset unless public_url.to_s.match?(%r{\Ahttps?://}i)
+
+    URI.join(public_url, asset).to_s
+  end
+
   def presentation_commit_link(sha)
     return if sha.blank?
 

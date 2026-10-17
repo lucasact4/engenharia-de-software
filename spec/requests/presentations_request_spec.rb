@@ -107,7 +107,7 @@ RSpec.describe "Presentation", type: :request do
     get presentation_path
 
     slide = document.at_css("#s-reunioes")
-    expect(slide.text).to include("03/10/2026", "18h20 (aproximadamente)", "Google Meet", "Funcionamento do Rails", "Encaminhamentos e responsáveis ainda precisam ser formalizados")
+    expect(slide.text).to include("03/10/2026", "18h20 (aproximadamente)", "Google Meet", "Funcionamento do Rails")
     expect(slide.css(".apr-figure--meeting img").size).to eq(4)
     expect(slide.css(".apr-figure--meeting img").map { |image| image["alt"] }).to all(be_present)
     expect(slide.css(".apr-figure__zoom").map { |button| button["data-zoom-src"] }).to all(include("presentation/reunioes/2026-10-03/"))
@@ -186,7 +186,7 @@ RSpec.describe "Presentation", type: :request do
 
       expect(document.at_css("#s-funcionalidades .apr-kicker__num").text).to eq("02")
       expect(document.at_css(".apr-toc [data-apr-label-for='funcionalidades']").text).to eq("02")
-      expect(document.at_css("#s-roteiro [data-apr-elapsed-for='problema']").text).to be_empty
+      expect(document.at_css("#s-roteiro [data-apr-slide-ref='funcionalidades'] [data-apr-label-for='funcionalidades']").text).to eq("02")
     end
 
     it "hides empty groups instead of leaving blank columns" do
@@ -198,13 +198,13 @@ RSpec.describe "Presentation", type: :request do
       expect(document.at_css("#s-gestao .apr-mgmt")["class"]).to include("apr-fit")
     end
 
-    it "warns when the selected slides exceed the delivery time limit" do
+    it "shows the live timer instead of per-slide time estimates" do
       create(:presentation_profile, :active, selections: presentation.catalog_keys.excluding(Presentation::REQUIRED_SLIDES).index_with(true))
 
       get presentation_path
 
-      expect(document.at_css("#s-roteiro .apr-estimate")["class"]).to include("is-over")
-      expect(document.at_css("#s-roteiro .apr-estimate").text).to include("acima do limite de 7min")
+      expect(document.css(".apr-estimate, .apr-slide-list__time, [data-apr-elapsed-for]")).to be_empty
+      expect(document.at_css(".apr-timer__display").text).to eq("07:00")
     end
 
     it "offers the temporary panel without form fields that could be submitted" do
@@ -224,8 +224,8 @@ RSpec.describe "Presentation", type: :request do
     get presentation_path
     expect(document.css("section.apr-slide:not([hidden])").map { |node| node["data-slide-id"] }).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report encerramento])
     expect(document.css("#s-evolucao .apr-timeline__title").map(&:text)).not_to include("Base Rails implantada", "Landing pública e /entrar")
-    expect(document.at_css("#s-conceito-visual").text).to include("Validação da equipe pendente")
-    expect(document.at_css("#s-funcionalidades [data-apr-item='funcionalidades.repositorio']").text).to include("Captura do repositório", "Abrir repositório")
+    expect(document.at_css("#s-conceito-visual").text).not_to include("Validação da equipe pendente", "Tema exibido")
+    expect(document.at_css("#s-funcionalidades [data-apr-item='funcionalidades.repositorio']").text).to include("Repositório no GitHub", "Abrir repositório")
     expect(document.at_css("#s-status-report").text).not_to include("Feito desde a última entrega", "Até a próxima entrega")
     expect(document.at_css("#s-status-report").text).to include("Experiência prática", "Evolução contínua", "Abrir retrospectiva", "Slide do quadro")
     expect(document.css("#s-retrospectiva [data-apr-item][hidden]").map { |node| node["data-apr-item"] }).to include("retrospectiva.licoes", "retrospectiva.acoes")
@@ -296,13 +296,15 @@ RSpec.describe "Presentation", type: :request do
       expect(document.css("#s-arquitetura .apr-tech__versions").map { |node| node.has_attribute?("hidden") }).to all(be(true))
     end
 
-    it "shows the native conceptual model with separate production, review and assumptions" do
+    it "shows the native conceptual model with established rules and access to DER appendices" do
       get presentation_path
 
       slide = document.at_css("#s-modelo-conceitual")
       expect(slide.at_css("[data-apr-item='modelo-conceitual.diagrama'] .apr-data-figure[data-diagram='conceptual']")).to be_present
       status = slide.at_css("[data-apr-item='modelo-conceitual.situacao']").text.squish
-      expect(status).to include("Diagrama produzido", "Implementado", "Revisão da equipe", "Aguardando evidência", "Premissas de requisitos", "Aguardando decisão")
+      expect(status).to include("Diagrama produzido", "Implementado", "Regras do modelo")
+      expect(status).not_to include("Revisão da equipe", "Aguardando decisão")
+      expect(slide.at_css("a[href='#s-modelo-dados']")).to be_present
       expect(slide.text).not_to include("ainda não há tabela", "não anexado")
     end
 

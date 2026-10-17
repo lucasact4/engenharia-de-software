@@ -9,7 +9,7 @@ profiles = [
       arquitetura arquitetura.tecnologias arquitetura.versoes arquitetura.diagrama arquitetura.mudancas
       casos-de-uso
       gestao gestao.trello gestao.cards gestao.ambientes
-      proximos-passos proximos-passos.marco proximos-passos.passos proximos-passos.riscos proximos-passos.dependencias
+      proximos-passos proximos-passos.marco proximos-passos.passos
       retrospectiva retrospectiva.pontos retrospectiva.acoes retrospectiva.licoes
       encerramento.links
     ]
@@ -24,8 +24,8 @@ profiles = [
       modelo-conceitual modelo-conceitual.diagrama modelo-conceitual.situacao modelo-conceitual.distincao
       reunioes reunioes.registros
       evolucao evolucao.linha-do-tempo evolucao.observacoes
-      proximos-passos proximos-passos.marco proximos-passos.passos proximos-passos.riscos proximos-passos.dependencias
-      status-report status-report.aprendizados status-report.acoes status-report.registro
+      proximos-passos proximos-passos.marco proximos-passos.passos
+      status-report status-report.aprendizados status-report.registro
       encerramento.links
     ]
   }

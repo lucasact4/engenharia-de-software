@@ -18,14 +18,16 @@
   </svg>
 
   <div class="apr-cover__main">
-    <%= sgu_brand(:symbol, tone: :dark_surface, alt: "", class_name: "apr-cover__mark") %>
     <p class="apr-cover__eyebrow"><span class="apr-dot" aria-hidden="true"></span><%= e[:disciplina] %> · <%= d[:titulo] %></p>
     <h1 id="<%= slide.heading_id %>" class="apr-cover__title">
-      <span class="apr-cover__sigla"><%= e.dig(:projeto, :sigla) %></span>
+      <span class="apr-sr-only"><%= e.dig(:projeto, :sigla) %></span>
+      <%= sgu_brand(:horizontal, alt: "", class_name: "apr-cover__logo") %>
       <span class="apr-cover__name"><%= e.dig(:projeto, :nome) %></span>
     </h1>
     <p class="apr-cover__lead"><%= e.dig(:projeto, :recorte) %></p>
   </div>
+
+  <div class="apr-cover__share"><%= render "presentations/shared/share_code" %></div>
 
   <dl class="apr-cover__meta">
     <div><dt>Instituição</dt><dd><%= e[:instituicao] %></dd></div>

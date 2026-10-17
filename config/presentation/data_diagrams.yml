@@ -963,7 +963,7 @@ diagrams:
     cardinality_labels: true
     notes:
     - "Dimensões distintas: categoria = assunto; severidade = impacto; prioridade = triagem; situação = atendimento; audiência = autorização."
-    - "Premissas provisórias (propostas, ainda sem aprovação da equipe): foto opcional; restrita = autor + gestão; acesso de coordenação e segurança a validar; identidade pública neutra, sem perfil público."
+    - "Regras atuais: fotos opcionais; pânico e dados operacionais restritos; mural interno para autenticados; publicação externa conforme verificação e moderação; perfil público opcional."
     nodes:
     - id: role
       title: Papel

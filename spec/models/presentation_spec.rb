@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Presentation do
   subject(:presentation) { described_class.load }
 
-  let(:image_keys) { %w[imagem imagem_ampliada captura evidencia_imagem arquivo] }
+  let(:image_keys) { %w[imagem imagem_ampliada captura evidencia_imagem evidencia_principal aprendizados_imagem arquivo] }
 
   def string_values(value, key = nil, &block)
     case value
