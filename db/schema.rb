@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -366,12 +366,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.text "bio"
+    t.string "business_name"
+    t.text "cnpj"
+    t.text "cpf"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "display_name"
     t.string "email_address", null: false
     t.datetime "email_verified_at"
+    t.string "mother_name"
     t.string "password_digest", null: false
+    t.string "person_type", default: "natural", null: false
+    t.text "phone"
     t.boolean "public_profile", default: false, null: false
     t.text "registration_review_reason"
     t.datetime "registration_reviewed_at"
@@ -382,8 +388,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
     t.string "username"
     t.datetime "verified_at"
     t.integer "verified_by_id"
+    t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
+    t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
     t.index ["username"], name: "index_users_on_username", unique: true

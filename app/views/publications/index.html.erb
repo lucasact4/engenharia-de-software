@@ -4,12 +4,28 @@
     <h1 class="sgu-page-title">Mural do campus</h1>
     <% if Current.user %><%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar<% end %><% end %>
   </div>
-  <%= form_with url: publications_path, method: :get, class: "mt-5 flex gap-2", data: { turbo_action: "advance" } do %>
-    <%= label_tag :q, "Buscar no mural", class: "sr-only" %>
-    <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Buscar no mural" %>
+  <%= form_with url: publications_path, method: :get, class: "mt-5 space-y-3", data: { turbo_action: "advance" } do %>
+    <div class="flex gap-2">
+      <%= label_tag :q, "Palavras-chave ou ID/protocolo", class: "sr-only" %>
+      <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Palavras-chave ou ID/protocolo" %>
+      <button type="submit" class="sgu-btn sgu-btn-secondary" aria-label="Buscar"><%= sgu_icon("search") %></button>
+    </div>
+    <div class="grid gap-2 sm:grid-cols-3">
+      <div>
+        <%= label_tag :creator, "Criador", class: "sr-only" %>
+        <%= search_field_tag :creator, params[:creator], class: "sgu-input", placeholder: "Criador" %>
+      </div>
+      <div>
+        <%= label_tag :category_id, "Categoria", class: "sr-only" %>
+        <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), include_blank: "Todas as categorias", class: "sgu-input" %>
+      </div>
+      <div>
+        <%= label_tag :severity, "Gravidade", class: "sr-only" %>
+        <%= select_tag :severity, options_for_select(Alert.reported_severities.keys.map { |value| [ enum_label("alert.severity", value), value ] }, params[:severity]), include_blank: "Todas as gravidades", class: "sgu-input" %>
+      </div>
+    </div>
     <%= hidden_field_tag :audience, params[:audience] if params[:audience].present? %>
     <%= hidden_field_tag :kind, params[:kind] if params[:kind].present? %>
-    <button type="submit" class="sgu-btn sgu-btn-secondary" aria-label="Buscar"><%= sgu_icon("search") %></button>
   <% end %>
   <details class="mt-3 text-sm">
     <summary class="cursor-pointer text-muted">Filtrar publicações</summary>
@@ -29,8 +45,9 @@
   <% unless Current.user %><p class="mt-4 text-sm text-muted"><%= link_to "Entrar", new_session_path(locale: nil, return_to: publications_path(locale: nil)), class: "sgu-link" %> para ver publicações internas e interagir.</p><% end %>
   <div class="mt-5 space-y-5"><% @cards.each do |card| %><%= render "publications/card", card: card %><% end %></div>
   <% if @cards.empty? %>
-    <div class="sgu-empty mt-6"><p><%= params[:q].present? || params[:kind].present? ? "Nada encontrado com esses filtros." : "Ainda não há publicações." %></p>
-      <% if params[:q].present? || params[:kind].present? %><%= link_to "Limpar filtros", publications_path, class: "sgu-link" %><% end %>
+    <% filters_applied = %i[q creator category_id severity kind].any? { |key| params[key].present? } %>
+    <div class="sgu-empty mt-6"><p><%= filters_applied ? "Nada encontrado com esses filtros." : "Ainda não há publicações." %></p>
+      <% if filters_applied %><%= link_to "Limpar filtros", publications_path, class: "sgu-link" %><% end %>
     </div>
   <% end %>
   <%= render "shared/pagination", pagy: @pagy %>
