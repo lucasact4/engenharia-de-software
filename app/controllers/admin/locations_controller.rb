@@ -13,6 +13,7 @@ class Admin::LocationsController < Admin::BaseController
   private
 
     def default_params_permited
-      [ :code, :name, :description, :position, :reference_latitude, :reference_longitude, :active ]
+      [ :code, :name, :description, :position, :reference_latitude, :reference_longitude,
+        :boundary_geojson, :active ]
     end
 end

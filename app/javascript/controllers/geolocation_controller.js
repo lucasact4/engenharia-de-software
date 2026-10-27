@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 // GPS exige clique; seleção no mapa não gera horário ou precisão fictícios de captura.
 export default class extends Controller {
   static targets = ["source", "gpsPanel", "manualPanel", "mapPanel", "captureButton", "status",
-    "latitude", "longitude", "accuracy", "capturedAt", "map", "mapLatitude", "mapLongitude", "googleLink", "googleUrl", "catalog"]
+    "latitude", "longitude", "accuracy", "capturedAt", "map", "mapLatitude", "mapLongitude", "googleLink", "googleUrl", "catalog", "shareExactLocation"]
+  static values = { buildings: Array }
 
   connect() {
     this.disposed = false
@@ -36,6 +37,7 @@ export default class extends Controller {
     this.currentSource = source
     this.captureButtonTarget.disabled = !this.supported
     this.updateLink()
+    this.syncSharingChoice()
   }
 
   catalogChanged() {
@@ -60,6 +62,7 @@ export default class extends Controller {
         this.capturedAtTarget.value = new Date(position.timestamp || Date.now()).toISOString()
         this.captureButtonTarget.disabled = false
         this.updateLink()
+        this.syncSharingChoice()
         const precision = Number.isFinite(accuracy) ? ` (precisão aproximada de ${Math.round(accuracy)} m)` : ""
         this.say(`Localização capturada${precision}. Você pode capturar de novo.`)
       },
@@ -80,12 +83,13 @@ export default class extends Controller {
         await import("leaflet")
         if (this.disposed || !this.element.isConnected) return
         if (this.mapInstance) return this.mapInstance.invalidateSize()
-        const coordinates = this.coordinates() || [-8.05, -34.9]
-        this.mapInstance = L.map(this.mapTarget, { scrollWheelZoom: false }).setView(coordinates, this.coordinates() ? 17 : 12)
+        const coordinates = this.coordinates() || [-8.0175, -34.9492]
+        this.mapInstance = L.map(this.mapTarget, { scrollWheelZoom: false }).setView(coordinates, this.coordinates() ? 17 : 15)
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.mapInstance)
+        this.showBuildings()
         this.mapInstance.on("click", event => this.setPoint(event.latlng.lat, event.latlng.lng))
         if (this.coordinates()) this.showMarker(...this.coordinates())
       }
@@ -93,6 +97,36 @@ export default class extends Controller {
     } catch {
       this.say("O mapa não carregou. Use GPS, informe coordenadas ou descreva o local.")
     }
+  }
+
+  showBuildings() {
+    if (!this.hasBuildingsValue) return
+
+    this.buildingsValue.forEach(building => {
+      const ring = building.boundary?.coordinates?.[0]
+      if (building.boundary?.type !== "Polygon" || !Array.isArray(ring)) return
+      const polygon = L.polygon(ring.map(([longitude, latitude]) => [latitude, longitude]), {
+        color: "#0f766e", fillColor: "#14b8a6", fillOpacity: 0.28, weight: 2
+      }).addTo(this.mapInstance)
+      const popup = document.createElement("div")
+      const title = document.createElement("strong")
+      title.textContent = building.name
+      popup.append(title)
+      if (building.description) {
+        const description = document.createElement("p")
+        description.textContent = building.description
+        popup.append(description)
+      }
+      const center = polygon.getBounds().getCenter()
+      const directions = document.createElement("a")
+      directions.href = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`
+      directions.target = "_blank"
+      directions.rel = "noopener noreferrer"
+      directions.textContent = "Abrir rota no Google Maps ↗"
+      popup.append(directions)
+      polygon.bindPopup(popup)
+      polygon.bindTooltip(building.name)
+    })
   }
 
   useCenter() {
@@ -121,6 +155,7 @@ export default class extends Controller {
     this.capturedAtTarget.value = ""
     this.showMarker(latitude, longitude)
     this.updateLink()
+    this.syncSharingChoice()
     this.say("Ponto selecionado no mapa. Confira se corresponde ao local da ocorrência.")
   }
 
@@ -165,6 +200,10 @@ export default class extends Controller {
     if (this.hasGoogleLinkTarget) this.googleLinkTarget.href = this.coordinates() ? `https://www.google.com/maps/search/?api=1&query=${this.coordinates().join(",")}` : "https://www.google.com/maps"
   }
 
+  syncSharingChoice() {
+    if (this.hasShareExactLocationTarget) this.shareExactLocationTarget.disabled = !this.coordinates()
+  }
+
   clearPoint() {
     this.clearGps()
     this.marker?.remove()
@@ -174,6 +213,7 @@ export default class extends Controller {
 
   clearGps() {
     ;[this.latitudeTarget, this.longitudeTarget, this.accuracyTarget, this.capturedAtTarget].forEach(field => { field.value = "" })
+    this.syncSharingChoice()
   }
 
   selectedSource() { return this.sourceTargets.find(input => input.checked)?.value }

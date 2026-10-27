@@ -5,6 +5,7 @@ module AlertFormParams
   OCCURRENCE_FIELDS = %i[
     title description category_id category_other_description reported_severity
     location_source location_id location_description latitude longitude location_accuracy_meters location_captured_at
+    share_exact_location
   ].freeze
   GPS_FIELDS = %i[latitude longitude location_accuracy_meters location_captured_at].freeze
   CORRECTION_FIELDS = %i[title description category_id category_other_description].freeze
@@ -33,7 +34,9 @@ module AlertFormParams
 
     def normalize_location(attributes)
       case attributes[:location_source]
-      when "manual" then GPS_FIELDS.each { |field| attributes[field] = nil }
+      when "manual"
+        GPS_FIELDS.each { |field| attributes[field] = nil }
+        attributes[:share_exact_location] = false
       when "map"
         attributes[:location_accuracy_meters] = nil
         attributes[:location_captured_at] = nil

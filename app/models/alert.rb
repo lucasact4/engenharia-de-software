@@ -89,6 +89,7 @@ class Alert < ApplicationRecord
   validate :category_details
   validate :active_catalog_entries
   validate :location_consistency
+  validate :exact_location_sharing_requires_coordinates
   validate :gps_capture_time
   validate :visibility_consistency
   validate :panic_rules
@@ -169,6 +170,14 @@ class Alert < ApplicationRecord
         errors.add(:location_captured_at, :gps_only) if location_captured_at.present?
       end
       errors.add(:location_unavailable_reason, :unavailable_only) if location_unavailable_reason.present? && !location_unavailable?
+    end
+
+    def exact_location_sharing_requires_coordinates
+      return unless has_attribute?(:share_exact_location)
+      return unless share_exact_location?
+      return if occurrence? && (location_gps? || location_map?) && latitude.present? && longitude.present?
+
+      errors.add(:share_exact_location, :requires_coordinates)
     end
 
     def gps_capture_time

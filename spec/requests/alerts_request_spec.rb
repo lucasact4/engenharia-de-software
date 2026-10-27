@@ -55,6 +55,14 @@ RSpec.describe "Alerts (portal)", type: :request do
       expect(response.body).to include(alert.protocol)
     end
 
+    it "shares exact coordinates on the associated publication only when explicitly selected" do
+      create_alert(share_exact_location: "1", requested_visibility: "public_external")
+
+      alert = Alert.last
+      expect(alert).to be_share_exact_location
+      expect(PublicationProjection.new(alert.publication, viewer: author).as_json[:location]).to eq(latitude: -8.0171234, longitude: -34.9501234)
+    end
+
     it "ignores author, status, priority and visibility sent by the client" do
       other = create(:user)
       create_alert(author_id: other.id, status: "resolved", priority: "urgent", visibility: "internal",

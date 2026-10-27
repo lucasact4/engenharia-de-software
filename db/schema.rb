@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -79,6 +79,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
     t.string "reported_severity"
     t.string "requested_visibility", null: false
     t.datetime "resolved_at"
+    t.boolean "share_exact_location", default: false, null: false
     t.string "status", default: "received", null: false
     t.datetime "status_changed_at"
     t.string "title"
@@ -220,6 +221,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
 
   create_table "locations", force: :cascade do |t|
     t.boolean "active", default: true, null: false
+    t.json "boundary"
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.text "description"

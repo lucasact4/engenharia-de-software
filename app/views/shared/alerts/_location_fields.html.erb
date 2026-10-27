@@ -3,7 +3,7 @@
     {title: "Local do campus · opcional", text: "Selecione um prédio, rua ou área quando estiver cadastrado. Pode complementar o GPS ou o mapa."},
     {title: "GPS", text: "Captura a posição atual somente após seu clique e autorização. Precisão e horário são registrados."},
     {title: "Mapa", text: "Clique no local, arraste o marcador ou use as coordenadas de um link completo do Google Maps. Isso não é uma captura GPS."},
-    {title: "Privacidade", text: "Coordenadas e precisão são restritas ao atendimento; não aparecem no mural público."}
+    {title: "Privacidade", text: "A localização exata fica restrita ao atendimento, a menos que você marque a opção para mostrá-la na publicação."}
   ] %></div>
   <div>
     <%= f.label :location_id, "Local do campus", class: "sgu-label" %>
@@ -21,7 +21,7 @@
     <span class="text-xs text-muted">Permissão solicitada apenas ao clicar.</span>
   </div>
   <div data-geolocation-target="mapPanel" class="space-y-3" hidden>
-    <div class="composer-map" data-geolocation-target="map" aria-label="Mapa para selecionar o local da ocorrência"></div>
+    <div class="composer-map" data-geolocation-target="map" data-geolocation-buildings-value="<%= Location.active.where.not(boundary: nil).ordered.map { |location| {name: location.name, description: location.description, boundary: location.boundary} }.to_json %>" aria-label="Mapa para selecionar o local da ocorrência"></div>
     <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0">Clique para marcar ou arraste o pino.</p><button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="geolocation#useCenter">Usar centro do mapa</button></div>
     <div class="grid gap-3 sm:grid-cols-2">
       <div><label for="map_latitude_<%= alert.id || 'new' %>" class="sgu-label">Latitude</label><input id="map_latitude_<%= alert.id || 'new' %>" type="number" step="any" min="-90" max="90" class="sgu-input" value="<%= alert.latitude %>" data-geolocation-target="mapLatitude" data-action="change->geolocation#coordinatesChanged"></div>
@@ -31,6 +31,10 @@
   </div>
   <div data-geolocation-target="manualPanel" hidden><p class="composer-hint !mt-0">Escolha um local cadastrado ou descreva abaixo onde aconteceu.</p></div>
   <div><%= f.label :location_description, "Descrição do local", class: "sgu-label" %><%= f.text_field :location_description, class: "sgu-input", maxlength: 160, placeholder: "Ex.: corredor da biblioteca, térreo" %><%= field_errors(alert, :location_description) %></div>
+  <label class="flex items-start gap-3 rounded-xl border border-line p-3 text-sm">
+    <%= f.check_box :share_exact_location, class: "mt-0.5", data: {geolocation_target: "shareExactLocation"}, disabled: alert.latitude.blank? || alert.longitude.blank? %>
+    <span><strong class="block text-ink">Mostrar localização exata na publicação</strong><span class="text-muted">Quando habilitado, quem puder ver a publicação também verá este ponto no mapa. Desmarcado, o endereço continua visível somente à equipe autorizada.</span></span>
+  </label>
   <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0" data-geolocation-target="status" role="status" aria-live="polite"><%= alert.latitude ? 'Localização informada. Confira antes de salvar.' : 'Nenhuma coordenada informada.' %></p><a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="sgu-link text-xs" data-geolocation-target="googleLink">Abrir no Google Maps ↗</a></div>
   <%= f.hidden_field :latitude, data: {geolocation_target: "latitude"} %><%= f.hidden_field :longitude, data: {geolocation_target: "longitude"} %>
   <%= f.hidden_field :location_accuracy_meters, data: {geolocation_target: "accuracy"} %><%= f.hidden_field :location_captured_at, value: alert.location_captured_at&.iso8601, data: {geolocation_target: "capturedAt"} %>

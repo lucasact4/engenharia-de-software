@@ -1,0 +1,33 @@
+<% content_for :title, "Mapa da UFRPE — Sede Recife" %>
+<div class="social-feed space-y-5">
+  <div>
+    <p class="text-sm font-semibold text-brand-link">UFRPE · Sede Recife</p>
+    <h1 class="sgu-page-title">Mapa de ocorrências</h1>
+    <p class="mt-2 max-w-2xl text-sm text-muted">Veja publicações do mural ligadas a prédios e áreas cadastrados da sede Recife. Selecione um marcador para abrir o post e acompanhar as atualizações.</p>
+  </div>
+  <%= render "publications/map_tabs", active: :map %>
+
+  <section class="sgu-card overflow-hidden" data-controller="campus-map"
+           data-campus-map-locations-value="<%= @map_data[:locations].to_json %>"
+           data-campus-map-reports-value="<%= @map_data[:reports].to_json %>"
+           data-campus-map-center-value="<%= @map_data[:center].to_json %>">
+    <p class="px-4 pt-4 text-sm text-muted" data-campus-map-target="status" role="status" aria-live="polite">Carregando o mapa da sede Recife…</p>
+    <div class="h-[65vh] min-h-96 w-full" data-campus-map-target="map" aria-label="Mapa da UFRPE sede Recife com ocorrências do mural"></div>
+  </section>
+
+  <section aria-labelledby="campus_reports_title">
+    <h2 id="campus_reports_title" class="sgu-section-title">Ocorrências no mapa</h2>
+    <% if @map_data[:reports].any? %>
+      <ul class="mt-3 space-y-3">
+        <% @map_data[:reports].each do |report| %>
+          <li class="sgu-card flex flex-wrap items-center justify-between gap-3 p-4">
+            <div><h3 class="font-semibold text-ink"><%= report[:title] %></h3><p class="mt-1 text-sm text-muted"><%= report[:exact] ? "ponto compartilhado pelo autor" : "local aproximado no campus" %></p></div>
+            <%= link_to "Abrir publicação", report[:url], class: "sgu-btn sgu-btn-secondary sgu-btn-sm" %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="sgu-empty mt-3">Ainda não há publicações do mural vinculadas a prédios com área ou coordenadas cadastradas. Quando a equipe cadastrar os locais da sede, as ocorrências correspondentes aparecerão aqui.</p>
+    <% end %>
+  </section>
+</div>

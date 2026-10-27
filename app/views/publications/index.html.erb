@@ -4,6 +4,7 @@
     <h1 class="sgu-page-title">Mural do campus</h1>
     <% if Current.user %><%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar<% end %><% end %>
   </div>
+  <%= render "publications/map_tabs", active: :posts %>
   <%= form_with url: publications_path, method: :get, class: "mt-5 flex gap-2", data: { turbo_action: "advance" } do %>
     <%= label_tag :q, "Buscar no mural", class: "sr-only" %>
     <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Buscar no mural" %>

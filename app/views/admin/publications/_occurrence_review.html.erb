@@ -4,7 +4,14 @@
   <%= render "admin/shared/page_header", back: admin_publications_path, back_label: "Publicações", title: "Analisar publicação", description: "Conteúdo criado pelo estudante. A decisão altera somente sua divulgação pública." %>
   <% if post.errors.any? %><div class="rounded-xl bg-negative-soft p-4 text-sm text-negative-ink" role="alert"><%= post.errors.full_messages.to_sentence %></div><% end %>
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-    <%= render "publications/card", card: PublicationProjection.collection([post], viewer: Current.user).first, full: true, preview: true %>
+    <div class="space-y-4">
+      <%= render "publications/card", card: PublicationProjection.collection([post], viewer: Current.user).first, full: true, preview: true %>
+      <% if post.alert.latitude.present? && post.alert.longitude.present? %>
+        <%= render "shared/exact_location", coordinates: { latitude: post.alert.latitude, longitude: post.alert.longitude }, label: "Localização exata para análise administrativa" %>
+      <% else %>
+        <section class="sgu-card p-4"><h2 class="font-semibold">Localização</h2><p class="mt-1 text-sm text-muted"><%= post.alert.location&.name || post.alert.location_description || "Sem ponto exato informado" %></p></section>
+      <% end %>
+    </div>
     <aside class="space-y-4">
       <% if post.review_pending? && policy(post).review? %>
         <section class="sgu-card p-5"><h2 class="sgu-section-title">Divulgação pública</h2>

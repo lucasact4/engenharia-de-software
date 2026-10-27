@@ -4,7 +4,7 @@ module Alerts
     PERMITTED = %i[
       title description category_id category_other_description
       location_source location_id location_description latitude longitude location_accuracy_meters location_captured_at
-      reported_severity requested_visibility
+      reported_severity requested_visibility share_exact_location
     ].freeze
 
     attr_reader :actor

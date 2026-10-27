@@ -9,14 +9,21 @@ RSpec.describe PublicationProjection do
     json = described_class.new(publication).as_json
 
     expect(json.keys).to eq(%i[id kind kind_label title body visibility published_at expires_at comments_enabled
-                               editorial_identity author photos own_review likes_count comments_count viewer_state])
+                               editorial_identity author photos location own_review likes_count comments_count viewer_state])
     expect(json[:body]).to eq(alert.description)
     expect(json[:own_review]).to be_nil
+    expect(json[:location]).to be_nil
     serialized = json.to_json
     [ alert.author.email_address, alert.protocol, "-8.1234567", "-34.7654321",
       publication.author.email_address, "alert_id", "spam", "admin" ].each do |secret|
       expect(serialized).not_to include(secret)
     end
+  end
+
+  it "projects exact coordinates only when the author opted in" do
+    alert.update!(share_exact_location: true)
+
+    expect(described_class.new(publication).as_json[:location]).to eq(latitude: -8.1234567, longitude: -34.7654321)
   end
 
   it "refuses to project content the viewer cannot see" do

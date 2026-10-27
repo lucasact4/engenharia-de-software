@@ -124,6 +124,8 @@ tables:
       - ''
     - - location_captured_at
       - ''
+    - - share_exact_location
+      - ''
     - - location_unavailable_reason
       - ''
     - - requested_visibility
@@ -204,6 +206,8 @@ tables:
       - ''
     - - reference_longitude
       - ''
+    - - boundary
+      - json
     - - created_at
       - ''
     - - updated_at
@@ -673,6 +677,7 @@ diagrams:
       - code
       - name
       - reference_latitude
+      - boundary
       - active
     - table: alerts
       x: 300
@@ -686,6 +691,7 @@ diagrams:
       - protocol
       - category_id
       - location_id
+      - share_exact_location
       - requested_visibility
       - visibility
       - publication_blocked

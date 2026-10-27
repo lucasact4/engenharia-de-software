@@ -103,11 +103,13 @@ RSpec.describe "Admin publications", type: :request do
     it "previews the existing content and approves it in one action" do
       publication = source.publication
       get admin_publication_path(publication)
-      expect(response.body).to include(source.description, "Não aprovar")
+      expect(response.body).to include(source.description, "Não aprovar", "Localização exata para análise administrativa",
+                                       "-8.017123", 'data-controller="location-preview"', "Abrir no Google Maps")
       expect(response.body).not_to include('name="publication[title]"', 'name="publication[body]"')
       patch review_admin_publication_path(publication), params: { decision: "approve", reviewed_content_version: 1, lock_version: publication.lock_version }
       expect(publication.reload).to have_attributes(state: "published", visibility: "public_external")
     end
+
 
     it "requires a rejection reason and keeps a revised post internal pending another review" do
       publication = source.publication

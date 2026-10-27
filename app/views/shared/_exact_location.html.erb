@@ -1,0 +1,10 @@
+<% latitude = coordinates.fetch(:latitude).to_f %>
+<% longitude = coordinates.fetch(:longitude).to_f %>
+<section class="mt-4 overflow-hidden rounded-xl border border-line" aria-label="<%= label %>">
+  <h3 class="px-3 py-2 text-sm font-semibold text-ink"><%= label %></h3>
+  <div class="h-56 w-full" data-controller="location-preview" data-location-preview-latitude-value="<%= latitude %>" data-location-preview-longitude-value="<%= longitude %>" aria-label="Mapa da localização compartilhada"></div>
+  <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-xs text-muted">
+    <span><%= format("%.6f, %.6f", latitude, longitude) %></span>
+    <%= link_to "Abrir no Google Maps ↗", "https://www.google.com/maps/search/?api=1&query=#{latitude},#{longitude}", target: "_blank", rel: "noopener noreferrer", class: "sgu-link" %>
+  </div>
+</section>
