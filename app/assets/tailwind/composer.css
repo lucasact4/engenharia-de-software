@@ -48,6 +48,7 @@
   .location-mode input:focus-visible + span { @apply outline-2 outline-offset-2 outline-brand-link; }
   .location-panel { @apply flex flex-wrap items-center gap-3 rounded-2xl bg-surface-muted p-4; }
   .composer-map { @apply relative z-0 h-72 w-full overflow-hidden rounded-2xl border border-line sm:h-80; }
+  .boundary-edit-handle { @apply rounded-full border-2 border-brand-link bg-white shadow-md; }
   .sgu-tooltip-content { @apply fixed z-[100] m-0 overflow-y-auto rounded-2xl border border-line bg-surface p-4 text-ink shadow-2xl; }
   .tooltip-heading { @apply mb-3 block border-b border-line pb-2 text-sm font-bold text-brand-link; }
   .tooltip-body { @apply block text-xs leading-5; }

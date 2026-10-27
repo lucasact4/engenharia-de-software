@@ -1,4 +1,5 @@
 <%= nav_link "Mural", publications_path, "newspaper", active: controller_name == "publications" %>
+<%= nav_link "Mapa do campus", campus_map_path, "map-pin", active: controller_name == "campus_map" %>
 <% if user %>
   <%= nav_link "Painel", panel_path, "layout-dashboard", active: controller_name == "panel" %>
   <%= nav_link "Registrar ocorrência", new_alert_path, "map-pin", active: controller_name == "alerts" && action_name.in?(%w[new create]) %>

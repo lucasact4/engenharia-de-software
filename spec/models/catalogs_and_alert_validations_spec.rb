@@ -40,6 +40,24 @@ RSpec.describe "Catalog locks and alert metadata validations" do
 
       expect(location.reload.update(code: "outro_local")).to be(false)
     end
+
+    it "accepts closed GeoJSON building boundaries and rejects malformed polygons" do
+      location = build(:location)
+      valid_polygon = {
+        type: "Polygon",
+        coordinates: [ [ [ -34.95, -8.01 ], [ -34.94, -8.01 ], [ -34.94, -8.00 ], [ -34.95, -8.01 ] ] ]
+      }
+      location.boundary_geojson = valid_polygon.to_json
+      expect(location).to be_valid
+
+      invalid_polygon = {
+        type: "Polygon",
+        coordinates: [ [ [ 200, -8 ], [ -34.94, -8.01 ], [ -34.94, -8 ], [ 200, -8 ] ] ]
+      }
+      location.boundary_geojson = invalid_polygon.to_json
+      expect(location).not_to be_valid
+      expect(location.errors[:boundary]).to be_present
+    end
   end
 
   describe Alert do

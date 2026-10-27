@@ -64,6 +64,7 @@ class PublicationProjection
       editorial_identity: I18n.t("sgu.public_identity.editorial"),
       author: @publication.occurrence? ? PublicIdentity.for(@publication.author, internal: @publication.internal?, with_avatar: true) : { display_name: I18n.t("sgu.public_identity.editorial"), public_profile: false, id: nil, verified: false },
       photos: @publication.ordered_feed_photos.map { |photo| { id: photo.id } },
+      location: shared_exact_location,
       own_review: own_review,
       likes_count: likes_count,
       comments_count: comments_count,
@@ -78,6 +79,13 @@ class PublicationProjection
 
       { alert_id: @publication.alert_id, status: @publication.review_status, reason: @publication.review_reason,
         requested: @publication.alert.requested_visibility }
+    end
+
+    def shared_exact_location
+      alert = @publication.alert
+      return unless @publication.occurrence? && alert&.share_exact_location? && alert.latitude.present? && alert.longitude.present?
+
+      { latitude: alert.latitude.to_f, longitude: alert.longitude.to_f }
     end
 
     # Estado privado somente da própria pessoa que está lendo.

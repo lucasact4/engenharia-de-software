@@ -1,0 +1,4 @@
+<nav class="flex flex-wrap gap-2" aria-label="Seções do mural">
+  <%= link_to "Publicações", publications_path, class: "sgu-tab", aria: { current: local_assigns[:active] == :posts ? "page" : nil } %>
+  <%= link_to "Mapa da UFRPE · Sede Recife", campus_map_path, class: "sgu-tab", aria: { current: local_assigns[:active] == :map ? "page" : nil } %>
+</nav>

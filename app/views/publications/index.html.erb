@@ -4,6 +4,7 @@
     <h1 class="sgu-page-title">Mural do campus</h1>
     <% if Current.user %><%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar<% end %><% end %>
   </div>
+<<<<<<< HEAD
   <%= form_with url: publications_path, method: :get, class: "mt-5 space-y-3", data: { turbo_action: "advance" } do %>
     <div class="flex gap-2">
       <%= label_tag :q, "Palavras-chave ou ID/protocolo", class: "sr-only" %>
@@ -24,6 +25,12 @@
         <%= select_tag :severity, options_for_select(Alert.reported_severities.keys.map { |value| [ enum_label("alert.severity", value), value ] }, params[:severity]), include_blank: "Todas as gravidades", class: "sgu-input" %>
       </div>
     </div>
+=======
+  <%= render "publications/map_tabs", active: :posts %>
+  <%= form_with url: publications_path, method: :get, class: "mt-5 flex gap-2", data: { turbo_action: "advance" } do %>
+    <%= label_tag :q, "Buscar no mural", class: "sr-only" %>
+    <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Buscar no mural" %>
+>>>>>>> 74f297b (adicionado no registro de ocorrência a localização via google maps para rastrear ocorrências dentro e fora da faculdade, também adicionado um mapa do campus para acompanhar de forma mais visual as ocorrências dentro do campus)
     <%= hidden_field_tag :audience, params[:audience] if params[:audience].present? %>
     <%= hidden_field_tag :kind, params[:kind] if params[:kind].present? %>
   <% end %>

@@ -14,6 +14,23 @@
       <%= field_errors(@instance, :reference_longitude) %>
     </div>
   </fieldset>
+  <fieldset class="space-y-3 rounded-xl bg-surface-muted p-4" data-controller="campus-boundary" data-campus-boundary-geojson-value="<%= @instance.boundary_geojson %>">
+    <legend class="sgu-label">Área do prédio no mapa (opcional)</legend>
+    <p class="text-xs text-muted">Desenhe ou ajuste o contorno sobre o mapa-base. Em locais já cadastrados, arraste os vértices para corrigir mudanças na estrutura. Salve para atualizar o mapa do campus.</p>
+    <div class="composer-map">
+      <div class="h-full min-h-64" data-campus-boundary-target="map" aria-label="Mapa para desenhar o contorno do prédio"></div>
+      <input type="hidden" name="location[boundary_geojson]" value="<%= @instance.boundary_geojson %>" data-campus-boundary-target="input">
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if @instance.boundary.present? %><button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="campus-boundary#edit">Ajustar vértices</button><% end %>
+      <button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="campus-boundary#start">Desenhar área</button>
+      <button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="campus-boundary#undo">Desfazer ponto</button>
+      <button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="campus-boundary#finish">Finalizar contorno</button>
+      <button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="campus-boundary#clear">Remover contorno</button>
+    </div>
+    <p class="text-xs text-muted" role="status" aria-live="polite" data-campus-boundary-target="status">Os nomes são usados no cadastro; a camada do mapa comunitário mostra os prédios apenas com cores.</p>
+    <%= field_errors(@instance, :boundary) %>
+  </fieldset>
   <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
     <%= link_to "Cancelar", admin_locations_path, class: "sgu-btn sgu-btn-secondary" %>
     <%= f.button "Salvar local", type: "submit", class: "sgu-btn sgu-btn-primary" %>

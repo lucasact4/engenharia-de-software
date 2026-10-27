@@ -81,6 +81,18 @@ RSpec.describe "Admin catalogs", type: :request do
       post admin_locations_path, params: { location: { code: "local_teste", name: "Local de teste", reference_latitude: "-8.01", reference_longitude: "-34.95" } }
       expect(Location.find_by!(code: "local_teste").reference_longitude).to eq(BigDecimal("-34.95"))
     end
+
+    it "lets administrators add a mapped building outline" do
+      boundary = {
+        type: "Polygon",
+        coordinates: [ [ [ -34.95, -8.01 ], [ -34.94, -8.01 ], [ -34.94, -8.00 ], [ -34.95, -8.01 ] ] ]
+      }.to_json
+      post admin_locations_path, params: { location: { code: "predio_teste", name: "Prédio de teste", boundary_geojson: boundary } }
+
+      location = Location.find_by!(code: "predio_teste")
+      expect(response).to redirect_to(admin_locations_path(locale: I18n.locale))
+      expect(location.boundary).to eq(JSON.parse(boundary))
+    end
   end
 
   it "is not available to coordination or regular users" do
