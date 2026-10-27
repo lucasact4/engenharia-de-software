@@ -22,7 +22,7 @@ RSpec.describe "Campus map administration", type: :feature, js: true do
     fill_in "Nome", with: "Prédio desenhado"
     fill_in "Código estável", with: "predio_desenhado"
     click_button "Salvar local"
-    expect(page).to have_no_css("form#new_location")
+    expect(page).to have_current_path(admin_locations_path, ignore_query: true)
 
     boundary = Location.find_by!(code: "predio_desenhado").boundary
     expect(boundary.fetch("type")).to eq("Polygon")
