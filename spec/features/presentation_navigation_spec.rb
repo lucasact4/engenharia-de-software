@@ -186,7 +186,8 @@ RSpec.describe "Presentation navigation", type: :feature, js: true do
   it "exports the reading deck with logos outside the viewport loaded" do
     visit "#{presentation_path}?modo=leitura"
     uri = URI(page.current_url)
-    uri.host = "rails-app"
+    # O Chrome do serviço Selenium alcança o app pelo nome do contêiner; o Chrome local (CI), pelo host atual.
+    uri.host = "rails-app" if ENV["SELENIUM_REMOTE_URL"]
     # O serviço Selenium admite uma sessão: libera a do Capybara antes de abrir o exportador.
     page.driver.quit
 
