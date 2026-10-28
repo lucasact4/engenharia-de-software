@@ -2,13 +2,16 @@
 class User < ApplicationRecord
   include TextSearch
   USERNAME_FORMAT = /\A[a-z0-9_]{3,30}\z/
+  PERSON_TYPES = %w[natural legal].freeze
 
   REGISTRATION_ROLES = %w[visitor professor student].freeze
 
   # Tipos explícitos também permitem executar os testes de atualização a partir do esquema antigo.
   attribute :registration_status, :string, default: "approved"
   attribute :registration_role_code, :string
+  attribute :person_type, :string, default: "natural"
   enum :registration_status, { pending: "pending", approved: "approved", rejected: "rejected" }, prefix: :registration, validate: true
+  enum :person_type, { natural: "natural", legal: "legal" }, validate: true
   belongs_to :registration_reviewed_by, class_name: "User", optional: true
 
   attribute :verified_at, :datetime
@@ -49,7 +52,12 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :username, with: ->(username) { username.strip.downcase.presence }
   normalizes :display_name, with: ->(name) { name.squish.presence }
+  normalizes :business_name, :mother_name, with: ->(name) { name.squish.presence }
+  normalizes :cpf, :cnpj, :phone, with: ->(document) { document.gsub(/\D/, "").presence }
   normalizes :bio, with: ->(bio) { bio.strip.presence }
+
+  # Documentos são determinísticos para permitir busca exata sem persistir o valor aberto.
+  encrypts :cpf, :cnpj, :phone, deterministic: true
 
   validates :email_address, presence: true, uniqueness: true
   validates :registration_role_code, inclusion: { in: REGISTRATION_ROLES }, allow_nil: true
@@ -58,6 +66,11 @@ class User < ApplicationRecord
 
   validates :username, format: { with: USERNAME_FORMAT }, uniqueness: true, allow_nil: true
   validates :display_name, length: { maximum: 80 }
+  validates :business_name, :mother_name, length: { maximum: 160 }
+  validates :cpf, length: { is: 11 }, uniqueness: true, allow_nil: true
+  validates :cnpj, length: { is: 14 }, uniqueness: true, allow_nil: true
+  validates :phone, length: { in: 10..13 }, uniqueness: true, allow_nil: true
+  validate :identity_document_matches_person_type
   validates :bio, length: { maximum: 500 }
 
   scope :active, -> { where(deleted_at: nil, registration_status: "approved") }
@@ -91,5 +104,11 @@ class User < ApplicationRecord
 
     def password_requirements
       PasswordRequirements.errors(password).each { |message| errors.add(:password, message) }
+    end
+
+    def identity_document_matches_person_type
+      errors.add(:cnpj, :incompatible_person_type) if natural? && cnpj.present?
+      errors.add(:cpf, :incompatible_person_type) if legal? && cpf.present?
+      errors.add(:business_name, :blank) if legal? && business_name.blank?
     end
 end

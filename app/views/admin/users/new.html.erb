@@ -18,6 +18,10 @@
 
       <div class="mt-4 grid grid-cols-1 gap-4">
         <div>
+          <%= f.label :display_name, "Nome", class: 'form-label' %>
+          <%= f.text_field :display_name, class: 'form-control', maxlength: 80 %>
+        </div>
+        <div>
           <%= f.label :email_address, attribute_translation(model_singular_name_to_translate(@instance), :email_address), class: 'form-label' %>
           <%= f.text_field :email_address, class: 'form-control', id: "#{model_field_id(@instance, :email_address)}" %>
         </div>
@@ -27,6 +31,37 @@
           <%= f.password_field :password, class: 'form-control', id: "#{model_field_id(@instance, :password)}" %>
         </div>
       </div>
+
+      <fieldset class="mt-5 space-y-4 rounded-xl border border-line p-4">
+        <legend class="px-2 text-sm font-semibold text-ink">Dados para pesquisa de pessoas</legend>
+        <p class="text-sm text-muted">CPF, CNPJ e telefone são armazenados criptografados.</p>
+        <div>
+          <%= f.label :person_type, "Tipo de pessoa", class: "form-label" %>
+          <%= f.select :person_type, [["Pessoa física", "natural"], ["Pessoa jurídica", "legal"]], {}, class: "form-control" %>
+        </div>
+        <div>
+          <%= f.label :business_name, "Razão social", class: "form-label" %>
+          <%= f.text_field :business_name, class: "form-control", maxlength: 160 %>
+        </div>
+        <div>
+          <%= f.label :mother_name, "Nome da mãe", class: "form-label" %>
+          <%= f.text_field :mother_name, class: "form-control", maxlength: 160 %>
+        </div>
+        <div>
+          <%= f.label :phone, "Telefone", class: "form-label" %>
+          <%= f.telephone_field :phone, class: "form-control", inputmode: "tel", maxlength: 18, autocomplete: "off" %>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <%= f.label :cpf, "CPF", class: "form-label" %>
+            <%= f.text_field :cpf, class: "form-control", inputmode: "numeric", maxlength: 14, autocomplete: "off" %>
+          </div>
+          <div>
+            <%= f.label :cnpj, "CNPJ", class: "form-label" %>
+            <%= f.text_field :cnpj, class: "form-control", inputmode: "numeric", maxlength: 18, autocomplete: "off" %>
+          </div>
+        </div>
+      </fieldset>
 
       <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <%= link_to translate_view_shared("cancel"), instances_index_path, class: "btn-secondary w-full sm:w-auto" %>

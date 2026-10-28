@@ -31,7 +31,9 @@ class RegistrationsController < ApplicationController
   private
 
     def registration_params
-      params.require(:registration).permit(:display_name, :email_address, :role_code, :password, :password_confirmation)
+      params.require(:registration).permit(:display_name, :email_address, :role_code, :person_type,
+                                           :business_name, :mother_name, :cpf, :cnpj, :phone,
+                                           :password, :password_confirmation)
     end
 
     def redirect_authenticated

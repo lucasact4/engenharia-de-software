@@ -40,6 +40,18 @@ tables:
       - ''
     - - verified_by_id
       - FK users
+    - - person_type
+      - ''
+    - - business_name
+      - ''
+    - - mother_name
+      - ''
+    - - cpf
+      - UQ
+    - - cnpj
+      - UQ
+    - - phone
+      - UQ
   user_roles:
     columns:
     - - id
@@ -765,7 +777,7 @@ diagrams:
     description: Todas as colunas e chaves estrangeiras operacionais. Alvo polimórfico
       da auditoria é indicado em tracejado.
     width: 1080
-    height: 810
+    height: 864
     nodes:
     - table: users
       x: 30
@@ -780,7 +792,7 @@ diagrams:
       split: 1
     - table: roles
       x: 790
-      "y": 630
+      "y": 684
       width: 260
       split: 2
     - table: audit_events
@@ -790,24 +802,24 @@ diagrams:
       split: 1
     - table: alerts
       x: 30
-      "y": 366
+      "y": 420
       width: 1020
       split: 4
       variant: core
     - table: categories
       x: 30
-      "y": 630
+      "y": 684
       width: 330
       split: 2
     - table: locations
       x: 375
-      "y": 630
+      "y": 684
       width: 400
       split: 2
     - id: audit_subject
       title: Registros auditados
       x: 30
-      "y": 280
+      "y": 334
       width: 480
       lines:
       - Alert · Publication · Comment · ContentReport · User

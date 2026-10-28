@@ -384,8 +384,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
     t.integer "registration_reviewed_by_id"
     t.datetime "verified_at"
     t.integer "verified_by_id"
+    t.string "business_name"
+    t.string "mother_name"
+    t.text "cpf"
+    t.text "cnpj"
+    t.string "person_type", default: "natural", null: false
+    t.text "phone"
+    t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
+    t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
     t.index ["username"], name: "index_users_on_username", unique: true
