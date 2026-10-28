@@ -68,6 +68,27 @@
       <%= f.label :requested_visibility, "Quem pode ver", class: "sr-only" %>
       <%= f.select :requested_visibility, [["Comunidade UFRPE (interna)", "internal"], ["Todos (pública)", "public_external"], ["Somente eu e o atendimento", "restricted"]], {}, class: "sgu-input" %>
       <% if Current.user&.verified? %><p class="composer-hint flex items-center gap-1 text-info-ink"><%= render "shared/verified_badge" %> Você pode publicar publicamente sem aprovação.</p><% else %><p class="composer-hint">Pedidos públicos ficam internos até a aprovação.</p><% end %>
+      <% if mode == :create %>
+        <div class="mt-4 rounded-xl border border-line p-4" data-controller="anonymous-public"
+             data-anonymous-public-site-key-value="<%= TurnstileVerifier.site_key %>">
+          <label for="alert_anonymous_public" class="flex items-start gap-3 text-sm font-semibold text-ink">
+            <%= check_box_tag "alert[anonymous_public]", "1", alert.anonymous_public?, id: "alert_anonymous_public",
+                              disabled: !TurnstileVerifier.configured?, class: "mt-0.5 size-4 accent-brand-solid",
+                              data: { anonymous_public_target: "checkbox", action: "change->anonymous-public#toggle" } %>
+            <span>Ocultar minha identidade na publicação pública</span>
+          </label>
+          <p class="mt-2 pl-7 text-xs text-muted">Seu cadastro continuará ligado ao relato para o atendimento. Seu nome, avatar e perfil não serão exibidos a quem lê a publicação pública.</p>
+          <% if TurnstileVerifier.configured? %>
+            <div class="mt-3 space-y-2" data-anonymous-public-target="challenge" hidden>
+              <div data-anonymous-public-target="widget"></div>
+
+              <p class="text-xs text-muted" data-anonymous-public-target="status" role="status" aria-live="polite"></p>
+            </div>
+          <% else %>
+            <p class="mt-2 pl-7 text-xs text-warning-ink">A opção será liberada quando a equipe configurar as chaves do Turnstile.</p>
+          <% end %>
+        </div>
+      <% end %>
       <%= field_errors(alert, :requested_visibility) %>
     </section>
   <% end %>

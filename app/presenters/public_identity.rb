@@ -3,6 +3,11 @@
 module PublicIdentity
   module_function
 
+  def anonymous_public
+    { display_name: I18n.t("sgu.public_identity.anonymous_public"), username: nil, public_profile: false,
+      id: nil, avatar_id: nil, verified: false }
+  end
+
   def for(user, internal: false, with_avatar: false)
     if user&.active? && (user.public_profile? || internal)
       { display_name: user.display_name || user.username || I18n.t("sgu.public_identity.anonymous"),

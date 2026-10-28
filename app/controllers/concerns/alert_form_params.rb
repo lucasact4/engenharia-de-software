@@ -3,7 +3,7 @@ module AlertFormParams
   extend ActiveSupport::Concern
 
   OCCURRENCE_FIELDS = %i[
-    title description category_id category_other_description reported_severity
+    title description category_id category_other_description reported_severity anonymous_public
     location_source location_id location_description latitude longitude location_accuracy_meters location_captured_at
     share_exact_location
   ].freeze

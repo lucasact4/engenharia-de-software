@@ -62,7 +62,7 @@ class PublicationProjection
       expires_at: @publication.expires_at&.iso8601,
       comments_enabled: @publication.comments_enabled,
       editorial_identity: I18n.t("sgu.public_identity.editorial"),
-      author: @publication.occurrence? ? PublicIdentity.for(@publication.author, internal: @publication.internal?, with_avatar: true) : { display_name: I18n.t("sgu.public_identity.editorial"), public_profile: false, id: nil, verified: false },
+      author: @publication.occurrence? ? author_identity : { display_name: I18n.t("sgu.public_identity.editorial"), public_profile: false, id: nil, verified: false },
       photos: @publication.ordered_feed_photos.map { |photo| { id: photo.id } },
       location: shared_exact_location,
       own_review: own_review,
@@ -73,6 +73,22 @@ class PublicationProjection
   end
 
   private
+
+    def author_identity
+      if anonymous_public_to_viewer?
+        PublicIdentity.anonymous_public
+      else
+        PublicIdentity.for(@publication.author, internal: @publication.internal?, with_avatar: true)
+      end
+    end
+
+    def anonymous_public_to_viewer?
+      return false unless @publication.public_external? && @publication.alert&.anonymous_public?
+      return true unless @viewer&.active?
+      return false if @publication.author_id == @viewer.id
+
+      !AlertPolicy.new(@viewer, @publication.alert).show_operational_details?
+    end
 
     def own_review
       return unless @viewer&.active? && @publication.occurrence? && @publication.author_id == @viewer.id
