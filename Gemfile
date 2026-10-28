@@ -24,6 +24,8 @@ gem "propshaft", "1.3.2"
 gem "sqlite3", "2.10.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "8.0.2"
+# Render presentation PDFs with Chromium, also outside the test environment.
+gem "selenium-webdriver", "4.51.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -104,5 +106,4 @@ group :test do
   # Rails default GEMS
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara", "3.40.0"
-  gem "selenium-webdriver", "4.51.0"
 end

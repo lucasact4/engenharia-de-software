@@ -9,6 +9,7 @@
      data-presentation-catalog-value="<%= presentation_catalog_data(@presentation, delivery: @selection.delivery).to_json %>"
      data-presentation-choices-value="<%= @selection.to_h.to_json %>"
      data-presentation-limit-value="<%= @selection.limit_seconds.to_i %>"
+     data-presentation-pdf-url-value="<%= presentation_pdf_path(locale: nil, perfil: @profile&.id) %>"
      data-action="click->presentation#followSlideLink">
   <a class="apr-skip" href="#apr-deck">Pular para os slides</a>
 
@@ -47,10 +48,11 @@
         <%= render "presentations/shared/icon", name: "expand" %><span>Tela cheia</span>
       </button>
       <button type="button" class="apr-btn" hidden
-              data-presentation-target="enhanced"
-              data-action="presentation#print">
-        <%= render "presentations/shared/icon", name: "printer" %><span>Imprimir / salvar PDF</span>
+              data-presentation-target="enhanced pdfButton"
+              data-action="presentation#downloadPdf">
+        <%= render "presentations/shared/icon", name: "printer" %><span>Baixar PDF</span>
       </button>
+      <p class="apr-pdf-status" role="status" aria-live="polite" data-presentation-target="pdfStatus" hidden></p>
       <%= link_to root_path(locale: nil), class: "apr-btn apr-btn--primary apr-local-only" do %>
         <span>Abrir o SGU</span><%= render "presentations/shared/icon", name: "arrow" %>
       <% end %>
