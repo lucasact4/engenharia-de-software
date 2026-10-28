@@ -134,7 +134,7 @@ RSpec.describe "Presentation revision", type: :feature, js: true do
     find(".apr-share-button").click
     expect(page).to have_css(".apr-lightbox[open] img[src*='apresentacao-qr']")
     press(:escape)
-    expect(find("#s-capa .apr-access a")["href"]).to eq("https://eduardo-hulkier-zayne.ngrok-free.dev/apresentacao#s-capa")
+    expect(find("#s-capa .apr-access a")["href"]).to eq("https://sgu.lucasact4.com.br/apresentacao#s-capa")
   end
 
   it "shows an index without per-slide duration and readable timer contrast in the light theme" do

@@ -48,7 +48,7 @@
     </div>
     <div data-category-details-target="details"><%= f.label :category_other_description, "Qual situação?", class: "sgu-label" %><%= f.text_area :category_other_description, rows: 2, maxlength: 500, class: "sgu-input" %><%= field_errors(alert, :category_other_description) %></div>
     <% unless correcting %>
-      <fieldset class="severity-picker"><legend class="sgu-label"><span class="inline-flex items-center gap-2">Gravidade percebida <%= render "shared/tooltip", label: "Como avaliar a gravidade", text: "É sua percepção da situação, não a prioridade do atendimento. A equipe faz sua própria avaliação. Em risco imediato, procure os serviços de emergência." %></span></legend>
+      <fieldset class="severity-picker"><legend class="sgu-label"><span class="inline-flex items-center gap-2">Gravidade percebida <%= render "shared/tooltip", label: "Como avaliar a gravidade", text: "Considere o impacto da situação em pessoas, acessibilidade, serviços ou patrimônio. Gravidade não define a ordem da fila: a equipe avalia a situação e define a prioridade separadamente. Se houver risco imediato, procure os serviços de emergência." %></span></legend>
         <div class="severity-grid">
           <% options.reported_severities.each do |option| %><label class="severity-choice severity-<%= option.value %>"><%= f.radio_button :reported_severity, option.value %><span><strong><%= option.label %></strong><small><%= option.description %></small></span></label><% end %>
         </div>

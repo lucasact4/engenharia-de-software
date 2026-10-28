@@ -73,7 +73,8 @@ pt-br:
       inactive: "está inativo e não pode ser escolhido"
       immutable: "não pode ser alterado depois da criação"
       reason_required: "Informe o motivo desta ação."
-      required_for_occurrence: "é obrigatória em ocorrências comuns (GPS ou local do catálogo)"
+      required_for_occurrence: "Informe a localização da ocorrência por GPS, ponto no mapa ou local descrito/cadastrado."
+      required_for_manual: "informe um local cadastrado ou descreva onde aconteceu (mínimo de 3 caracteres)"
       coordinates_pair: "Latitude e longitude devem ser informadas juntas."
       gps_coordinates_required: "Localização por GPS exige latitude e longitude."
       manual_without_coordinates: "Seleção manual de local não grava coordenadas."
@@ -155,15 +156,15 @@ pt-br:
         internal: { label: "Interna", description: "Visível para pessoas autenticadas." }
         restricted: { label: "Restrita", description: "Visível para o autor e a equipe responsável." }
       severity:
-        low: { label: "Leve", description: "Incômodo sem risco imediato." }
-        moderate: { label: "Moderada", description: "Afeta o uso de um espaço ou serviço." }
-        high: { label: "Alta", description: "Risco relevante a pessoas ou ao patrimônio." }
-        critical: { label: "Crítica", description: "Risco grave e imediato." }
+        low: { label: "Leve", description: "Impacto localizado e pequeno, sem risco relevante à segurança ou interrupção importante." }
+        moderate: { label: "Moderada", description: "Afeta o uso de um espaço ou serviço, sem perigo imediato." }
+        high: { label: "Alta", description: "Interrupção importante ou risco significativo para pessoas, acessibilidade ou patrimônio." }
+        critical: { label: "Crítica", description: "Ameaça grave e imediata à vida ou à integridade física; procure também os serviços de emergência." }
       priority:
-        low: { label: "Baixa", description: "Pode aguardar a fila normal." }
-        normal: { label: "Normal", description: "Atendimento na ordem regular." }
-        high: { label: "Alta", description: "Deve ser atendida antes das demais." }
-        urgent: { label: "Urgente", description: "Exige ação imediata." }
+        low: { label: "Baixa", description: "A equipe pode manter na fila conforme a avaliação do atendimento." }
+        normal: { label: "Normal", description: "Segue a ordem regular da fila definida pela equipe." }
+        high: { label: "Alta", description: "A equipe prioriza antes dos atendimentos de rotina." }
+        urgent: { label: "Urgente", description: "A equipe considera necessária uma resposta imediata." }
       status:
         received: { label: "Recebida", description: "Registrada no sistema; ainda não avaliada." }
         triaging: { label: "Em triagem", description: "Equipe avaliando severidade, prioridade e responsável." }

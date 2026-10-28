@@ -367,16 +367,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
 
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
-    t.string "business_name"
-    t.text "cnpj"
-    t.text "cpf"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "email_address", null: false
-    t.string "mother_name"
     t.string "password_digest", null: false
-    t.string "person_type", default: "natural", null: false
-    t.text "phone"
     t.datetime "updated_at", null: false
     t.string "display_name"
     t.string "username"
@@ -390,6 +384,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
     t.integer "registration_reviewed_by_id"
     t.datetime "verified_at"
     t.integer "verified_by_id"
+    t.string "business_name"
+    t.string "mother_name"
+    t.text "cpf"
+    t.text "cnpj"
+    t.string "person_type", default: "natural", null: false
+    t.text "phone"
     t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
     t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"

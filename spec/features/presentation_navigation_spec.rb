@@ -113,7 +113,8 @@ RSpec.describe "Presentation navigation", type: :feature, js: true do
 
       press(:escape)
       expect(page).to have_no_css(".apr-custom[open]")
-      expect(page.evaluate_script("document.activeElement.id")).to eq("s-evolucao")
+      # O dialog perde [open] antes do evento close que leva o foco ao slide; espera em vez de ler na hora.
+      expect(page).to have_css("#s-evolucao", focused: true)
       expect(page.evaluate_script("location.hash")).to eq("#s-evolucao")
       expect(slide_counter).to have_text("/ #{main_count - 1}")
 
@@ -186,7 +187,8 @@ RSpec.describe "Presentation navigation", type: :feature, js: true do
   it "exports the reading deck with logos outside the viewport loaded" do
     visit "#{presentation_path}?modo=leitura"
     uri = URI(page.current_url)
-    uri.host = "rails-app"
+    # O Chrome do serviço Selenium alcança o app pelo nome do contêiner; o Chrome local (CI), pelo host atual.
+    uri.host = "rails-app" if ENV["SELENIUM_REMOTE_URL"]
     # O serviço Selenium admite uma sessão: libera a do Capybara antes de abrir o exportador.
     page.driver.quit
 
