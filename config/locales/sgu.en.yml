@@ -9,7 +9,8 @@ en:
       inactive: "is inactive and cannot be selected"
       immutable: "cannot be changed after creation"
       reason_required: "Provide a reason for this action."
-      required_for_occurrence: "is required for regular occurrences (GPS or catalog location)"
+      required_for_occurrence: "Provide the occurrence location by GPS, map point, or a described/cataloged place."
+      required_for_manual: "select a catalog location or describe where it happened (at least 3 characters)"
       coordinates_pair: "Latitude and longitude must be provided together."
       gps_coordinates_required: "GPS location requires latitude and longitude."
       manual_without_coordinates: "Manual location selection does not store coordinates."
@@ -75,15 +76,15 @@ en:
         internal: { label: "Internal", description: "Visible to authenticated people." }
         restricted: { label: "Restricted", description: "Visible to the author and the responsible team." }
       severity:
-        low: { label: "Low", description: "Nuisance without immediate risk." }
-        moderate: { label: "Moderate", description: "Affects the use of a space or service." }
-        high: { label: "High", description: "Relevant risk to people or property." }
-        critical: { label: "Critical", description: "Severe and immediate risk." }
+        low: { label: "Low", description: "Small, localized impact without a material safety risk or major disruption." }
+        moderate: { label: "Moderate", description: "Affects the use of a space or service without immediate danger." }
+        high: { label: "High", description: "Major disruption or significant risk to people, accessibility, or property." }
+        critical: { label: "Critical", description: "Severe and immediate threat to life or physical safety; also contact emergency services." }
       priority:
-        low: { label: "Low", description: "Can wait in the regular queue." }
-        normal: { label: "Normal", description: "Regular order." }
-        high: { label: "High", description: "Handle before the others." }
-        urgent: { label: "Urgent", description: "Requires immediate action." }
+        low: { label: "Low", description: "The team may keep it in the queue according to its handling assessment." }
+        normal: { label: "Normal", description: "Follows the regular order set by the team." }
+        high: { label: "High", description: "The team places it ahead of routine cases." }
+        urgent: { label: "Urgent", description: "The team considers an immediate response necessary." }
       status:
         received: { label: "Received", description: "Stored by the system; not yet assessed." }
         triaging: { label: "Triaging", description: "Team assessing severity, priority and assignee." }

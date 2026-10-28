@@ -48,10 +48,15 @@ dimensoes:
     estado: implementado
     nota: "Catálogo administrável, com descrições e exemplos no formulário."
   - nome: "Severidade"
-    pergunta: "Qual a gravidade/impacto?"
+    pergunta: "Qual o impacto da situação?"
     exemplos: ["Leve", "Moderada", "Alta", "Crítica", "Não sei avaliar"]
-    estado: aguardando_decisao
-    nota: "Escala proposta pelo responsável; falta consolidar os critérios com a equipe. Não confundir com prioridade de atendimento."
+    estado: implementado
+    nota: "Critérios orientados pelo impacto em pessoas, acessibilidade, serviços e patrimônio. O autor pode não avaliar; a equipe registra sua avaliação separadamente."
+  - nome: "Prioridade"
+    pergunta: "Em que ordem a equipe deve atender?"
+    exemplos: ["Baixa", "Normal", "Alta", "Urgente"]
+    estado: implementado
+    nota: "Definida pela equipe na triagem para ordenar a fila; não é calculada automaticamente a partir da severidade percebida."
   - nome: "Status"
     pergunta: "Em que etapa?"
     exemplos: ["Recebida", "Em análise", "Resolvida"]
@@ -63,10 +68,10 @@ dimensoes:
     estado: aguardando_decisao
     nota: "Regra implementada: post interno para autenticados; externo direto para verificados ou após aprovação; pânico e detalhes operacionais restritos."
 
-regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgente pode ser privada, e uma ocorrência resolvida pode continuar pública."
+regra_dimensoes: "Categoria, severidade, prioridade, status e visibilidade são dimensões independentes: uma ocorrência urgente pode ser privada, uma ocorrência grave pode aguardar avaliação da equipe e uma ocorrência resolvida pode continuar pública."
 
-# Requisitos refinados (lista oficial consolidada no card #13). Preencha somente com o que
-# estiver no documento aprovado pela equipe; deixe a lista vazia enquanto ele não existir.
+# Requisitos refinados deste recorte, com base na lista vigente enviada pelo responsável do projeto.
+# A referência a um documento oficial permanece pendente até que o artefato seja disponibilizado.
 # Formato:
 #   - id: "RF001"                     # identificador do documento
 #     tipo: funcional                 # funcional | nao_funcional
@@ -76,7 +81,28 @@ regra_dimensoes: "As quatro dimensões são independentes: uma ocorrência urgen
 #     criterios_aceite:               # condições verificáveis (ex.: Dado/Quando/Então)
 #       - "Dado um usuário autenticado, quando enviar categoria e local, então a ocorrência fica com status Recebida."
 #     estado: planejado               # implementado | parcial | planejado | aguardando_decisao | aguardando_evidencia
-requisitos_refinados: []
+requisitos_refinados:
+  - id: "RF009"
+    tipo: funcional
+    titulo: "Exigir localização em ocorrência comum"
+    descricao: "Toda ocorrência comum deve informar o local por GPS, ponto no mapa ou local selecionado/descrito. Pedidos de pânico podem usar a localização indisponível quando a pessoa não puder compartilhá-la."
+    criterios_aceite:
+      - "Uma ocorrência comum sem localização não é salva; o formulário explica que GPS, ponto no mapa ou local cadastrado/descrição são aceitos."
+      - "GPS e mapa exigem latitude e longitude válidas; precisão e horário de captura só são registrados quando a origem é GPS."
+      - "A origem manual exige local cadastrado ou descrição com pelo menos 3 caracteres e não grava coordenadas."
+      - "Um pedido de pânico pode ser registrado sem coordenadas quando a localização está indisponível, com o motivo informado."
+    estado: implementado
+  - id: "RF017"
+    tipo: funcional
+    titulo: "Classificar severidade separadamente da prioridade"
+    descricao: "A severidade descreve o impacto percebido ou avaliado; a prioridade é definida pela equipe para ordenar o atendimento."
+    criterios_aceite:
+      - "Leve indica impacto localizado e pequeno, sem risco relevante à segurança ou interrupção importante."
+      - "Moderada indica impacto no uso de um espaço ou serviço, sem perigo imediato."
+      - "Alta indica interrupção importante ou risco significativo para pessoas, acessibilidade ou patrimônio."
+      - "Crítica indica ameaça grave e imediata à vida ou à integridade física; a orientação também indica procurar os serviços de emergência."
+      - "O autor pode escolher Não sei avaliar; a severidade percebida, a severidade avaliada pela equipe e a prioridade são armazenadas separadamente."
+    estado: implementado
 
 # Conflitos conhecidos entre versões dos requisitos.
 conflitos:
@@ -89,11 +115,6 @@ conflitos:
     tema: "Foto da ocorrência"
     anterior: "Foto opcional."
     proposta: "Foto obrigatória."
-    estado: aguardando_decisao
-  - id: "RF009"
-    tema: "Localização"
-    anterior: "Localização opcional."
-    proposta: "Localização obrigatória no registro comum; definir precisão e exceções para emergência."
     estado: aguardando_decisao
   - id: "RF012"
     tema: "Localização em tempo real"

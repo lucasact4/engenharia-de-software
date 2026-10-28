@@ -159,7 +159,7 @@ class Alert < ApplicationRecord
       when "gps", "map"
         errors.add(:base, :gps_coordinates_required) if latitude.nil? || longitude.nil?
       when "manual"
-        errors.add(:location_description, "informe o local (mínimo 3 caracteres)") if location.nil? && location_description.to_s.strip.length < 3
+        errors.add(:location_description, :required_for_manual) if location.nil? && location_description.to_s.strip.length < 3
         errors.add(:base, :manual_without_coordinates) if latitude.present? || longitude.present?
       when "unavailable"
         errors.add(:base, :unavailable_without_location) if location.present? || latitude.present?
