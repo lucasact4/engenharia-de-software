@@ -82,14 +82,14 @@ This continuation keeps the same application/profile architecture and stable sli
 
 - [`experience.css`](../app/assets/stylesheets/presentation/experience.css) scopes the sage light palette to the presentation and preserves the selected theme in print: colors, logos, and light/dark screen captures. It also styles the timeline, timer, sharing, and responsive index.
 - [`presentation_timer_controller.js`](../app/javascript/controllers/presentation_timer_controller.js) and [`_timer.html.erb`](../app/views/presentations/shared/_timer.html.erb) start paused at **seven minutes**. Start, pause, reset, and editing **1–120 whole minutes** are available. Applying a new duration resets and pauses; no automatic start occurs. A real deadline based on `Date.now()` prevents delayed intervals in background tabs from slowing the countdown. Public index/customization omit per-slide times and summed estimates; internal timing metadata remains compatible.
-- [`_share_code.html.erb`](../app/views/presentations/shared/_share_code.html.erb) uses `entrega.yml` → `links.apresentacao` and `links.qr_code`. The local QR PNG encodes the exact configured public ngrok address, including `/apresentacao#s-capa`. This tunnel is public access to the presentation, not a production deployment.
-- [`gerar_qr_apresentacao.py`](../script/gerar_qr_apresentacao.py) takes `URL [--output arquivo.png]`. Update the public URL in `entrega.yml` and regenerate the PNG together whenever the address changes. Python, `qrcode`, and Pillow are generator requirements only; `qrcode` and `zxing-cpp` under `tmp/qa_dependencies` were QA tools, not Rails dependencies. Regeneration reproduces the checked PNG byte for byte.
+- [`_share_code.html.erb`](../app/views/presentations/shared/_share_code.html.erb) uses `entrega.yml` → `links.apresentacao` and `links.qr_code`. The public presentation target is now `https://sgu.lucasact4.com.br/apresentacao#s-capa`; the root domain remains routed to the same application. `links.apresentacao` now uses that address; the QR PNG must encode the same URL, including the fragment. This Cloudflare Tunnel exposes the local development application for demos. The subdomain DNS CNAME exists; the coordinator verified HTTPS access and decoded the regenerated served PNG on **19/10/2026**, as recorded below. See [Cloudflare startup and checks](cloudflare-tunnel.md#normal-startup-and-checks).
+- [`gerar_qr_apresentacao.py`](../script/gerar_qr_apresentacao.py) takes `URL [--output arquivo.png]`. Update the public URL in `entrega.yml` and regenerate the PNG together whenever the address changes. Python, `qrcode`, and Pillow are generator requirements only; `qrcode` and `zxing-cpp` under `tmp/qa_dependencies` were QA tools, not Rails dependencies. The generator now uses high error correction (H) and centers the existing `app/assets/images/brand/sgu-simbolo.png` on a white badge by default; no branding option is required. Earlier byte-for-byte reproduction applies to the previous unbranded QR. The coordinator decoded the regenerated branded PNG to the new URL, including `#s-capa`.
 - [`repositorio.png`](../app/assets/images/presentation/github/repositorio.png) is the supplied GitHub screenshot, preserved byte for byte. SHA-256: `8c5484161a039afdf400fd482655dc7107c7c797c88b4555ca0d588283549c69`. The former missing-repository-capture item is resolved; optional individual code captures remain absent.
 - [`evolucao.yml`](../config/presentation/evolucao.yml) supplies **eleven chronological milestones**: landing 14/09, first delivery 23/09, use cases **≈30/09**, initial web presentation 01/10, data/migration and conceptual model 02/10, operation and meeting 03/10, retrospective/planning, brand, and revised presentation 04/10. The use-case date has `estimada: true` and an explicit note that the actual update date is unknown; it is not a verified commit date or fabricated artifact. Source commits stay internal rather than appearing as timeline buttons. The 04/10 retrospective/planning milestone does not establish the date of the original retrospective session.
 - [`planejamento.yml`](../config/presentation/planejamento.yml) now has a fifth future priority: simplify publishing/following and use persuasive design inspired by Instagram to encourage campus participation. This describes intended UX work; likes alone do not mean a gamification system exists. `letter_opener`, official location seeds, and email confirmation remain future work.
 - [`exportar_apresentacao_pdf.rb`](../script/exportar_apresentacao_pdf.rb) accepts `APRESENTACAO_TEMA=dark` (default) or `light`. The PDF keeps the chosen theme and capture variants. `presentation_public_asset_url` in [`presentations_helper.rb`](../app/helpers/presentations_helper.rb) makes image links use the configured public host; code links and internal appendix return links remain clickable. The exporter may fetch Rails through its container address, while PDF image links use the public address.
 
-### Current validation — experience/PDF and native appendix links
+### Historical validation — experience/PDF and native appendix links
 
 | Check | Confirmed result |
 | --- | --- |
@@ -102,11 +102,27 @@ This continuation keeps the same application/profile architecture and stable sli
 | Desktop visual review | **20 captures**: all ten main slides at 1920×1080 in both themes. |
 | Responsive review | All ten main slides at **320×568**, **390×844**, **768×1024**, and **1366×768**, in both themes, without horizontal overflow. |
 | PDF review | Both exports have **14 pages**, **31 public HTTP(S) links**, and **nine valid internal destinations** each; all **28 pages** rendered and reviewed. |
-| QR verification | Exact configured URL decoded from the PNG and from the cover raster of both themed PDFs. |
+| QR verification (historical) | The previous configured URL was decoded from the PNG and cover raster of both themed PDFs. Current branded PNG checks are recorded separately below; the new PDF's QR raster was not decoded. |
 
 The complete exports are `tmp/apresentacao/sgu-atual-escuro.pdf` and `tmp/apresentacao/sgu-atual-claro.pdf`, each ten main slides plus four selected DER appendices. The PDFs contain no localhost or `rails-app` links. This page count reflects the actual selected development profile and changes with selection. Timers/dialogs/navigation controls are omitted from print, and the meeting still prints all four originals.
 
 Three existing assertions were adapted to the intentional removal of public estimates, presentation-specific color, and public image-link target/rel behavior; their focused check passed **3 examples, 0 failures** before the final integrated run. Previous failed runs and the historical 720/1 report retain their original results.
+
+### 19/10/2026 — public subdomain verification
+
+The coordinator confirmed these checks on **19/10/2026**, separately from the historical refinement results above.
+
+| Check | Confirmed result |
+| --- | --- |
+| Public HTTPS | HTTP 200 for `/`, `/up`, and `/apresentacao` on both `sgu.lucasact4.com.br` and `lucasact4.com.br`. |
+| HTML and assets | Presentation HTML contains `https://sgu.lucasact4.com.br/apresentacao#s-capa` and no ngrok references. All 30 HTML-referenced local assets returned HTTP 200 over HTTPS. |
+| Branded QR PNG | The served PNG decoded to the exact new URL. The local PNG also decoded at its original 784 pixels and at 328, 240, and 180 pixels. |
+| Request and QR feature specs | **18 examples, 0 failures**. |
+| Public PDF download | `POST /apresentacao/pdf` with CSRF returned HTTP 200, `application/pdf`, **5,542,482 bytes**, **14 pages**. PDF annotation links use the new subdomain with no ngrok references. |
+
+The downloaded artifact is `tmp/apresentacao-dominio-publico.pdf` (untracked). These checks did not include QR raster decoding from the new PDF or physical-phone scanning.
+
+Previously exported PDFs and printed QR codes containing the old ngrok or root-domain presentation address must be regenerated and replaced before redistribution. Historical PDF/QR checks above do not validate those new exports.
 
 Remaining evidence/operational gaps are the unattached use-case and occurrence-flow artifacts, requirement mapping, retrospective session date/recorded actions, optional code screenshots, and actual deployment/email/location work. The approximate use-case timeline entry does not resolve the missing artifact. Changing or stopping the tunnel can break public presentation/image links; update the configuration, regenerate/decode the QR, and recheck external access and PDF links before presenting.
 
