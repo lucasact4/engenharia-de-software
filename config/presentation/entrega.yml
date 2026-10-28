@@ -23,7 +23,7 @@ equipe:
 
 # Links públicos. Nunca use caminhos locais (C:\, \\wsl, /mnt, /home).
 links:
-  apresentacao: "https://eduardo-hulkier-zayne.ngrok-free.dev/apresentacao#s-capa"
+  apresentacao: "https://sgu.lucasact4.com.br/apresentacao#s-capa"
   qr_code: "presentation/acesso/apresentacao-qr.png"
   github: "https://github.com/lucasact4/engenharia-de-software"
   trello: "https://trello.com/b/1cLXCnNU/sgu-sistema-de-gerenciamento-urbano"
