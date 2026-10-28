@@ -1,10 +1,11 @@
 <section class="composer-section" role="group" aria-labelledby="occurrence_location_label" data-controller="geolocation">
-  <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("map-pin", "size-5") %></span><h2 id="occurrence_location_label">Localização</h2><%= render "shared/tooltip", label: "Como informar a localização", items: [
-    {title: "Local do campus · opcional", text: "Selecione um prédio, rua ou área quando estiver cadastrado. Pode complementar o GPS ou o mapa."},
+  <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("map-pin", "size-5") %></span><h2 id="occurrence_location_label">Localização · obrigatória</h2><%= render "shared/tooltip", label: "Como informar a localização", items: [
+    {title: "Local do campus", text: "O catálogo ajuda a identificar um prédio, rua ou área. Se não houver coordenadas, selecione um local cadastrado ou descreva onde aconteceu."},
     {title: "GPS", text: "Captura a posição atual somente após seu clique e autorização. Precisão e horário são registrados."},
     {title: "Mapa", text: "Clique no local, arraste o marcador ou use as coordenadas de um link completo do Google Maps. Isso não é uma captura GPS."},
     {title: "Privacidade", text: "Coordenadas e precisão são restritas ao atendimento; não aparecem no mural público."}
   ] %></div>
+  <p class="composer-hint">Para registrar uma ocorrência comum, informe o local por GPS, marque um ponto no mapa ou selecione/descreva um local do campus. O catálogo é opcional quando você já informou coordenadas.</p>
   <div>
     <%= f.label :location_id, "Local do campus", class: "sgu-label" %>
     <%= f.select :location_id, options_from_select_options(options.locations, alert.location_id, include_blank: "Nenhum local cadastrado selecionado"), {}, class: "sgu-input", data: {geolocation_target: "catalog", action: "change->geolocation#catalogChanged"} %>
