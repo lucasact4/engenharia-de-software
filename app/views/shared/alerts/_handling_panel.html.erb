@@ -16,7 +16,7 @@
   <% if policy.assess? %>
     <section class="sgu-card p-5" aria-labelledby="handling_assessment_title">
       <h2 id="handling_assessment_title" class="sgu-section-title">Classificação</h2>
-      <p class="mt-1 text-xs text-muted">Severidade avaliada e prioridade são da equipe e não alteram a severidade percebida pelo autor.</p>
+      <p class="mt-1 text-xs text-muted">A severidade avaliada descreve o impacto; a prioridade organiza a fila de atendimento. A equipe define ambas na triagem, independentemente da severidade percebida pelo autor.</p>
       <%= form_with url: urls[:assessment], method: :patch, id: "handling_assessment_form", class: "mt-4 space-y-3" do %>
         <%= hidden_field_tag :lock_version, alert.lock_version, id: "handling_assessment_lock_version" %>
         <div>
