@@ -5,7 +5,7 @@
 #
 # Variáveis opcionais:
 #   APRESENTACAO_URL  URL vista pelo Chrome do Selenium (padrão: http://rails-app:3100/apresentacao?modo=leitura)
-#   SELENIUM_REMOTE_URL  definida pelo Dev Container (http://selenium:4444/wd/hub); sem ela, usa o Chrome local
+#   SELENIUM_REMOTE_URL  definida pelo Dev Container (padrão: http://selenium:4444/wd/hub)
 #
 # O servidor precisa aceitar o host "rails-app": inicie-o com RAILS_DEVELOPMENT_HOSTS=rails-app.
 require "base64"
@@ -20,14 +20,7 @@ FileUtils.mkdir_p(File.dirname(output))
 
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument("--headless=new")
-# Mesmo critério do driver do Capybara (spec/spec_helper.rb): fora do Dev Container, como no CI, o Chrome é local.
-remote_url = ENV["SELENIUM_REMOTE_URL"]
-if remote_url
-  driver = Selenium::WebDriver.for(:remote, url: remote_url, options: options)
-else
-  options.add_argument("--no-sandbox")
-  driver = Selenium::WebDriver.for(:chrome, options: options)
-end
+driver = Selenium::WebDriver.for(:remote, url: ENV.fetch("SELENIUM_REMOTE_URL", "http://selenium:4444/wd/hub"), options: options)
 
 begin
   driver.navigate.to(url)
