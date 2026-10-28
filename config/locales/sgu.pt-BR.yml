@@ -97,6 +97,7 @@ pt-br:
       panic_not_publishable: "de pânico não pode gerar publicação"
       incompatible_audience: "não autorizou esta audiência"
       only_for_occurrence: "só pode ser vinculado a publicações de ocorrência"
+      anonymous_public_only_for_occurrence: "só pode ser usado em relatos de ocorrência"
       requires_current_approval: "exige aprovação da versão atual do conteúdo"
       after_publication: "deve ser posterior à publicação"
       not_submittable: "não permite envio para revisão nesta situação"
@@ -119,6 +120,7 @@ pt-br:
   sgu:
     public_identity:
       anonymous: "Pessoa usuária"
+      anonymous_public: "Pessoa anônima"
       editorial: "Equipe do SGU"
     audit:
       publication.created: "Rascunho criado"

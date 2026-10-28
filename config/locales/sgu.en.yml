@@ -3,6 +3,7 @@ en:
   sgu:
     public_identity:
       anonymous: "User"
+      anonymous_public: "Anonymous person"
       editorial: "SGU team"
   errors:
     messages:
@@ -33,6 +34,7 @@ en:
       panic_not_publishable: "of panic type cannot be published"
       incompatible_audience: "did not authorize this audience"
       only_for_occurrence: "can only be linked to occurrence publications"
+      anonymous_public_only_for_occurrence: "can only be used for occurrence reports"
       requires_current_approval: "requires approval of the current content version"
       after_publication: "must be after publication"
       not_submittable: "cannot be submitted for review in this state"
