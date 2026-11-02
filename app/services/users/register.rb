@@ -11,7 +11,10 @@ module Users
 
       approved = Rails.configuration.x.registration.auto_approve
       User.transaction do
-        user = User.new(display_name: registration.display_name, email_address: registration.normalized_email,
+        user = User.new(display_name: registration.display_name, person_type: registration.person_type,
+                        business_name: registration.business_name, mother_name: registration.mother_name,
+                        cpf: registration.cpf, cnpj: registration.cnpj, phone: registration.phone,
+                        email_address: registration.normalized_email,
                         password: registration.password, password_confirmation: registration.password_confirmation,
                         admin: false, public_profile: false, registration_role_code: role.code,
                         registration_status: approved ? "approved" : "pending",

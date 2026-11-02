@@ -1,6 +1,6 @@
 # SGU Presentation Maintenance Guide
 
-The public presentation is `/apresentacao`. Content comes from the YAML files in this directory; display profiles are stored in the database and edited through **Admin → Apresentação**. **Personalizar apresentação** changes only the current browser tab. This guide is in English; quoted slide names and controls match the Portuguese interface.
+The public presentation is `/apresentacao`. Content comes from the YAML files in this directory; display profiles are stored in the database and edited through **Admin → Apresentação**. **Personalizar apresentação** keeps temporary choices in the current tab; **Baixar PDF** sends a copy to the server for that export without saving them. This guide is in English; quoted slide names and controls match the Portuguese interface.
 
 ## Match slides to delivery requirements
 
@@ -54,7 +54,7 @@ Optional material includes problem/proposal, scope, occurrence flow, repository 
 | Slides, content keys, times, defaults | `roteiro.yml`, partials in `app/views/presentations/slides/` | Versioned file changes. |
 | Requirement wording, display titles, order, mapping | `entrega.yml` → `exigencias`, including `slides[].titulo` | Versioned file changes. |
 | Selection for an occasion | `presentation_profiles` table | Admin → Apresentação. |
-| Temporary adjustments | Current browser tab | Personalizar apresentação. |
+| Temporary adjustments | Current browser tab; copied to the server for PDF export | Personalizar apresentação. |
 
 A checkbox means **show content**, not **requirement fulfilled**. It does not create evidence or edit wording. Team-approval notices and confirmation counts have been removed from the slides and checklist. The parser still accepts the legacy `confirmado_pela_equipe` field for compatibility; it is not used as a display gate. All catalog content is rendered in public HTML even when hidden by selection; do not store confidential data in these files.
 
@@ -83,6 +83,8 @@ Catalog timing metadata remains available for maintenance, but public navigation
 ### Temporary customization
 
 **Personalizar apresentação** recalculates sequence, index, counter, progress, appendix access, and printing. **Concluir** closes the panel. **Restaurar padrão do perfil** or reloading discards temporary changes; they are saved neither in the database nor browser storage.
+
+**Baixar PDF** submits the current checkbox choices and theme to the server only for generating that download. It preserves the profile being previewed and does not update its saved selection.
 
 If the current slide is hidden, navigation moves to the next visible slide, or the previous one when necessary. Tab/Enter operate the panel; Esc closes it. Without JavaScript, reading mode uses the saved profile and has no customization panel.
 
@@ -286,15 +288,17 @@ The timer starts **paused at 07:00**; opening the presentation never starts it a
 
 The public index and customization panel show slide titles and selections without per-slide times or total estimates. Historical timing metadata remains available internally. The implementation is `app/javascript/controllers/presentation_timer_controller.js` with `shared/_timer.html.erb`.
 
-The QR code on the cover and navigation opens the public presentation. Configure both `entrega.yml` → `links.apresentacao` (the full public URL, including `#s-capa`) and `links.qr_code` (asset path relative to `app/assets/images`). Current PNG: `presentation/acesso/apresentacao-qr.png`. The configured ngrok URL is a temporary public tunnel, not evidence of a production deployment; verify it is reachable before sharing or exporting.
+The QR code on the cover and navigation opens the public presentation. Configure both `entrega.yml` → `links.apresentacao` (the full public URL, including `#s-capa`) and `links.qr_code` (asset path relative to `app/assets/images`). Current PNG: `presentation/acesso/apresentacao-qr.png`. The public presentation address is `https://sgu.lucasact4.com.br/apresentacao#s-capa`; `https://lucasact4.com.br/` remains routed to the application. This Cloudflare Tunnel exposes the local development application for demos. The subdomain DNS CNAME, tunnel ingress, Rails allowed host, and configured presentation URL are in place. On **2026-10-19**, the coordinator confirmed HTTP 200 over HTTPS for `/`, `/up`, and `/apresentacao` on both hosts and decoded the served QR PNG to the exact subdomain URL. See [Cloudflare startup and checks](../../docs/cloudflare-tunnel.md#normal-startup-and-checks).
 
 Changing the public address requires updating `links.apresentacao` **and regenerating the PNG with the exact same URL**:
 
 ```bash
-python3 script/gerar_qr_apresentacao.py 'https://YOUR-PUBLIC-HOST/apresentacao#s-capa'
+python3 script/gerar_qr_apresentacao.py 'https://sgu.lucasact4.com.br/apresentacao#s-capa'
 ```
 
-Replace the example host with the actual configured address. Optional `--output arquivo.png` changes the destination; the default is `app/assets/images/presentation/acesso/apresentacao-qr.png`. Python, `qrcode`, and Pillow are required only for regeneration, not Rails runtime. QA used `qrcode` and `zxing-cpp` under `tmp/qa_dependencies`; decoding is a verification step, not a runtime Rails dependency. The generator reproduced the current PNG byte for byte, and decoding confirmed the exact configured URL, including the fragment.
+Run the command from the repository root. Optional `--output arquivo.png` changes the destination; the default is `app/assets/images/presentation/acesso/apresentacao-qr.png`. The generator uses high error correction (H) and centers the existing `app/assets/images/brand/sgu-simbolo.png` on a white badge by default; no branding option is required. Python, `qrcode`, and Pillow are required only for regeneration, not Rails runtime. QA used `qrcode` and `zxing-cpp` under `tmp/qa_dependencies`; decoding is a verification step, not a runtime Rails dependency. Earlier byte-for-byte reproduction and PDF raster decoding results apply to the previous QR. The current served PNG and local branded PNG at 784, 328, 240, and 180 pixels decoded to the exact subdomain URL, including `#s-capa`. Physical-phone scanning and QR raster decoding from the new PDF were not tested. See [dated public verification](../../docs/apresentacao-refinamento-revisao.md#19102026--public-subdomain-verification) for asset, request/QR spec, and public PDF checks.
+
+Regenerate and replace previously exported PDFs and printed QR codes containing the old ngrok or root-domain address; changing the source URL and PNG does not update existing copies.
 
 `presentation_public_asset_url` derives **Abrir imagem** URLs from the public presentation address so exported image links do not point to the Selenium container. Those links open in a new tab with `noopener noreferrer`. Update the public URL before PDF export and confirm external access while the tunnel is running.
 
@@ -304,9 +308,19 @@ Use `bin/dev` in the Dev Container and open `http://localhost:3000/apresentacao`
 
 The presenting-mode layout target is a 1920×1080 viewport with the default second-delivery selection. `spec/features/presentation_revision_spec.rb` checks slide fit and mobile width. The earlier brand revision recorded some vertical scrolling in a shorter browser window; use **F** for full screen and check the actual projector/browser dimensions. Consult [the refinement review](../../docs/apresentacao-refinamento-revisao.md) for current measured results rather than assuming earlier measurements validate these changes.
 
-Use **Imprimir / salvar PDF** or Ctrl+P for A4 landscape, one slide per page, including selected appendices. Browser printing respects temporary selection and the active theme, including screenshots, background colors, and logos. It removes controls/maintenance notes and needs background graphics enabled. The PDF preserves public image/code links and internal appendix return destinations. Dialogs and information buttons are not printed; instead, print shows compact evidence lines (file basenames and tests) and the short notes of partial items.
+Use **Baixar PDF** to download the current selection and theme directly, including selected appendices, without opening the browser print dialog. While **Gerando PDF…** is shown, wait for the download; errors appear beside the button and allow retrying.
 
-For Selenium export, run an additional presentation server in a separate Dev Container terminal:
+The downloaded PDF starts with a separate full-page access QR before the cover: a centered 168mm square branded QR and links to the configured public presentation URL. This intro has no folio and is excluded from slide numbering; the ten main slides remain **01/10–10/10**. Ten main slides plus four appendices produce **15 pages** including the intro; a minimal cover/closing selection produces **three pages**. These changes apply only to downloaded PDFs; the website layout and navigation remain unchanged.
+
+The PDF uses A4 landscape with 10mm top/bottom and 12mm side page margins. Main-slide text automatically enlarges to fit the physical printable area, with a three-column timeline and more room for figures. Appendices retain their existing typography. Any remaining overflow is scaled to fit. Public image/code links and internal appendix destinations remain clickable. Controls, maintenance notes, dialogs, and information buttons are omitted; compact evidence lines and short partial-item notes remain.
+
+For this PDF refinement, coordinator checks passed **26 targeted request/browser examples, 0 failures**, and RuboCop reported **2 files, 0 offenses**. Dark/light exports each have **15 pages** and **42 annotation links, including 9 internal links**; the minimal selection has **3 pages**. Measurements found no child content outside printable bounds in either theme. The coordinator visually reviewed the final Poppler renders in both themes and decoded each rendered intro QR to the configured subdomain URL. The updated PDF downloaded over public HTTPS with HTTP 200; its links contain no ngrok or local renderer addresses.
+
+The download posts to `/apresentacao/pdf` with CSRF protection. [`Presentation::Pdf`](../../app/services/presentation/pdf.rb) renders the server's presentation HTML with styles and images embedded, so the renderer does not need to open the public domain or another Rails URL. The Dev Container supplies Chromium through `SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub`; keep its Selenium service available. Outside that environment, configure a reachable Selenium Chrome service or provide local Chrome/Chromium and the dependencies/permissions needed by Selenium Manager. `selenium-webdriver` is a runtime dependency, but the production Dockerfile does not install Chromium or provision a renderer; configure one before offering PDF downloads in production. Overlapping exports in the same Rails process return a retryable busy response.
+
+Ctrl+P remains available for manual browser printing. Select A4 landscape, enable background graphics, and review the preview; this path uses the website's print layout without the download-only QR intro or automatic slide fitting.
+
+The existing command-line Selenium exporter is a separate workflow for saved profiles. It opens a presentation URL and uses the website's print layout without the download-only QR intro or automatic fitting. It does not receive temporary choices from another browser tab. Run an additional presentation server in a separate Dev Container terminal:
 
 ```bash
 RAILS_DEVELOPMENT_HOSTS=rails-app bin/rails server -b 0.0.0.0 -p 3100 -P tmp/pids/apresentacao-3100.pid
@@ -332,7 +346,15 @@ Replace `<id>` using administration's **Visualizar** link. The Dev Container def
 
 ## Validation
 
-The final integrated run after the native appendix-link correction passed **731 examples, 0 failures**, seed **65244**, in **4 min 24.5 sec**, with **97.15%** line coverage (4,270/4,395); log: `tmp/qa_final_verified.log`. RuboCop checked **319 files without offenses**; Zeitwerk, Brakeman (no warnings), Tailwind, JavaScript syntax, and `git diff --check` passed. Visual checks include 20 Full HD captures and all ten main slides at 320×568, 390×844, 768×1024, and 1366×768 in both themes without horizontal overflow. Both themed PDFs have **14 reviewed pages**, **31 public HTTP(S) links**, and **nine valid internal destinations** each, with no localhost/container-host links. The cover QR was decoded from both PDF rasters. The native appendix-link correction also passed **two targeted request/browser examples, zero failures**. The preceding 730/0 and 726/0 runs remain previous validations; see [the refinement review](../../docs/apresentacao-refinamento-revisao.md) for both phases and evidence boundaries.
+The earlier integrated run after the native appendix-link correction passed **731 examples, 0 failures**, seed **65244**, in **4 min 24.5 sec**, with **97.15%** line coverage (4,270/4,395); log: `tmp/qa_final_verified.log`. RuboCop checked **319 files without offenses**; Zeitwerk, Brakeman (no warnings), Tailwind, JavaScript syntax, and `git diff --check` passed. Visual checks include 20 Full HD captures and all ten main slides at 320×568, 390×844, 768×1024, and 1366×768 in both themes without horizontal overflow. Both themed PDFs have **14 reviewed pages**, **31 public HTTP(S) links**, and **nine valid internal destinations** each, with no localhost/container-host links. The cover QR was decoded from both PDF rasters. The native appendix-link correction also passed **two targeted request/browser examples, zero failures**. These results predate the direct-download endpoint and the branded subdomain QR migration. The preceding 730/0 and 726/0 runs remain previous validations; see [the refinement review](../../docs/apresentacao-refinamento-revisao.md) for both phases and evidence boundaries.
+
+Focused direct-download checks cover transient selections, profile preservation, attachment responses, renderer failures, busy responses, button progress, and retry messages:
+
+```bash
+bundle exec rspec spec/requests/presentation_pdf_request_spec.rb spec/features/presentation_pdf_spec.rb
+```
+
+The request specs stub the renderer and the browser specs stub its response. Also download a real PDF and inspect its page count, padding, dense slides, theme images, external links, and internal destinations when changing rendering or print styles.
 
 JavaScript features require Selenium; Capybara starts its own server and does not need port 3100:
 

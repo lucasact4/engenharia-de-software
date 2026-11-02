@@ -10,7 +10,7 @@ module AuthSupport
 
   def sign_in_via_ui(user)
     visit new_session_path(locale: I18n.locale)
-    fill_in "email_address", with: user.email_address
+    fill_in "identifier", with: user.email_address
     fill_in "password", with: (user.password || "123")
     click_button "Entrar"
     expect(page).to have_current_path(user.admin? ? admin_path : panel_path, ignore_query: true)

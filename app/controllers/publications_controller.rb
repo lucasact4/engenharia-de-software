@@ -12,7 +12,8 @@ class PublicationsController < PortalController
     scope = feed_scope
     scope = scope.where(kind: params[:kind]) if Publication.kinds.key?(params[:kind].to_s)
     scope = scope.where(visibility: params[:audience]) if Current.user && Publication.visibilities.key?(params[:audience].to_s)
-    scope = scope.left_joins(:alert).text_search(params[:q], "COALESCE(alerts.title, publications.title)", "COALESCE(alerts.description, publications.body)")
+    @categories = Category.active.ordered
+    scope = filter_feed(scope)
     @pagy, records = pagy(scope.order(published_at: :desc, id: :desc), limit: 10)
     @cards = PublicationProjection.collection(records, viewer: Current.user)
   end
@@ -26,6 +27,44 @@ class PublicationsController < PortalController
   end
 
   private
+
+    def filter_feed(scope)
+      scope = scope.left_joins(:alert, :author).left_joins(alert: :category)
+
+      keyword = params[:q].to_s.strip
+      if keyword.present?
+        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(keyword.downcase)}%"
+        id = keyword.match?(/\A\d+\z/) ? keyword.to_i : -1
+        scope = scope.where(
+          "LOWER(COALESCE(alerts.title, publications.title, '')) LIKE :term OR " \
+          "LOWER(COALESCE(alerts.description, publications.body, '')) LIKE :term OR " \
+          "LOWER(COALESCE(categories.name, '')) LIKE :term OR " \
+          "alerts.protocol = :protocol OR publications.id = :id",
+          term: pattern, protocol: keyword, id: id
+        )
+      end
+
+      creator = params[:creator].to_s.strip
+      if creator.present?
+        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(creator.downcase)}%"
+        scope = scope.where(
+          "LOWER(COALESCE(users.display_name, '')) LIKE :creator OR " \
+          "LOWER(COALESCE(users.business_name, '')) LIKE :creator OR " \
+          "LOWER(COALESCE(users.username, '')) LIKE :creator",
+          creator: pattern
+        )
+      end
+
+      category_id = params[:category_id].to_s
+      scope = scope.where(alerts: { category_id: category_id }) if category_id.match?(/\A\d+\z/) && Category.exists?(id: category_id)
+
+      severity = params[:severity].to_s
+      if Alert.reported_severities.key?(severity)
+        scope = scope.where("alerts.reported_severity = :severity OR alerts.assessed_severity = :severity", severity: severity)
+      end
+
+      scope.distinct
+    end
 
     def feed_scope
       PublicationPolicy::FeedScope.new(Current.user, Publication.all).resolve

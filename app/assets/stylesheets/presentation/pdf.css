@@ -1,0 +1,109 @@
+.apr-pdf-status {
+  max-width: 19rem;
+  font-size: .75rem;
+  color: var(--apr-ink-2);
+}
+
+.apr-btn:disabled { cursor: wait; opacity: .7; }
+
+/* Downloaded PDF only: 190mm of printable height after the 10mm page margins.
+   Leave 1mm for Chromium's rounding; padding is inside each slide's border box. */
+@media print {
+  .apr-body .apr-pdf-status { display: none !important; }
+
+  /* Keep print emulation and the PDF at the same physical content width. */
+  .apr-body.apr-pdf { width: 273mm !important; }
+
+  .apr-body.apr-pdf .apr-pdf-access {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3mm;
+    height: 189mm;
+    break-after: page;
+    break-inside: avoid;
+    background: #fff;
+    color: #102e27;
+    text-align: center;
+  }
+
+  .apr-body.apr-pdf .apr-pdf-access__code,
+  .apr-body.apr-pdf .apr-pdf-access__code img {
+    display: block;
+    width: 168mm;
+    height: 168mm;
+    max-width: none;
+    object-fit: contain;
+  }
+
+  .apr-body.apr-pdf .apr-pdf-access h1 { font-size: 18pt; }
+  .apr-body.apr-pdf .apr-pdf-access > a:last-child { font-size: 12pt; }
+
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] {
+    font-size: var(--apr-pdf-font, 14pt) !important;
+    line-height: 1.35;
+  }
+
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] .apr-title { font-size: 1.85em; }
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] .apr-figure__open { font-size: .65em; }
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] .apr-journey__print,
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] .apr-repo-shot__url,
+  .apr-body.apr-pdf .apr-slide[data-appendix="false"] .apr-info__print { font-size: .65em; }
+
+  /* Reflow the eleven milestones into readable groups instead of six narrow columns. */
+  .apr-body.apr-pdf .apr-history__row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .apr-body.apr-pdf .apr-history__row::before,
+  .apr-body.apr-pdf .apr-history__row::after { display: none; }
+  .apr-body.apr-pdf .apr-history__band { padding: .65em; }
+  .apr-body.apr-pdf .apr-history { gap: .7em; }
+  .apr-body.apr-pdf .apr-history__stage { margin-bottom: .5em !important; }
+  .apr-body.apr-pdf .apr-history__dot { margin-bottom: .35em; }
+
+  .apr-body.apr-pdf .apr-milestone-card .apr-figure__img { max-height: 85mm; }
+  .apr-body.apr-pdf .apr-figure--github .apr-figure__img { max-height: 72mm; }
+  .apr-body.apr-pdf .apr-figure--meeting .apr-figure__img { height: 50mm; }
+
+
+  .apr-body.apr-pdf .apr-slide,
+  .apr-body.apr-pdf .apr--presenting .apr-slide {
+    box-sizing: border-box !important;
+    display: block !important;
+    height: 189mm !important;
+    min-height: 0 !important;
+    max-height: 189mm !important;
+    padding: 6mm 7mm 11mm !important;
+    border: .3mm solid var(--apr-line) !important;
+    border-top: 1.5mm solid var(--apr-g-600) !important;
+    border-radius: 3mm !important;
+    overflow: hidden !important;
+    break-before: auto !important;
+    break-after: auto;
+    break-inside: avoid !important;
+  }
+
+  .apr-body.apr-pdf .apr-slide:not([hidden]) ~ .apr-slide:not([hidden]) {
+    break-before: page !important;
+  }
+
+  .apr-body.apr-pdf .apr-slide__inner,
+  .apr-body.apr-pdf .apr--presenting .apr-slide__inner {
+    width: calc(100% / var(--apr-pdf-scale, 1)) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: scale(var(--apr-pdf-scale, 1));
+    transform-origin: top left;
+    gap: .75em;
+  }
+
+  .apr-body.apr-pdf .apr-slide__folio {
+    left: 7mm;
+    right: 7mm;
+    bottom: 4mm;
+    margin: 0 !important;
+    padding: 1.5mm 0 0 !important;
+    font-size: 6.5pt;
+  }
+
+  .apr-body [hidden][hidden] { display: none !important; }
+}

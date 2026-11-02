@@ -180,7 +180,7 @@ RSpec.describe "Presentation revision and SGU brand", type: :request do
       expect(document.at_css("#s-capa .apr-access img")["src"]).to include("presentation/acesso/apresentacao-qr")
       links = document.css(".apr-figure__open").map { |node| node["href"] }
       expect(links).not_to be_empty
-      expect(links).to all(start_with("https://eduardo-hulkier-zayne.ngrok-free.dev/assets/"))
+      expect(links).to all(start_with("https://sgu.lucasact4.com.br/assets/"))
     end
   end
 

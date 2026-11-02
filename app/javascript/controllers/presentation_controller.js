@@ -6,16 +6,17 @@ import { PresentationSelection, estimateText, formatDuration } from "lib/present
 //
 // O servidor envia todos os slides e conteúdos; o que o perfil desmarca vem com hidden.
 // "Personalizar apresentação" altera essa seleção só nesta página, em memória: nada é salvo
-// nem enviado ao servidor, e recarregar volta ao perfil.
+// no perfil, e recarregar volta ao perfil. O download de PDF envia uma cópia
+// temporária dessas escolhas ao renderizador, sem persistir alterações.
 export default class extends Controller {
   static targets = [
     "slide", "enhanced", "modeLabel", "fullscreenButton",
     "prevButton", "nextButton", "counter", "currentTitle", "progress", "announcer",
     "indexDialog", "indexLink", "lightbox", "lightboxMedia", "lightboxCaption", "actualSizeButton",
-    "customDialog", "customHeading", "customButton", "customStatus", "estimate"
+    "customDialog", "customHeading", "customButton", "customStatus", "estimate", "pdfButton", "pdfStatus"
   ]
 
-  static values = { catalog: Array, choices: Object, limit: Number }
+  static values = { catalog: Array, choices: Object, limit: Number, pdfUrl: String }
 
   connect() {
     this.index = 0
@@ -531,8 +532,49 @@ dialogClosed() {
     this.fullscreenButtonTarget.querySelector("span").textContent = active ? "Sair da tela cheia" : "Tela cheia"
   }
 
-  print() {
-    window.print()
+  async downloadPdf() {
+    if (this.downloadingPdf) return
+    this.downloadingPdf = true
+    const button = this.pdfButtonTarget
+    const label = button.querySelector("span")
+    button.disabled = true
+    button.setAttribute("aria-busy", "true")
+    label.textContent = "Gerando PDF…"
+    this.pdfStatusTarget.hidden = false
+    this.pdfStatusTarget.textContent = "Preparando o PDF com os slides e o tema selecionados…"
+
+    try {
+      const response = await fetch(this.pdfUrlValue, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/pdf, application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || ""
+        },
+        body: JSON.stringify({ choices: this.selection.choices, theme: document.documentElement.dataset.theme })
+      })
+      if (!response.ok || !response.headers.get("Content-Type")?.includes("application/pdf")) {
+        const error = await response.json().catch(() => ({}))
+        throw new Error(error.error || "Não foi possível gerar o PDF. Tente novamente.")
+      }
+      const url = URL.createObjectURL(await response.blob())
+      const link = document.createElement("a")
+      link.href = url
+      link.download = response.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/)?.[1] || "sgu-apresentacao.pdf"
+      document.body.append(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000)
+      this.pdfStatusTarget.textContent = "PDF pronto. Download iniciado."
+    } catch (error) {
+      this.pdfStatusTarget.textContent = error.message || "Falha ao baixar o PDF. Tente novamente."
+    } finally {
+      this.downloadingPdf = false
+      button.disabled = false
+      button.removeAttribute("aria-busy")
+      label.textContent = "Baixar PDF"
+    }
   }
 
   // Ampliação de imagens e diagramas

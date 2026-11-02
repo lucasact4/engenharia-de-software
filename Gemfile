@@ -5,7 +5,7 @@ source "https://rubygems.org"
 
 # Rails Base GEMS
 # Tailwind CSS for Rails [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails", "4.6.0"
+gem "tailwindcss-rails", "4.7.0"
 # Agnostic icon library for rails [https://github.com/Rails-Designer/rails_icons]
 gem "rails_icons", "1.10.0"
 # Object oriented authorization for Rails applications. [https://github.com/varvet/pundit]
@@ -21,9 +21,11 @@ gem "psych", "5.5.0"
 # Ruby on Rails [https://rubyonrails.org/]
 gem "propshaft", "1.3.2"
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", "2.10.1"
+gem "sqlite3", "2.10.2"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "8.0.2"
+# Render presentation PDFs with Chromium, also outside the test environment.
+gem "selenium-webdriver", "4.52.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -43,7 +45,7 @@ gem "solid_queue"
 gem "solid_cable"
 
 # Reduces boot times through caching; required in config/boot.rb [https://github.com/Shopify/bootsnap]
-gem "bootsnap", "1.26.0", require: false
+gem "bootsnap", "1.26.1", require: false
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem "kamal", "2.12.0", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
@@ -104,5 +106,4 @@ group :test do
   # Rails default GEMS
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara", "3.40.0"
-  gem "selenium-webdriver", "4.51.0"
 end

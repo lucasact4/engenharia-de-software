@@ -1,7 +1,7 @@
 <% content_for :title, "Entrar · SGU UFRPE" %>
 <%= render layout: "shared/auth/shell", locals: { eyebrow: "Sua comunidade espera por você", title: "Entre na sua conta", description: "Acesse notícias, acompanhe seus alertas e participe das conversas do campus." } do %>
   <%= form_with url: session_path(locale: nil), class: "space-y-5" do |form| %>
-    <div><%= form.label :email_address, "E-mail", class: "sgu-label" %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "sgu-input h-12", placeholder: "seuemail@ufrpe.br", value: params[:email_address] %></div>
+    <div><%= form.label :identifier, "E-mail, CPF ou telefone", class: "sgu-label" %><%= form.text_field :identifier, required: true, autofocus: true, autocomplete: "username", inputmode: "text", class: "sgu-input h-12", placeholder: "E-mail, CPF ou telefone", value: params[:identifier] || params[:email_address] %></div>
     <div data-controller="password-toggle">
       <div class="mb-2 flex items-center justify-between gap-2"><%= form.label :password, "Senha", class: "sgu-label !mb-0" %><%= link_to "Esqueci minha senha", new_password_path, class: "sgu-link text-xs" %></div>
       <div class="relative">

@@ -3,7 +3,8 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  config.hosts << "eduardo-hulkier-zayne.ngrok-free.dev"
+  config.hosts << "lucasact4.com.br"
+  config.hosts << "sgu.lucasact4.com.br"
 
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true

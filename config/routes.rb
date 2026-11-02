@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   root "home#index"
   get "apresentacao", to: "presentations#show", as: :presentation
+  post "apresentacao/pdf", to: "presentations#pdf", as: :presentation_pdf
   get "mural/mapa", to: "campus_map#index", as: :campus_map
 
   # Área autenticada de pessoas usuárias e equipes (portal).
