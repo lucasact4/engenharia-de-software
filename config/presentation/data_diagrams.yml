@@ -138,6 +138,8 @@ tables:
       - ''
     - - share_exact_location
       - ''
+    - - anonymous_public
+      - ''
     - - location_unavailable_reason
       - ''
     - - requested_visibility

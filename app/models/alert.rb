@@ -3,6 +3,7 @@ class Alert < ApplicationRecord
   include TextSearch
   attribute :location_description, :string
   attribute :photo_order, :json, default: -> { [] }
+  attribute :anonymous_public, :boolean, default: false
   TITLE_LENGTH = 5..160
   DESCRIPTION_LENGTH = 10..5000
   CATEGORY_DETAILS_MAX = 500
@@ -92,6 +93,7 @@ class Alert < ApplicationRecord
   validate :exact_location_sharing_requires_coordinates
   validate :gps_capture_time
   validate :visibility_consistency
+  validate :anonymous_public_is_occurrence
   validate :panic_rules
   validate :closure_consistency
   validate :duplicate_reference
@@ -198,6 +200,10 @@ class Alert < ApplicationRecord
       return if visibility.nil? || requested_visibility.nil?
 
       errors.add(:visibility, :must_match_request) if visibility_internal? && !requested_internal?
+    end
+
+    def anonymous_public_is_occurrence
+      errors.add(:anonymous_public, :anonymous_public_only_for_occurrence) if anonymous_public? && !occurrence?
     end
 
     def panic_rules

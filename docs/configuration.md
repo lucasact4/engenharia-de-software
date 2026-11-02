@@ -39,6 +39,10 @@ The current deployment configuration expects these secrets:
 
 Use encrypted credentials for application secrets that Rails reads. Use environment variables for deployment-provided values and operational configuration. Document every new variable in this file or the project's deployment documentation.
 
+## Turnstile for anonymous public posts
+
+Set TURNSTILE_SITE_KEY to the public widget key and TURNSTILE_SECRET_KEY to the server-only key. The option to hide an author's public identity stays unavailable until both are configured. Keep the secret in the deployment secret manager; do not commit it. See docs/turnstile.md for the complete setup notes.
+
 ## Email in development
 
 Development uses file delivery. Password-reset emails are written locally instead of being sent to a real address. The default URL host is `localhost:3000`.

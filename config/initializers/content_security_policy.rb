@@ -4,13 +4,14 @@ Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src :self
     policy.base_uri :self
-    policy.connect_src :self
+    policy.connect_src :self, "https://challenges.cloudflare.com"
+    policy.frame_src :self, "https://challenges.cloudflare.com"
     policy.font_src :self, :data, "https://cdn.jsdelivr.net", "https://fonts.cdnfonts.com", "https://fonts.gstatic.com"
     policy.form_action :self
     policy.frame_ancestors :self
     policy.img_src :self, :data, :blob, "https://tile.openstreetmap.org"
     policy.object_src :none
-    policy.script_src :self
+    policy.script_src :self, "https://challenges.cloudflare.com"
     policy.style_src :self, :unsafe_inline, "https://cdn.jsdelivr.net", "https://fonts.cdnfonts.com", "https://fonts.googleapis.com"
   end
 

@@ -39,8 +39,16 @@ class AlertsController < PortalController
   def create
     authorize Alert, :create_occurrence?
     @client_request_id = requested_client_request_id
+    attributes = occurrence_params
+    if ActiveModel::Type::Boolean.new.cast(attributes[:anonymous_public]) &&
+        !TurnstileVerifier.verify(params[:cf_turnstile_response], expected_hostname: request.host)
+      rebuild_form(nil)
+      @alert.errors.add(:base, turnstile_error_message)
+      return render :new, status: :unprocessable_entity
+    end
+
     result = Alerts::CreateOccurrence.call(
-      actor: Current.user, attributes: occurrence_params, photos: uploaded_photos, client_request_id: @client_request_id
+      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id
     )
     message = result.created? ? "Ocorrência registrada. Protocolo #{result.alert.protocol}." : "Este envio já tinha sido recebido (protocolo #{result.alert.protocol}); nada foi duplicado."
     redirect_to alert_path(result.alert), notice: message, status: :see_other
@@ -100,6 +108,14 @@ class AlertsController < PortalController
 
     def set_alert
       @alert = policy_scope(Alert).find(params[:id])
+    end
+
+    def turnstile_error_message
+      if TurnstileVerifier.configured?
+        "Não foi possível confirmar o desafio antirobô. Tente novamente."
+      else
+        "A publicação anônima está indisponível até que a proteção Turnstile seja configurada."
+      end
     end
 
     def filter(scope)

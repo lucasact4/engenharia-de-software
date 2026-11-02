@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120001) do
     t.string "location_description"
     t.json "photo_order", default: [], null: false
     t.boolean "share_exact_location", default: false, null: false
+    t.boolean "anonymous_public", default: false, null: false
     t.index ["assigned_to_id"], name: "index_alerts_on_assigned_to_id"
     t.index ["author_id", "client_request_id"], name: "index_alerts_on_author_and_client_request", unique: true, where: "client_request_id IS NOT NULL"
     t.index ["author_id", "created_at"], name: "index_alerts_on_author_id_and_created_at"
