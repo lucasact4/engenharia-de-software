@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Anonymous public occurrence identity", type: :request do
   let(:author) { create(:user, :public_profile) }
+  let(:admin) { create(:user, :admin) }
   let(:category) { create(:category) }
 
   before { sign_in(author) }
@@ -35,7 +36,7 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
   end
 
   it "keeps the account responsible while hiding its public identity" do
-    author.update!(verified_at: Time.current)
+    author.update!(verified_at: Time.current, verified_by: admin)
     allow(TurnstileVerifier).to receive(:verify).and_return(true)
 
     expect { submit_anonymous_occurrence("valid-token") }.to change(Alert, :count).by(1)
@@ -55,7 +56,6 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
     reader_card = PublicationProjection.new(alert.publication, viewer: reader).as_json
     expect(reader_card[:author]).to include(display_name: "Pessoa anônima", public_profile: false, id: nil, verified: false)
 
-    admin = create(:user, :admin)
     admin_card = PublicationProjection.new(alert.publication, viewer: admin).as_json
     expect(admin_card[:author][:display_name]).to eq(author.display_name)
   end

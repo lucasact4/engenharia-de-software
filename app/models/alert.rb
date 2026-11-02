@@ -3,6 +3,7 @@ class Alert < ApplicationRecord
   include TextSearch
   attribute :location_description, :string
   attribute :photo_order, :json, default: -> { [] }
+  attribute :anonymous_public, :boolean, default: false
   TITLE_LENGTH = 5..160
   DESCRIPTION_LENGTH = 10..5000
   CATEGORY_DETAILS_MAX = 500

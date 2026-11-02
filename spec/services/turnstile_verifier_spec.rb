@@ -15,7 +15,7 @@ RSpec.describe TurnstileVerifier do
     allow(http).to receive(:start).and_yield(http)
     expect(http).to receive(:request) do |request|
       expect(URI.decode_www_form(request.body)).to contain_exactly(
-        ["secret", "server-secret"], ["response", "valid-token"]
+        [ "secret", "server-secret" ], [ "response", "valid-token" ]
       )
       response
     end
