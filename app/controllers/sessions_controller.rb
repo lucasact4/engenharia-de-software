@@ -9,9 +9,10 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.authenticate_by(params.permit(:email_address, :password))
+    identifier = params[:identifier].presence || params[:email_address]
+    user = user_for_identifier(identifier)
 
-    if user&.active?
+    if user&.authenticate(params[:password]) && user.active?
       start_new_session_for user
       redirect_to after_authentication_url
     else
@@ -23,4 +24,20 @@ class SessionsController < ApplicationController
     terminate_session
     redirect_to new_session_path
   end
+
+  private
+
+    def user_for_identifier(value)
+      identifier = value.to_s.strip
+      return if identifier.blank?
+
+      if identifier.include?("@")
+        User.find_by(email_address: identifier.downcase)
+      else
+        digits = identifier.gsub(/\D/, "")
+        return if digits.blank?
+
+        User.find_by(cpf: digits) || User.find_by(phone: digits)
+      end
+    end
 end

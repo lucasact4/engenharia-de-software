@@ -9,6 +9,14 @@
   <% end %>
   <%= form_with model: @registration, url: registration_path(locale: nil), class: "mt-6 space-y-5" do |form| %>
     <div><%= form.label :display_name, "Nome", class: "sgu-label" %><%= form.text_field :display_name, required: true, maxlength: 80, autocomplete: "name", class: "sgu-input", placeholder: "Como você se chama?" %></div>
+    <div><%= form.label :person_type, "Tipo de pessoa", class: "sgu-label" %><%= form.select :person_type, [["Pessoa física", "natural"], ["Pessoa jurídica", "legal"]], {}, class: "sgu-input" %></div>
+    <div><%= form.label :business_name, "Razão social (para pessoa jurídica)", class: "sgu-label" %><%= form.text_field :business_name, maxlength: 160, autocomplete: "organization", class: "sgu-input" %></div>
+    <div><%= form.label :mother_name, "Nome da mãe (opcional)", class: "sgu-label" %><%= form.text_field :mother_name, maxlength: 160, autocomplete: "off", class: "sgu-input" %></div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div><%= form.label :cpf, "CPF (opcional)", class: "sgu-label" %><%= form.text_field :cpf, inputmode: "numeric", maxlength: 14, autocomplete: "off", class: "sgu-input" %></div>
+      <div><%= form.label :cnpj, "CNPJ (opcional)", class: "sgu-label" %><%= form.text_field :cnpj, inputmode: "numeric", maxlength: 18, autocomplete: "off", class: "sgu-input" %></div>
+    </div>
+    <div><%= form.label :phone, "Telefone (opcional)", class: "sgu-label" %><%= form.telephone_field :phone, inputmode: "tel", maxlength: 18, autocomplete: "tel", class: "sgu-input" %></div>
     <div>
       <%= form.label :email_address, "E-mail da UFRPE", class: "sgu-label" %>
       <%= form.email_field :email_address, required: true, maxlength: 254, autocomplete: "email", class: "sgu-input", placeholder: "seunome@ufrpe.br", aria: { describedby: "email_hint" } %>
