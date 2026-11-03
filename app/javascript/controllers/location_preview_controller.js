@@ -5,15 +5,23 @@ export default class extends Controller {
 
   connect() {
     this.disposed = false
-    this.loadMap()
+    this.loaded = false
+    this.showMap = () => {
+      if (this.loaded) requestAnimationFrame(() => this.map?.invalidateSize())
+      else this.loadMap()
+    }
+    this.element.addEventListener("location-preview:shown", this.showMap)
   }
 
   disconnect() {
     this.disposed = true
+    this.element.removeEventListener("location-preview:shown", this.showMap)
     this.map?.remove()
   }
 
   async loadMap() {
+    if (this.loaded) return
+    this.loaded = true
     try {
       await import("leaflet")
       if (this.disposed || !this.element.isConnected) return

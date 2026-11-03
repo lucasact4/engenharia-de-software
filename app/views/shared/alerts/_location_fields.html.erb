@@ -23,7 +23,7 @@
   </div>
   <div data-geolocation-target="mapPanel" class="space-y-3" hidden>
     <div class="composer-map" data-geolocation-target="map" data-geolocation-buildings-value="<%= Location.active.where.not(boundary: nil).ordered.map { |location| {name: location.name, description: location.description, boundary: location.boundary} }.to_json %>" aria-label="Mapa para selecionar o local da ocorrência"></div>
-    <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0">Clique para marcar ou arraste o pino.</p><button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="geolocation#useCenter">Usar centro do mapa</button></div>
+    <div class="flex flex-wrap items-center justify-between gap-2"><p class="composer-hint !mt-0">Marque um prédio ou área da sede. Para ocorrências de trânsito fora do campus, arraste o mapa até o local e marque o ponto.</p><button type="button" class="sgu-btn sgu-btn-secondary sgu-btn-sm" data-action="geolocation#useCenter">Usar centro do mapa</button></div>
     <div class="grid gap-3 sm:grid-cols-2">
       <div><label for="map_latitude_<%= alert.id || 'new' %>" class="sgu-label">Latitude</label><input id="map_latitude_<%= alert.id || 'new' %>" type="number" step="any" min="-90" max="90" class="sgu-input" value="<%= alert.latitude %>" data-geolocation-target="mapLatitude" data-action="change->geolocation#coordinatesChanged"></div>
       <div><label for="map_longitude_<%= alert.id || 'new' %>" class="sgu-label">Longitude</label><input id="map_longitude_<%= alert.id || 'new' %>" type="number" step="any" min="-180" max="180" class="sgu-input" value="<%= alert.longitude %>" data-geolocation-target="mapLongitude" data-action="change->geolocation#coordinatesChanged"></div>

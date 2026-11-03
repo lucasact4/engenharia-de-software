@@ -100,6 +100,13 @@ class Admin::PublicationsController < Admin::ApplicationController
     end
   end
 
+  def destroy
+    authorize @publication, :destroy?
+    editorial_action("Publicação apagada do mural. O registro e as interações foram preservados no histórico administrativo.") do
+      Publications::Delete.call(actor: Current.user, publication: @publication, reason: params[:reason])
+    end
+  end
+
   private
 
     def set_publication

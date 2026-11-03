@@ -151,10 +151,7 @@
         </section>
       <% end %>
 
-      <section class="rounded-2xl border border-line bg-surface-muted p-5 text-sm text-muted">
-        <p class="font-semibold text-ink">Por que não há “Excluir”?</p>
-        <p class="mt-1">Publicações podem ter comentários, curtidas e denúncias. Para tirar do ar, use a retirada com motivo; o registro editorial continua auditável.</p>
-      </section>
+      <%= render "delete_form", publication: p %>
     </aside>
   </div>
 </div>
