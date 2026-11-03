@@ -6,7 +6,7 @@
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
     <div class="space-y-4">
       <%= render "publications/card", card: PublicationProjection.collection([post], viewer: Current.user).first, full: true, preview: true %>
-      <% if post.alert.latitude.present? && post.alert.longitude.present? %>
+      <% if post.alert.latitude.present? && post.alert.longitude.present? && !post.alert.share_exact_location? %>
         <%= render "shared/exact_location", coordinates: { latitude: post.alert.latitude, longitude: post.alert.longitude }, label: "Localização exata para análise administrativa" %>
       <% else %>
         <section class="sgu-card p-4"><h2 class="font-semibold">Localização</h2><p class="mt-1 text-sm text-muted"><%= post.alert.location&.name || post.alert.location_description || "Sem ponto exato informado" %></p></section>
@@ -24,7 +24,21 @@
         </section>
       <% else %><div class="sgu-card p-5"><%= enum_badge("publication.review_status", post.review_status, PortalHelper::REVIEW_BADGES) %><p class="mt-3 text-sm text-muted"><%= post.public_external? ? 'Publicação pública.' : 'Sem pedido público aguardando decisão.' %></p><% if post.review_reason.present? %><p class="mt-2 text-sm">Motivo: <%= post.review_reason %></p><% end %></div><% end %>
       <%= link_to "Abrir atendimento da ocorrência", admin_alert_path(post.alert_id), class: "sgu-link text-sm" %>
-      <% if post.published? %><details class="sgu-card p-4"><summary class="cursor-pointer text-sm text-muted">Moderação</summary><%= form_with url: withdraw_admin_publication_path(post), method: :patch, class: "mt-3 space-y-3" do %><%= label_tag :withdraw_reason, "Motivo da retirada", class: "sgu-label" %><%= text_area_tag :reason, nil, id: "withdraw_reason", required: true, rows: 2, class: "sgu-input" %><button type="submit" class="sgu-btn sgu-btn-danger-outline">Retirar do mural</button><% end %></details><% end %>
+      <% if post.published? || policy(post).destroy? %>
+        <details class="sgu-card p-4">
+          <summary class="cursor-pointer text-sm font-semibold text-ink">Moderação da publicação</summary>
+          <div class="mt-3 space-y-4">
+            <% if post.published? && policy(post).withdraw? %>
+              <%= form_with url: withdraw_admin_publication_path(post), method: :patch, class: "space-y-3" do %>
+                <%= label_tag :withdraw_reason, "Motivo da retirada", class: "sgu-label" %>
+                <%= text_area_tag :reason, nil, id: "withdraw_reason", required: true, rows: 2, class: "sgu-input" %>
+                <button type="submit" class="sgu-btn sgu-btn-danger-outline">Retirar do mural</button>
+              <% end %>
+            <% end %>
+            <%= render "delete_form", publication: post, compact: true %>
+          </div>
+        </details>
+      <% end %>
     </aside>
   </div>
 </div>

@@ -22,23 +22,28 @@ class PublicationPolicy < ApplicationPolicy
   end
 
   def update?
-    active_admin? && !record.occurrence?
+    active_admin? && !record.occurrence? && !record.withdrawn? && !record.moderation_blocked?
   end
 
   def submit?
-    active_admin? && !record.occurrence?
+    active_admin? && !record.occurrence? && !record.withdrawn? && !record.moderation_blocked?
   end
 
   def review?
-    active_admin? && (!record.occurrence? || (record.alert.requested_public_external? && !record.alert.publication_blocked?))
+    active_admin? && !record.withdrawn? && !record.moderation_blocked? &&
+      (!record.occurrence? || (record.alert.requested_public_external? && !record.alert.publication_blocked?))
   end
 
   def publish?
-    active_admin? && !record.occurrence?
+    active_admin? && !record.occurrence? && !record.withdrawn? && !record.moderation_blocked?
   end
 
   def withdraw?
     active_admin?
+  end
+
+  def destroy?
+    active_admin? && !record.withdrawn?
   end
 
   # Curtir, salvar, acompanhar e denunciar exigem conta ativa e acesso atual.

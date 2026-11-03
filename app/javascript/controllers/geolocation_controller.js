@@ -89,6 +89,8 @@ export default class extends Controller {
           maxZoom: 19,
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.mapInstance)
+        await this.showOfficialBuildings()
+        if (this.disposed || !this.mapInstance) return
         this.showBuildings()
         this.mapInstance.on("click", event => this.setPoint(event.latlng.lat, event.latlng.lng))
         if (this.coordinates()) this.showMarker(...this.coordinates())
@@ -127,6 +129,26 @@ export default class extends Controller {
       polygon.bindPopup(popup)
       polygon.bindTooltip(building.name)
     })
+  }
+
+  async showOfficialBuildings() {
+    try {
+      const response = await fetch("/maps/ufrpe-sede-buildings-v2.geojson", {
+        headers: { Accept: "application/geo+json, application/json" }
+      })
+      if (!response.ok || this.disposed || !this.mapInstance) return
+      const buildings = await response.json()
+      if (this.disposed || !this.mapInstance) return
+      L.geoJSON(buildings, {
+        style: { color: "#0f766e", fillColor: "#14b8a6", fillOpacity: 0.2, weight: 1.5 },
+        onEachFeature: (_feature, layer) => layer.on("click", event => {
+          if (event.originalEvent) L.DomEvent.stopPropagation(event.originalEvent)
+          this.setPoint(event.latlng.lat, event.latlng.lng)
+        })
+      }).addTo(this.mapInstance)
+    } catch {
+      // O mapa-base e a marcação livre continuam disponíveis sem os contornos oficiais.
+    }
   }
 
   useCenter() {

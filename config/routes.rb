@@ -98,7 +98,7 @@ Rails.application.routes.draw do
         patch :restriction, path: "restricao"
       end
     end
-    resources :publications, path: "publicacoes", except: :destroy do
+    resources :publications, path: "publicacoes" do
       member do
         patch :submit_review, path: "envio"
         patch :review, path: "revisao"

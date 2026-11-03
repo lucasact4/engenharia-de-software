@@ -27,8 +27,16 @@ RSpec.describe "Campus map for the community", type: :feature, js: true do
 
     visit publication_path(publication)
 
+    expect(page).to have_button("Mostrar Localização")
+    expect(page).to have_no_css("[data-controller='location-preview'].leaflet-container")
+    click_button "Mostrar Localização"
+    expect(page).to have_button("Ocultar Localização")
     expect(page).to have_css("[data-controller='location-preview'].leaflet-container", wait: 10)
     expect(page).to have_link("Abrir no Google Maps")
     expect(page).not_to have_css("iframe[title*='Google Maps']")
+
+    click_button "Ocultar Localização"
+    expect(page).to have_button("Mostrar Localização")
+    expect(page).to have_no_css("[data-controller='location-preview'].leaflet-container")
   end
 end

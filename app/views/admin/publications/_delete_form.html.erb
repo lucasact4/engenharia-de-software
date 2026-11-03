@@ -1,0 +1,16 @@
+<% if policy(publication).destroy? %>
+  <% compact = local_assigns.fetch(:compact, false) %>
+  <section class="<%= compact ? 'border-t border-line pt-4' : 'sgu-card p-5' %>">
+    <h2 class="<%= compact ? 'text-sm font-semibold text-ink' : 'sgu-section-title' %>">Apagar publicação</h2>
+    <p class="mt-1 text-sm text-muted">Remove do mural e preserva comentários, denúncias e o histórico para auditoria.</p>
+    <%= form_with url: admin_publication_path(publication), method: :delete, class: "mt-3 space-y-3" do %>
+      <%= hidden_field_tag :return_to, admin_publications_path %>
+      <%= label_tag "delete_reason_#{publication.id}", "Motivo (obrigatório)", class: "sgu-label" %>
+      <%= text_area_tag :reason, nil, id: "delete_reason_#{publication.id}", rows: 3, maxlength: 1000, required: true, class: "sgu-input" %>
+      <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full"
+              data-turbo-confirm="Apagar esta publicação do mural? O histórico e as interações serão preservados.">
+        <%= sgu_icon("trash") %> Apagar publicação
+      </button>
+    <% end %>
+  </section>
+<% end %>

@@ -60,6 +60,28 @@ RSpec.describe "Admin publications", type: :request do
     expect(publication.reload).to have_attributes(state: "draft", review_status: "not_submitted", content_version: 2)
   end
 
+  it "removes a publication from the mural with a reason while preserving its history and interactions" do
+    publication = create(:publication, :published)
+    comment = create(:comment, publication: publication)
+
+    delete admin_publication_path(publication), params: { reason: "", return_to: admin_publications_path }
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(publication.reload).to be_published
+
+    expect {
+      delete admin_publication_path(publication), params: { reason: "Conteúdo inadequado", return_to: admin_publications_path }
+    }.not_to change(Publication, :count)
+
+    expect(response).to redirect_to(admin_publications_path)
+    expect(publication.reload).to have_attributes(state: "withdrawn", moderation_blocked: true)
+    expect(comment.reload.publication_id).to eq(publication.id)
+    expect(PublicationPolicy.new(admin, publication).publish?).to be(false)
+    expect(PublicationPolicy.new(admin, publication).update?).to be(false)
+    expect(AuditEvent.for_subject(publication).find_by!(action: "publication.deleted").reason).to eq("Conteúdo inadequado")
+    get publication_path(publication)
+    expect(response).to have_http_status(:not_found)
+  end
+
   it "returns 409 and preserves the form for a stale edit" do
     publication = create(:publication)
     stale = publication.lock_version

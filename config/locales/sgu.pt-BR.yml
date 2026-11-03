@@ -130,6 +130,7 @@ pt-br:
       publication.rejected: "Revisão rejeitada"
       publication.published: "Publicada"
       publication.withdrawn: "Retirada do ar"
+      publication.deleted: "Apagada do mural"
       publication.source_changed: "Fonte alterada; nova revisão necessária"
       publication.review_invalidated: "Revisão invalidada pela mudança de audiência da fonte"
       content_report.reviewed: "Denúncia analisada"

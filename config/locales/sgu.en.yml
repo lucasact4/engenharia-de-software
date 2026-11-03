@@ -5,6 +5,8 @@ en:
       anonymous: "User"
       anonymous_public: "Anonymous person"
       editorial: "SGU team"
+    audit:
+      publication.deleted: "Removed from the mural"
   errors:
     messages:
       inactive: "is inactive and cannot be selected"

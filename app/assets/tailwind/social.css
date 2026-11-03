@@ -29,4 +29,7 @@
   .sgu-tooltip[data-visible="true"] .sgu-tooltip-content { @apply visible; }
   .photo-preview { @apply grid grid-cols-3 gap-2; }
   .photo-preview img { @apply aspect-square w-full rounded-xl object-cover; }
+  .leaflet-div-icon.campus-map-spot { border: 0; background: transparent; }
+  .campus-map-spot span { display: grid; width: 32px; height: 32px; place-items: center; border: 3px solid white; border-radius: 50% 50% 50% 0; background: #0f766e; box-shadow: 0 2px 8px #0007; color: white; transform: rotate(-45deg); }
+  .campus-map-spot b { font-size: 11px; transform: rotate(45deg); }
 }
