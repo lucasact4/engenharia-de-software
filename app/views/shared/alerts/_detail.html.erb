@@ -89,6 +89,9 @@
       <% if alert.occurrence? && detail.operational? %>
         <dt>Audiência solicitada</dt><dd><%= enum_label("alert.requested_visibility", alert.requested_visibility) %></dd>
       <% end %>
+      <% if detail.operational? && alert.related_alert && AlertPolicy.new(detail.viewer, alert.related_alert).show? %>
+        <dt>Relato relacionado</dt><dd><%= link_to alert.related_alert.protocol, alert_path(alert.related_alert), class: "sgu-link font-mono" %></dd>
+      <% end %>
     </dl>
   </section>
 
