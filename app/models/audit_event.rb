@@ -9,7 +9,9 @@ class AuditEvent < ApplicationRecord
                         expires_at comments_enabled published_at withdrawn_at source_changed_at approval_method moderation_blocked],
     "Comment" => %w[removed_at removed_by_id],
     "ContentReport" => %w[state],
-    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id verified_at verified_by_id]
+    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id verified_at verified_by_id
+                  email_notifications_enabled email_notifications_consented_at nearby_alerts_email_enabled
+                  nearby_alerts_radius_km notification_location_id]
   }.freeze
 
   METADATA_KEYS = %w[kind fields role_code decision target_type source reopening system_reason

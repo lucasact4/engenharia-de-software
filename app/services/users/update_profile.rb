@@ -3,7 +3,8 @@ module Users
   # pode corrigir nome, usuário e apresentação e retirar o perfil do ar, mas nunca torná-lo
   # público em nome de alguém. E-mail, senha, admin, papéis e desativação têm fluxos próprios.
   class UpdateProfile < ApplicationService
-    PERMITTED = %i[display_name username bio public_profile avatar].freeze
+    PERMITTED = %i[display_name username bio public_profile avatar email_notifications_enabled
+                   nearby_alerts_email_enabled nearby_alerts_radius_km notification_location_id].freeze
 
     attr_reader :actor
 
@@ -17,6 +18,8 @@ module Users
     def call
       own = own_profile?
       authorize!(@user, :update?, policy_class: own ? ProfilePolicy : UserPolicy)
+      @attributes.except!(:email_notifications_enabled, :nearby_alerts_email_enabled,
+                          :nearby_alerts_radius_km, :notification_location_id) unless own
       @attributes.delete(:avatar) if @attributes[:avatar].blank?
       @attributes.delete(:avatar) unless own
       @user.assign_attributes(@attributes)
