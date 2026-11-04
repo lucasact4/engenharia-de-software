@@ -1,4 +1,15 @@
 <% content_for :title, @alert.protocol %>
+<% if @anonymous_submission_audit %>
+  <section class="sgu-card mt-5 p-5" aria-labelledby="anonymous-submission-audit">
+    <h2 id="anonymous-submission-audit" class="sgu-section-title">Auditoria da submissão anônima</h2>
+    <p class="mt-2 text-xs text-muted">Dados cifrados no banco e visíveis somente à administração.</p>
+    <dl class="sgu-dl mt-4">
+      <dt>Data e hora</dt><dd><%= sgu_time(@anonymous_submission_audit.submitted_at) %></dd>
+      <dt>Endereço IP</dt><dd class="font-mono"><%= @anonymous_submission_audit.ip_address.presence || "Não informado" %></dd>
+      <dt>User-Agent</dt><dd class="break-all"><%= @anonymous_submission_audit.user_agent.presence || "Não informado" %></dd>
+    </dl>
+  </section>
+<% end %>
 <div class="space-y-5 py-2">
   <%= link_to admin_alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Ocorrências<% end %>
   <%= render "shared/alerts/header", detail: @detail do %>

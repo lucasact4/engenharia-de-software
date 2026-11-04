@@ -26,6 +26,9 @@ module Publications
         @publication.save!
         AuditEvent.record!(actor: actor, action: "publication.published", subject: @publication, changes: changes)
       end
+      if @publication.occurrence? && @publication.public_external?
+        NearbyAlertNotificationJob.perform_later(@publication.alert_id)
+      end
       @publication
     end
 

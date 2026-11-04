@@ -16,6 +16,10 @@ module Alerts
         Publications::SyncOccurrence.call(actor: actor, alert: alert, request_external: true)
       end
 
+      def after_create(alert)
+        NearbyAlertNotificationJob.perform_later(alert.id)
+      end
+
       def alert_attributes
         @attributes[:requested_visibility] ||= "internal"
         @attributes[:title] = Alert.title_from(@attributes[:description]) unless @attributes.key?(:title)

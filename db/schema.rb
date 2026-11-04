@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_121500) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -46,6 +46,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.datetime "updated_at", null: false
     t.index ["alert_id"], name: "index_alert_subscriptions_on_alert_id"
     t.index ["user_id", "alert_id"], name: "index_alert_subscriptions_on_user_id_and_alert_id", unique: true
+  end
+
+  create_table "anonymous_submission_audits", force: :cascade do |t|
+    t.integer "alert_id", null: false
+    t.text "ip_address_ciphertext", null: false
+    t.text "user_agent_ciphertext", null: false
+    t.datetime "submitted_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_anonymous_submission_audits_on_alert_id", unique: true
   end
 
   create_table "alerts", force: :cascade do |t|
@@ -391,10 +401,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.text "cnpj"
     t.string "person_type", default: "natural", null: false
     t.text "phone"
+    t.boolean "email_notifications_enabled", default: false, null: false
+    t.boolean "nearby_alerts_email_enabled", default: false, null: false
+    t.integer "nearby_alerts_radius_km", default: 5, null: false
+    t.datetime "email_notifications_consented_at"
+    t.integer "notification_location_id"
     t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
     t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["notification_location_id"], name: "index_users_on_notification_location_id"
     t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
@@ -406,12 +422,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.check_constraint "registration_role_code IS NULL OR registration_role_code IN ('visitor', 'professor', 'student')", name: "users_registration_role_valid"
     t.check_constraint "registration_status IN ('pending', 'approved', 'rejected')", name: "users_registration_status_valid"
     t.check_constraint "username IS NULL OR (length(username) BETWEEN 3 AND 30 AND username = lower(username))", name: "users_username_length_and_case"
+    t.check_constraint "nearby_alerts_radius_km BETWEEN 1 AND 25", name: "users_nearby_alert_radius"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "alert_subscriptions", "alerts"
   add_foreign_key "alert_subscriptions", "users"
+  add_foreign_key "anonymous_submission_audits", "alerts"
   add_foreign_key "alerts", "alerts", column: "duplicate_of_id"
   add_foreign_key "alerts", "categories"
   add_foreign_key "alerts", "locations"
@@ -445,4 +463,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "user_roles", "users", column: "granted_by_id"
   add_foreign_key "users", "users", column: "registration_reviewed_by_id"
   add_foreign_key "users", "users", column: "verified_by_id"
+  add_foreign_key "users", "locations", column: "notification_location_id"
 end

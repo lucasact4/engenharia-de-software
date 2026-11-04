@@ -48,7 +48,8 @@ class AlertsController < PortalController
     end
 
     result = Alerts::CreateOccurrence.call(
-      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id
+      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id,
+      request_audit: { ip_address: request.remote_ip, user_agent: request.user_agent, submitted_at: Time.current }
     )
     message = result.created? ? "Ocorrência registrada. Protocolo #{result.alert.protocol}." : "Este envio já tinha sido recebido (protocolo #{result.alert.protocol}); nada foi duplicado."
     redirect_to alert_path(result.alert), notice: message, status: :see_other
