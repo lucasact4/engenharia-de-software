@@ -119,4 +119,29 @@ RSpec.describe "Occurrence composer controls", type: :feature, js: true do
     expect(page).to have_content("Use um link completo do Google Maps")
     expect(find("#alert_latitude", visible: false).value).to eq("")
   end
+
+  it "offers the manual map fallback when GPS permission is denied on a small screen" do
+    original_size = page.driver.browser.manage.window.size
+    page.driver.browser.manage.window.resize_to(390, 844)
+    visit new_alert_path
+    page.execute_script(<<~JS)
+      Object.defineProperty(navigator, "geolocation", {
+        configurable: true,
+        value: { getCurrentPosition: (_success, error) => error({ code: 1 }) }
+      })
+      const element = document.querySelector('[data-controller~="geolocation"]')
+      window.Stimulus.getControllerForElementAndIdentifier(element, "geolocation").supported = true
+    JS
+
+    click_button "Usar minha localização"
+
+    expect(page).to have_css("[data-geolocation-target='status']", text: /Permissão de localização negada/)
+    expect(page).to have_content("Você também pode descrever o local ou marcar no mapa.")
+    expect(find("#alert_latitude", visible: :all).value).to eq("")
+    choose "Marcar no mapa", allow_label_click: true
+    expect(page).to have_css(".composer-map.leaflet-container", wait: 10)
+    expect(page.evaluate_script("document.documentElement.scrollWidth <= window.innerWidth")).to be(true)
+  ensure
+    page.driver.browser.manage.window.resize_to(original_size.width, original_size.height) if original_size
+  end
 end

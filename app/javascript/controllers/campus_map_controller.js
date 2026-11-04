@@ -26,6 +26,8 @@ export default class extends Controller {
       if (this.disposed || !this.element.isConnected) return
 
       this.map = L.map(this.mapTarget, { scrollWheelZoom: true }).setView(this.centerValue, 16)
+      this.spotLayer = L.layerGroup().addTo(this.map)
+      this.spotMarkers = []
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 20,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -36,6 +38,8 @@ export default class extends Controller {
       this.locationsValue.forEach(location => this.addLocation(location, bounds))
       this.spotsValue.forEach(spot => this.addReport(spot, bounds))
       if (bounds.length) this.map.fitBounds(bounds, { padding: [24, 24], maxZoom: 18 })
+      this.map.on("zoomend moveend", this.refreshSpotLayer, this)
+      this.refreshSpotLayer()
       const publicationCount = this.spotsValue.reduce((count, spot) => count + spot.count, 0)
       this.statusTarget.textContent = `${publicationCount} publicação(ões) ativa(s); ${publicationCount} ocorrência(s) localizada(s) em ${this.spotsValue.length} local(is) da sede Recife.`
       requestAnimationFrame(() => this.map?.invalidateSize())
@@ -83,7 +87,7 @@ export default class extends Controller {
       iconSize: [32, 32],
       iconAnchor: [16, 32]
     })
-    const marker = L.marker(point, { icon, title: `${report.count} publicação(ões) neste local` }).addTo(this.map)
+    const marker = L.marker(point, { icon, title: `${report.count} publicação(ões) neste local` })
     const popup = document.createElement("div")
     popup.className = "campus-popup"
     const heading = document.createElement("h3")
@@ -147,6 +151,100 @@ export default class extends Controller {
     popup.append(mapLink)
 
     marker.bindPopup(popup, { className: "campus-map-popup", minWidth: 250, maxWidth: 380 })
+    this.spotMarkers.push({ marker, report })
     bounds.push(point)
+  }
+
+  refreshSpotLayer() {
+    if (!this.spotLayer || !this.map) return
+    this.spotLayer.clearLayers()
+
+    const groups = this.clusterSpots(this.clusterRadius())
+    groups.forEach(group => {
+      if (group.length === 1) {
+        this.spotLayer.addLayer(group[0].marker)
+      } else {
+        this.spotLayer.addLayer(this.clusterMarker(group))
+      }
+    })
+  }
+
+  clusterRadius() {
+    const zoom = this.map.getZoom()
+    if (zoom >= 18) return 0
+    if (zoom >= 16) return 30
+    if (zoom >= 14) return 48
+    return 64
+  }
+
+  clusterSpots(radius) {
+    const items = this.spotMarkers.map(item => ({
+      ...item,
+      projected: this.map.project(item.marker.getLatLng(), this.map.getZoom())
+    }))
+    if (radius === 0) return items.map(item => [item])
+
+    const parents = items.map((_item, index) => index)
+    const find = index => {
+      if (parents[index] !== index) parents[index] = find(parents[index])
+      return parents[index]
+    }
+    const join = (first, second) => {
+      const firstRoot = find(first)
+      const secondRoot = find(second)
+      if (firstRoot !== secondRoot) parents[secondRoot] = firstRoot
+    }
+    const cells = new Map()
+    const radiusSquared = radius * radius
+
+    items.forEach((item, index) => {
+      const cellX = Math.floor(item.projected.x / radius)
+      const cellY = Math.floor(item.projected.y / radius)
+      for (let offsetX = -1; offsetX <= 1; offsetX++) {
+        for (let offsetY = -1; offsetY <= 1; offsetY++) {
+          const nearby = cells.get(`${cellX + offsetX}:${cellY + offsetY}`) || []
+          nearby.forEach(otherIndex => {
+            const other = items[otherIndex].projected
+            const deltaX = item.projected.x - other.x
+            const deltaY = item.projected.y - other.y
+            if (deltaX * deltaX + deltaY * deltaY <= radiusSquared) join(index, otherIndex)
+          })
+        }
+      }
+      const cellKey = `${cellX}:${cellY}`
+      cells.set(cellKey, [ ...(cells.get(cellKey) || []), index ])
+    })
+
+    const grouped = new Map()
+    items.forEach((item, index) => {
+      const root = find(index)
+      grouped.set(root, [ ...(grouped.get(root) || []), item ])
+    })
+    return Array.from(grouped.values())
+  }
+
+  clusterMarker(group) {
+    const publications = group.reduce((count, item) => count + item.report.count, 0)
+    const center = L.latLng(
+      group.reduce((sum, item) => sum + item.marker.getLatLng().lat, 0) / group.length,
+      group.reduce((sum, item) => sum + item.marker.getLatLng().lng, 0) / group.length
+    )
+    const size = Math.max(40, 26 + String(publications).length * 9)
+    const marker = L.marker(center, {
+      icon: L.divIcon({
+        className: "campus-map-cluster",
+        html: `<span>${publications}</span>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2]
+      }),
+      title: `${publications} publicações em ${group.length} locais próximos`
+    })
+    const bounds = L.latLngBounds(group.map(item => item.marker.getLatLng()))
+    marker.on("click", () => {
+      const currentZoom = this.map.getZoom()
+      this.map.fitBounds(bounds, { padding: [36, 36], maxZoom: 18, animate: false })
+      if (this.map.getZoom() <= currentZoom && currentZoom < 18) this.map.setZoom(currentZoom + 1)
+    })
+    return marker
   }
 }
