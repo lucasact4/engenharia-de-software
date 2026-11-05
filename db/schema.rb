@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.json "photo_order", default: [], null: false
     t.boolean "share_exact_location", default: false, null: false
     t.boolean "anonymous_public", default: false, null: false
+    t.integer "related_alert_id"
     t.index ["assigned_to_id"], name: "index_alerts_on_assigned_to_id"
     t.index ["author_id", "client_request_id"], name: "index_alerts_on_author_and_client_request", unique: true, where: "client_request_id IS NOT NULL"
     t.index ["author_id", "created_at"], name: "index_alerts_on_author_id_and_created_at"
@@ -94,6 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.index ["kind", "visibility", "status"], name: "index_alerts_on_kind_and_visibility_and_status"
     t.index ["location_id"], name: "index_alerts_on_location_id"
     t.index ["protocol"], name: "index_alerts_on_protocol", unique: true
+    t.index ["related_alert_id"], name: "index_alerts_on_related_alert_id"
     t.index ["status", "created_at"], name: "index_alerts_on_status_and_created_at"
     t.check_constraint "(closed_at IS NULL AND closure_reason IS NULL) OR status = 'closed'", name: "alerts_closure_only_when_closed"
     t.check_constraint "(latitude IS NULL AND longitude IS NULL) OR (latitude IS NOT NULL AND longitude IS NOT NULL)", name: "alerts_coordinates_pair"
@@ -413,6 +415,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "alert_subscriptions", "alerts"
   add_foreign_key "alert_subscriptions", "users"
   add_foreign_key "alerts", "alerts", column: "duplicate_of_id"
+  add_foreign_key "alerts", "alerts", column: "related_alert_id"
   add_foreign_key "alerts", "categories"
   add_foreign_key "alerts", "locations"
   add_foreign_key "alerts", "users", column: "assigned_to_id"
