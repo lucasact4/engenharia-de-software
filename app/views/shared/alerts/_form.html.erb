@@ -22,12 +22,12 @@
       <%= field_errors(alert, :description) %>
     </div>
   </section>
-  <% if mode == :create && options.prior_occurrences.any? %>
+  <% if !correcting && options.prior_occurrences.any? %>
     <section class="composer-section">
-      <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("link", "size-5") %></span><h2>Relato relacionado <span class="composer-optional">opcional</span></h2></div>
+      <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("clipboard-list", "size-5") %></span><h2>Relato relacionado <span class="composer-optional">opcional</span></h2></div>
       <p class="composer-hint">Relacione este relato a outro que você já registrou. Isso não marca nenhum deles como duplicado.</p>
       <%= f.label :related_alert_id, "Relato anterior", class: "sgu-label" %>
-      <%= f.select :related_alert_id, options.prior_occurrences, { include_blank: "Nenhum relato relacionado" }, class: "sgu-input" %>
+      <%= f.select :related_alert_id, options.prior_occurrences, { include_blank: "Nenhum relato relacionado" }, class: "sgu-input", aria: { invalid: invalid?(alert, :related_alert) } %>
       <%= field_errors(alert, :related_alert) %>
     </section>
   <% end %>

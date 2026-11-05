@@ -257,11 +257,13 @@ class Alert < ApplicationRecord
 
     # Relação contextual entre relatos do mesmo autor; não encerra o alerta como duplicado.
     def related_alert_reference
-      return unless related_alert
+      return unless has_attribute?(:related_alert_id)
+      return if related_alert_id.blank?
 
-      errors.add(:related_alert, "não pode ser o próprio relato") if related_alert_id == id && id.present?
-      errors.add(:related_alert, "deve pertencer à mesma pessoa") unless author_id.present? && related_alert.author_id == author_id
-      errors.add(:related_alert, "deve ser uma ocorrência") unless related_alert.occurrence?
+      valid_reference = occurrence? && related_alert&.persisted? && related_alert.occurrence? &&
+        author_id.present? && related_alert.author_id == author_id &&
+        (!persisted? || related_alert.id < id)
+      errors.add(:related_alert, :invalid) unless valid_reference
     end
 
     def assignee_active

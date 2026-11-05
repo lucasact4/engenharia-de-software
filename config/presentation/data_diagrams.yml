@@ -166,6 +166,8 @@ tables:
       - ''
     - - duplicate_of_id
       - FK alerts
+    - - related_alert_id
+      - FK alerts
     - - resolved_at
       - ''
     - - closed_at
@@ -508,6 +510,11 @@ foreign_keys:
   required: false
   unique: false
 - source: alerts
+  target: alerts
+  column: related_alert_id
+  required: false
+  unique: false
+- source: alerts
   target: categories
   column: category_id
   required: false
@@ -713,6 +720,7 @@ diagrams:
       - priority
       - assigned_to_id
       - duplicate_of_id
+      - related_alert_id
       variant: core
     - table: users
       x: 570

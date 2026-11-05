@@ -45,7 +45,9 @@ class AlertOptionsPresenter
   def prior_occurrences
     return [] unless @actor
 
-    @actor.authored_alerts.occurrence.recent_first.limit(50).map do |alert|
+    scope = @actor.authored_alerts.occurrence
+    scope = scope.where("id < ?", @alert.id) if @alert&.persisted?
+    scope.recent_first.map do |alert|
       [ "#{alert.protocol} · #{alert.title}", alert.id ]
     end
   end
