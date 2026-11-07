@@ -42,6 +42,16 @@ class AlertOptionsPresenter
     catalog_options(Location, @alert&.location)
   end
 
+  def prior_occurrences
+    return [] unless @actor
+
+    scope = @actor.authored_alerts.occurrence
+    scope = scope.where("id < ?", @alert.id) if @alert&.persisted?
+    scope.recent_first.map do |alert|
+      [ "#{alert.protocol} · #{alert.title}", alert.id ]
+    end
+  end
+
   def location_sources(kind: current_kind)
     values = Alert.location_sources.values
     values -= %w[unavailable] if kind == "occurrence"

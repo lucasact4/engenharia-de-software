@@ -87,7 +87,7 @@ class AlertDetailPresenter
     def history_entry(event)
       {
         at: event.created_at,
-        title: HISTORY_TITLES.fetch(event.action, event.action),
+        title: event.metadata["source"] == "author_completion" ? "Ocorrência resolvida pelo autor" : HISTORY_TITLES.fetch(event.action, event.action),
         details: history_details(event),
         actor: (handler? ? actor_label(event.actor) : nil),
         reason: (handler? || (author? && event.action == "alert.status_changed") ? event.reason : nil)

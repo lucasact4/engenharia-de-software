@@ -6,7 +6,7 @@ This guide describes the occurrence-publication refactor. For account registrati
 
 ## Data ownership and boundaries
 
-- `Alert` owns the explicit title, description, category, location, original photos, photo order, and operational handling data. The author form requires a title of 5–160 characters and a description of 10–5,000 characters. Editing only the description preserves the existing title. `Alert.title_from` remains a creation fallback for older programmatic callers that omit the title key entirely; an explicitly blank title is rejected. `Publication` never duplicates this title or description.
+- `Alert` owns the explicit title, description, category, location, original photos, photo order, optional earlier-occurrence reference, and operational handling data. The author form requires a title of 5–160 characters and a description of 10–5,000 characters. Editing only the description preserves the existing title. `Alert.title_from` remains a creation fallback for older programmatic callers that omit the title key entirely; an explicitly blank title is rejected. `Publication` never duplicates this title or description.
 - `Publication` owns the post identity, audience, approval decision, content version, moderation block, and social interactions. There is at most one publication per source alert. For occurrences, stored `publications.title` and `body` are `NULL`; readers obtain canonical content through the model and `PublicationProjection`.
 - Approval changes this existing publication. Comments, replies, likes, bookmarks, subscriptions, and reports keep the same publication ID across edits, rejection, and a change of audience.
 - News and notices keep their own editorial content and administrator workflow. A panic alert does not become a feed post. A private occurrence has no public/internal feed disclosure.
@@ -28,6 +28,18 @@ At `/admin/publicacoes`, the administrator opens the pending occurrence and sees
 The rejection reason is available to the author in their occurrence detail and their own post data, not to other feed readers. The author may edit the occurrence or select public visibility again to resubmit. Text edits and changes to the photo selection, cover, or order update the canonical source and invalidate the previous external approval. For an unverified author, the updated post returns to internal visibility with a pending review. A verified author receives approval for the updated content version automatically.
 
 An administrator can also remove a post for moderation with a reason. Editing, requesting external visibility, or receiving a badge does not clear either an alert disclosure restriction or a publication moderation block. Removing a post preserves the record and its interaction/history IDs.
+
+## RF008: author completion and earlier occurrences
+
+The occurrence author can mark their own active occurrence as resolved through `PATCH /alertas/:id/concluir` (`complete_alert_path`). The dedicated action requires `lock_version`; an outdated version returns HTTP 409 while the occurrence still requires completion. It sets `status = resolved`, `resolved_at`, and `status_changed_at`, and records `alert.status_changed` with audit metadata `source = author_completion`. Repeating completion of an already resolved occurrence succeeds without another state change or audit event. Panic alerts, closed occurrences, and other people's records cannot be completed through this action.
+
+This author action does not grant handling permissions or change the general team's transition matrix. Closed-record reopening remains an administrator operation. Completing an occurrence preserves its publication and social history; it does not constitute a duplicate closure or change a moderation decision.
+
+The author may optionally select an earlier occurrence when creating or editing a report. `alerts.related_alert_id` points to a persisted occurrence by the same author; on an existing report, the target ID must be lower than the report's ID. Self-references, forward references, missing records, other authors' records, and panic alerts are rejected with the same generic invalid-reference error. The selector only offers the author's eligible earlier occurrences. Changing or clearing the link uses the ordinary content-edit audit and publication-version workflow.
+
+The related-record link is operational context. It appears only to the author or authorized operational handlers who can also access the target occurrence; ordinary feed readers receive no related record details. Linking reports does not mark either one as a duplicate or resolve it automatically.
+
+Migration `20261103120000_add_related_alert_to_alerts.rb` adds the optional self-reference and foreign key. Apply pending migrations with `bin/rails db:migrate` before using the field; preserve the existing database as described in the upgrade procedure below.
 
 ## Verification badge
 
@@ -111,6 +123,8 @@ Migration `20261003180000_add_occurrence_photo_order_and_map_location.rb` adds `
 | Initial occurrence and post transaction | `app/services/alerts/create_occurrence.rb` |
 | Synchronization and approval origin | `app/services/publications/sync_occurrence.rb` |
 | Author edits and administrative corrections | `app/services/alerts/update_content.rb`, `correct_content.rb` |
+| Author completion and its audit event | `app/services/alerts/complete.rb`, `app/controllers/alerts_controller.rb`, `app/views/shared/alerts/_completion.html.erb` |
+| Earlier-occurrence validation and options | `app/models/alert.rb`, `app/presenters/alert_options_presenter.rb` |
 | Approve/reject, stale version protection | `app/services/publications/review.rb`, `app/controllers/admin/publications_controller.rb` |
 | Verification and authorization | `app/services/users/change_verification.rb`, `app/policies/user_verification_policy.rb` |
 | Public projection and identity | `app/presenters/publication_projection.rb`, `public_identity.rb` |
