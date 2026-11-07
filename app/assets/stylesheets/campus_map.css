@@ -137,6 +137,25 @@
   display: none;
 }
 
+.leaflet-div-icon.campus-map-cluster {
+  border: 0;
+  background: transparent;
+}
+
+.campus-map-cluster span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #0f766e;
+  box-shadow: 0 2px 8px #0007;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .campus-popup-toggle,
   .campus-popup-open,

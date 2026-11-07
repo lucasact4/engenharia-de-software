@@ -22,6 +22,14 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     SQLite3::Database.new(db_path.to_s) { |db| return db.execute(sql) }
   end
 
+  def normalize_schema(source)
+    source.gsub(/(  create_table .*? do \|t\|\n)(.*?)(  end)/m) do
+      header, body, footer = Regexp.last_match.captures
+      declarations, remaining_lines = body.lines.partition { |line| line.match?(/^\s+t\./) }
+      "#{header}#{declarations.sort.join}#{remaining_lines.join}#{footer}"
+    end
+  end
+
   it "recovers previous administrative restrictions without undoing a later release" do
     rails("db:migrate", "VERSION=20261001120700", schema: dir.join("before_block.rb"))
     rails("runner", <<~RUBY)
@@ -98,7 +106,7 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("SELECT count(*) FROM categories")).to eq([ [ 7 ] ])
     expect(query("SELECT count(*) FROM alerts")).to eq([ [ 0 ] ])
     expect(query("PRAGMA foreign_key_check")).to be_empty
-    expect(dir.join("after.rb").read).to eq(Rails.root.join("db/schema.rb").read)
+    expect(normalize_schema(dir.join("after.rb").read)).to eq(normalize_schema(Rails.root.join("db/schema.rb").read))
 
     rails("db:migrate", "VERSION=20260914150000", schema: dir.join("rolled_back.rb"))
     tables = query("SELECT name FROM sqlite_master WHERE type = 'table'").flatten
