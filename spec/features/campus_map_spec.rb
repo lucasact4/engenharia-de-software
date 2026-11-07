@@ -11,7 +11,7 @@ RSpec.describe "Campus map for the community", type: :feature, js: true do
 
   it "loads the campus map and links its report marker to the mural post" do
     alert = create(:alert, :public_request, location: location, latitude: -8.0175, longitude: -34.9505)
-    publication = create(:publication, :published, kind: "occurrence", alert: alert)
+    publication = create(:publication, :published, :campus_map_approved, kind: "occurrence", alert: alert)
 
     visit campus_map_path
 
@@ -39,7 +39,7 @@ RSpec.describe "Campus map for the community", type: :feature, js: true do
       alert = create(:alert, :public_request, location: campus_location,
                                               latitude: campus_location.reference_latitude,
                                               longitude: campus_location.reference_longitude)
-      create(:publication, :published, kind: "occurrence", alert: alert, title: "Ocorrência #{index + 1}")
+      create(:publication, :published, :campus_map_approved, kind: "occurrence", alert: alert, title: "Ocorrência #{index + 1}")
     end
 
     visit campus_map_path

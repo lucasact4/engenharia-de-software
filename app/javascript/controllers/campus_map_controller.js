@@ -172,8 +172,9 @@ export default class extends Controller {
   clusterRadius() {
     const zoom = this.map.getZoom()
     if (zoom >= 18) return 0
-    if (zoom >= 16) return 30
-    if (zoom >= 14) return 48
+    if (zoom >= 17) return 12
+    if (zoom >= 16) return 24
+    if (zoom >= 14) return 42
     return 64
   }
 

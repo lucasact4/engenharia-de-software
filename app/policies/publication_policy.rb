@@ -34,6 +34,14 @@ class PublicationPolicy < ApplicationPolicy
       (!record.occurrence? || (record.alert.requested_public_external? && !record.alert.publication_blocked?))
   end
 
+  def approve_for_campus_map?
+    active_admin? && record.occurrence? && record.published? && !record.withdrawn? && !record.moderation_blocked? &&
+      record.public_external? &&
+      record.approved_for_current_content? && record.alert.requested_public_external? &&
+      !record.alert.publication_blocked? && !record.approved_for_campus_map? &&
+      record.alert.status.in?(%w[received triaging in_progress awaiting_information])
+  end
+
   def publish?
     active_admin? && !record.occurrence? && !record.withdrawn? && !record.moderation_blocked?
   end

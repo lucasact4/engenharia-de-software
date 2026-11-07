@@ -26,5 +26,21 @@
         <button type="submit" class="sgu-btn sgu-btn-danger-outline w-full" data-turbo-confirm="Restringir o registro e retirar publicações vinculadas?"><%= sgu_icon("lock") %> Restringir</button>
       <% end %>
     <% end %>
+
+    <% if publication&.occurrence? && publication.public_external? && publication.approved_for_current_content? %>
+      <section class="mt-5 border-t border-line pt-4" aria-labelledby="admin_publication_approval_title">
+        <h3 id="admin_publication_approval_title" class="font-semibold text-ink">Exibição no mapa do campus</h3>
+        <% if publication.approved_for_campus_map? %>
+          <p class="mt-2 text-sm"><span class="sgu-badge sgu-badge-green">Aprovada para o mapa</span>
+            <% if publication.campus_map_approved_by %><span class="ml-2 text-muted">por <%= publication.campus_map_approved_by.display_name.presence || publication.campus_map_approved_by.email_address %></span>
+            <% else %><span class="ml-2 text-muted">spot anterior preservado</span><% end %>
+          </p>
+        <% elsif policy(publication).approve_for_campus_map? %>
+          <p class="mt-1 text-sm text-muted">Este é o mesmo post já aprovado no mural. Liberá-lo no mapa não cria outra publicação nem muda sua aprovação no mural.</p>
+          <%= button_to "Aprovar para o mapa", approve_for_map_admin_alert_path(alert), method: :patch,
+                params: { lock_version: publication.lock_version }, class: "sgu-btn sgu-btn-primary mt-3 w-full" %>
+        <% end %>
+      </section>
+    <% end %>
   </section>
 <% end %>

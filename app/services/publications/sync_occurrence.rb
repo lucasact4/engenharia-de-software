@@ -24,6 +24,9 @@ module Publications
         publication ||= Publication.new(kind: "occurrence", alert: @alert, author: @alert.author, visibility: "internal")
         publication.lock! if publication.persisted?
         publication.content_version += 1 if publication.persisted? && @content_changed
+        if @content_changed || !@alert.requested_public_external? || @alert.publication_blocked?
+          publication.assign_attributes(campus_map_approved_at: nil, campus_map_approved_by: nil)
+        end
         if @alert.publication_blocked? || @alert.requested_restricted? || publication.moderation_blocked?
           publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current, visibility: "internal")
         else

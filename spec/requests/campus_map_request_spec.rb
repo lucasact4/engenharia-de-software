@@ -17,11 +17,11 @@ RSpec.describe "Campus map", type: :request do
     selected_alert = create(:alert, :public_request, title: "Luminária em atendimento", category: category, location: location,
                                                      latitude: -8.017, longitude: -34.95,
                                                      status: "in_progress", reported_severity: "high")
-    selected = create(:publication, :published, kind: "occurrence", alert: selected_alert)
+    selected = create(:publication, :published, :campus_map_approved, kind: "occurrence", alert: selected_alert)
     other_alert = create(:alert, :public_request, title: "Rampa em triagem", category: other_category, location: location,
                                                   latitude: -8.017, longitude: -34.95,
                                                   status: "triaging", reported_severity: "moderate")
-    other = create(:publication, :published, kind: "occurrence", alert: other_alert)
+    other = create(:publication, :published, :campus_map_approved, kind: "occurrence", alert: other_alert)
 
     get campus_map_path, params: { category_id: category.id, status: "in_progress", severity: "high" }
 

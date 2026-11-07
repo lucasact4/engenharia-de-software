@@ -127,6 +127,7 @@ pt-br:
       publication.updated: "Conteúdo ou configuração alterados"
       publication.submitted: "Enviada para revisão"
       publication.approved: "Versão aprovada"
+      publication.campus_map_approved: "Aprovada para o mapa do campus"
       publication.rejected: "Revisão rejeitada"
       publication.published: "Publicada"
       publication.withdrawn: "Retirada do ar"
