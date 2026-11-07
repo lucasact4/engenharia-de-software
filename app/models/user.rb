@@ -16,6 +16,11 @@ class User < ApplicationRecord
 
   attribute :verified_at, :datetime
   belongs_to :verified_by, class_name: "User", optional: true
+  attribute :email_notifications_enabled, :boolean, default: false
+  attribute :nearby_alerts_email_enabled, :boolean, default: false
+  attribute :nearby_alerts_radius_km, :integer, default: 5
+  attribute :email_notifications_consented_at, :datetime
+  attribute :notification_location_id, :integer
   belongs_to :notification_location, class_name: "Location", optional: true
 
   before_validation :stamp_email_notification_consent
