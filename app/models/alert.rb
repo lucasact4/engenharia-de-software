@@ -60,6 +60,7 @@ class Alert < ApplicationRecord
   belongs_to :location, optional: true
   belongs_to :assigned_to, class_name: "User", optional: true, inverse_of: :assigned_alerts
   belongs_to :duplicate_of, class_name: "Alert", optional: true
+  belongs_to :related_alert, class_name: "Alert", optional: true
 
   has_one :publication, dependent: :restrict_with_exception
   has_many :duplicates, class_name: "Alert", foreign_key: :duplicate_of_id, inverse_of: :duplicate_of,
@@ -97,6 +98,7 @@ class Alert < ApplicationRecord
   validate :panic_rules
   validate :closure_consistency
   validate :duplicate_reference
+  validate :related_alert_reference
   validate :assignee_active
   validate :photos_constraints
   validate :photo_order_format
@@ -251,6 +253,17 @@ class Alert < ApplicationRecord
         current = current.duplicate_of
       end
       false
+    end
+
+    # Relação contextual entre relatos do mesmo autor; não encerra o alerta como duplicado.
+    def related_alert_reference
+      return unless has_attribute?(:related_alert_id)
+      return if related_alert_id.blank?
+
+      valid_reference = occurrence? && related_alert&.persisted? && related_alert.occurrence? &&
+        author_id.present? && related_alert.author_id == author_id &&
+        (!persisted? || related_alert.id < id)
+      errors.add(:related_alert, :invalid) unless valid_reference
     end
 
     def assignee_active

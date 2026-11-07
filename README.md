@@ -168,7 +168,7 @@ bin/rubocop && \
 - [Occurrence posts, public review, and verification](docs/occurrence-social-flow.md)
 - [Occurrences, handling, board, and social features: implementation](docs/alertas-crud-implementacao.md) (Portuguese)
 - [SQLite in production](docs/sqlite-production.md)
-- [Backing up and restoring SQLite production data](docs/sqlite-backup-and-restore.md)
+- [Automatic 48-hour SQLite backups and recovery (RNF007)](docs/sqlite-backup-and-restore.md)
 - [Migrating from SQLite to PostgreSQL](docs/sqlite-to-postgresql.md)
 - [First deployment checklist](docs/first-deploy.md)
 - [Project delivery checklist](docs/project-delivery.md)
@@ -196,7 +196,7 @@ The lettering is drawn as geometric strokes, so no third-party font is used. The
 
 - `Dockerfile` defines the production image.
 - `config/deploy.yml` and `.kamal/secrets` hold the Kamal configuration and the names of the required secrets. The configuration still contains template placeholders.
-- No SGU deployment has been recorded yet. Before you deploy, follow the [first deployment checklist](docs/first-deploy.md) and decide on a [SQLite backup strategy](docs/sqlite-backup-and-restore.md).
+- No SGU deployment has been recorded yet. Before you deploy, follow the [first deployment checklist](docs/first-deploy.md) and configure and rehearse [automatic 48-hour SQLite backups and recovery](docs/sqlite-backup-and-restore.md), including remote storage and monitoring.
 
 ## License and credits
 

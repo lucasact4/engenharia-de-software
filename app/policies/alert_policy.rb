@@ -24,6 +24,10 @@ class AlertPolicy < ApplicationPolicy
     author? && record.occurrence?
   end
 
+  def complete?
+    author? && record.occurrence? && !record.closed?
+  end
+
   # Correção administrativa do texto/categoria de outra pessoa: auditada, com motivo, e sem
   # tocar localização, severidade relatada ou fotos (evidência do relato original).
   def correct_content?

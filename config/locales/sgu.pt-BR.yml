@@ -35,6 +35,8 @@ pt-br:
         closure_reason: "Motivo do encerramento"
         closure_notes: "Explicação do encerramento"
         duplicate_of: "Alerta original"
+        related_alert: "Relato anterior"
+        related_alert_id: "Relato anterior"
         resolved_at: "Resolvido em"
         closed_at: "Encerrado em"
         client_request_id: "Chave de envio"
