@@ -1,0 +1,9 @@
+<% if policy(alert).complete? && !alert.resolved? %>
+  <section class="sgu-card p-5 sm:p-6" aria-labelledby="alert_completion_title">
+    <h2 id="alert_completion_title" class="sgu-section-title">Concluir minha ocorrência</h2>
+    <p class="mt-2 text-sm text-muted">Se a situação já foi solucionada, você pode marcar sua ocorrência como resolvida. A alteração ficará registrada no histórico.</p>
+    <%= button_to "Marcar como resolvida", complete_alert_path(alert), method: :patch,
+                  params: { lock_version: alert.lock_version }, class: "sgu-btn sgu-btn-primary mt-4",
+                  form: { data: { turbo_confirm: "Você confirma que a situação desta ocorrência foi solucionada?" } } %>
+  </section>
+<% end %>

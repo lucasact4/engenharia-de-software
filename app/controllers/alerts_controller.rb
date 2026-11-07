@@ -6,7 +6,7 @@ class AlertsController < PortalController
 
   TABS = %w[meus internos acompanhados].freeze
 
-  before_action :set_alert, only: %i[show edit update audience]
+  before_action :set_alert, only: %i[show edit update audience complete]
 
   def index
     authorize Alert, :index?
@@ -23,10 +23,7 @@ class AlertsController < PortalController
 
   def show
     authorize @alert, :show?
-    @detail = AlertDetailPresenter.new(@alert, viewer: Current.user)
-    @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
-    post = @alert.publication if @alert.occurrence?
-    @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
+    prepare_show
   end
 
   def new
@@ -94,6 +91,22 @@ class AlertsController < PortalController
     render :edit, status: :conflict
   end
 
+  def complete
+    authorize @alert, :complete?
+    Alerts::Complete.call(actor: Current.user, alert: @alert, lock_version: params.require(:lock_version))
+    redirect_to alert_path(@alert), notice: "Ocorrência marcada como resolvida.", status: :see_other
+  rescue ActiveRecord::StaleObjectError
+    @alert = policy_scope(Alert).find(@alert.id)
+    prepare_show
+    flash.now[:alert] = stale_conflict_message
+    render :show, status: :conflict
+  rescue ActiveRecord::RecordInvalid => error
+    @alert.reload
+    prepare_show
+    flash.now[:alert] = error.record.errors.full_messages.to_sentence
+    render :show, status: :unprocessable_entity
+  end
+
   # O autor escolhe a audiência; divulgação externa segue a verificação e a revisão.
   def audience
     authorize @alert, :change_audience?
@@ -109,6 +122,13 @@ class AlertsController < PortalController
 
     def set_alert
       @alert = policy_scope(Alert).find(params[:id])
+    end
+
+    def prepare_show
+      @detail = AlertDetailPresenter.new(@alert, viewer: Current.user)
+      @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
+      post = @alert.publication if @alert.occurrence?
+      @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
     end
 
     def turnstile_error_message

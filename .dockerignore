@@ -45,3 +45,6 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Local recovery snapshots must never enter an application image.
+/backups/
