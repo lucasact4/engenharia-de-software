@@ -278,6 +278,10 @@ tables:
       - ''
     - - moderation_blocked
       - ''
+    - - campus_map_approved_at
+      - ''
+    - - campus_map_approved_by_id
+      - FK users
   comments:
     columns:
     - - id
@@ -632,6 +636,11 @@ foreign_keys:
 - source: publications
   target: users
   column: reviewed_by_id
+  required: false
+  unique: false
+- source: publications
+  target: users
+  column: campus_map_approved_by_id
   required: false
   unique: false
 - source: sessions
