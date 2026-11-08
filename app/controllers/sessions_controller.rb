@@ -10,9 +10,9 @@ class SessionsController < ApplicationController
 
   def create
     identifier = params[:identifier].presence || params[:email_address]
-    user = user_for_identifier(identifier)
+    user = authenticate_identifier(identifier, params[:password])
 
-    if user&.authenticate(params[:password]) && user.active?
+    if user
       start_new_session_for user
       redirect_to after_authentication_url
     else
@@ -27,17 +27,22 @@ class SessionsController < ApplicationController
 
   private
 
-    def user_for_identifier(value)
+    def authenticate_identifier(value, password)
       identifier = value.to_s.strip
       return if identifier.blank?
 
-      if identifier.include?("@")
-        User.find_by(email_address: identifier.downcase)
+      candidates = if identifier.include?("@")
+        User.active.where(email_address: identifier.downcase)
       else
         digits = identifier.gsub(/\D/, "")
         return if digits.blank?
 
-        User.find_by(cpf: digits) || User.find_by(phone: digits)
+        User.active.where(cpf: digits).or(User.active.where(phone: digits))
       end
+
+      # Um número pode identificar duas contas: CPF de uma e telefone de outra.
+      # Só entra quando a senha corresponde a uma única conta ativa.
+      authenticated = candidates.select { |candidate| candidate.authenticate(password) }
+      authenticated.first if authenticated.one?
     end
 end
