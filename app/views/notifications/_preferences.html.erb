@@ -1,0 +1,25 @@
+<details class="mb-4 rounded-xl border border-line bg-surface p-4">
+  <summary class="cursor-pointer font-semibold">Preferências de entrega</summary>
+  <%= form_with model: @preference, url: preferences_notifications_path, method: :patch, class: "mt-4 space-y-3" do |form| %>
+    <% if Notifications::ChannelConfig.email_available? %>
+      <label class="flex items-center gap-2"><%= form.check_box :email_enabled %> Receber atualizações e alertas próximos por e-mail</label>
+    <% end %>
+    <div>
+      <%= form.label :location_id, "Local de referência para alertas próximos", class: "block font-semibold" %>
+      <%= form.collection_select :location_id, @nearby_locations, :id, :name, { include_blank: "Desativar alertas próximos" }, class: "mt-1 max-w-full rounded-lg border border-line bg-surface p-2" %>
+      <p class="text-sm text-muted">Acompanhe ocorrências em até <%= Notifications::Nearby::RADIUS_METERS %> metros do local escolhido.</p>
+    </div>
+    <%= form.submit "Salvar preferências", class: "sgu-btn sgu-btn-secondary" %>
+  <% end %>
+  <% if Notifications::ChannelConfig.push_available? %>
+    <div class="mt-4 border-t border-line pt-4"
+        data-controller="notification-push"
+        data-notification-push-worker-value="<%= pwa_service_worker_path(locale: nil) %>"
+        data-notification-push-url-value="<%= subscribe_push_notifications_path(locale: nil) %>"
+        data-notification-push-key-value="<%= Notifications::ChannelConfig.vapid.fetch(:public_key) %>"
+        data-notification-push-enabled-value="<%= Current.session.push_subscriptions.exists? %>">
+      <button type="button" class="sgu-btn sgu-btn-secondary" data-notification-push-target="button" data-action="notification-push#toggle" hidden></button>
+      <p class="mt-2 text-sm text-muted" data-notification-push-target="status" aria-live="polite">Ative avisos neste navegador para receber atualizações mesmo fora da página.</p>
+    </div>
+  <% end %>
+</details>

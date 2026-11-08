@@ -4,16 +4,17 @@
     <%= link_to (user ? panel_path : root_path(locale: nil)), class: "flex shrink-0 items-center gap-2.5 !text-ink", aria: { label: "SGU UFRPE, início" } do %>
       <span class="sm:hidden"><%= sgu_brand(:symbol, alt: "", class_name: "h-9") %></span>
       <span class="hidden sm:block"><%= sgu_brand(:horizontal, alt: "", class_name: "h-9") %></span>
-      <span class="hidden border-l border-line pl-2.5 text-[0.6rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted xl:block">UFRPE<br>Campus em conexão</span>
+      <% unless user %><span class="hidden border-l border-line pl-2.5 text-[0.6rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted xl:block">UFRPE<br>Campus em conexão</span><% end %>
     <% end %>
 
-    <nav class="ml-2 hidden flex-1 items-center gap-1 lg:flex" aria-label="Navegação principal">
+    <nav class="portal-primary-nav ml-2 hidden flex-1 items-center gap-1 lg:flex" aria-label="Navegação principal">
       <%= render "layouts/portal/nav_links", user: user %>
     </nav>
 
     <div class="ml-auto flex items-center gap-2">
       <%= render "shared/theme_toggle" %>
       <% if user %>
+        <%= render "notifications/bell" %>
         <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pedir ajuda (pânico)" } do %>
           <%= sgu_icon("siren") %><span>Pânico</span>
         <% end %>

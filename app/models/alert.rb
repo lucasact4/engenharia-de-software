@@ -68,6 +68,8 @@ class Alert < ApplicationRecord
   has_many_attached :photos
 
   before_validation :assign_protocol, on: :create
+  after_create { Notifications::Events.alert_created(self) }
+  after_update { Notifications::Events.alert_updated(self) }
 
   validates :protocol, presence: true, uniqueness: true
   validates :title, length: { maximum: TITLE_LENGTH.max }

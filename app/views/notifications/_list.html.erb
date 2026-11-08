@@ -1,0 +1,13 @@
+<ul class="divide-y divide-line">
+  <% notifications.each do |notification| %>
+    <li class="p-3 <%= 'bg-surface-muted' unless notification.read_at %>" data-notification-id="<%= notification.id %>">
+      <p class="text-xs font-semibold text-muted"><%= notification.urgent? ? "URGENTE · Pânico" : (notification.read_at ? "Lida" : "Não lida") %></p>
+      <%= link_to notification.message, notification_destination(notification), class: "block py-1 text-sm text-ink hover:underline" %>
+      <span class="text-xs text-muted"><%= sgu_time(notification.created_at) %></span>
+      <% unless notification.read_at %>
+        <%= button_to(notification.urgent? ? "Reconhecer alerta" : "Marcar como lida", read_notification_path(notification), method: :patch, class: "mt-2 text-xs font-semibold text-brand-link underline", form: { data: { action: "submit->notifications#read" } }) %>
+      <% end %>
+    </li>
+  <% end %>
+  <% if notifications.empty? %><li class="p-4 text-sm text-muted">Nenhuma notificação disponível.</li><% end %>
+</ul>

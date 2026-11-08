@@ -1,0 +1,12 @@
+<% content_for :title, "Notificações · SGU" %>
+<div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+  <h1 class="text-2xl font-bold">Suas notificações</h1>
+  <%= button_to "Marcar notificações comuns como lidas", read_all_notifications_path, method: :patch, class: "sgu-btn sgu-btn-secondary" %>
+</div>
+<p class="mb-4 text-sm text-muted">Alertas de pânico são prioritários e exigem reconhecimento individual. Abrir a prévia não marca avisos como lidos.</p>
+<%= render "notifications/preferences" %>
+<div class="rounded-xl border border-line bg-surface"><%= render "notifications/list", notifications: @notifications %></div>
+<nav class="mt-4 flex gap-4" aria-label="Páginas de notificações">
+  <%= link_to "Anteriores", notifications_path(page: @page - 1), class: "text-brand-link" if @page > 1 %>
+  <%= link_to "Próximas", notifications_path(page: @page + 1), class: "text-brand-link" if @notifications.size == 50 %>
+</nav>

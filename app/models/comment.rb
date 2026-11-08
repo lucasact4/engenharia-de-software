@@ -1,6 +1,7 @@
 # Comentários com um nível de respostas; remoção preserva a conversa.
 class Comment < ApplicationRecord
   BODY_LENGTH = 1..2000
+  after_create { Notifications::Events.comment_created(self) }
 
   belongs_to :publication
   belongs_to :author, class_name: "User", inverse_of: :comments

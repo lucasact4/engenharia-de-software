@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -206,6 +206,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.text "resolution_notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "notification_version", default: 0, null: false
     t.index ["comment_id"], name: "index_content_reports_on_comment_id"
     t.index ["publication_id"], name: "index_content_reports_on_publication_id"
     t.index ["reporter_id", "comment_id"], name: "index_content_reports_unique_comment_target", unique: true, where: "comment_id IS NOT NULL"
@@ -238,6 +239,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.check_constraint "length(name) BETWEEN 1 AND 120", name: "locations_name_length"
     t.check_constraint "reference_latitude IS NULL OR (reference_latitude >= -90 AND reference_latitude <= 90)", name: "locations_reference_latitude_range"
     t.check_constraint "reference_longitude IS NULL OR (reference_longitude >= -180 AND reference_longitude <= 180)", name: "locations_reference_longitude_range"
+  end
+
+  create_table "notification_deliveries", force: :cascade do |t|
+    t.integer "notification_id", null: false
+    t.integer "push_subscription_id"
+    t.string "channel", null: false
+    t.integer "attempts", default: 0, null: false
+    t.datetime "available_at", null: false
+    t.datetime "finished_at"
+    t.string "result"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["finished_at", "available_at"], name: "index_notification_deliveries_on_finished_at_and_available_at"
+    t.index ["notification_id", "push_subscription_id"], name: "index_notification_deliveries_push", unique: true, where: "channel = 'push'"
+    t.index ["notification_id"], name: "index_notification_deliveries_email", unique: true, where: "channel = 'email'"
+    t.index ["notification_id"], name: "index_notification_deliveries_on_notification_id"
+    t.index ["push_subscription_id"], name: "index_notification_deliveries_on_push_subscription_id"
+    t.check_constraint "(channel = 'email' AND push_subscription_id IS NULL) OR (channel = 'push' AND push_subscription_id IS NOT NULL)", name: "notification_deliveries_destination"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "location_id"
+    t.boolean "email_enabled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_notification_preferences_on_location_id"
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "event_key", null: false
+    t.string "kind", null: false
+    t.string "message", null: false
+    t.integer "alert_id"
+    t.integer "publication_id"
+    t.integer "comment_id"
+    t.integer "content_report_id"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_notifications_on_alert_id"
+    t.index ["comment_id"], name: "index_notifications_on_comment_id"
+    t.index ["content_report_id"], name: "index_notifications_on_content_report_id"
+    t.index ["publication_id"], name: "index_notifications_on_publication_id"
+    t.index ["user_id", "event_key"], name: "index_notifications_on_user_id_and_event_key", unique: true
+    t.index ["user_id", "read_at", "created_at"], name: "index_notifications_on_user_id_and_read_at_and_created_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+    t.check_constraint "kind IN ('alert_status', 'publication_status', 'comment', 'like', 'panic', 'content_report', 'publication_pending', 'nearby_alert')", name: "notifications_kind"
   end
 
   create_table "presentation_profiles", force: :cascade do |t|
@@ -321,6 +372,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
     t.check_constraint "state <> 'withdrawn' OR withdrawn_at IS NOT NULL", name: "publications_withdrawn_at"
     t.check_constraint "state IN ('draft', 'published', 'withdrawn')", name: "publications_state"
     t.check_constraint "visibility IN ('internal', 'public_external')", name: "publications_visibility"
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.integer "session_id", null: false
+    t.string "endpoint_digest", null: false
+    t.text "endpoint", null: false
+    t.text "p256dh", null: false
+    t.text "auth", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint_digest"], name: "index_push_subscriptions_on_endpoint_digest", unique: true
+    t.index ["session_id"], name: "index_push_subscriptions_on_session_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -428,6 +491,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "content_reports", "publications"
   add_foreign_key "content_reports", "users", column: "reporter_id"
   add_foreign_key "content_reports", "users", column: "reviewed_by_id"
+  add_foreign_key "notification_deliveries", "notifications", on_delete: :cascade
+  add_foreign_key "notification_deliveries", "push_subscriptions", on_delete: :cascade
+  add_foreign_key "notification_preferences", "locations", on_delete: :nullify
+  add_foreign_key "notification_preferences", "users", on_delete: :cascade
+  add_foreign_key "notifications", "alerts"
+  add_foreign_key "notifications", "comments"
+  add_foreign_key "notifications", "content_reports"
+  add_foreign_key "notifications", "publications"
+  add_foreign_key "notifications", "users"
   add_foreign_key "publication_bookmarks", "publications"
   add_foreign_key "publication_bookmarks", "users"
   add_foreign_key "publication_likes", "publications"
@@ -437,6 +509,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_120000) do
   add_foreign_key "publications", "alerts"
   add_foreign_key "publications", "users", column: "author_id"
   add_foreign_key "publications", "users", column: "reviewed_by_id"
+  add_foreign_key "push_subscriptions", "sessions", on_delete: :cascade
   add_foreign_key "sessions", "users"
   add_foreign_key "user_follows", "users", column: "followed_id"
   add_foreign_key "user_follows", "users", column: "follower_id"

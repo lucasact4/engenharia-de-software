@@ -12,6 +12,15 @@ Rails.application.routes.draw do
 
   # Área autenticada de pessoas usuárias e equipes (portal).
   resource :panel, only: :show, path: "painel", controller: "panel"
+  resources :notifications, path: "notificacoes", only: :index do
+    patch :read, on: :member, path: "leitura"
+    patch :read_all, on: :collection, path: "ler-todas"
+    patch :preferences, on: :collection, path: "preferencias"
+    post :subscribe_push, on: :collection, path: "push"
+    delete :unsubscribe_push, on: :collection, path: "push"
+  end
+  get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
 
   resources :alerts, path: "alertas", only: %i[index show new create edit update] do
     patch :audience, on: :member, path: "audiencia"

@@ -24,6 +24,7 @@ class User < ApplicationRecord
 
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   # Papéis declarados (multiperfil). Não concedem administração: ver Role.
   has_many :user_roles, dependent: :destroy
