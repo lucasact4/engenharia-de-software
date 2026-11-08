@@ -3,6 +3,7 @@
 # O atendimento fica em Handling::AlertsController; a administração, em Admin::AlertsController.
 class AlertsController < PortalController
   include AlertFormParams
+  include AnonymousPublicationProtection
 
   TABS = %w[meus internos acompanhados].freeze
 
@@ -37,8 +38,7 @@ class AlertsController < PortalController
     authorize Alert, :create_occurrence?
     @client_request_id = requested_client_request_id
     attributes = occurrence_params
-    if ActiveModel::Type::Boolean.new.cast(attributes[:anonymous_public]) &&
-        !TurnstileVerifier.verify(params[:cf_turnstile_response], expected_hostname: request.host)
+    unless anonymous_publication_verified?(attributes)
       rebuild_form(nil)
       @alert.errors.add(:base, turnstile_error_message)
       return render :new, status: :unprocessable_entity
@@ -129,14 +129,6 @@ class AlertsController < PortalController
       @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
       post = @alert.publication if @alert.occurrence?
       @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
-    end
-
-    def turnstile_error_message
-      if TurnstileVerifier.configured?
-        "Não foi possível confirmar o desafio antirobô. Tente novamente."
-      else
-        "A publicação anônima está indisponível até que a proteção Turnstile seja configurada."
-      end
     end
 
     def filter(scope)

@@ -6,6 +6,7 @@
 class Admin::AlertsController < Admin::ApplicationController
   include ErrorResponses
   include AlertFormParams
+  include AnonymousPublicationProtection
   include AlertHandlingActions
   include AlertQueueFilters
 
@@ -49,8 +50,16 @@ class Admin::AlertsController < Admin::ApplicationController
   def create
     authorize Alert, :create_occurrence?
     @client_request_id = params[:client_request_id].to_s
+    attributes = occurrence_params
+    unless anonymous_publication_verified?(attributes)
+      @alert = Alert.new(attributes.merge(kind: "occurrence"))
+      @alert.errors.add(:base, turnstile_error_message)
+      @photos_dropped = uploaded_photos.any?
+      @options = AlertOptionsPresenter.new(actor: Current.user)
+      return render :new, status: :unprocessable_entity
+    end
     result = Alerts::CreateOccurrence.call(
-      actor: Current.user, attributes: occurrence_params, photos: uploaded_photos,
+      actor: Current.user, attributes: attributes, photos: uploaded_photos,
       client_request_id: @client_request_id,
       request_audit: { ip_address: request.remote_ip, user_agent: request.user_agent, submitted_at: Time.current }
     )

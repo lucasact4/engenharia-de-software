@@ -83,7 +83,7 @@ class PublicationProjection
     end
 
     def anonymous_public_to_viewer?
-      return false unless @publication.public_external? && @publication.alert&.anonymous_public?
+      return false unless @publication.alert&.anonymous_public?
       return true unless @viewer&.active?
       return false if @publication.author_id == @viewer.id
 

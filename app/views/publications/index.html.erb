@@ -14,7 +14,7 @@
     <div class="grid gap-2 sm:grid-cols-3">
       <div>
         <%= label_tag :creator, "Criador", class: "sr-only" %>
-        <%= search_field_tag :creator, params[:creator], class: "sgu-input", placeholder: "Criador" %>
+        <%= search_field_tag :creator, params[:creator], class: "sgu-input", placeholder: "Criador", aria: { describedby: "creator_privacy_hint" } %>
       </div>
       <div>
         <%= label_tag :category_id, "Categoria", class: "sr-only" %>
@@ -28,6 +28,7 @@
     <%= hidden_field_tag :audience, params[:audience] if params[:audience].present? %>
     <%= hidden_field_tag :kind, params[:kind] if params[:kind].present? %>
   <% end %>
+  <p id="creator_privacy_hint" class="mt-2 text-xs text-muted">A busca por criador considera somente a identidade visível para você.</p>
   <details class="mt-3 text-sm">
     <summary class="cursor-pointer text-muted">Filtrar publicações</summary>
     <nav class="mt-3 flex flex-wrap gap-2" aria-label="Tipo de publicação">

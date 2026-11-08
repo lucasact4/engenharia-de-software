@@ -3,7 +3,7 @@ require "json"
 require "uri"
 
 # Verifica no servidor os tokens Turnstile de publicações com identidade oculta.
-# O IP do visitante e o token nunca são registrados em logs.
+# Este verificador não registra tokens nem IP; a origem do envio tem auditoria protegida própria.
 class TurnstileVerifier
   SITEVERIFY_URI = URI("https://challenges.cloudflare.com/turnstile/v0/siteverify")
   TIMEOUT_SECONDS = 3

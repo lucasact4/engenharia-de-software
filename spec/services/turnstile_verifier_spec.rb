@@ -36,4 +36,25 @@ RSpec.describe TurnstileVerifier do
 
     expect(described_class.verify("x" * (described_class::MAX_TOKEN_LENGTH + 1))).to be(false)
   end
+
+  [
+    { success: false, action: "anonymous_occurrence", hostname: "sgu.example" },
+    { success: true, action: "different_action", hostname: "sgu.example" },
+    { success: true, action: "anonymous_occurrence", hostname: "other.example" }
+  ].each do |payload|
+    it "rejects an unsuccessful or incorrectly bound Siteverify response #{payload.inspect}" do
+      allow(described_class).to receive(:configured?).and_return(true)
+      response = Net::HTTPOK.new("1.1", "200", "OK")
+      allow(response).to receive(:body).and_return(payload.to_json)
+      http = instance_double(Net::HTTP)
+      allow(Net::HTTP).to receive(:new).with("challenges.cloudflare.com", 443).and_return(http)
+      allow(http).to receive(:use_ssl=).with(true)
+      allow(http).to receive(:open_timeout=).with(3)
+      allow(http).to receive(:read_timeout=).with(3)
+      allow(http).to receive(:start).and_yield(http)
+      allow(http).to receive(:request).and_return(response)
+
+      expect(described_class.verify("token", expected_hostname: "sgu.example")).to be(false)
+    end
+  end
 end

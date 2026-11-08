@@ -71,6 +71,23 @@ class PublicationPolicy < ApplicationPolicy
     end
   end
 
+  # Restringe a busca por criador às identidades exibidas pela projeção do mural.
+  class AuthorIdentityScope < ApplicationPolicy::Scope
+    def resolve
+      occurrences = scope.occurrence.where(author_id: User.active.select(:id))
+      identified = occurrences.where(visibility: "internal")
+        .or(occurrences.where(author_id: User.active.where(public_profile: true).select(:id)))
+      return identified if active_admin? || role?(:coordination)
+
+      visible = identified.where(alert_id: Alert.occurrence.where(anonymous_public: false).select(:id))
+      return visible unless active_user?
+
+      visible = visible.or(identified.where(author_id: user.id))
+      visible = visible.or(identified.where(alert_id: Alert.where(assigned_to_id: user.id).select(:id))) if role?(:security)
+      visible
+    end
+  end
+
   # O que está no ar para quem lê, inclusive para administradores (rascunhos ficam no admin).
   class FeedScope < ApplicationPolicy::Scope
     def resolve
