@@ -38,6 +38,20 @@ RSpec.describe "Admin alerts", type: :request do
     expect(response.body).to include("Audiência e divulgação")
   end
 
+  it "approves the existing mural post for the campus map without changing its mural approval" do
+    publication = create(:publication, :published, kind: "occurrence", alert: alert,
+                                                   visibility: "public_external")
+
+    get admin_alert_path(alert)
+    expect(response.body).to include("Aprovar para o mapa")
+
+    patch approve_for_map_admin_alert_path(alert), params: { lock_version: publication.lock_version }
+
+    expect(response).to redirect_to(admin_alert_path(alert, locale: I18n.locale))
+    expect(publication.reload).to have_attributes(review_status: "approved", visibility: "public_external")
+    expect(publication).to be_approved_for_campus_map
+  end
+
   it "creates an occurrence authored by the admin, never on behalf of someone else" do
     post admin_alerts_path, params: {
       client_request_id: SecureRandom.uuid,

@@ -92,6 +92,7 @@ Rails.application.routes.draw do
     end
     resources :alerts, path: "ocorrencias", except: :destroy do
       member do
+        patch :approve_for_map, path: "aprovar-no-mapa"
         patch :assessment, path: "classificacao"
         patch :assignment, path: "responsavel"
         patch :transition, path: "situacao"

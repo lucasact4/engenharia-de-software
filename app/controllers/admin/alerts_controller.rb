@@ -26,6 +26,18 @@ class Admin::AlertsController < Admin::ApplicationController
     render_handling_show(:ok)
   end
 
+  def approve_for_map
+    publication = @alert.publication
+    authorize publication, :approve_for_campus_map?
+    Publications::ApproveForCampusMap.call(actor: Current.user, publication: publication,
+                                           lock_version: params[:lock_version])
+    redirect_to admin_alert_path(@alert), flash: { success: "Ocorrência aprovada para aparecer no mapa do campus." }, status: :see_other
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::StaleObjectError => error
+    publication&.errors&.each { |item| @alert.errors.import(item) } if error.is_a?(ActiveRecord::RecordInvalid)
+    @alert.errors.add(:base, "A publicação mudou durante a aprovação. Confira os dados atuais e tente novamente.") if error.is_a?(ActiveRecord::StaleObjectError)
+    render_handling_show(error.is_a?(ActiveRecord::StaleObjectError) ? :conflict : :unprocessable_entity)
+  end
+
   # O administrador registra como autor de si mesmo; não há criação "em nome de" outra pessoa.
   def new
     authorize Alert, :create_occurrence?

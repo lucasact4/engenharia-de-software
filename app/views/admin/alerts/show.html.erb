@@ -25,7 +25,7 @@
     <%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: admin_alert_path(@alert) %>
     <%= render "shared/alerts/handling_panel", alert: @alert, options: @options, assignees: @assignees, submitted: @submitted || {},
           urls: { assessment: assessment_admin_alert_path(@alert), assignment: assignment_admin_alert_path(@alert), transition: transition_admin_alert_path(@alert) } do %>
-      <%= render "admin/alerts/audience_panel", alert: @alert, options: @options, submitted: @submitted || {} %>
+      <%= render "admin/alerts/audience_panel", alert: @alert, publication: @publication, options: @options, submitted: @submitted || {} %>
     <% end %>
   </div>
 </div>

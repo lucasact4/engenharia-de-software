@@ -315,8 +315,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_121500) do
     t.datetime "updated_at", null: false
     t.string "approval_method"
     t.boolean "moderation_blocked", default: false, null: false
+    t.datetime "campus_map_approved_at"
+    t.integer "campus_map_approved_by_id"
     t.index ["alert_id"], name: "index_publications_on_alert_id", unique: true
     t.index ["author_id"], name: "index_publications_on_author_id"
+    t.index ["campus_map_approved_by_id"], name: "index_publications_on_campus_map_approved_by_id"
     t.index ["reviewed_by_id"], name: "index_publications_on_reviewed_by_id"
     t.index ["state", "visibility", "published_at"], name: "index_publications_on_state_and_visibility_and_published_at"
     t.check_constraint "(kind = 'occurrence' AND alert_id IS NOT NULL) OR (kind <> 'occurrence' AND alert_id IS NULL)", name: "publications_alert_source"
@@ -349,11 +352,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_121500) do
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "ip_address"
-    t.datetime "updated_at", null: false
-    t.string "user_agent"
     t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
@@ -379,12 +382,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_121500) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.boolean "admin", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "deleted_at"
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false, null: false
     t.string "display_name"
     t.string "username"
     t.text "bio"
@@ -457,6 +460,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_121500) do
   add_foreign_key "publication_subscriptions", "users"
   add_foreign_key "publications", "alerts"
   add_foreign_key "publications", "users", column: "author_id"
+  add_foreign_key "publications", "users", column: "campus_map_approved_by_id"
   add_foreign_key "publications", "users", column: "reviewed_by_id"
   add_foreign_key "sessions", "users"
   add_foreign_key "user_follows", "users", column: "followed_id"
