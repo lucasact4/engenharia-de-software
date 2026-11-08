@@ -66,6 +66,8 @@ class Alert < ApplicationRecord
   has_many :duplicates, class_name: "Alert", foreign_key: :duplicate_of_id, inverse_of: :duplicate_of,
            dependent: :restrict_with_exception
   has_many :alert_subscriptions, dependent: :destroy
+  has_one :anonymous_submission_audit, dependent: :restrict_with_exception
+  has_one :anonymous_submission_audit, dependent: :restrict_with_exception
   has_many_attached :photos
 
   before_validation :assign_protocol, on: :create

@@ -16,8 +16,20 @@ class User < ApplicationRecord
 
   attribute :verified_at, :datetime
   belongs_to :verified_by, class_name: "User", optional: true
+  attribute :email_notifications_enabled, :boolean, default: false
+  attribute :nearby_alerts_email_enabled, :boolean, default: false
+  attribute :nearby_alerts_radius_km, :integer, default: 5
+  attribute :email_notifications_consented_at, :datetime
+  attribute :notification_location_id, :integer
+  belongs_to :notification_location, class_name: "Location", optional: true
+
+  before_validation :stamp_email_notification_consent
+  validates :nearby_alerts_radius_km, numericality: { only_integer: true, in: 1..25 }
+  validate :nearby_notifications_require_consent_and_location
 
   def verified? = active? && verified_at.present?
+
+  def email_notifications_consented? = email_notifications_enabled? && email_notifications_consented_at.present?
 
   has_one_attached :avatar
   validate :avatar_constraints
@@ -87,6 +99,26 @@ class User < ApplicationRecord
   end
 
   private
+
+    def stamp_email_notification_consent
+      if email_notifications_enabled?
+        self.email_notifications_consented_at ||= Time.current
+      else
+        self.email_notifications_consented_at = nil
+        self.nearby_alerts_email_enabled = false
+        self.notification_location = nil
+      end
+    end
+
+    def nearby_notifications_require_consent_and_location
+      return unless nearby_alerts_email_enabled?
+
+      errors.add(:nearby_alerts_email_enabled, "exige consentimento para e-mails") unless email_notifications_enabled?
+      errors.add(:notification_location, "selecione um local de referência") unless notification_location
+      if notification_location && (!notification_location.active? || notification_location.reference_latitude.nil? || notification_location.reference_longitude.nil?)
+        errors.add(:notification_location, "precisa ser ativo e ter coordenadas de referência")
+      end
+    end
 
     def avatar_constraints
       change = attachment_changes["avatar"]

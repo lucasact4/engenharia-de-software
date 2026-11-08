@@ -52,6 +52,16 @@ tables:
       - UQ
     - - phone
       - UQ
+    - - email_notifications_enabled
+      - ''
+    - - nearby_alerts_email_enabled
+      - ''
+    - - nearby_alerts_radius_km
+      - ''
+    - - email_notifications_consented_at
+      - ''
+    - - notification_location_id
+      - FK locations
   user_roles:
     columns:
     - - id
@@ -482,6 +492,22 @@ tables:
       - ""
     - - updated_at
       - ""
+  anonymous_submission_audits:
+    columns:
+    - - id
+      - PK
+    - - alert_id
+      - FK·UQ alerts
+    - - ip_address_ciphertext
+      - ''
+    - - user_agent_ciphertext
+      - ''
+    - - submitted_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
 foreign_keys:
 - source: users
   target: users
@@ -678,6 +704,16 @@ foreign_keys:
   column: verified_by_id
   required: false
   unique: false
+- source: users
+  target: locations
+  column: notification_location_id
+  required: false
+  unique: false
+- source: anonymous_submission_audits
+  target: alerts
+  column: alert_id
+  required: true
+  unique: true
 diagrams:
   core:
     title: DER físico — núcleo do SGU
@@ -837,11 +873,12 @@ diagrams:
       split: 2
     - id: audit_subject
       title: Registros auditados
-      x: 30
-      "y": 334
-      width: 480
+      x: 525
+      "y": 200
+      width: 255
       lines:
-      - Alert · Publication · Comment · ContentReport · User
+      - Alert · Publication · Comment
+      - ContentReport · User
       variant: reference
     relations:
     - source: audit_events
@@ -919,6 +956,7 @@ diagrams:
     description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
       Fotos usam vínculo polimórfico com alertas, publicações e usuários. presentation_profiles
       guarda só a seleção de slides da apresentação, sem chave estrangeira.
+      anonymous_submission_audits guarda IP e user agent cifrados de relatos anônimos.
     width: 1080
     height: 590
     nodes:
@@ -950,6 +988,12 @@ diagrams:
       x: 30
       "y": 370
       width: 260
+      split: 1
+      variant: infra
+    - table: anonymous_submission_audits
+      x: 350
+      "y": 330
+      width: 340
       split: 1
       variant: infra
     - table: users

@@ -13,6 +13,17 @@
       <%= field_errors(@user, :avatar) %>
     </div>
     <%= render "shared/profile_fields", f: f, user: @user %>
+    <fieldset class="rounded-xl border border-line p-4">
+      <legend class="px-1 font-bold">Notificações por e-mail</legend>
+      <p class="mb-3 text-sm text-muted">Usaremos seu endereço cadastrado somente para avisos do SGU. Cada mensagem contém o protocolo e a situação, sem descrição do relato.</p>
+      <label class="flex items-start gap-3 text-sm"><%= f.check_box :email_notifications_enabled, class: "mt-1 size-4 accent-brand-solid" %><span>Consinto em receber atualizações dos relatos que registrei ou acompanho e alertas públicos próximos ao local escolhido.</span></label>
+      <div class="mt-4 space-y-3">
+        <label class="flex items-start gap-3 text-sm"><%= f.check_box :nearby_alerts_email_enabled, class: "mt-1 size-4 accent-brand-solid" %><span>Receber alertas públicos próximos</span></label>
+        <div><%= f.label :notification_location_id, "Local de referência", class: "sgu-label" %><%= f.select :notification_location_id, Location.active.ordered.map { |location| [location.name, location.id] }, { include_blank: "Selecione um local do campus" }, class: "sgu-input" %><p class="sgu-hint">O SGU usa somente o ponto do catálogo; sua localização pessoal não é coletada.</p></div>
+        <div><%= f.label :nearby_alerts_radius_km, "Distância máxima (km)", class: "sgu-label" %><%= f.number_field :nearby_alerts_radius_km, min: 1, max: 25, step: 1, class: "sgu-input" %></div>
+      </div>
+      <p class="mt-3 text-xs text-muted">Você pode retirar o consentimento nesta página. A escolha não altera avisos necessários à segurança da conta.</p>
+    </fieldset>
     <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
       <%= link_to "Cancelar", profile_path, class: "sgu-btn sgu-btn-secondary" %>
       <%= f.button "Salvar perfil", type: "submit", class: "sgu-btn sgu-btn-primary" %>
