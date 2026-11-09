@@ -94,7 +94,7 @@ group :test do
   # SimpleCov is a code coverage analysis tool for Ruby. [https://github.com/simplecov-ruby/simplecov]
   gem "simplecov", "1.3.2"
   # rspec-rails integrates the Rails testing helpers into RSpec. [https://github.com/rspec/rspec-rails]
-  gem "rspec-rails", "8.0.4"
+  gem "rspec-rails", "8.0.5"
   # Simple one-liner tests for common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers", "8.0.1"
   # A set of RSpec matchers for testing Pundit policies. [https://github.com/pundit-community/pundit-matchers]
