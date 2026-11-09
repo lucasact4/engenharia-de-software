@@ -3,10 +3,11 @@
 # O atendimento fica em Handling::AlertsController; a administração, em Admin::AlertsController.
 class AlertsController < PortalController
   include AlertFormParams
+  include AnonymousPublicationProtection
 
   TABS = %w[meus internos acompanhados].freeze
 
-  before_action :set_alert, only: %i[show edit update audience]
+  before_action :set_alert, only: %i[show edit update audience complete]
 
   def index
     authorize Alert, :index?
@@ -23,10 +24,7 @@ class AlertsController < PortalController
 
   def show
     authorize @alert, :show?
-    @detail = AlertDetailPresenter.new(@alert, viewer: Current.user)
-    @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
-    post = @alert.publication if @alert.occurrence?
-    @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
+    prepare_show
   end
 
   def new
@@ -40,15 +38,15 @@ class AlertsController < PortalController
     authorize Alert, :create_occurrence?
     @client_request_id = requested_client_request_id
     attributes = occurrence_params
-    if ActiveModel::Type::Boolean.new.cast(attributes[:anonymous_public]) &&
-        !TurnstileVerifier.verify(params[:cf_turnstile_response], expected_hostname: request.host)
+    unless anonymous_publication_verified?(attributes)
       rebuild_form(nil)
       @alert.errors.add(:base, turnstile_error_message)
       return render :new, status: :unprocessable_entity
     end
 
     result = Alerts::CreateOccurrence.call(
-      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id
+      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id,
+      request_audit: { ip_address: request.remote_ip, user_agent: request.user_agent, submitted_at: Time.current }
     )
     message = result.created? ? "Ocorrência registrada. Protocolo #{result.alert.protocol}." : "Este envio já tinha sido recebido (protocolo #{result.alert.protocol}); nada foi duplicado."
     redirect_to alert_path(result.alert), notice: message, status: :see_other
@@ -93,6 +91,22 @@ class AlertsController < PortalController
     render :edit, status: :conflict
   end
 
+  def complete
+    authorize @alert, :complete?
+    Alerts::Complete.call(actor: Current.user, alert: @alert, lock_version: params.require(:lock_version))
+    redirect_to alert_path(@alert), notice: "Ocorrência marcada como resolvida.", status: :see_other
+  rescue ActiveRecord::StaleObjectError
+    @alert = policy_scope(Alert).find(@alert.id)
+    prepare_show
+    flash.now[:alert] = stale_conflict_message
+    render :show, status: :conflict
+  rescue ActiveRecord::RecordInvalid => error
+    @alert.reload
+    prepare_show
+    flash.now[:alert] = error.record.errors.full_messages.to_sentence
+    render :show, status: :unprocessable_entity
+  end
+
   # O autor escolhe a audiência; divulgação externa segue a verificação e a revisão.
   def audience
     authorize @alert, :change_audience?
@@ -110,12 +124,11 @@ class AlertsController < PortalController
       @alert = policy_scope(Alert).find(params[:id])
     end
 
-    def turnstile_error_message
-      if TurnstileVerifier.configured?
-        "Não foi possível confirmar o desafio antirobô. Tente novamente."
-      else
-        "A publicação anônima está indisponível até que a proteção Turnstile seja configurada."
-      end
+    def prepare_show
+      @detail = AlertDetailPresenter.new(@alert, viewer: Current.user)
+      @subscribed = Current.user.alert_subscriptions.exists?(alert_id: @alert.id)
+      post = @alert.publication if @alert.occurrence?
+      @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
     end
 
     def filter(scope)

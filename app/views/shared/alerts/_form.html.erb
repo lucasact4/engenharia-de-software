@@ -22,6 +22,15 @@
       <%= field_errors(alert, :description) %>
     </div>
   </section>
+  <% if !correcting && options.prior_occurrences.any? %>
+    <section class="composer-section">
+      <div class="composer-section-heading"><span class="composer-section-icon"><%= sgu_icon("clipboard-list", "size-5") %></span><h2>Relato relacionado <span class="composer-optional">opcional</span></h2></div>
+      <p class="composer-hint">Relacione este relato a outro que você já registrou. Isso não marca nenhum deles como duplicado.</p>
+      <%= f.label :related_alert_id, "Relato anterior", class: "sgu-label" %>
+      <%= f.select :related_alert_id, options.prior_occurrences, { include_blank: "Nenhum relato relacionado" }, class: "sgu-input", aria: { invalid: invalid?(alert, :related_alert) } %>
+      <%= field_errors(alert, :related_alert) %>
+    </section>
+  <% end %>
   <% unless correcting %>
     <% existing_photos = alert.persisted? ? alert.ordered_photos.map { |photo| {id: photo.id, url: alert_photo_path(alert_id: alert.id, id: photo.id)} } : [] %>
     <section class="composer-section" data-controller="photo-preview" data-photo-preview-existing-value="<%= existing_photos.to_json %>">
@@ -75,9 +84,9 @@
             <%= check_box_tag "alert[anonymous_public]", "1", alert.anonymous_public?, id: "alert_anonymous_public",
                               disabled: !TurnstileVerifier.configured?, class: "mt-0.5 size-4 accent-brand-solid",
                               data: { anonymous_public_target: "checkbox", action: "change->anonymous-public#toggle" } %>
-            <span>Ocultar minha identidade na publicação pública</span>
+            <span>Ocultar minha identidade no mural</span>
           </label>
-          <p class="mt-2 pl-7 text-xs text-muted">Seu cadastro continuará ligado ao relato para o atendimento. Seu nome, avatar e perfil não serão exibidos a quem lê a publicação pública.</p>
+          <p class="mt-2 pl-7 text-xs text-muted">Sua conta continuará vinculada ao relato. Seu nome, avatar e perfil ficam ocultos para os leitores do mural, inclusive enquanto aguarda aprovação. Você e os responsáveis autorizados pelo atendimento podem identificar a autoria.</p>
           <% if TurnstileVerifier.configured? %>
             <div class="mt-3 space-y-2" data-anonymous-public-target="challenge" hidden>
               <div data-anonymous-public-target="widget"></div>

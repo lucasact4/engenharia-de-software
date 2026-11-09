@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
   resources :alerts, path: "alertas", only: %i[index show new create edit update] do
     patch :audience, on: :member, path: "audiencia"
+    patch :complete, on: :member, path: "concluir"
     resource :subscription, only: %i[create destroy], controller: "alert_subscriptions", path: "acompanhamento"
   end
   # Fotos originais: sempre pelo controller, com autorização a cada pedido.
@@ -100,6 +101,7 @@ Rails.application.routes.draw do
     end
     resources :alerts, path: "ocorrencias", except: :destroy do
       member do
+        patch :approve_for_map, path: "aprovar-no-mapa"
         patch :assessment, path: "classificacao"
         patch :assignment, path: "responsavel"
         patch :transition, path: "situacao"

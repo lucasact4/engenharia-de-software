@@ -1,7 +1,8 @@
 # Edição do próprio perfil (nome, usuário, apresentação e opt-in público) por Users::UpdateProfile.
 # Só esses campos são aceitos: e-mail, senha, admin, papéis e desativação nunca passam por aqui.
 class ProfilesController < PortalController
-  FIELDS = %i[display_name username bio public_profile avatar].freeze
+  FIELDS = %i[display_name username bio public_profile avatar email_notifications_enabled
+              nearby_alerts_email_enabled nearby_alerts_radius_km notification_location_id].freeze
 
   before_action :set_user
 

@@ -7,6 +7,25 @@
   </div>
   <%= render "publications/map_tabs", active: :map %>
 
+  <%= form_with url: campus_map_path, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4", aria: { label: "Filtros do mapa de ocorrências" } do %>
+    <div>
+      <%= label_tag :category_id, "Categoria", class: "sgu-label" %>
+      <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :name, @map_filters[:category_id]), include_blank: "Todas as categorias", class: "sgu-input" %>
+    </div>
+    <div>
+      <%= label_tag :status, "Situação", class: "sgu-label" %>
+      <%= select_tag :status, options_for_select(@map_statuses.map { |status| [ enum_label("alert.status", status), status ] }, @map_filters[:status]), include_blank: "Todas as situações ativas", class: "sgu-input" %>
+    </div>
+    <div>
+      <%= label_tag :severity, "Severidade percebida", class: "sgu-label" %>
+      <%= select_tag :severity, options_for_select(@map_severities.map { |severity| [ enum_label("alert.severity", severity), severity ] } + [ [ "Não informada", "not_reported" ] ], @map_filters[:severity]), include_blank: "Todas as severidades", class: "sgu-input" %>
+    </div>
+    <div class="flex flex-wrap items-end gap-2">
+      <button type="submit" class="sgu-btn sgu-btn-primary">Filtrar mapa</button>
+      <% if @map_filters.any? %><%= link_to "Limpar filtros", campus_map_path, class: "sgu-btn sgu-btn-secondary" %><% end %>
+    </div>
+  <% end %>
+
   <section class="sgu-card overflow-hidden" data-controller="campus-map"
            data-campus-map-locations-value="<%= @map_data[:locations].to_json %>"
            data-campus-map-spots-value="<%= @map_data[:spots].to_json %>"
@@ -14,7 +33,7 @@
            data-campus-map-buildings-url-value="/maps/ufrpe-sede-buildings-v2.geojson">
     <p class="px-4 pt-4 text-sm text-muted" data-campus-map-target="status" role="status" aria-live="polite">Carregando o mapa da sede Recife…</p>
     <div class="h-[65vh] min-h-96 w-full" data-campus-map-target="map" aria-label="Mapa da UFRPE sede Recife com ocorrências do mural"></div>
-    <p class="px-4 pb-4 text-xs text-muted">Clique em um contorno colorido para ver o nome do prédio. Os spots agrupam publicações aprovadas por local. <%= link_to "Mapa oficial da UFRPE/NTI", "https://www.nti.ufrpe.br/sites/www.nti.ufrpe.br/files/qgis/sede/index.html", target: "_blank", rel: "noopener noreferrer", class: "sgu-link" %>. Trânsito fora da sede também pode aparecer no mapa.</p>
+    <p class="px-4 pb-4 text-xs text-muted">Clique em um contorno colorido para ver o nome do prédio. Pontos próximos se agrupam quando o mapa está afastado e se separam ao aproximar. <%= link_to "Mapa oficial da UFRPE/NTI", "https://www.nti.ufrpe.br/sites/www.nti.ufrpe.br/files/qgis/sede/index.html", target: "_blank", rel: "noopener noreferrer", class: "sgu-link" %>. Trânsito fora da sede também pode aparecer no mapa.</p>
   </section>
 
   <section aria-labelledby="campus_reports_title">

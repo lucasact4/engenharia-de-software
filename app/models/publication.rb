@@ -27,6 +27,7 @@ class Publication < ApplicationRecord
   belongs_to :author, class_name: "User", inverse_of: :authored_publications
   belongs_to :alert, optional: true
   belongs_to :reviewed_by, class_name: "User", optional: true
+  belongs_to :campus_map_approved_by, class_name: "User", optional: true
 
   has_many :comments, dependent: :restrict_with_exception
   has_many :publication_likes, dependent: :destroy
@@ -69,6 +70,10 @@ class Publication < ApplicationRecord
 
   def approved_for_current_content?
     review_approved? && reviewed_content_version.present? && reviewed_content_version == content_version
+  end
+
+  def approved_for_campus_map?
+    campus_map_approved_at.present?
   end
 
   def expired?(at = Time.current)

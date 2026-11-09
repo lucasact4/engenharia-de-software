@@ -10,7 +10,7 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
   def submit_anonymous_occurrence(token)
     post alerts_path, params: {
       client_request_id: SecureRandom.uuid,
-      cf_turnstile_response: token,
+      "cf-turnstile-response" => token,
       alert: {
         title: "Lâmpada queimada no bloco",
         description: "Corredor do primeiro andar sem iluminação desde ontem.",

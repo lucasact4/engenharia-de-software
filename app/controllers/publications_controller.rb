@@ -46,13 +46,9 @@ class PublicationsController < PortalController
 
       creator = params[:creator].to_s.strip
       if creator.present?
-        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(creator.downcase)}%"
-        scope = scope.where(
-          "LOWER(COALESCE(users.display_name, '')) LIKE :creator OR " \
-          "LOWER(COALESCE(users.business_name, '')) LIKE :creator OR " \
-          "LOWER(COALESCE(users.username, '')) LIKE :creator",
-          creator: pattern
-        )
+        scope = PublicationPolicy::AuthorIdentityScope.new(Current.user, scope).resolve
+        scope = scope.text_search(creator, "COALESCE(users.display_name, users.username, '')",
+                                  "CASE WHEN users.public_profile THEN users.username ELSE NULL END")
       end
 
       category_id = params[:category_id].to_s

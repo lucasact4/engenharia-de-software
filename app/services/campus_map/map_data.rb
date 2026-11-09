@@ -4,12 +4,15 @@ module CampusMap
   class MapData
     CENTER = [ -8.0175, -34.9492 ].freeze
     BUILDING_COLORS = %w[#16a34a #f97316 #dc2626 #7c3aed #0891b2 #ca8a04 #db2777 #2563eb].freeze
+    ACTIVE_STATUSES = %w[received triaging in_progress awaiting_information].freeze
+    REPORTED_SEVERITIES = Alert.reported_severities.keys.freeze
     OFFICIAL_BUILDINGS = JSON.parse(
       Rails.root.join("public/maps/ufrpe-sede-buildings-v2.geojson").read
     ).fetch("features").freeze
 
-    def initialize(viewer:)
+    def initialize(viewer:, filters: {})
       @viewer = viewer
+      @filters = filters.to_h.symbolize_keys
     end
 
     def call
@@ -26,7 +29,8 @@ module CampusMap
       posts = feed_scope.where(kind: "occurrence").where.not(alert_id: nil)
         .where(review_status: "approved")
         .where("publications.reviewed_content_version = publications.content_version")
-        .where(alert_id: active_occurrences.select(:id))
+        .where.not(campus_map_approved_at: nil)
+        .where(alert_id: filtered_occurrences.select(:id))
         .includes(alert: [ :location, :category ]).order(published_at: :desc, id: :desc).limit(500)
 
       reports = posts.filter_map { |post| report_marker(post, locations, official_buildings) }
@@ -43,14 +47,28 @@ module CampusMap
       end
 
       def active_occurrences
-        Alert.occurrence.where(status: %w[received triaging in_progress awaiting_information])
+        Alert.occurrence.where(status: ACTIVE_STATUSES)
+      end
+
+      def filtered_occurrences
+        relation = active_occurrences
+        relation = relation.where(category_id: @filters[:category_id]) if @filters[:category_id].present?
+        relation = relation.where(status: @filters[:status]) if ACTIVE_STATUSES.include?(@filters[:status])
+
+        severity = @filters[:severity]
+        if REPORTED_SEVERITIES.include?(severity)
+          relation = relation.where(reported_severity: severity)
+        elsif severity == "not_reported"
+          relation = relation.where(reported_severity: nil)
+        end
+        relation
       end
 
       def report_marker(post, locations, official_buildings)
         alert = post.alert
         coordinates = [ alert.latitude, alert.longitude ] if alert.latitude.present? && alert.longitude.present?
-        matched = locations.find { |location| coordinates && inside?(coordinates, location.boundary) }
-        matched ||= alert.location if alert.location&.active?
+        matched = alert.location if alert.location&.active?
+        matched ||= locations.find { |location| coordinates && inside?(coordinates, location.boundary) }
         matching_point = coordinates || representative_point_for_location(matched) if coordinates || matched
         official_building = official_buildings.find do |building|
           matching_point && inside?(matching_point, building.fetch(:geometry))
@@ -70,12 +88,12 @@ module CampusMap
 
         exact = alert.share_exact_location? && coordinates.present? &&
           (matched.nil? || matched.boundary.blank? || inside?(coordinates, matched.boundary))
-        place_type = if official_building
+        place_type = if matched
+          "location"
+        elsif official_building
           "building"
         elsif traffic && !campus_area
           "traffic"
-        elsif matched
-          "location"
         elsif campus_area
           "campus_area"
         elsif traffic
@@ -91,12 +109,16 @@ module CampusMap
           approximate_point(place_point)
         end
         spot_anchor = place_type.in?(%w[building location]) ? place_point : approximate_point(place_point)
-        spot_key = case place_type
-        when "building" then "official-#{official_building.fetch(:id)}"
-        when "location" then "location-#{matched.id}"
-        when "campus_area" then "area-#{rounded_point(matching_point).join('-')}"
-        when "traffic" then "traffic-#{rounded_point(matching_point).join('-')}"
-        else "external-#{rounded_point(matching_point).join('-')}"
+        spot_key = if exact
+          "exact-#{coordinates.map { |coordinate| coordinate.to_f.round(6) }.join('-')}"
+        else
+          case place_type
+          when "building" then "official-#{official_building.fetch(:id)}"
+          when "location" then "location-#{matched.id}"
+          when "campus_area" then "area-#{rounded_point(matching_point).join('-')}"
+          when "traffic" then "traffic-#{rounded_point(matching_point).join('-')}"
+          else "external-#{rounded_point(matching_point).join('-')}"
+          end
         end
 
         {
@@ -125,8 +147,8 @@ module CampusMap
       end
 
       def spot_marker(spot_key, publications)
-        single_exact_report = publications.one? && publications.first[:exact]
-        point = single_exact_report ? publications.first.values_at(:latitude, :longitude) :
+        exact_reports = publications.all? { |publication| publication[:exact] }
+        point = exact_reports ? publications.first.values_at(:latitude, :longitude) :
           publications.first.values_at(:spot_latitude, :spot_longitude)
         {
           id: spot_key,

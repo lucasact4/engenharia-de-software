@@ -6,6 +6,7 @@
 
 *.identifier
 /coverage
+/backups/
 
 # Ignore bundler config.
 /.bundle

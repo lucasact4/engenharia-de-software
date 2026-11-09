@@ -53,6 +53,9 @@ module Publications
         AuditEvent.record!(actor: actor, action: "publication.#{@decision == 'approve' ? 'approved' : 'rejected'}",
                            subject: @publication, changes: changes, reason: @reason)
       end
+      if @decision == "approve" && @publication.occurrence? && @publication.public_external?
+        NearbyAlertNotificationJob.perform_later(@publication.alert_id)
+      end
       @publication
     end
 

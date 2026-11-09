@@ -82,6 +82,11 @@ FactoryBot.define do
       state { "published" }
       published_at { 30.minutes.ago }
     end
+
+    trait :campus_map_approved do
+      campus_map_approved_at { 10.minutes.ago }
+      association :campus_map_approved_by, factory: [ :user, :admin ]
+    end
   end
 
   factory :comment do

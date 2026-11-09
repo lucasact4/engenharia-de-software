@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.json "photo_order", default: [], null: false
     t.boolean "share_exact_location", default: false, null: false
     t.boolean "anonymous_public", default: false, null: false
+    t.integer "related_alert_id"
     t.index ["assigned_to_id"], name: "index_alerts_on_assigned_to_id"
     t.index ["author_id", "client_request_id"], name: "index_alerts_on_author_and_client_request", unique: true, where: "client_request_id IS NOT NULL"
     t.index ["author_id", "created_at"], name: "index_alerts_on_author_id_and_created_at"
@@ -94,6 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.index ["kind", "visibility", "status"], name: "index_alerts_on_kind_and_visibility_and_status"
     t.index ["location_id"], name: "index_alerts_on_location_id"
     t.index ["protocol"], name: "index_alerts_on_protocol", unique: true
+    t.index ["related_alert_id"], name: "index_alerts_on_related_alert_id"
     t.index ["status", "created_at"], name: "index_alerts_on_status_and_created_at"
     t.check_constraint "(closed_at IS NULL AND closure_reason IS NULL) OR status = 'closed'", name: "alerts_closure_only_when_closed"
     t.check_constraint "(latitude IS NULL AND longitude IS NULL) OR (latitude IS NOT NULL AND longitude IS NOT NULL)", name: "alerts_coordinates_pair"
@@ -129,6 +131,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.check_constraint "title IS NULL OR length(title) <= 160", name: "alerts_title_length"
     t.check_constraint "visibility = 'restricted' OR requested_visibility = 'internal'", name: "alerts_visibility_matches_request"
     t.check_constraint "visibility IN ('internal', 'restricted')", name: "alerts_visibility"
+  end
+
+  create_table "anonymous_submission_audits", force: :cascade do |t|
+    t.integer "alert_id", null: false
+    t.text "ip_address_ciphertext", null: false
+    t.text "user_agent_ciphertext", null: false
+    t.datetime "submitted_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_anonymous_submission_audits_on_alert_id", unique: true
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -354,8 +366,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.datetime "updated_at", null: false
     t.string "approval_method"
     t.boolean "moderation_blocked", default: false, null: false
+    t.datetime "campus_map_approved_at"
+    t.integer "campus_map_approved_by_id"
     t.index ["alert_id"], name: "index_publications_on_alert_id", unique: true
     t.index ["author_id"], name: "index_publications_on_author_id"
+    t.index ["campus_map_approved_by_id"], name: "index_publications_on_campus_map_approved_by_id"
     t.index ["reviewed_by_id"], name: "index_publications_on_reviewed_by_id"
     t.index ["state", "visibility", "published_at"], name: "index_publications_on_state_and_visibility_and_published_at"
     t.check_constraint "(kind = 'occurrence' AND alert_id IS NOT NULL) OR (kind <> 'occurrence' AND alert_id IS NULL)", name: "publications_alert_source"
@@ -400,11 +415,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "ip_address"
-    t.datetime "updated_at", null: false
-    t.string "user_agent"
     t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
@@ -430,12 +445,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.boolean "admin", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "deleted_at"
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false, null: false
     t.string "display_name"
     t.string "username"
     t.text "bio"
@@ -454,10 +469,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.text "cnpj"
     t.string "person_type", default: "natural", null: false
     t.text "phone"
+    t.boolean "email_notifications_enabled", default: false, null: false
+    t.boolean "nearby_alerts_email_enabled", default: false, null: false
+    t.integer "nearby_alerts_radius_km", default: 5, null: false
+    t.datetime "email_notifications_consented_at"
+    t.integer "notification_location_id"
     t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
     t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["notification_location_id"], name: "index_users_on_notification_location_id"
     t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
@@ -466,6 +487,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.check_constraint "(verified_at IS NULL AND verified_by_id IS NULL) OR (verified_at IS NOT NULL AND verified_by_id IS NOT NULL)", name: "users_verification_pair"
     t.check_constraint "bio IS NULL OR length(bio) <= 500", name: "users_bio_length"
     t.check_constraint "display_name IS NULL OR length(display_name) BETWEEN 1 AND 80", name: "users_display_name_length"
+    t.check_constraint "nearby_alerts_radius_km BETWEEN 1 AND 25", name: "users_nearby_alert_radius"
     t.check_constraint "registration_role_code IS NULL OR registration_role_code IN ('visitor', 'professor', 'student')", name: "users_registration_role_valid"
     t.check_constraint "registration_status IN ('pending', 'approved', 'rejected')", name: "users_registration_status_valid"
     t.check_constraint "username IS NULL OR (length(username) BETWEEN 3 AND 30 AND username = lower(username))", name: "users_username_length_and_case"
@@ -476,10 +498,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   add_foreign_key "alert_subscriptions", "alerts"
   add_foreign_key "alert_subscriptions", "users"
   add_foreign_key "alerts", "alerts", column: "duplicate_of_id"
+  add_foreign_key "alerts", "alerts", column: "related_alert_id"
   add_foreign_key "alerts", "categories"
   add_foreign_key "alerts", "locations"
   add_foreign_key "alerts", "users", column: "assigned_to_id"
   add_foreign_key "alerts", "users", column: "author_id"
+  add_foreign_key "anonymous_submission_audits", "alerts"
   add_foreign_key "audit_events", "users", column: "actor_id"
   add_foreign_key "comment_likes", "comments"
   add_foreign_key "comment_likes", "users"
@@ -508,6 +532,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   add_foreign_key "publication_subscriptions", "users"
   add_foreign_key "publications", "alerts"
   add_foreign_key "publications", "users", column: "author_id"
+  add_foreign_key "publications", "users", column: "campus_map_approved_by_id"
   add_foreign_key "publications", "users", column: "reviewed_by_id"
   add_foreign_key "push_subscriptions", "sessions", on_delete: :cascade
   add_foreign_key "sessions", "users"
@@ -516,6 +541,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "user_roles", "users", column: "granted_by_id"
+  add_foreign_key "users", "locations", column: "notification_location_id"
   add_foreign_key "users", "users", column: "registration_reviewed_by_id"
   add_foreign_key "users", "users", column: "verified_by_id"
 end
