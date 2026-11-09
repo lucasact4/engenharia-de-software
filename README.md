@@ -166,6 +166,7 @@ bin/rubocop && \
 - [Upgrading an existing database to the SGU data model](docs/data-model-upgrade.md)
 - [Registration, themes, and review](docs/sgu-cadastro-temas-revisao.md) (Portuguese)
 - [Occurrence posts, public review, and verification](docs/occurrence-social-flow.md)
+- [In-app notifications, panic priority, and inbox permissions](docs/notifications.md)
 - [Occurrences, handling, board, and social features: implementation](docs/alertas-crud-implementacao.md) (Portuguese)
 - [SQLite in production](docs/sqlite-production.md)
 - [Automatic 48-hour SQLite backups and recovery (RNF007)](docs/sqlite-backup-and-restore.md)

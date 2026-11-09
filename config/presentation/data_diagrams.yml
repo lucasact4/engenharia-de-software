@@ -342,6 +342,8 @@ tables:
       - ''
     - - resolution_notes
       - ''
+    - - notification_version
+      - ''
     - - created_at
       - ''
     - - updated_at
@@ -492,6 +494,86 @@ tables:
       - ""
     - - updated_at
       - ""
+  notifications:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - event_key
+      - UQ* user_id
+    - - kind
+      - ''
+    - - message
+      - ''
+    - - alert_id
+      - FK alerts
+    - - publication_id
+      - FK publications
+    - - comment_id
+      - FK comments
+    - - content_report_id
+      - FK content_reports
+    - - read_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  notification_preferences:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - location_id
+      - FK locations
+    - - email_enabled
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  push_subscriptions:
+    columns:
+    - - id
+      - PK
+    - - session_id
+      - FK sessions
+    - - endpoint_digest
+      - UQ
+    - - endpoint
+      - ''
+    - - p256dh
+      - ''
+    - - auth
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  notification_deliveries:
+    columns:
+    - - id
+      - PK
+    - - notification_id
+      - FK notifications
+    - - push_subscription_id
+      - FK push_subscriptions
+    - - channel
+      - ''
+    - - attempts
+      - ''
+    - - available_at
+      - ''
+    - - finished_at
+      - ''
+    - - result
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
   anonymous_submission_audits:
     columns:
     - - id
@@ -509,6 +591,56 @@ tables:
     - - updated_at
       - ''
 foreign_keys:
+- source: notification_preferences
+  target: users
+  column: user_id
+  required: true
+  unique: true
+- source: notification_preferences
+  target: locations
+  column: location_id
+  required: false
+  unique: false
+- source: push_subscriptions
+  target: sessions
+  column: session_id
+  required: true
+  unique: false
+- source: notification_deliveries
+  target: notifications
+  column: notification_id
+  required: true
+  unique: true
+- source: notification_deliveries
+  target: push_subscriptions
+  column: push_subscription_id
+  required: false
+  unique: false
+- source: notifications
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: notifications
+  target: alerts
+  column: alert_id
+  required: false
+  unique: false
+- source: notifications
+  target: publications
+  column: publication_id
+  required: false
+  unique: false
+- source: notifications
+  target: comments
+  column: comment_id
+  required: false
+  unique: false
+- source: notifications
+  target: content_reports
+  column: content_report_id
+  required: false
+  unique: false
 - source: users
   target: users
   column: registration_reviewed_by_id
@@ -893,7 +1025,7 @@ diagrams:
     description: Todas as colunas e relações sociais. Referências a users e alerts
       não repetem suas colunas.
     width: 1080
-    height: 820
+    height: 1200
     nodes:
     - table: publications
       x: 30
@@ -941,6 +1073,11 @@ diagrams:
       "y": 640
       width: 240
       split: 1
+    - table: notifications
+      x: 550
+      "y": 640
+      width: 500
+      split: 2
     - table: users
       reference: true
       x: 30
@@ -951,6 +1088,28 @@ diagrams:
       x: 810
       "y": 20
       width: 240
+    - table: notification_preferences
+      x: 30
+      "y": 850
+      width: 310
+    - table: notification_deliveries
+      x: 370
+      "y": 850
+      width: 335
+    - table: push_subscriptions
+      x: 735
+      "y": 850
+      width: 315
+    - table: locations
+      reference: true
+      x: 30
+      "y": 1080
+      width: 310
+    - table: sessions
+      reference: true
+      x: 735
+      "y": 1080
+      width: 315
   infrastructure:
     title: Infraestrutura e autenticação
     description: Anexos e variantes referenciam blobs; sessões referenciam usuários.

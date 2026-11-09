@@ -1,4 +1,12 @@
+development:
+  deliver_notifications:
+    class: DeliverNotificationsJob
+    schedule: every 15 seconds
+
 production:
+  deliver_notifications:
+    class: DeliverNotificationsJob
+    schedule: every 15 seconds
   storage_backup:
     class: StorageBackupJob
     queue: backups

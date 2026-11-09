@@ -1,0 +1,9 @@
+<section class="notification-urgent-card" role="alertdialog" aria-modal="false" aria-labelledby="panic-notification-title" aria-describedby="panic-notification-description">
+  <h2 id="panic-notification-title" class="text-lg font-bold">Pânico · atenção imediata</h2>
+  <p id="panic-notification-description" class="my-3"><%= notification.message %></p>
+  <p class="mb-3 text-sm">Reconhecer este aviso registra apenas sua leitura; o atendimento deve ser realizado na ocorrência.</p>
+  <div class="flex flex-wrap gap-3">
+    <%= link_to "Abrir pedido de ajuda", notification_destination(notification), class: "sgu-btn sgu-btn-danger" %>
+    <%= button_to "Reconhecer alerta", read_notification_path(notification), method: :patch, class: "sgu-btn sgu-btn-secondary", form: { data: { action: "submit->notifications#read" } } %>
+  </div>
+</section>

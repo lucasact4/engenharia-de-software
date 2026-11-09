@@ -47,7 +47,8 @@ RSpec.describe "Card #6 migrations on a legacy database" do
         review_status: "approved", content_version: 1, reviewed_content_version: 1,
         reviewed_by_id: admin.id, reviewed_at: Time.current, published_at: Time.current
       }], returning: %w[id]).rows.first.first
-      Comment.create!(publication_id: publication_id, author: author, body: "Comentário histórico")
+      # Fixture histórica anterior à caixa de notificações, sem callbacks da aplicação atual.
+      Comment.insert_all!([{ publication_id: publication_id, author_id: author.id, body: "Comentário histórico" }])
       PublicationLike.insert_all!([{ publication_id: publication_id, user_id: author.id }])
       [blocked, released].each do |alert|
         AuditEvent.record!(actor: admin, action: "alert.restricted", subject: alert, reason: "Dados pessoais")
