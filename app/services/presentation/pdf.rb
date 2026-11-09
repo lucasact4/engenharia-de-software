@@ -14,9 +14,16 @@ class Presentation::Pdf
     margin: { top: 1.0, bottom: 1.0, left: 1.2, right: 1.2 },
     background: true, shrinkToFit: false
   }.freeze
+  # Documents (e.g. the test plan) flow on portrait A4 pages instead of one slide per page.
+  DOCUMENT_PAGE_OPTIONS = {
+    orientation: "portrait", page: { width: 21.0, height: 29.7 },
+    margin: { top: 1.4, bottom: 1.4, left: 1.6, right: 1.6 },
+    background: true, shrinkToFit: false
+  }.freeze
 
-  def initialize(html:, theme: nil, public_url:)
+  def initialize(html:, theme: nil, public_url:, layout: :slides)
     @html = html
+    @document = layout == :document
     @theme = theme == "light" ? "light" : "dark"
     @public_url = public_url
   end
@@ -37,11 +44,11 @@ class Presentation::Pdf
             [...document.images].every(image => image.complete && image.naturalWidth > 0);
         JS
       end
-      fit_slides(driver)
+      fit_slides(driver) unless @document
 
       # Selenium 4.47's public print_page wrapper nests the W3C options; send
       # them at the protocol's root so Chromium respects A4 and our margins.
-      encoded = driver.send(:bridge).send(:execute, :print_page, {}, PAGE_OPTIONS)
+      encoded = driver.send(:bridge).send(:execute, :print_page, {}, @document ? DOCUMENT_PAGE_OPTIONS : PAGE_OPTIONS)
       content = Base64.strict_decode64(encoded)
       raise Error, "Chromium returned an invalid PDF" unless content.start_with?("%PDF-")
 
@@ -76,12 +83,13 @@ class Presentation::Pdf
   def document
     doc = Nokogiri::HTML(@html)
     doc.at_css("html")["data-theme"] = @theme
-    doc.at_css("body")["class"] = "#{doc.at_css('body')['class']} apr-pdf"
+    doc.at_css("body")["class"] = "#{doc.at_css('body')['class']} apr-pdf#{' apr-pdf--doc' if @document}"
     doc.css("script, link, meta[http-equiv], [hidden], .apr-bar, .apr-nav, .apr-toc, .apr-skip, dialog, .apr-share-rail, .apr-sr-only").remove
     doc.css(@theme == "light" ? ".apr-theme-only--dark" : ".apr-theme-only--light").remove
-    add_access_page(doc)
+    add_access_page(doc) unless @document
     style = Nokogiri::XML::Node.new("style", doc)
     style.content = stylesheet("theme.css") + stylesheet("presentation.css")
+    style.content += "@page { size: A4 portrait; margin: 14mm 16mm; }" if @document
     doc.at_css("head").add_child(style)
     doc.css("img[src]").each do |image|
       path = URI.parse(image["src"]).path
