@@ -191,6 +191,18 @@ slides:
       - { id: marco, titulo: "Marco demonstrável", padrao: true }
       - { id: passos, titulo: "Lista de próximos passos", padrao: true }
 
+  - id: testes-cruzados
+    titulo: "Recomendações para os testes cruzados"
+    tempo: 45
+    padrao: false
+    responsavel:
+
+  - id: plano-de-teste
+    titulo: "Plano de teste"
+    tempo: 40
+    padrao: false
+    responsavel:
+
   - id: encerramento
     tema: escuro
     titulo: "Encerramento"

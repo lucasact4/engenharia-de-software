@@ -1,0 +1,53 @@
+<% testing = Presentation::CrossTesting.load %>
+<% plano = testing.plano %>
+<% doc = presentation.requisitos[:documento] %>
+<%= render "presentations/shared/heading", slide: slide, kicker: "plano de teste", lead: plano[:objetivo] %>
+
+<div class="apr-xtp">
+  <div class="apr-table-wrap">
+    <table class="apr-table apr-table--compact apr-xtp__table">
+      <caption class="apr-sr-only">Missões do teste exploratório</caption>
+      <thead>
+        <tr><th scope="col">Missão</th><th scope="col">Requisitos</th><th scope="col">Perfil</th><th scope="col">Prioridade</th></tr>
+      </thead>
+      <tbody>
+        <% testing.missoes.each do |missao| %>
+          <tr>
+            <th scope="row"><span class="apr-xtp__id"><%= missao[:id] %></span> <%= missao[:titulo] %></th>
+            <td class="apr-xtp__reqs"><%= missao[:requisitos].join(", ") %></td>
+            <td><%= missao[:perfil] %></td>
+            <td><%= missao[:prioridade] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="apr-xtp__side">
+    <section class="apr-xtp__card" aria-labelledby="<%= slide.dom_id %>-abordagem">
+      <h3 id="<%= slide.dom_id %>-abordagem" class="apr-label">Abordagem</h3>
+      <p><%= plano[:abordagem].first %></p>
+    </section>
+    <section class="apr-xtp__card" aria-labelledby="<%= slide.dom_id %>-severidade">
+      <h3 id="<%= slide.dom_id %>-severidade" class="apr-label">Severidade dos defeitos</h3>
+      <dl class="apr-plan-severity">
+        <% testing.reporte[:severidades].each_with_index do |(nivel, texto), index| %>
+          <div class="apr-plan-severity--<%= index %>"><dt><%= nivel %></dt><dd><%= texto %></dd></div>
+        <% end %>
+      </dl>
+    </section>
+    <section class="apr-xtp__card" aria-labelledby="<%= slide.dom_id %>-fim">
+      <h3 id="<%= slide.dom_id %>-fim" class="apr-label">Encerramento</h3>
+      <ul class="apr-plan-list"><% plano[:criterios_fim].each do |item| %><li><%= item %></li><% end %></ul>
+    </section>
+  </div>
+</div>
+
+<p class="apr-xtp__actions">
+  <%= link_to test_plan_path(locale: nil), class: "apr-btn apr-btn--outline" do %><%= render "presentations/shared/icon", name: "book" %><span>Plano completo</span><% end %>
+  <%= link_to test_plan_pdf_path(locale: nil), class: "apr-btn apr-btn--outline apr-local-only", data: { turbo: false } do %><%= render "presentations/shared/icon", name: "printer" %><span>PDF do plano</span><% end %>
+  <% if doc[:url].present? %>
+    <%= link_to doc[:url], class: "apr-btn apr-btn--outline", target: "_blank", rel: "noopener noreferrer" do %><%= render "presentations/shared/icon", name: "external" %><span>Documento de requisitos (v<%= doc[:versao] %>)</span><% end %>
+  <% end %>
+</p>
+<%= presentation_update_note("testes_cruzados.yml", "plano: objetivo, abordagem, critérios; missões e severidades.") %>

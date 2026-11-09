@@ -61,4 +61,17 @@ RSpec.describe "Cross testing pages", type: :request do
     expect(document.at_css(".apr-bar")).to be_nil
     expect(document.at_css("a[href$='/apresentacao/testes-cruzados']")["href"]).to start_with("https://")
   end
+
+  it "offers both pages as optional slides of the presentation" do
+    presentation = Presentation.load
+    complementary = presentation.slide_groups(presentation.default_delivery).to_h { |id, _, slides| [ id, slides.map(&:id) ] }
+
+    expect(complementary.fetch("complementar")).to include("testes-cruzados", "plano-de-teste")
+
+    create(:presentation_profile, :active, selections: { "testes-cruzados" => true, "plano-de-teste" => true })
+    get presentation_path
+    page = Nokogiri::HTML(response.body)
+    expect(page.at_css("#s-testes-cruzados")).not_to have_attribute("hidden")
+    expect(page.at_css("#s-plano-de-teste a[href='#{test_plan_path}']")).to be_present
+  end
 end

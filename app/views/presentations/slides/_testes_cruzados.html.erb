@@ -1,0 +1,48 @@
+<% testing = Presentation::CrossTesting.load %>
+<% mvp = testing.mvp %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "testes cruzados · exploratório",
+      lead: "Use o SGU como alguém da UFRPE usaria e registre tudo que der errado ou parecer confuso." %>
+
+<div class="apr-xts">
+  <section class="apr-xts__access" aria-label="Acesso ao MVP">
+    <% if presentation_asset?(mvp[:qr_code]) %>
+      <%= image_tag mvp[:qr_code], class: "apr-xts__qr", alt: "QR Code para abrir #{mvp[:rotulo]}" %>
+    <% end %>
+    <%= link_to mvp[:url], class: "apr-xts__url", target: "_blank", rel: "noopener noreferrer" do %><%= mvp[:rotulo] %><% end %>
+    <dl class="apr-xts__profiles">
+      <% testing.acesso.each do |item| %>
+        <div><dt><%= item[:perfil] %></dt><dd><%= item[:texto] %></dd></div>
+      <% end %>
+    </dl>
+    <p class="apr-xts__links">
+      <%= link_to "Página completa", cross_tests_path(locale: nil), class: "apr-more" %>
+      <%= link_to "Plano de teste", test_plan_path(locale: nil), class: "apr-more" %>
+    </p>
+  </section>
+
+  <div class="apr-xts__body">
+    <ul class="apr-xts__tips" role="list" aria-label="Antes de começar">
+      <% testing.dicas.each do |dica| %>
+        <li><span aria-hidden="true"><%= render "presentations/shared/icon", name: dica[:icone] %></span><div><strong><%= dica[:titulo] %></strong> <%= dica[:texto] %></div></li>
+      <% end %>
+    </ul>
+
+    <h3 class="apr-label">Missões</h3>
+    <ol class="apr-xts__missions" role="list">
+      <% testing.missoes.each do |missao| %>
+        <li>
+          <span class="apr-xts__id"><%= missao[:id] %></span>
+          <div><strong><%= missao[:titulo] %></strong><span><%= missao[:explorar] %></span></div>
+        </li>
+      <% end %>
+    </ol>
+
+    <p class="apr-xts__out">
+      <span class="apr-label">Não é defeito</span>
+      <% testing.fora_do_escopo.each do |texto, req| %><span class="apr-tag"><%= texto %> · <%= req %></span><% end %>
+    </p>
+  </div>
+</div>
+
+<%= presentation_update_note("testes_cruzados.yml", "acesso, dicas, missões e itens fora do escopo.") %>

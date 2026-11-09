@@ -623,9 +623,223 @@
   font-size: 0.8rem;
 }
 
+/* Slides do deck (em: acompanham a escala do slide) ------------------------ */
+
+.apr-xts {
+  display: grid;
+  grid-template-columns: minmax(10em, 13em) minmax(0, 1fr);
+  gap: 1.2em;
+  margin-top: 0.8em;
+}
+
+.apr-xts__access {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.6em;
+  padding: 0.9em;
+  border: 1px solid var(--apr-line);
+  border-top: 3px solid var(--apr-g-600);
+  border-radius: var(--apr-radius);
+  background: var(--apr-surface);
+}
+
+.apr-xts .apr-xts__qr {
+  width: 100%;
+  max-width: 7.5em;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.apr-xts__url {
+  padding: 0.35em 0.8em;
+  border-radius: 999px;
+  background: var(--apr-gold);
+  color: var(--on-accent, #10251f) !important;
+  font-family: var(--apr-mono);
+  font-size: 0.78em;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.apr-xts__profiles {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.74em;
+}
+
+.apr-xts__profiles dt {
+  color: var(--apr-link);
+  font-weight: 800;
+}
+
+.apr-xts__profiles dd {
+  color: var(--apr-ink-2);
+}
+
+.apr-xts__body {
+  display: grid;
+  align-content: start;
+  gap: 0.7em;
+  min-width: 0;
+}
+
+.apr-xts__tips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35em 1em;
+  padding-bottom: 0.6em;
+  border-bottom: 1px solid var(--apr-line);
+  font-size: 0.76em;
+  color: var(--apr-ink-2);
+}
+
+.apr-xts__tips li {
+  display: flex;
+  gap: 0.55em;
+  align-items: flex-start;
+}
+
+.apr-xts__tips li > span {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 8px;
+  background: var(--apr-g-100);
+  color: var(--apr-link);
+}
+
+.apr-xts__tips strong {
+  color: var(--apr-ink);
+}
+
+.apr-xts__missions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5em;
+}
+
+.apr-xts__missions li {
+  display: flex;
+  gap: 0.6em;
+  align-items: flex-start;
+  padding: 0.45em 0.65em;
+  border: 1px solid var(--apr-line);
+  border-left: 3px solid var(--apr-g-600);
+  border-radius: 10px;
+  background: var(--apr-surface);
+}
+
+.apr-xts__missions div {
+  display: grid;
+  gap: 0.1em;
+  font-size: 0.8em;
+}
+
+.apr-xts__missions div span {
+  color: var(--apr-ink-2);
+  font-size: 0.92em;
+}
+
+.apr-xts__id,
+.apr-xtp__id {
+  flex: none;
+  padding: 0.05em 0.4em;
+  border-radius: 5px;
+  background: var(--apr-g-800);
+  color: var(--apr-gold);
+  font-family: var(--apr-mono);
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.apr-xts__out {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.apr-xts__out .apr-label {
+  margin-right: 0.3em;
+}
+
+.apr-xts__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 1em;
+}
+
+.apr-xtp__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em 1.4em;
+  margin-top: 1em;
+}
+
+.apr-xtp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1.2em;
+  align-items: start;
+  margin-top: 1em;
+}
+
+.apr-xtp__table {
+  min-width: 0;
+}
+
+.apr-xtp__reqs {
+  font-family: var(--apr-mono);
+  font-size: 0.9em;
+}
+
+.apr-xtp__side {
+  display: grid;
+  gap: 0.7em;
+}
+
+.apr-xtp__card {
+  display: grid;
+  gap: 0.45em;
+  padding: 0.8em 0.9em;
+  border: 1px solid var(--apr-line);
+  border-radius: var(--apr-radius);
+  background: var(--apr-surface);
+  font-size: 0.78em;
+  color: var(--apr-ink-2);
+}
+
+.apr-xtp__card .apr-label {
+  font-size: 0.85em;
+}
+
+.apr-xtp__card .apr-plan-severity div {
+  font-size: 1em;
+  grid-template-columns: 4.6em minmax(0, 1fr);
+}
+
+.apr-xtp__card .apr-plan-severity dt {
+  font-size: 0.85em;
+}
+
+.apr-xtp__card .apr-plan-list li {
+  padding-left: 1em;
+}
+
+.apr-xtp__actions .apr-btn {
+  font-size: 0.75em;
+}
+
 /* Telas menores ------------------------------------------------------------ */
 
 @media (max-width: 960px) {
+  .apr-xts,
+  .apr-xtp { grid-template-columns: 1fr; }
   .apr-xt-tips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apr-xt-missions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apr-xt-split { grid-template-columns: 1fr; }
