@@ -8,10 +8,10 @@ card_refinamento:
 
 # Documento oficial de requisitos (preencher quando o card #13 for concluído).
 documento:
-  titulo:
-  versao:
-  origem:     # ex.: "Google Docs — versão exportada em 15/10/2026" ou URL pública
-  url:
+  titulo: "Documento de requisitos UFRPE-SGU-REQ"
+  versao: "0.02"
+  origem: "Google Docs — versão de 02/10/2026"
+  url: "https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit?usp=sharing"
 
 problema:
   frase: "Situações de infraestrutura, acessibilidade e segurança no campus precisam chegar a quem pode agir — e a comunidade precisa acompanhar o que acontece depois."
