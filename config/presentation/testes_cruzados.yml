@@ -44,7 +44,7 @@ dicas:
     texto: "Use seu e-mail @ufrpe.br e uma senha nova, que você não usa em outros sites."
   - icone: "shield"
     titulo: "Use dados fictícios"
-    texto: "É uma demonstração. Nada chega à UFRPE e o pânico não aciona ninguém de verdade."
+    texto: "É uma demonstração. Nada chega à UFRPE e o pânico só avisa a equipe do projeto."
   - icone: "image"
     titulo: "Guarde evidências"
     texto: "Tire um print ou grave a tela assim que algo der errado e anote os passos."
@@ -70,14 +70,14 @@ missoes:
     prioridade: "Alta"
   - id: "M4"
     titulo: "Acompanhar uma ocorrência"
-    explorar: "Acompanhar uma ocorrência e conferir o estado do atendimento em “Acompanhamentos”."
+    explorar: "Acompanhar uma ocorrência, conferir o estado em “Acompanhamentos” e concluir a sua própria ocorrência."
     requisitos: ["RF008", "RF019"]
     perfil: "Conta própria"
     prioridade: "Média"
   - id: "M5"
-    titulo: "Interagir e denunciar"
-    explorar: "Comentar, curtir, seguir, salvar e denunciar uma postagem ou um comentário."
-    requisitos: ["RF013"]
+    titulo: "Interagir e ser notificado"
+    explorar: "Comentar, curtir, seguir, salvar, denunciar e conferir as notificações no sino."
+    requisitos: ["RF013", "RF014"]
     perfil: "Conta própria"
     prioridade: "Média"
   - id: "M6"
@@ -90,7 +90,7 @@ missoes:
 # Ainda não implementado ou em decisão: não registrar como defeito.
 fora_do_escopo:
   - ["Login com Google ou SIGAA", "RF004"]
-  - ["Notificações por push ou e-mail", "RF014"]
+  - ["Notificações por push ou e-mail (use o sino)", "RF014"]
   - ["Localização contínua no pânico", "RF012"]
   - ["Publicar sem login", "RF005"]
 
