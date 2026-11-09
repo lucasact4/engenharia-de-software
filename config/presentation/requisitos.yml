@@ -13,6 +13,14 @@ documento:
   origem: "Google Docs — versão de 02/10/2026"
   url: "https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit?usp=sharing"
 
+# Resumo por requisito do que foi implementado, de quem fez e do que falta.
+# O PDF fica em public/docs; ao gerar uma nova versão, substitua o arquivo e atualize a data.
+documento_implementacao:
+  titulo: "Requisitos e implementação"
+  resumo: "O que já foi implementado e o que falta, por requisito"
+  data: "09/11/2026"
+  url: "/docs/sgu-requisitos-implementacao.pdf"
+
 problema:
   frase: "Situações de infraestrutura, acessibilidade e segurança no campus precisam chegar a quem pode agir — e a comunidade precisa acompanhar o que acontece depois."
   dores:

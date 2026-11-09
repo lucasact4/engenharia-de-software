@@ -27,7 +27,7 @@
       <dl class="apr-plan-meta">
         <div><dt>Ambiente</dt><dd><%= link_to mvp[:rotulo], mvp[:url] %></dd></div>
         <div><dt>Tipo de teste</dt><dd>Exploratório, entre equipes</dd></div>
-        <div><dt>Base</dt><dd><%= render "cross_tests/requirements_doc", doc: @requirements_doc %></dd></div>
+        <div><dt>Requisitos</dt><dd class="apr-plan-docs"><%= render "cross_tests/requirements_doc", doc: @requirements_doc %><%= render "cross_tests/implementation_doc", doc: @implementation_doc %></dd></div>
         <div><dt>Versão do plano</dt><dd><%= plano[:versao] %> · <%= plano[:data] %></dd></div>
         <div><dt>Disciplina</dt><dd><%= @entrega[:disciplina] %> · <%= @entrega[:professora] %></dd></div>
         <div><dt>Equipe SGU</dt><dd><%= @entrega[:equipe].to_sentence %></dd></div>

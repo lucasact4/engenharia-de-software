@@ -94,11 +94,35 @@
       </section>
     </div>
 
-    <p class="apr-xt-foot">
-      <%= link_to test_plan_path(locale: nil), class: "apr-more" do %>Ver o plano de teste completo<% end %>
-      <% if @requirements_doc[:url].present? %>
-        <%= presentation_link("Documento de requisitos", @requirements_doc[:url], class: "apr-more") %>
-      <% end %>
-    </p>
+    <section class="apr-xt-section" aria-labelledby="apr-xt-docs">
+      <h2 id="apr-xt-docs" class="apr-xt__h2">Documentos</h2>
+      <ul class="apr-xt-docs" role="list">
+        <% if @requirements_doc[:url].present? %>
+          <li>
+            <%= link_to @requirements_doc[:url], class: "apr-xt-doc", target: "_blank", rel: "noopener noreferrer" do %>
+              <span class="apr-xt-doc__icon"><%= render "presentations/shared/icon", name: "book" %></span>
+              <span class="apr-xt-doc__text"><strong>Documento de requisitos</strong><span><%= [ @requirements_doc[:titulo], @requirements_doc[:versao] && "versão #{@requirements_doc[:versao]}" ].compact.join(", ") %></span></span>
+              <%= render "presentations/shared/icon", name: "external" %>
+            <% end %>
+          </li>
+        <% end %>
+        <% if @implementation_doc.present? && @implementation_doc[:url].present? %>
+          <li>
+            <%= link_to @implementation_doc[:url], class: "apr-xt-doc", target: "_blank", rel: "noopener" do %>
+              <span class="apr-xt-doc__icon"><%= render "presentations/shared/icon", name: "check" %></span>
+              <span class="apr-xt-doc__text"><strong><%= @implementation_doc[:titulo] %></strong><span><%= @implementation_doc[:resumo] %> · PDF de <%= @implementation_doc[:data] %></span></span>
+              <%= render "presentations/shared/icon", name: "external" %>
+            <% end %>
+          </li>
+        <% end %>
+        <li>
+          <%= link_to test_plan_path(locale: nil), class: "apr-xt-doc" do %>
+            <span class="apr-xt-doc__icon"><%= render "presentations/shared/icon", name: "list" %></span>
+            <span class="apr-xt-doc__text"><strong>Plano de teste</strong><span>Missões, ambiente, registro de defeitos e critérios</span></span>
+            <%= render "presentations/shared/icon", name: "arrow" %>
+          <% end %>
+        </li>
+      </ul>
+    </section>
   </main>
 </div>

@@ -1,6 +1,7 @@
 <% testing = Presentation::CrossTesting.load %>
 <% plano = testing.plano %>
 <% doc = presentation.requisitos[:documento] %>
+<% implementation = presentation.requisitos[:documento_implementacao] || {} %>
 <%= render "presentations/shared/heading", slide: slide, kicker: "plano de teste", lead: plano[:objetivo] %>
 
 <div class="apr-xtp">
@@ -48,6 +49,9 @@
   <%= link_to test_plan_pdf_path(locale: nil), class: "apr-btn apr-btn--outline apr-local-only", data: { turbo: false } do %><%= render "presentations/shared/icon", name: "printer" %><span>PDF do plano</span><% end %>
   <% if doc[:url].present? %>
     <%= link_to doc[:url], class: "apr-btn apr-btn--outline", target: "_blank", rel: "noopener noreferrer" do %><%= render "presentations/shared/icon", name: "external" %><span>Documento de requisitos (v<%= doc[:versao] %>)</span><% end %>
+  <% end %>
+  <% if implementation[:url].present? %>
+    <%= link_to implementation[:url], class: "apr-btn apr-btn--outline", target: "_blank", rel: "noopener" do %><%= render "presentations/shared/icon", name: "check" %><span><%= implementation[:titulo] %> (PDF)</span><% end %>
   <% end %>
 </p>
 <%= presentation_update_note("testes_cruzados.yml", "plano: objetivo, abordagem, critérios; missões e severidades.") %>

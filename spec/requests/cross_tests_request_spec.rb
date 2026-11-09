@@ -26,6 +26,21 @@ RSpec.describe "Cross testing pages", type: :request do
     expect(page.at_css("a[href='#{test_plan_pdf_path}']")).to be_present
   end
 
+  it "lists the implementation summary PDF right below the official requirements document" do
+    requisitos = Presentation.load.requisitos
+    official = requisitos.dig(:documento, :url)
+    implementation = requisitos.dig(:documento_implementacao, :url)
+    expect(Rails.public_path.join(implementation.delete_prefix("/"))).to exist
+
+    get cross_tests_path
+    links = Nokogiri::HTML(response.body).css("a.apr-xt-doc").map { |link| link["href"] }
+    expect(links.first(2)).to eq([ official, implementation ])
+
+    get test_plan_path
+    links = Nokogiri::HTML(response.body).css(".apr-plan-docs a").map { |link| link["href"] }
+    expect(links).to eq([ official, implementation ])
+  end
+
   it "downloads the test plan as a portrait document PDF" do
     renderer = instance_double(Presentation::Pdf, call: "%PDF-1.7\nplan")
     allow(Presentation::Pdf).to receive(:new).and_return(renderer)

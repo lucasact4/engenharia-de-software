@@ -30,5 +30,6 @@ class CrossTestsController < ApplicationController
     presentation = Presentation.load
     @entrega = presentation.entrega
     @requirements_doc = presentation.requisitos[:documento]
+    @implementation_doc = presentation.requisitos[:documento_implementacao]
   end
 end
