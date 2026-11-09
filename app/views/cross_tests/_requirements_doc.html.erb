@@ -1,0 +1,7 @@
+<%# Documento de requisitos (requisitos.yml → documento), com link quando houver URL pública. locals: doc %>
+<% label = [ doc[:titulo].presence || "Documento de requisitos", doc[:versao].presence && "versão #{doc[:versao]}" ].compact.join(", ") %>
+<% if doc[:url].to_s.match?(%r{\Ahttps?://}i) %>
+  <%= link_to label, doc[:url], target: "_blank", rel: "noopener noreferrer" %>
+<% else %>
+  <%= label %>
+<% end %>

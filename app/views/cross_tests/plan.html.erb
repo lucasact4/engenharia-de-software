@@ -1,0 +1,142 @@
+<% content_for :title, "SGU — Plano de teste" %>
+<% content_for :description, "Plano dos testes cruzados do MVP do SGU para #{@entrega[:disciplina]}." %>
+<% plano = @testing.plano %>
+<% mvp = @testing.mvp %>
+<% projeto = @entrega[:projeto] %>
+<% channel = @testing.report_channel %>
+
+<div class="apr-xt">
+  <a class="apr-skip" href="#apr-plan">Pular para o plano</a>
+  <%= render "cross_tests/bar", current: :plan %>
+
+  <main id="apr-plan" class="apr-xt__main" tabindex="-1">
+    <% if flash[:alert].present? %>
+      <p class="apr-plan-alert" role="alert"><%= flash[:alert] %></p>
+    <% end %>
+
+    <article class="apr-plan" aria-labelledby="apr-plan-titulo">
+      <header class="apr-plan__head">
+        <%= sgu_brand(:horizontal, alt: "SGU", class_name: "apr-plan__brand") %>
+        <div>
+          <p class="apr-kicker"><span class="apr-kicker__text">testes cruzados</span></p>
+          <h1 id="apr-plan-titulo" class="apr-plan__title">Plano de teste</h1>
+          <p class="apr-plan__subtitle"><%= projeto[:sigla] %> — <%= projeto[:nome] %></p>
+        </div>
+      </header>
+
+      <dl class="apr-plan-meta">
+        <div><dt>Ambiente</dt><dd><%= link_to mvp[:rotulo], mvp[:url] %></dd></div>
+        <div><dt>Tipo de teste</dt><dd>Exploratório, entre equipes</dd></div>
+        <div><dt>Base</dt><dd><%= render "cross_tests/requirements_doc", doc: @requirements_doc %></dd></div>
+        <div><dt>Versão do plano</dt><dd><%= plano[:versao] %> · <%= plano[:data] %></dd></div>
+        <div><dt>Disciplina</dt><dd><%= @entrega[:disciplina] %> · <%= @entrega[:professora] %></dd></div>
+        <div><dt>Equipe SGU</dt><dd><%= @entrega[:equipe].to_sentence %></dd></div>
+      </dl>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-objetivo">
+        <h2 id="apr-plan-objetivo"><span>1</span> Objetivo</h2>
+        <p><%= plano[:objetivo] %></p>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-escopo">
+        <h2 id="apr-plan-escopo"><span>2</span> Escopo: missões</h2>
+        <div class="apr-plan-table">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Missão</th>
+                <th scope="col">O que explorar</th>
+                <th scope="col">Requisitos</th>
+                <th scope="col">Perfil</th>
+                <th scope="col">Prioridade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @testing.missoes.each do |missao| %>
+                <tr>
+                  <th scope="row"><span class="apr-plan__id"><%= missao[:id] %></span> <%= missao[:titulo] %></th>
+                  <td><%= missao[:explorar] %></td>
+                  <td class="apr-plan__reqs"><%= missao[:requisitos].join(", ") %></td>
+                  <td><%= missao[:perfil] %></td>
+                  <td><%= missao[:prioridade] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <p class="apr-plan__note"><strong>Fora do escopo</strong> (ainda não implementado ou em decisão):
+          <%= safe_join(@testing.fora_do_escopo.map { |texto, req| "#{texto} (#{req})" }, "; ") %>.</p>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-abordagem">
+        <h2 id="apr-plan-abordagem"><span>3</span> Abordagem</h2>
+        <ul class="apr-plan-list">
+          <% plano[:abordagem].each do |item| %><li><%= item %></li><% end %>
+        </ul>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-ambiente">
+        <h2 id="apr-plan-ambiente"><span>4</span> Ambiente e acesso</h2>
+        <dl class="apr-plan-rows">
+          <% plano[:ambiente].each do |rotulo, texto| %>
+            <div><dt><%= rotulo %></dt><dd><%= texto %></dd></div>
+          <% end %>
+          <% @testing.acesso.each do |item| %>
+            <div><dt><%= item[:perfil] %></dt><dd><%= item[:texto] %></dd></div>
+          <% end %>
+        </dl>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-defeitos">
+        <h2 id="apr-plan-defeitos"><span>5</span> Registro de defeitos</h2>
+        <div class="apr-plan-cols">
+          <div>
+            <h3>Cada registro traz</h3>
+            <ol class="apr-plan-list apr-plan-list--num">
+              <% @testing.reporte[:campos].each do |campo| %><li><%= campo %></li><% end %>
+            </ol>
+            <% if channel %>
+              <p class="apr-plan__note">Canal: <%= link_to(channel[:rotulo].presence || channel[:url], channel[:url]) %></p>
+            <% end %>
+          </div>
+          <div>
+            <h3>Severidade</h3>
+            <dl class="apr-plan-severity">
+              <% @testing.reporte[:severidades].each_with_index do |(nivel, texto), index| %>
+                <div class="apr-plan-severity--<%= index %>"><dt><%= nivel %></dt><dd><%= texto %></dd></div>
+              <% end %>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-criterios">
+        <h2 id="apr-plan-criterios"><span>6</span> Critérios</h2>
+        <div class="apr-plan-cols">
+          <div>
+            <h3>Início</h3>
+            <ul class="apr-plan-list"><% plano[:criterios_inicio].each do |item| %><li><%= item %></li><% end %></ul>
+          </div>
+          <div>
+            <h3>Encerramento</h3>
+            <ul class="apr-plan-list"><% plano[:criterios_fim].each do |item| %><li><%= item %></li><% end %></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="apr-plan__section" aria-labelledby="apr-plan-responsaveis">
+        <h2 id="apr-plan-responsaveis"><span>7</span> Responsabilidades</h2>
+        <dl class="apr-plan-rows">
+          <% plano[:responsabilidades].each do |quem, oque| %>
+            <div><dt><%= quem %></dt><dd><%= oque %></dd></div>
+          <% end %>
+        </dl>
+      </section>
+
+      <footer class="apr-plan__foot">
+        <span><%= projeto[:aviso] %></span>
+        <%= link_to "Recomendações para quem testa", cross_tests_path(locale: nil) %>
+      </footer>
+    </article>
+  </main>
+</div>

@@ -1,0 +1,104 @@
+<% content_for :title, "SGU — Recomendações para os testes cruzados" %>
+<% content_for :description, "Como testar o MVP do SGU nos testes cruzados de #{@entrega[:disciplina]}." %>
+<% mvp = @testing.mvp %>
+<% channel = @testing.report_channel %>
+
+<div class="apr-xt">
+  <a class="apr-skip" href="#apr-xt-main">Pular para o conteúdo</a>
+  <%= render "cross_tests/bar", current: :show %>
+
+  <main id="apr-xt-main" class="apr-xt__main" tabindex="-1">
+    <section class="apr-xt-hero" aria-labelledby="apr-xt-titulo">
+      <div class="apr-xt-hero__text">
+        <p class="apr-kicker"><span class="apr-kicker__text">testes cruzados · exploratório</span></p>
+        <h1 id="apr-xt-titulo" class="apr-xt__title">Teste o SGU</h1>
+        <p class="apr-xt__lead">Use o sistema como alguém da UFRPE usaria e registre tudo que der errado ou parecer confuso.</p>
+        <%= link_to mvp[:url], class: "apr-xt-url", target: "_blank", rel: "noopener noreferrer" do %>
+          <span><%= mvp[:rotulo] %></span><%= render "presentations/shared/icon", name: "external" %>
+        <% end %>
+        <dl class="apr-xt-access">
+          <% @testing.acesso.each do |item| %>
+            <div>
+              <dt><%= item[:perfil] %></dt>
+              <dd><%= item[:texto] %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+      <% if presentation_asset?(mvp[:qr_code]) %>
+        <figure class="apr-xt-qr">
+          <%= image_tag mvp[:qr_code], alt: "QR Code para abrir #{mvp[:rotulo]}" %>
+          <figcaption>Aponte a câmera do celular</figcaption>
+        </figure>
+      <% end %>
+    </section>
+
+    <section class="apr-xt-section" aria-labelledby="apr-xt-dicas">
+      <h2 id="apr-xt-dicas" class="apr-xt__h2">Antes de começar</h2>
+      <ul class="apr-xt-tips" role="list">
+        <% @testing.dicas.each do |dica| %>
+          <li class="apr-xt-tip">
+            <span class="apr-xt-tip__icon"><%= render "presentations/shared/icon", name: dica[:icone] %></span>
+            <h3><%= dica[:titulo] %></h3>
+            <p><%= dica[:texto] %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <section class="apr-xt-section" aria-labelledby="apr-xt-missoes">
+      <div class="apr-xt-section__head">
+        <h2 id="apr-xt-missoes" class="apr-xt__h2">Missões</h2>
+        <p>Escolha uma por vez. A missão diz o que explorar, não os passos: tente caminhos diferentes e dados inesperados.</p>
+      </div>
+      <ol class="apr-xt-missions" role="list">
+        <% @testing.missoes.each do |missao| %>
+          <li class="apr-xt-mission">
+            <p class="apr-xt-mission__top">
+              <span class="apr-xt-mission__id"><%= missao[:id] %></span>
+              <span class="apr-tag"><%= missao[:perfil] %></span>
+            </p>
+            <h3><%= missao[:titulo] %></h3>
+            <p class="apr-xt-mission__text"><%= missao[:explorar] %></p>
+            <p class="apr-xt-mission__reqs" aria-label="Requisitos">
+              <% missao[:requisitos].each do |req| %><code><%= req %></code><% end %>
+            </p>
+          </li>
+        <% end %>
+      </ol>
+    </section>
+
+    <div class="apr-xt-split">
+      <section class="apr-xt-section apr-xt-box" aria-labelledby="apr-xt-reporte">
+        <h2 id="apr-xt-reporte" class="apr-xt__h2">Como registrar um defeito</h2>
+        <ol class="apr-xt-steps" role="list">
+          <% @testing.reporte[:campos].each do |campo| %><li><%= campo %></li><% end %>
+        </ol>
+        <p class="apr-xt-channel">
+          <% if channel %>
+            Envie em <%= presentation_link(channel[:rotulo].presence || channel[:url], channel[:url], class: "apr-more") %>
+          <% else %>
+            Envie para a equipe SGU.
+          <% end %>
+        </p>
+      </section>
+
+      <section class="apr-xt-section apr-xt-box apr-xt-box--muted" aria-labelledby="apr-xt-fora">
+        <h2 id="apr-xt-fora" class="apr-xt__h2">Não é defeito</h2>
+        <p class="apr-xt-box__lead">Ainda não implementado ou em decisão.</p>
+        <ul class="apr-xt-out" role="list">
+          <% @testing.fora_do_escopo.each do |texto, req| %>
+            <li><span><%= texto %></span><code><%= req %></code></li>
+          <% end %>
+        </ul>
+      </section>
+    </div>
+
+    <p class="apr-xt-foot">
+      <%= link_to test_plan_path(locale: nil), class: "apr-more" do %>Ver o plano de teste completo<% end %>
+      <% if @requirements_doc[:url].present? %>
+        <%= presentation_link("Documento de requisitos", @requirements_doc[:url], class: "apr-more") %>
+      <% end %>
+    </p>
+  </main>
+</div>

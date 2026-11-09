@@ -1,0 +1,28 @@
+<%# Barra superior das páginas de testes cruzados. locals: current (:show | :plan) %>
+<header class="apr-bar">
+  <%= link_to root_path(locale: nil), class: "apr-brand", aria: { label: "Abrir a página inicial do SGU" } do %>
+    <%= sgu_brand(:symbol, tone: :on_dark, alt: "", class_name: "apr-brand__mark") %>
+    <span class="apr-brand__text">
+      <strong>SGU</strong>
+      <span>Testes cruzados · <%= @entrega[:disciplina] %></span>
+    </span>
+  <% end %>
+
+  <nav class="apr-bar__actions" aria-label="Testes cruzados">
+    <%= render "shared/theme_toggle" %>
+    <%= link_to cross_tests_path(locale: nil), class: "apr-btn", aria: { current: (current == :show ? "page" : nil) } do %>
+      <%= render "presentations/shared/icon", name: "list" %><span>Recomendações</span>
+    <% end %>
+    <%= link_to test_plan_path(locale: nil), class: "apr-btn", aria: { current: (current == :plan ? "page" : nil) } do %>
+      <%= render "presentations/shared/icon", name: "book" %><span>Plano de teste</span>
+    <% end %>
+    <% if current == :plan %>
+      <%= link_to test_plan_pdf_path(locale: nil), class: "apr-btn", data: { turbo: false } do %>
+        <%= render "presentations/shared/icon", name: "printer" %><span>Baixar PDF</span>
+      <% end %>
+    <% end %>
+    <%= link_to @testing.mvp[:url], class: "apr-btn apr-btn--primary", target: "_blank", rel: "noopener noreferrer" do %>
+      <span>Abrir o SGU</span><%= render "presentations/shared/icon", name: "external" %>
+    <% end %>
+  </nav>
+</header>

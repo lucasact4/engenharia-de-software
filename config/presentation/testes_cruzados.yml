@@ -1,0 +1,113 @@
+# Testes cruzados do MVP: recomendações (/apresentacao/testes-cruzados) e plano de teste
+# (/apresentacao/plano-de-teste, com PDF). As duas páginas leem este arquivo.
+
+mvp:
+  url: "https://sgu.lucasact4.com.br/"
+  rotulo: "sgu.lucasact4.com.br"
+  qr_code: "presentation/acesso/mvp-qr.png"
+
+plano:
+  versao: "1.0"
+  data: "08/11/2026"
+  objetivo: "Encontrar defeitos e problemas de uso no MVP do SGU com testes exploratórios feitos por outra equipe da turma."
+  abordagem:
+    - "Teste exploratório guiado por missões: quem testa escolhe uma missão, usa o sistema livremente e registra o que encontrar."
+    - "Cada missão diz o que explorar, não os passos. Caminhos alternativos e dados inesperados são bem-vindos."
+    - "Os testes automatizados (RSpec) continuam rodando no GitHub Actions a cada pull request."
+  ambiente:
+    - ["Endereço", "sgu.lucasact4.com.br (versão publicada do MVP)"]
+    - ["Dispositivos", "Celular com localização ativa e computador"]
+    - ["Navegadores", "Chrome, Edge, Firefox ou Safari atualizados"]
+    - ["Dados", "Fictícios; o ambiente é de demonstração e não é um serviço oficial da UFRPE"]
+  responsabilidades:
+    - ["Equipe testadora", "Executar as missões e registrar os defeitos com evidência."]
+    - ["Equipe SGU", "Manter o MVP no ar, analisar os registros e priorizar as correções."]
+  criterios_inicio:
+    - "MVP publicado e acessível pelo endereço."
+    - "Recomendações e plano de teste entregues à equipe testadora."
+  criterios_fim:
+    - "Todas as missões executadas por pelo menos uma pessoa."
+    - "Defeitos registrados com evidência e classificados por severidade."
+
+acesso:
+  - perfil: "Visitante"
+    texto: "Sem login: mural, busca, mapa e perfis públicos."
+  - perfil: "Conta própria"
+    texto: "Crie em “Criar conta” com seu e-mail @ufrpe.br. A conta é liberada na hora."
+
+dicas:
+  - icone: "scan"
+    titulo: "Use o celular"
+    texto: "Ative a localização: o registro de ocorrência usa o GPS. Depois repita no computador."
+  - icone: "key"
+    titulo: "Crie sua conta"
+    texto: "Use seu e-mail @ufrpe.br e uma senha nova, que você não usa em outros sites."
+  - icone: "shield"
+    titulo: "Use dados fictícios"
+    texto: "É uma demonstração. Nada chega à UFRPE e o pânico não aciona ninguém de verdade."
+  - icone: "image"
+    titulo: "Guarde evidências"
+    texto: "Tire um print ou grave a tela assim que algo der errado e anote os passos."
+
+missoes:
+  - id: "M1"
+    titulo: "Criar conta e entrar"
+    explorar: "Cadastro, login por e-mail, CPF ou telefone e saída da conta."
+    requisitos: ["RF001", "RF003"]
+    perfil: "Visitante"
+    prioridade: "Alta"
+  - id: "M2"
+    titulo: "Registrar uma ocorrência"
+    explorar: "Categoria, gravidade, localização (GPS, mapa ou local) e até 5 fotos PNG ou JPEG de até 5 MB."
+    requisitos: ["RF005", "RF007", "RF009", "RF017", "RF018", "RNF003"]
+    perfil: "Conta própria"
+    prioridade: "Alta"
+  - id: "M3"
+    titulo: "Encontrar ocorrências"
+    explorar: "Mural com busca por palavra-chave, categoria, gravidade, criador e protocolo; mapa do campus."
+    requisitos: ["RF006", "RF010"]
+    perfil: "Visitante"
+    prioridade: "Alta"
+  - id: "M4"
+    titulo: "Acompanhar uma ocorrência"
+    explorar: "Acompanhar uma ocorrência e conferir o estado do atendimento em “Acompanhamentos”."
+    requisitos: ["RF008", "RF019"]
+    perfil: "Conta própria"
+    prioridade: "Média"
+  - id: "M5"
+    titulo: "Interagir e denunciar"
+    explorar: "Comentar, curtir, seguir, salvar e denunciar uma postagem ou um comentário."
+    requisitos: ["RF013"]
+    perfil: "Conta própria"
+    prioridade: "Média"
+  - id: "M6"
+    titulo: "Botão de pânico"
+    explorar: "Confirmação em duas etapas, motivo e envio da localização."
+    requisitos: ["RF011"]
+    perfil: "Conta própria"
+    prioridade: "Média"
+
+# Ainda não implementado ou em decisão: não registrar como defeito.
+fora_do_escopo:
+  - ["Login com Google ou SIGAA", "RF004"]
+  - ["Notificações por push ou e-mail", "RF014"]
+  - ["Localização contínua no pânico", "RF012"]
+  - ["Publicar sem login", "RF005"]
+
+reporte:
+  # Canal onde a equipe testadora registra os defeitos (formulário, planilha, issues…).
+  # Sem URL, a página pede para enviar à equipe SGU.
+  canal:
+    rotulo:
+    url:
+  campos:
+    - "O que aconteceu, em uma frase"
+    - "Passos para reproduzir"
+    - "Resultado esperado e resultado obtido"
+    - "Print ou vídeo"
+    - "Celular ou computador e navegador"
+  severidades:
+    - ["Crítica", "Impede concluir a missão, perde dados ou expõe informação."]
+    - ["Alta", "Função principal com resultado errado e sem alternativa."]
+    - ["Média", "Erro com alternativa ou comportamento confuso."]
+    - ["Baixa", "Texto, visual ou detalhe de acessibilidade."]
