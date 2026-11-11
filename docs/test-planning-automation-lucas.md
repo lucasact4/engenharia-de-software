@@ -1,12 +1,10 @@
 # Participação individual — Lucas Vitor: planejamento e automação de testes
 
-Branch: `testes/rf013-lucas-vitor`. Escopo: RF013 (denúncias), RF007 (fotos) e RF018 (categoria). [Card #53 — controle e evidências](https://trello.com/c/BSGE2VRG). [Plano na branch](https://github.com/lucasact4/engenharia-de-software/blob/testes/rf013-lucas-vitor/docs/test-planning-automation-lucas.md). Commit dos testes: `83f3f60`.
+Branch: `testes/rf013-lucas-vitor`. Escopo: RF013 (denúncias automatizadas) e RF018 (plano manual de categoria). [Card #53 — controle e evidências](https://trello.com/c/BSGE2VRG). [Plano na branch](https://github.com/lucasact4/engenharia-de-software/blob/testes/rf013-lucas-vitor/docs/test-planning-automation-lucas.md). Commit atual dos testes: `6c1b06f`; execução anterior: `83f3f60`.
 
 ## Origem dos critérios e limites
 
-Este plano detalha a participação individual de Lucas na estratégia da equipe. Os critérios abaixo refinam os requisitos RF013, RF007 e RF018 com regras verificáveis da implementação atual. Regras adicionais, como o limite de detalhes e os motivos da denúncia, devem ser revisadas com a equipe antes do aceite. [Documento oficial de requisitos](https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit).
-
-RF007 tem conflito registrado em `config/presentation/requisitos.yml`: foto opcional na versão anterior versus proposta de foto obrigatória, ainda aguardando decisão. O modelo atual aceita ocorrência sem foto. O plano distingue comportamento implementado de requisito pendente; aceitar zero fotos não comprova atendimento à proposta obrigatória.
+Este plano detalha a participação individual de Lucas na estratégia da equipe. O recorte atual contém RF013 automatizado e RF018 como plano manual ainda não executado. O restante da tarefa da equipe permanece pendente de consolidação, sem atribuição de participação não confirmada. Os critérios abaixo refinam RF013 e RF018 com regras verificáveis da implementação atual; não reproduzem o texto literal dos RFs. Regras adicionais, como o limite de detalhes e os motivos da denúncia, devem ser revisadas com a equipe antes do aceite. [Documento oficial de requisitos](https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit).
 
 ## RF013 — critérios de aceitação e matriz automatizada
 
@@ -40,24 +38,9 @@ Os testes de modelo isolam os validadores usando associações `build_stubbed` e
 
 O recorte não demonstra sozinho autorização, interface, persistência, notificações, unicidade por denunciante/alvo ou revisão administrativa. Há testes de serviço e requisição complementares; a validação permanece parcial.
 
-## RF007 — plano manual de fotos
-
-Pré-condições: ambiente de teste autorizado, usuário autenticado, formulário de nova ocorrência com título `Lâmpada quebrada`, descrição `Lâmpada apagada na entrada do bloco`, categoria ativa e localização manual `Entrada do bloco A`. Preparar arquivos de teste reais, sem dados pessoais. Recomeçar com formulário válido em cada caso. Os critérios são refinados a partir de `Alert`, não texto literal do RF. Todos os casos manuais abaixo estão **não executados neste registro**.
-
-| Caso / critério | Entrada concreta | Ação | Resultado esperado |
-| --- | --- | --- | --- |
-| RF007-M01 / RF007-AC01 | `entrada.png`, PNG real de 100 KiB | Anexar, enviar e reabrir ocorrência como autor | Salvar e permitir visualizar a foto |
-| RF007-M02 / RF007-AC02 | Cinco JPEG reais, `foto1.jpg` a `foto5.jpg`, 100 KiB cada | Anexar os cinco e enviar | Salvar com cinco fotos; limite de quantidade aceito |
-| RF007-M03 / RF007-AC03 | Seis PNG reais de 100 KiB cada | Anexar os seis e tentar enviar | Bloquear excesso; não salvar seis anexos |
-| RF007-M04 / RF007-AC04 | PNG real com 5.242.881 bytes (5 MiB + 1) | Anexar e tentar enviar | Rejeitar arquivo acima de 5 MiB com indicação de erro |
-| RF007-M05 / RF007-AC05 | `falsa.png`, conteúdo textual `isto não é imagem`, MIME declarado PNG | Anexar e tentar enviar | Rejeitar conteúdo que não é PNG/JPEG real |
-| RF007-M06 / RF007-AC06 | Nenhuma foto | Enviar formulário válido | Implementação atual aceita; registrar divergência se a obrigatoriedade for aprovada |
-
-Se o navegador bloquear antes do envio, registrar essa etapa e não afirmar que a validação do servidor foi exercitada. A regra de 5 MiB vale por arquivo; PNG e JPEG são os tipos aceitos.
-
 ## RF018 — plano manual de categoria
 
-Usar o mesmo formulário válido, sem fotos para não misturar regras. Em ambiente de teste, dispor de categoria ativa `Infraestrutura` sem exigência de detalhe, categoria ativa `Outro` com `requires_details: true` e categoria inativa `Categoria desativada`. São dados de preparação propostos, não catálogo confirmado nem alterações efetuadas nesta tarefa. Todos os casos estão **não executados neste registro**.
+Pré-condições: ambiente de teste autorizado e disponível, usuário autenticado com permissão para criar ocorrência comum e formulário de nova ocorrência. Em cada caso, recomeçar com título `Lâmpada quebrada`, descrição `Lâmpada apagada na entrada do bloco`, localização manual descrita como `Entrada do bloco A`, sem coordenadas, sem metadados GPS e sem compartilhamento de localização exata; visibilidade solicitada e efetiva `internal`, sem fotos. Alterar somente categoria e detalhe conforme a linha. Dispor de categoria ativa `Infraestrutura` sem exigência de detalhe, categoria ativa `Outro` com `requires_details: true` e categoria inativa `Categoria desativada`. São dados de preparação propostos, não catálogo confirmado nem alterações efetuadas nesta tarefa. Todos os casos estão **não executados neste registro**.
 
 | Caso / critério | Entrada concreta | Ação | Resultado esperado |
 | --- | --- | --- | --- |
@@ -77,7 +60,7 @@ A tabela identifica a entrega individual preparada para Lucas. Cada integrante d
 
 | Integrante | Participação nesta atividade |
 | --- | --- |
-| Lucas Vitor | Responsável por apresentar e revisar os 11 testes RF013 e os planos RF007/RF018 preparados nesta entrega com apoio de ferramenta de programação |
+| Lucas Vitor | Responsável por apresentar e revisar os 11 testes RF013 e o plano RF018 preparados nesta entrega com apoio de ferramenta de programação |
 | Guilherme Santiago | A definir / não confirmado |
 | Jose de Lemos | A definir / não confirmado |
 | Victor Novais | A definir / não confirmado |
@@ -87,11 +70,11 @@ Revisor cruzado sugerido: **Victor Novais — A CONFIRMAR**. Sugestão não repr
 
 ## Evidência local — 11/11/2026
 
-Resultados executados no Dev Container durante a preparação desta entrega, com código dos testes no commit `83f3f60`:
+Resultados locais de preparação no Dev Container, conforme evidências informadas nesta tarefa; não reexecutados nesta revisão documental:
 
-- RF013: 11 exemplos novos de modelo junto com 5 de serviços e 5 de requisição de denúncias: **21 examples, 0 failures**, seed **64710**.
-- Execução isolada final: **11 examples, 0 failures**, seed **12345**.
-- `bundle exec rubocop spec/models/content_report_spec.rb`: **1 file inspected, no offenses detected**.
+- Execução anterior, commit `83f3f60`: 11 exemplos de modelo RF013 junto com 5 de serviços e 5 de requisição de denúncias: **21 examples, 0 failures**, seed **64710**.
+- Execução isolada atual, commit `6c1b06f`, com nomes dos exemplos e comentários em português: **11 examples, 0 failures**, seed **8976**. Esse resultado se limita ao spec de modelo; não representa nova execução dos 21 exemplos.
+- Verificação RuboCop anteriormente registrada: `bundle exec rubocop spec/models/content_report_spec.rb`: **1 file inspected, no offenses detected**; não reexecutada nesta revisão.
 - Verificação deliberada de assertividade: `single_target` desabilitado somente em processo temporário; UT03 e UT04 produziram **2 exemplos / 2 falhas**, como esperado. Esses testes detectam a retirada da regra. A execução final voltou a passar com a regra original; o script temporário foi excluído.
 
 Os resultados e o commit estão registrados no card #53. Testes manuais e cruzados permanecem pendentes. O percentual global mostrado pelo SimpleCov ao executar apenas este arquivo não representa a cobertura do RF013.
@@ -100,17 +83,17 @@ Os resultados e o commit estão registrados no card #53. Testes manuais e cruzad
 
 | Tempo | Demonstração |
 | --- | --- |
-| 0:00–0:15 | Identificar Lucas, branch e card #53; delimitar RF013 automatizado e RF007/RF018 planejados |
+| 0:00–0:15 | Identificar Lucas, branch e card #53; delimitar RF013 automatizado e RF018 como plano manual |
 | 0:15–0:45 | Mostrar matriz e spec: alvo único, denunciante, motivo, detalhe e limites |
 | 0:45–1:15 | Mostrar comando e saída real preservada dos testes; distinguir 11 modelos dos 21 exemplos combinados; explicar Rails e DB de teste |
-| 1:15–1:40 | Mostrar planos manuais, entradas e resultados esperados; destacar conflito de foto opcional/obrigatória |
-| 1:40–2:00 | Mostrar a tabela de participação e o card com a evidência do colega, se já executada; indicar o link deste plano |
+| 1:15–1:40 | Mostrar os sete cenários do plano RF018, suas pré-condições, entradas e resultados esperados; distinguir plano de execução |
+| 1:40–2:00 | Mostrar participação com apoio de ferramenta, revisão cruzada pendente e restante da tarefa da equipe pendente; indicar plano e card |
 
 Se uma execução ultrapassar o tempo, usar sua saída real previamente capturada e identificada. Não apresentar plano manual como teste realizado.
 
 ## Fontes e registro do teste cruzado
 
-Regras verificadas em `app/models/content_report.rb`, `app/models/alert.rb`, `app/models/category.rb` e `config/presentation/requisitos.yml`. Testes complementares existentes em `spec/services/content_reports_spec.rb` e `spec/requests/moderation_request_spec.rb`.
+Regras e rastreabilidade verificadas em `app/models/content_report.rb`, `app/models/alert.rb`, `app/models/category.rb` e `spec/models/content_report_spec.rb`. Testes complementares existentes em `spec/services/content_reports_spec.rb` e `spec/requests/moderation_request_spec.rb`.
 
 O colega deve comentar no card #53 usando este modelo, preenchido após executar:
 
