@@ -42,7 +42,7 @@
 
 | Area | Tools |
 | --- | --- |
-| Language and framework | Ruby 3.4.8 (`.ruby-version`), Rails 8.1.3.1 |
+| Language and framework | Ruby 3.4.12 (`.ruby-version`), Rails 8.1.3.1 |
 | Data | SQLite, Solid Cache, Solid Queue, Solid Cable |
 | Interface | Hotwire (Turbo, Stimulus), Importmap, Tailwind CSS, Preline, Lucide icons via `rails_icons` |
 | Authorization and pagination | Pundit, Pagy |
