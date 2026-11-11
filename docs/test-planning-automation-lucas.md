@@ -1,6 +1,6 @@
 # Participação individual — Lucas Vitor: planejamento e automação de testes
 
-Branch: `codex/testes-rf013-lucas`. Escopo: RF013 (denúncias), RF007 (fotos) e RF018 (categoria). [Card #53 — controle e evidências](https://trello.com/c/BSGE2VRG). [Plano na branch](https://github.com/lucasact4/engenharia-de-software/blob/codex/testes-rf013-lucas/docs/test-planning-automation-lucas.md). Commit dos testes: `83f3f60`.
+Branch: `testes/rf013-lucas-vitor`. Escopo: RF013 (denúncias), RF007 (fotos) e RF018 (categoria). [Card #53 — controle e evidências](https://trello.com/c/BSGE2VRG). [Plano na branch](https://github.com/lucasact4/engenharia-de-software/blob/testes/rf013-lucas-vitor/docs/test-planning-automation-lucas.md). Commit dos testes: `83f3f60`.
 
 ## Origem dos critérios e limites
 
