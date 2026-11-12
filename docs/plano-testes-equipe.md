@@ -11,7 +11,7 @@ Plano compartilhado com autoria individual dos casos. Cada integrante entrega se
 | Lucas Vitor | RF010, RF016 | 13 exemplos validados localmente; cinco manuais auxiliares planejados |
 | José de Lemos | RF002, RF007 | Oito casos relatados como aprovados no HTML; specs e logs não disponíveis localmente |
 | Alisson Cerqueira | RF011, RF014 | Sete aprovações e uma falha relatadas no HTML; código/log vinculados não disponíveis |
-| Guilherme Santiago | RF012, RF015 | Casos, automação e evidências pendentes; RF012 não implementado: equipe deve rever bloqueio/escopo |
+| Guilherme Santiago | RF012, RF015 | Oito casos automatizados. RF012: 1 passou e 3 falharam. RF015: 4 passaram. [Card #55](https://trello.com/c/J7cRCpBg) |
 | Victor Novais | RF001, RF005 | Casos, automação e evidências pendentes |
 
 Implementação: RF010 por José; núcleo RF016 por Alisson, com Victor no fluxo anônimo anterior; Lucas contribuiu na integração, schema e specs. Conferir autoria do trecho e contribuições do testador antes de reconhecer independência cruzada. Casos de Lucas e consolidação deste plano tiveram apoio de ferramenta de programação.
@@ -103,6 +103,46 @@ Resultado informado por José: **8 exemplos, 0 falhas**, quatro por arquivo.
 
 Resultado informado por Alisson: **8 exemplos, 1 falha**, seed **14011**. O plano, ZIP e log citados no HTML ainda não foram fornecidos; por isso seus links originais não estão disponíveis nesta cópia.
 
+## RF012 — Guilherme: geolocalização em tempo real
+
+**Critérios de aceitação:** AC01 o pânico confirmado com GPS deve iniciar o acompanhamento contínuo. AC02 o autor deve poder interromper o acompanhamento. AC03 o administrador deve poder interromper o acompanhamento. AC04 a ocorrência comum registra o ponto informado sem iniciar o acompanhamento.
+
+Arquivo: `qa/acceptance/rf012_geolocation_spec.rb`. Os testes usam Chrome e dados fictícios, com GPS simulado em `-8.0171234, -34.9501234`. O arquivo é executado explicitamente para permitir a revisão das lacunas do requisito fora da suíte padrão.
+
+| Caso / critério | Entrada e ação | Esperado | Observado |
+| --- | --- | --- | --- |
+| RF012-01 / AC01 | Usuário autenticado confirma o pânico com GPS | Registrar a posição inicial e iniciar observação contínua | **Falhou.** Registrou a posição inicial sem chamar `watchPosition` |
+| RF012-02 / AC02 | Autor abre o detalhe do seu pânico com GPS e procura o controle de interrupção | Exibir controle e confirmar a interrupção após acioná-lo | **Falhou.** O controle não foi encontrado no detalhe do autor |
+| RF012-03 / AC03 | Administrador abre o detalhe administrativo do pânico com GPS e procura o controle | Exibir controle e confirmar a interrupção após acioná-lo | **Falhou.** O controle não foi encontrado no painel administrativo |
+| RF012-04 / AC04 | Usuário captura GPS e publica uma ocorrência comum | Gravar as coordenadas capturadas sem iniciar acompanhamento | **Passou.** Coordenadas gravadas, sem observação contínua |
+
+Quando o acompanhamento estiver disponível, verificar também o recebimento de um segundo ponto e o descarte de um terceiro após a interrupção pelo autor ou administrador.
+
+## RF015 — Guilherme: painel de moderação
+
+**Critério de aceitação:** AC01 apenas administradores ativos podem gerenciar publicações.
+
+Arquivo: `spec/policies/rf015_moderation_unit_spec.rb`. Testa `PublicationPolicy#manage?` com perfis simulados.
+
+| Caso / critério | Entrada e ação | Esperado | Observado |
+| --- | --- | --- | --- |
+| RF015-U01 / AC01 | Administrador ativo consulta a permissão de gestão | Permitir | **Passou.** Permissão concedida |
+| RF015-U02 / AC01 | Usuário ativo sem papel administrativo consulta a permissão | Negar | **Passou.** Permissão negada |
+| RF015-U03 / AC01 | Administrador inativo consulta a permissão | Negar | **Passou.** Permissão negada |
+| RF015-U04 / AC01 | Visitante sem sessão consulta a permissão | Negar | **Passou.** Permissão negada |
+
+Os fluxos de editar, aprovar e ocultar publicações ficam para verificação complementar pela interface.
+
+### Execução de RF012 e RF015
+
+Prepare o banco de teste e os estilos. Para os casos do RF012, disponibilize um Chrome ou um Selenium no ambiente Rails de teste.
+
+```sh
+bundle exec rspec -I spec spec/policies/rf015_moderation_unit_spec.rb qa/acceptance/rf012_geolocation_spec.rb --seed 18842 --format documentation
+```
+
+**Execução na cópia local de 11/11/2026:** 8 casos, 5 aprovações e 3 falhas (seed 18842). O teste cruzado continua pendente. Um colega que não implementou o requisito deve registrar a versão, o ID do caso, o resultado observado e a evidência no [cartão de Guilherme](https://trello.com/c/J7cRCpBg).
+
 ## Manuais auxiliares de Lucas — planejados
 
 Ambiente de teste autorizado, dados fictícios e IDs conhecidos. Mapa: ocorrências em andamento, categorias ativas e aprovação específica preparada. Auditoria: conta autenticada com identidade pública oculta, admin e usuário comum; Turnstile configurado/válido, senão bloquear preparação; usar apenas metadados sintéticos da base RF016.
@@ -117,4 +157,4 @@ Ambiente de teste autorizado, dados fictícios e IDs conhecidos. Mapa: ocorrênc
 
 ## Pendências da equipe
 
-Confirmar autoria/independência cruzada e anexar código/logs dos relatos; investigar RF011-04 e definir proximidade, sem registrar correção não comprovada. Guilherme e Victor ainda devem acrescentar casos/evidências. Demais RFs/RNFs e conclusão coletiva permanecem pendentes; seleção de dez RFs não equivale à cobertura completa dos 28 requisitos.
+Confirmar autoria/independência cruzada e anexar código/logs dos relatos; investigar RF011-04 e definir proximidade, sem registrar correção não comprovada. Victor ainda deve acrescentar casos/evidências. O RF012 requer revisão das lacunas de acompanhamento contínuo e interrupção. Demais RFs/RNFs e conclusão coletiva permanecem pendentes; seleção de dez RFs não equivale à cobertura completa dos 28 requisitos.
