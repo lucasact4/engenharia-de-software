@@ -1,105 +1,120 @@
 # Plano de testes da equipe — em consolidação
 
-Branch `testes/planejamento-automacao-lucas`. [Plano comum no GitHub](https://github.com/lucasact4/engenharia-de-software/blob/testes/planejamento-automacao-lucas/docs/plano-testes-equipe.md) · [Card #53](https://trello.com/c/BSGE2VRG) · [Requisitos](https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit).
+[Plano comum no GitHub — main](https://github.com/lucasact4/engenharia-de-software/blob/main/docs/plano-testes-equipe.md) · [Card #53](https://trello.com/c/BSGE2VRG) · [Requisitos](https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit).
 
-## Objetivo e participação
+## Participação e evidências
 
-Consolidar critérios, casos e evidências da equipe. Cada integrante escreve casos para dois RFs e automatiza pelo menos quatro casos de um deles. A avaliação tem parte coletiva (plano único) e individual (participação e demonstração). Lucas automatiza ambos os RFs selecionados. Este plano ainda não contém os casos de todos os integrantes.
+Plano compartilhado com autoria individual dos casos. Cada integrante entrega seu vídeo de até 2 minutos com o mesmo link deste plano. Os critérios abaixo orientam os testes; resultados parciais não comprovam atendimento integral do requisito.
 
-Cada integrante entrega vídeo individual de até 2 minutos, usando o mesmo link deste plano compartilhado.
-
-| Integrante | RFs selecionados | Situação nesta atividade |
+| Integrante | RFs | Situação |
 | --- | --- | --- |
-| Lucas Vitor | RF010 e RF016 | RF010 e RF016 automatizados: 13 exemplos passaram; manuais auxiliares não executados |
-| José de Lemos | RF002 e RF007 | Pendentes: casos, automação e evidências |
-| Alisson Cerqueira | RF011 e RF014 | Pendentes: casos, automação e evidências |
-| Guilherme Santiago | RF012 e RF015 | Pendentes; RF012 não implementado: bloqueio para equipe rever seleção/escopo |
-| Victor Novais | RF001 e RF005 | Pendentes: casos, automação e evidências |
+| Lucas Vitor | RF010, RF016 | 13 exemplos validados localmente; cinco manuais auxiliares planejados |
+| José de Lemos | RF002, RF007 | Oito casos relatados como aprovados no HTML; specs e logs não disponíveis localmente |
+| Alisson Cerqueira | RF011, RF014 | Sete aprovações e uma falha relatadas no HTML; código/log vinculados não disponíveis |
+| Guilherme Santiago | RF012, RF015 | Casos, automação e evidências pendentes; RF012 não implementado: equipe deve rever bloqueio/escopo |
+| Victor Novais | RF001, RF005 | Casos, automação e evidências pendentes |
 
-Implementação: RF010 por José; núcleo RF016 por Alisson, com Victor no fluxo anônimo anterior; Lucas contribuiu na integração, schema e specs. Conferir autor do trecho e contribuições do testador antes de reconhecer independência do teste cruzado.
+Implementação: RF010 por José; núcleo RF016 por Alisson, com Victor no fluxo anônimo anterior; Lucas contribuiu na integração, schema e specs. Conferir autoria do trecho e contribuições do testador antes de reconhecer independência cruzada. Casos de Lucas e consolidação deste plano tiveram apoio de ferramenta de programação.
 
-Os casos de Lucas e este plano foram preparados com apoio de ferramenta de programação, sujeitos à revisão dos responsáveis.
+**Evidências de 11/11/2026:** [relatório de José](evidencias/jose-rf002-rf007.html) e [relatório de Alisson](evidencias/alisson-rf011-rf014.html), preservados como recebidos. Os resultados dos colegas foram transcritos, sem reexecução: os arquivos de código e logs dessas execuções não foram fornecidos. As entradas abaixo respeitam o detalhamento disponível nos relatórios.
 
-## Critérios de aceitação antes dos casos
+## RF010 — Lucas: mapa e privacidade
 
-RF010 pede mapa com postagens localizadas; RF016 pede registro de IP, User-Agent e timestamp da submissão anônima. Abaixo estão refinamentos verificáveis da implementação, não reprodução literal nem declaração de atendimento integral dos requisitos.
+**Critérios:** AC01 sem consentimento usa referência; AC02 GPS autorizado dentro do polígono usa ponto exato; AC03 sem coordenadas usa referência; AC04 GPS fora do polígono selecionado usa referência; AC05 agrupamento preserva quantidade/IDs/links; AC06 fluxo público respeita aprovação e filtro. L01: localização só descritiva é lacuna, não aceite do requisito.
 
-| ID | Critério refinado |
-| --- | --- |
-| RF010-AC01 | Sem consentimento de ponto exato, usar ponto representativo do local e `exact: false` |
-| RF010-AC02 | Consentimento com GPS dentro do polígono selecionado permite coordenadas exatas |
-| RF010-AC03 | Consentimento sem coordenadas usa referência do local, sem exatidão |
-| RF010-AC04 | GPS fora do polígono selecionado usa referência do local, sem exatidão |
-| RF010-AC05 | Agrupar relatos aproximados do mesmo local preservando quantidade, IDs e links |
-| RF010-AC06 | Fluxo público respeita aprovação específica do mapa e filtros |
-| RF010-L01 | Local apenas descritivo retorna `nil`: lacuna caracterizada, não aceite de todo relato localizado |
-| RF016-AC01 | Submissão com identidade pública oculta captura IP, User-Agent e `submitted_at`, vinculados à ocorrência |
-| RF016-AC06 | Ausência de `submitted_at` ou do vínculo com a ocorrência torna a auditoria inválida |
-| RF016-AC02 | IP e User-Agent cifrados no armazenamento; leitores do modelo recuperam os valores |
-| RF016-AC03 | Inspeção de metadados somente por administrador ativo; mural não os divulga |
-| RF016-AC04 | Auditorias de ocorrências diferentes preservam seus próprios vínculos e metadados |
-| RF016-AC05 | Modelo recusa atualização e exclusão da auditoria persistida (append-only) |
+Arquivo: `spec/services/campus_map/rf010_marker_spec.rb`. Testa algoritmos internos com objetos sem persistência; autorização e filtros ficam nos casos manuais. Base: polígono longitude/latitude entre `[-34.951,-8.018]` e `[-34.949,-8.016]`, referência `[-8.017,-34.95]` e GPS interno `[-8.0175,-34.9505]` (latitude/longitude).
 
-## RF010 — seis unidades automatizadas
+| Caso / critério | Entrada e ação | Esperado / resultado | Status |
+| --- | --- | --- | --- |
+| RF010-UT01 / AC01 | GPS interno, sem consentimento; `report_marker` | Referência; `exact: false` | Passou localmente |
+| RF010-UT02 / AC02 | GPS interno, consentimento; `report_marker` | GPS preservado; `exact: true` | Passou localmente |
+| RF010-UT03 / AC03 | Consentimento, coordenadas nulas, local georreferenciado; `report_marker` | Referência; `exact: false` | Passou localmente |
+| RF010-UT04 / L01 | `Perto da entrada`, sem local georreferenciado nem GPS; `report_marker` | `nil`: caracteriza LACUNA, não atendimento integral | Passou localmente |
+| RF010-UT05 / AC04 | GPS autorizado fora do polígono selecionado; `report_marker` | Referência; `exact: false` | Passou localmente |
+| RF010-UT06 / AC05 | Dois relatos aproximados no mesmo local; `spot_marker` | `count: 2`, ambos os IDs e links preservados | Passou localmente |
 
-Arquivo `spec/services/campus_map/rf010_marker_spec.rb`, títulos e comentários em português. Associações `build_stubbed`, sem persistência dos objetos; Rails/helper ainda exigem ambiente de teste preparado. Métodos privados `report_marker` e `spot_marker` acessados intencionalmente via `send`: há acoplamento à implementação, sem refatoração do código do colega. Não comprovam aprovação, autorização ou filtros do método público `call`.
+## RF016 — Lucas: metadados da submissão
 
-Base: local ativo, polígono longitude/latitude fechado entre `[-34.951,-8.018]` e `[-34.949,-8.016]`; referência latitude/longitude `[-8.017,-34.95]`; GPS interno `[-8.0175,-34.9505]`.
+**Critérios:** AC01 registro vincula ocorrência e instante; AC02 IP/agente cifrados e recuperáveis; AC03 metadados só no admin, ausentes do mural; AC04 vínculos próprios por ocorrência; AC05 modelo impede alteração/exclusão; AC06 ocorrência e instante obrigatórios.
 
-| Caso / critério | Entrada e ação | Resultado esperado |
-| --- | --- | --- |
-| RF010-UT01 / AC01 | GPS interno, consentimento falso; chamar `report_marker` | Referência do local; `exact: false` |
-| RF010-UT02 / AC02 | GPS interno, consentimento verdadeiro; chamar `report_marker` | Coordenadas GPS; `exact: true` |
-| RF010-UT03 / AC03 | Consentimento verdadeiro, coordenadas nulas, local georreferenciado; chamar `report_marker` | Referência do local; `exact: false` |
-| RF010-UT04 / L01 | Descrição `Perto da entrada`, sem local georreferenciado nem GPS; chamar `report_marker` | `nil`: LACUNA, teste de caracterização, não aceite integral do RF010 |
-| RF010-UT05 / AC04 | GPS autorizado fora do polígono selecionado; chamar `report_marker` | Referência do local; `exact: false` |
-| RF010-UT06 / AC05 | Dois relatos aproximados no mesmo local; gerar marcadores e chamar `spot_marker` | `count: 2`, IDs e links de ambos preservados |
+Arquivo: `spec/models/anonymous_submission_audit_spec.rb`. Testa o modelo com banco de teste e cifragem reais, sem verificar interface ou autorização. Dados fictícios: `192.0.2.10`, `AgentTeste/1.0`, `2026-11-11T12:00:00Z`.
 
-Quatro exemplos existentes em `spec/services/campus_map/map_data_spec.rb` exercitam integração via `call`; não são autoria nova de Lucas nesta atividade nem garantem autorização completa.
-
-## RF016 — sete testes automatizados de modelo
-
-Arquivo `spec/models/anonymous_submission_audit_spec.rb`. Usa `create(:alert)`, banco de teste real e cifragem real, sem mocks. Testa o modelo, não o fluxo de ponta a ponta, a captura HTTP, Turnstile ou autorização. Base sintética: IP `192.0.2.10`, agente `AgentTeste/1.0`, instante UTC `2026-11-11T12:00:00Z`. A auditoria e a ocorrência são persistidas, diferentemente dos objetos `build_stubbed` de RF010.
-
-| Caso / critério | Entrada e ação | Resultado esperado |
-| --- | --- | --- |
-| RF016-UT01 / AC01 | Chamar `record!` com ocorrência e metadados válidos; recarregar | Registro persistido, vínculo com a ocorrência e `submitted_at` preservados |
-| RF016-UT02 / AC02 | Persistir IP sintético; comparar coluna e consultar `ip_address` | Ciphertext diferente do texto claro; leitor recupera o IP original |
-| RF016-UT03 / AC02 | Persistir agente sintético; comparar coluna e consultar `user_agent` | Ciphertext diferente do texto claro; leitor recupera o agente original |
-| RF016-UT04 / AC06 | `submitted_at: nil`, demais campos válidos; chamar `record!` | `ActiveRecord::RecordInvalid`, erro de ausência do instante, sem salvar auditoria |
-| RF016-UT05 / AC06 | `alert: nil`, demais campos válidos; chamar `record!` | `ActiveRecord::RecordInvalid`, erro de ausência da ocorrência |
-| RF016-UT06 / AC05 | Auditoria persistida; tentar `update!` e recarregar | `ActiveRecord::ReadOnlyRecord`; valores originais intactos |
-| RF016-UT07 / AC05 | Auditoria persistida; tentar `destroy!` e recarregar | `ActiveRecord::ReadOnlyRecord`; registro permanece |
+| Caso / critério | Entrada e ação | Esperado / resultado | Status |
+| --- | --- | --- | --- |
+| RF016-UT01 / AC01 | `record!` com ocorrência/metadados válidos; recarregar | Persistência, vínculo e `submitted_at` preservados | Passou localmente |
+| RF016-UT02 / AC02 | Persistir IP; comparar coluna e consultar leitor | Cifra diferente do texto claro; leitor recupera IP | Passou localmente |
+| RF016-UT03 / AC02 | Persistir agente; comparar coluna e consultar leitor | Cifra diferente do texto claro; leitor recupera agente | Passou localmente |
+| RF016-UT04 / AC06 | `submitted_at: nil`; `record!` | `RecordInvalid`, sem salvar auditoria | Passou localmente |
+| RF016-UT05 / AC06 | `alert: nil`; `record!` | `RecordInvalid` por ausência da ocorrência | Passou localmente |
+| RF016-UT06 / AC05 | Registro persistido; `update!`; recarregar | `ReadOnlyRecord`, originais intactos | Passou localmente |
+| RF016-UT07 / AC05 | Registro persistido; `destroy!`; recarregar | `ReadOnlyRecord`, registro permanece | Passou localmente |
 
 ```sh
 bundle exec rspec spec/services/campus_map/rf010_marker_spec.rb spec/models/anonymous_submission_audit_spec.rb --seed 12345 --format progress
 ```
 
-Validação local assistida: **13 examples, 0 failures**, seed **12345** — seis unidades RF010 e sete testes de modelo RF016. RuboCop: **2 files inspected, no offenses detected**. O resultado não inclui as quatro integrações existentes nem comprova execução manual, autorização ou cobertura global.
+Última execução local dos dois arquivos: **13 exemplos, 0 falhas**, seed **12345**. RuboCop: dois arquivos sem infrações. Esse resultado não inclui os testes já existentes nem os casos manuais.
 
-## Casos manuais auxiliares — não executados
+## RF002 — José: pesquisa de pessoas
 
-RF010: ambiente de teste com local da base, contas autorizadas e publicações fictícias em andamento. Preparar aprovação específica do mapa quando indicada; registrar IDs e reiniciar os dados entre casos.
+**Critérios:** RF002-AC01 pesquisar campos textuais; AC02 nome parcial sem diferenciar maiúsculas; AC03 CPF/CNPJ completos após remover pontuação; AC04 não pesquisar documento por trecho numérico. Arquivo informado por José: `spec/controllers/admin/users_search_spec.rb` (ainda não disponível na main).
+
+| Caso / critério | Entrada e ação relatadas | Esperado / observado no HTML | Status |
+| --- | --- | --- | --- |
+| RF002-01 / AC01 | Pesquisar nome, razão social, mãe e e-mail das pessoas de teste | Pessoa correspondente em cada um dos quatro campos | Passou — relato |
+| RF002-02 / AC02 | Pesquisar trecho do nome variando maiúsculas/minúsculas | Pessoa encontrada por trecho | Passou — relato |
+| RF002-03 / AC03 | Pesquisar CPF e CNPJ de teste completos com pontuação, sem divulgar documentos reais | Pessoas corretas por documento exato normalizado | Passou — relato |
+| RF002-04 / AC04 | Pesquisar apenas trecho numérico do CPF | Não retornar a pessoa pelo documento parcial | Passou — relato |
+
+## RF007 — José: fotos
+
+**Critérios:** RF007-AC01 fotos opcionais, PNG/JPEG reais aceitos; AC02 conteúdo falso rejeitado; AC03 máximo cinco fotos e limite de 5 MB por arquivo; AC04 não reutilizar arquivo de outro relato. Arquivo informado por José: `spec/models/alert_photos_spec.rb` (ainda não disponível na main).
+
+| Caso / critério | Entrada e ação relatadas | Esperado / observado no HTML | Status |
+| --- | --- | --- | --- |
+| RF007-01 / AC01 | Validar relato sem foto e com imagens PNG/JPEG reais | Ambas as condições aceitas | Passou — relato |
+| RF007-02 / AC02 | Anexar texto com nome e MIME declarados PNG; validar | Conteúdo incompatível rejeitado | Passou — relato |
+| RF007-03 / AC03 | Validar seis fotos e, separadamente, arquivo acima do limite de tamanho | Excesso de quantidade e tamanho rejeitados | Passou — relato |
+| RF007-04 / AC04 | Anexar a outro relato blob já pertencente a uma postagem | Reutilização rejeitada | Passou — relato |
+
+Resultado informado por José: **8 exemplos, 0 falhas**, quatro por arquivo.
+
+## RF011 — Alisson: pânico (integração)
+
+**Critérios:** RF011-AC01 exigir autenticação; AC02 pedir confirmação; AC03 registrar GPS/motivo em pedido restrito; AC04 selecionar agentes próximos. Raio/posição do agente não definidos no requisito; o teste relatado adotou locais de referência cadastrados, não um raio formal aprovado.
+
+| Caso / critério | Entrada e ação relatadas | Esperado / observado no HTML | Status |
+| --- | --- | --- | --- |
+| RF011-01 / AC01 | Sem autenticação, solicitar pânico | Exigir login / direcionou ao login, sem criar pedido | Passou — relato |
+| RF011-02 / AC02 | Abrir solicitação antes de confirmar | Não criar pedido / controles de pedir ajuda, confirmar e cancelar presentes | Passou — relato |
+| RF011-03 / AC03 | Confirmar pedido com GPS e motivo | Pedido restrito, protocolo e aviso / registrados e visíveis ao agente de teste | Passou — relato |
+| RF011-04 / AC04 | Pedido e dois agentes com referências próxima/distante; verificar destinatários | Só próximo / os dois receberam aviso interno, inclusive o distante | Falhou — relato |
+
+## RF014 — Alisson: notificações (serviço/processamento)
+
+**Critérios:** RF014-AC01 encaminhar aos canais configurados; AC02 evitar repetição; AC03 preservar anonimato; AC04 avisar usuário próximo (raio de 500 m para ocorrência comum). E-mail e push foram simulados: os casos não comprovam envio real nem eliminam a possibilidade de duplicação em outros fluxos.
+
+| Caso / critério | Entrada e ação relatadas | Esperado / observado no HTML | Status |
+| --- | --- | --- | --- |
+| RF014-01 / AC01 | Processar aviso com e-mail/push simulados | Uma chamada por canal / ambos chamados uma vez e registrados como enviados | Passou — relato |
+| RF014-02 / AC02 | Exercitar repetição do aviso no fluxo testado | Manter original sem duplicata / nenhuma duplicata nesse recorte | Passou — relato |
+| RF014-03 / AC03 | Processar postagem com anonimato | Sem aviso ao autor ou entrega externa / nenhum criado | Passou — relato |
+| RF014-04 / AC04 | Ocorrência comum com usuários próximo/distante, limite 500 m | Avisar somente próximo / apenas próximo recebeu na central | Passou — relato |
+
+Resultado informado por Alisson: **8 exemplos, 1 falha**, seed **14011**. O plano, ZIP e log citados no HTML ainda não foram fornecidos; por isso seus links originais não estão disponíveis nesta cópia.
+
+## Manuais auxiliares de Lucas — planejados
+
+Ambiente de teste autorizado, dados fictícios e IDs conhecidos. Mapa: ocorrências em andamento, categorias ativas e aprovação específica preparada. Auditoria: conta autenticada com identidade pública oculta, admin e usuário comum; Turnstile configurado/válido, senão bloquear preparação; usar apenas metadados sintéticos da base RF016.
 
 | Caso / critério | Entrada e ação | Esperado | Status |
 | --- | --- | --- | --- |
-| RF010-M01 / AC06 | Uma publicação aprovada para o mapa e outra aprovada só no mural; abrir mapa público | Mostrar somente a elegível ao mapa | Planejado |
-| RF010-M02 / AC06 | Relatos aprovados em duas categorias ativas; selecionar filtro de uma categoria na interface | Mostrar apenas relatos dessa categoria | Planejado |
+| RF010-M01 / AC06 | Uma publicação aprovada para mapa, outra só para mural; abrir mapa | Somente a elegível ao mapa aparece | Planejado |
+| RF010-M02 / AC06 | Publicações aprovadas em duas categorias; filtrar uma categoria | Apenas a categoria escolhida | Planejado |
+| RF016-M01 / AC01, AC03 | Admin abre ocorrência preparada com auditoria | Metadados sintéticos e instante correto, com possível formatação de fuso | Planejado |
+| RF016-M02 / AC03 | Abrir mural/detalhe público da publicação elegível | Sem IP, agente ou timestamp da auditoria | Planejado |
+| RF016-M03 / AC03 | Usuário comum, inclusive autor, tenta URL administrativa | Sem metadados; HTML ao painel, demais formatos 403 na barreira admin | Planejado |
 
-RF016: ambiente de teste autorizado, conta autenticada habilitada a criar ocorrência, administrador ativo e usuário comum. Formulário válido: título `Lâmpada quebrada`, descrição `Lâmpada apagada na entrada do bloco`, categoria ativa e local manual `Entrada do bloco A`; selecionar identidade pública oculta (`anonymous_public`). Turnstile configurado e válido; indisponibilidade bloqueia os casos de submissão, sem contornar a proteção.
+## Pendências da equipe
 
-Preparar ocorrência com auditoria sintética de IP `192.0.2.10`, agente `AgentTeste/1.0` e instante `2026-11-11T12:00:00Z`, sem divulgar IP real, segredos ou ciphertext. Identificar o ID e garantir publicação elegível ao mural no cenário público.
-
-| Caso / critério | Entrada e ação | Esperado | Status |
-| --- | --- | --- | --- |
-| RF016-M01 / AC01, AC03 | Como admin ativo, abrir detalhe da ocorrência preparada | Mostrar IP/agente sintéticos e instante equivalente ao UTC; UI pode formatar o fuso | Planejado |
-| RF016-M02 / AC03 | Abrir mural e detalhe público da publicação elegível | Sem IP, agente ou timestamp da auditoria; distinguir data pública da postagem | Planejado |
-| RF016-M03 / AC03 | Como usuário comum, inclusive autor, tentar URL administrativa direta | Sem metadados; barreira admin redireciona HTML ao painel e retorna 403 para outros formatos | Planejado |
-
-## Fontes, evidências e pendências
-
-Fontes técnicas: `app/services/campus_map/map_data.rb`, os dois specs do mapa e o spec de auditoria, `app/models/anonymous_submission_audit.rb`, `app/services/alerts/create.rb`, controllers público/admin de alertas, `app/controllers/admin/application_controller.rb` e detalhe administrativo. `record!` usa AES-256-GCM para IP/agente e grava `submitted_at`; controllers passam `request.remote_ip`, `request.user_agent`, `Time.current`; gravação ocorre na mesma transação e inspeção admin descriptografa os valores.
-
-Registrar no card: implementador, testador, confirmação de independência do trecho, ambiente/data, commit, casos, comando/seed, esperado, observado e evidência. Os manuais acima não foram executados. Demais integrantes precisam incluir critérios, casos e resultados próprios neste plano comum.
-
-Dos 28 requisitos (19 RF e 9 RNF), dez RFs estão selecionados. Permanecem sem responsável/casos consolidados RF003, RF004, RF006, RF008, RF009, RF013, RF017, RF018, RF019 e os nove RNFs. Seleção não significa cobertura comprovada; conclusão coletiva, independência dos testes cruzados e revisão do bloqueio RF012 continuam pendentes da equipe.
+Confirmar autoria/independência cruzada e anexar código/logs dos relatos; investigar RF011-04 e definir proximidade, sem registrar correção não comprovada. Guilherme e Victor ainda devem acrescentar casos/evidências. Demais RFs/RNFs e conclusão coletiva permanecem pendentes; seleção de dez RFs não equivale à cobertura completa dos 28 requisitos.
