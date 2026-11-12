@@ -1,108 +1,97 @@
-# Participação individual — Lucas Vitor: planejamento e automação de testes
+# Lucas Vitor — RF010 e RF016
 
-Branch: `testes/rf013-lucas-vitor`. Escopo: RF013 (denúncias automatizadas) e RF018 (plano manual de categoria). [Card #53 — controle e evidências](https://trello.com/c/BSGE2VRG). [Plano na branch](https://github.com/lucasact4/engenharia-de-software/blob/testes/rf013-lucas-vitor/docs/test-planning-automation-lucas.md). Commit atual dos testes: `6c1b06f`; execução anterior: `83f3f60`.
+Seção individual do [plano único da equipe](plano-testes-equipe.md#seções-individuais). Branch `testes/rf010-rf016-lucas-vitor`; [card #53](https://trello.com/c/BSGE2VRG). Recorte: RF010 automatizado e escrito; RF016 com plano manual. Preparado com apoio de ferramenta de programação, para revisão e apresentação por Lucas. Os casos manuais não foram executados.
 
-## Origem dos critérios e limites
+## Critérios antes dos casos
 
-Este plano detalha a participação individual de Lucas na estratégia da equipe. O recorte atual contém RF013 automatizado e RF018 como plano manual ainda não executado. O restante da tarefa da equipe permanece pendente de consolidação, sem atribuição de participação não confirmada. Os critérios abaixo refinam RF013 e RF018 com regras verificáveis da implementação atual; não reproduzem o texto literal dos RFs. Regras adicionais, como o limite de detalhes e os motivos da denúncia, devem ser revisadas com a equipe antes do aceite. [Documento oficial de requisitos](https://docs.google.com/document/d/1Z-G_nlIvvTVX9EKb3dZUui2HXBQL_vz4f8bAMfQmtv0/edit).
+RF010 exige mapa com postagens que têm localização; RF016 exige registro de IP, User-Agent e timestamp na submissão com identidade pública oculta. As regras abaixo são refinamentos verificáveis da implementação, não transcrição literal nem comprovação integral desses RFs.
 
-## RF013 — critérios de aceitação e matriz automatizada
+| ID | Critério refinado |
+| --- | --- |
+| RF010-AC01 | Sem consentimento de localização exata, representar o relato no ponto do local com `exact: false` |
+| RF010-AC02 | Com consentimento e coordenadas dentro do polígono selecionado, preservar o ponto GPS exato |
+| RF010-AC03 | Consentimento sem coordenadas não autoriza inventar ponto exato: usar referência do local |
+| RF010-AC04 | GPS fora do polígono selecionado deve usar ponto representativo, sem indicação de exatidão |
+| RF010-AC05 | Agrupar relatos aproximados do mesmo local preservando quantidade, IDs e links |
+| RF010-AC06 | No fluxo público, exibir somente publicações elegíveis ao mapa conforme aprovação, acesso e filtros |
+| RF010-L01 | Lacuna: descrição de localização sem georreferência retorna `nil`; caracteriza comportamento atual, não satisfaz exibir todo relato localizado |
 
-Arquivo: `spec/models/content_report_spec.rb`. Base de cada caso: denúncia nova, estado `pending`, denunciante e publicação obtidos com `build_stubbed`, motivo `spam`, nenhum comentário e nenhum detalhe; IDs sem denúncia prévia no banco de teste. Alterar somente a entrada indicada. A ação comum é chamar `valid?` (pelos matchers `be_valid`) e inspecionar validade, erros e alvo quando aplicável.
+| ID | Critério refinado |
+| --- | --- |
+| RF016-AC01 | Submissão com identidade pública oculta registra IP, User-Agent e `submitted_at`, vinculados à ocorrência |
+| RF016-AC02 | IP e User-Agent são cifrados no armazenamento e recuperáveis pelos leitores autorizados |
+| RF016-AC03 | Somente administrador ativo acessa a inspeção administrativa; mural não divulga os metadados |
+| RF016-AC04 | Cada auditoria permanece vinculada à ocorrência correta, sem misturar submissões |
+| RF016-AC05 | Auditoria persistida é append-only pelo modelo: alterações e exclusões são recusadas |
 
-Cada linha define um critério de aceitação refinado e seu teste rastreável; resultados são expectativas, não registros de execução.
+## RF010 — seis testes de unidade
 
-| Critério | Teste | Entrada concreta / alteração | Ação | Resultado esperado |
-| --- | --- | --- | --- | --- |
-| RF013-AC01 | RF013-UT01 | Somente publicação; `reason: "spam"` | Validar e consultar `target` | Válido; alvo é a publicação |
-| RF013-AC02 | RF013-UT02 | Publicação nula; somente comentário ligado à publicação | Validar; consultar `target` e `target_publication` | Válido; alvo é o comentário e publicação de origem correta |
-| RF013-AC03 | RF013-UT03 | Publicação e comentário nulos | Validar e consultar erros | Inválido; erro `base: single_target` |
-| RF013-AC04 | RF013-UT04 | Publicação e comentário simultâneos | Validar e consultar erros | Inválido; erro `base: single_target` |
-| RF013-AC05 | RF013-UT05 | `reporter: nil` | Validar e consultar erros | Inválido; erro `reporter: blank` neste aplicativo |
-| RF013-AC06 | RF013-UT06 | `reason: "unsupported"` | Validar e consultar erros | Inválido; erro `reason: inclusion` |
-| RF013-AC07 | RF013-UT07 | `reason: "other"`, `details: nil` | Validar e consultar erros | Inválido; erro `details: blank` |
-| RF013-AC08 | RF013-UT08 | `reason: "other"`, `details: "  \n\t  "` | Validar e consultar erros | Whitespace normalizado para ausência; inválido, `details: blank` |
-| RF013-AC09 | RF013-UT09 | `reason: "other"`, `details: "  O conteúdo expõe dados pessoais.  "` | Validar e ler detalhes | Válido; detalhes sem espaços externos |
-| RF013-AC10 | RF013-UT10 | `details: "a" * 2000` | Validar | Válido no limite de 2000 caracteres |
-| RF013-AC11 | RF013-UT11 | `details: "a" * 2001` | Validar e consultar erros | Inválido; erro `details: too_long` |
+Arquivo `spec/services/campus_map/rf010_marker_spec.rb`, títulos e comentários em português. Dados `build_stubbed`, sem persistência dos objetos; Rails ainda inicializa pelo helper e requer ambiente de teste preparado. Sem navegador, GPS real ou serviço externo. Métodos privados `report_marker` e `spot_marker` acessados intencionalmente via `send`, sem refatorar o código do colega: há acoplamento à implementação. Os exemplos não garantem aprovação, autorização ou filtros do método público `call`.
 
-### Execução e isolamento
+Base: local ativo com polígono longitude/latitude fechado entre `[-34.951,-8.018]` e `[-34.949,-8.016]`, ponto representativo latitude/longitude `[-8.017,-34.95]`; GPS interno `[-8.0175,-34.9505]`. Publicações e relatos fictícios, sem dados pessoais.
 
-Na raiz do projeto, com dependências instaladas e banco de teste disponível:
+| Teste / vínculo | Entrada | Ação | Esperado |
+| --- | --- | --- | --- |
+| RF010-UT01 / AC01 | GPS interno; consentimento falso | Chamar `report_marker` via `send` | Ponto representativo; `exact: false` |
+| RF010-UT02 / AC02 | GPS interno; consentimento verdadeiro | Mesmo método | Coordenadas GPS preservadas; `exact: true` |
+| RF010-UT03 / AC03 | Consentimento verdadeiro; coordenadas nulas; local georreferenciado | Mesmo método | Ponto representativo; `exact: false` |
+| RF010-UT04 / L01 | Somente descrição `Perto da entrada`, sem local georreferenciado nem coordenadas | Mesmo método | `nil`: teste de caracterização da lacuna, não aceite integral do RF010 |
+| RF010-UT05 / AC04 | GPS fora do polígono do local selecionado; consentimento verdadeiro | Mesmo método | Retornar referência do local; `exact: false` |
+| RF010-UT06 / AC05 | Dois relatos aproximados no mesmo local, IDs e links distintos | Gerar marcadores e chamar `spot_marker` via `send` | `count: 2`, ambos os IDs e links preservados |
+
+Quatro exemplos existentes em `spec/services/campus_map/map_data_spec.rb` complementam a integração via `call`: representação, consentimento/áreas, aprovação/invalidação e separação de pontos exatos. Não são de autoria de Lucas nesta atividade; não equivalem a teste completo de autorização.
 
 ```sh
-bundle exec rspec spec/models/content_report_spec.rb --format documentation
+bundle exec rspec spec/services/campus_map/rf010_marker_spec.rb --format documentation
+bundle exec rspec spec/services/campus_map/rf010_marker_spec.rb spec/services/campus_map/map_data_spec.rb --format documentation --seed 12345
 ```
 
-Os testes de modelo isolam os validadores usando associações `build_stubbed` e `valid?`, sem navegador nem serviços externos e sem salvar a denúncia ou disparar seus callbacks de salvamento/notificação. Inicializam Rails por `rails_helper` e consultam o banco de teste nas validações de unicidade. Portanto, não são herméticos nem independentes de DB. O helper também mantém o schema de teste e usa DatabaseCleaner; executar somente no ambiente de teste preparado.
+## RF010 — plano manual do fluxo público/interface
 
-O recorte não demonstra sozinho autorização, interface, persistência, notificações, unicidade por denunciante/alvo ou revisão administrativa. Há testes de serviço e requisição complementares; a validação permanece parcial.
+Pré-condições: ambiente de teste, mapa acessível, local e polígono da base acima, publicações fictícias com ocorrência em andamento; preparar aprovação específica do mapa quando indicada. Usar contas autorizadas e registrar os IDs. Cada caso começa com dados controlados; todos **não executados**.
 
-## RF018 — plano manual de categoria
-
-Pré-condições: ambiente de teste autorizado e disponível, usuário autenticado com permissão para criar ocorrência comum e formulário de nova ocorrência. Em cada caso, recomeçar com título `Lâmpada quebrada`, descrição `Lâmpada apagada na entrada do bloco`, localização manual descrita como `Entrada do bloco A`, sem coordenadas, sem metadados GPS e sem compartilhamento de localização exata; visibilidade solicitada e efetiva `internal`, sem fotos. Alterar somente categoria e detalhe conforme a linha. Dispor de categoria ativa `Infraestrutura` sem exigência de detalhe, categoria ativa `Outro` com `requires_details: true` e categoria inativa `Categoria desativada`. São dados de preparação propostos, não catálogo confirmado nem alterações efetuadas nesta tarefa. Todos os casos estão **não executados neste registro**.
-
-| Caso / critério | Entrada concreta | Ação | Resultado esperado |
+| Caso / critério | Entrada | Ação pública/interface | Esperado |
 | --- | --- | --- | --- |
-| RF018-M01 / RF018-AC01 | Categoria `Infraestrutura` ativa | Selecionar, enviar e reabrir | Salvar associada à categoria escolhida |
-| RF018-M02 / RF018-AC02 | Categoria não selecionada | Tentar enviar ocorrência | Bloquear ausência de categoria |
-| RF018-M03 / RF018-AC03 | `Outro`; detalhes vazios | Selecionar e tentar enviar | Bloquear; solicitar detalhamento |
-| RF018-M04 / RF018-AC03 | `Outro`; detalhes com três espaços | Selecionar e tentar enviar | Bloquear; whitespace não satisfaz presença |
-| RF018-M05 / RF018-AC04 | `Outro`; `Bicicletário danificado` | Selecionar, preencher e enviar | Salvar categoria e detalhe informado |
-| RF018-M06 / RF018-AC05 | `Outro`; detalhe com 501 letras `a` | Preencher e tentar enviar | Bloquear detalhe acima de 500 caracteres |
-| RF018-M07 / RF018-AC06 | `Categoria desativada` | Abrir seleção para nova ocorrência | Não oferecer categoria inativa para nova associação; se oferecida, registrar divergência; o modelo rejeita nova associação inativa |
+| RF010-M01 / AC01 | Publicação aprovada, GPS interno, sem consentimento | Abrir mapa e marcador | Ponto representativo, sem expor GPS exato; link leva à publicação correta |
+| RF010-M02 / AC02 | Publicação aprovada, GPS interno, consentimento verdadeiro | Abrir mapa e detalhe do marcador | Ponto exato e vínculo correto |
+| RF010-M03 / AC06 | Uma publicação aprovada para o mapa e outra sem essa aprovação | Abrir mapa público | Somente a elegível aparece; aprovação do mural isolada não basta |
+| RF010-M04 / AC05 | Duas publicações aprovadas e aproximadas no mesmo local | Abrir agrupamento | Contador 2 e dois links corretos |
+| RF010-M05 / AC06 | Duas categorias ativas diferentes com relatos aprovados | Selecionar filtro de uma categoria | Exibir somente relatos da categoria selecionada |
+| RF010-M06 / L01 | Relato aprovado com apenas descrição manual de local | Abrir mapa e procurar seu ID | Ausente no comportamento atual; registrar lacuna, sem declarar RF atendido |
 
-A exigência de detalhe depende de `requires_details`, não apenas do nome `Outro`. RF018 trata da categoria da ocorrência, sem inferir severidade ou prioridade. Não aplicar a obrigatoriedade de categoria ao fluxo de pânico.
+## RF016 — plano de auditoria da submissão
 
-## Quem fez o quê
+Pré-condições: ambiente de teste autorizado; conta autenticada habilitada para criar ocorrência, administrador ativo e usuário comum; formulário válido com título `Lâmpada quebrada`, descrição `Lâmpada apagada na entrada do bloco`, categoria ativa e local manual `Entrada do bloco A`. Selecionar ocultação da identidade pública (`anonymous_public`); isso não significa envio sem login. Turnstile deve estar configurado e validado; se indisponível, marcar os casos de submissão como **bloqueados**, sem contornar a proteção.
 
-A tabela identifica a entrega individual preparada para Lucas. Cada integrante deve completar sua própria participação; este documento não substitui o plano consolidado dos demais requisitos da equipe.
+Usar requisições controladas exclusivamente no ambiente de teste com IP documental `192.0.2.10`, User-Agent `AgentTeste/1.0` e relógio controlado `2026-11-11T12:00:00Z`. Para segunda submissão, `192.0.2.11`, `AgentTeste/2.0`, `2026-11-11T12:01:00Z`. Nunca divulgar IP real, chaves ou ciphertext em evidências. Casos abaixo são **planejados, não executados**; M06–M08 exigem verificação técnica autorizada, não apenas navegador.
 
-| Integrante | Participação nesta atividade |
+| Caso / critério | Entrada | Ação | Esperado |
+| --- | --- | --- | --- |
+| RF016-M01 / AC01 | Ocorrência válida, identidade oculta, fixture 1, Turnstile válido | Submeter com conta autorizada; anotar ID/protocolo | Criar ocorrência e auditoria vinculada com os três metadados capturados |
+| RF016-M02 / AC01, AC03 | ID de M01; administrador ativo | Abrir detalhe administrativo | Inspeção mostra IP e User-Agent sintéticos e horário equivalente ao instante UTC; interface pode formatar o fuso |
+| RF016-M03 / AC03 | Publicação de M01 elegível ao mural | Abrir mural e detalhe público | Sem IP, User-Agent ou timestamp da auditoria; não confundir com data pública da postagem |
+| RF016-M04 / AC03 | Usuário comum, inclusive autor de M01 | Tentar URL administrativa direta | Negar acesso aos metadados; HTML redireciona ao painel e formatos não HTML retornam 403 na barreira administrativa |
+| RF016-M05 / AC04 | Duas submissões distintas com fixtures 1 e 2 | Inspecionar como admin cada ocorrência | Cada ID ligado à sua auditoria, IP, agente e instante corretos |
+| RF016-M06 / AC02 | Auditoria de M01 | Em DB somente de teste aprovado, conferir colunas cifradas; ler pelos métodos do modelo | `ip_address_ciphertext` e `user_agent_ciphertext` diferem dos valores claros; leitores recuperam fixtures; não prometer cifra na UI administrativa |
+| RF016-M07 / AC05 | Auditoria persistida; novo IP sintético | Pelo modelo, tentar `update!` e `destroy!`; recarregar | Recusar com `ActiveRecord::ReadOnlyRecord`; registro e valores preservados. Não comprova proteção contra SQL direto |
+| RF016-M08 / AC01 | Criação com `anonymous_public: true` sem `request_audit` | Chamar serviço em teste autorizado, mantendo demais dados válidos | `ActiveRecord::RecordInvalid`; transação não persiste ocorrência sem captura da auditoria |
+
+Fonte conferida: `AnonymousSubmissionAudit.record!` cifra IP/User-Agent com MessageEncryptor AES-256-GCM e registra `submitted_at`; o modelo bloqueia atualização/exclusão após persistência. `Alerts::Create#persist!` exige metadados quando a identidade é oculta e grava auditoria na transação. Controllers público e admin passam `request.remote_ip`, `request.user_agent` e `Time.current` (instante atual; comparar em UTC). Captura implementada no PR #25, commit `e2889d1`. Inspeção administrativa descriptografa para exibição e depende de administrador ativo; a criptografia deve ser conferida no armazenamento.
+
+## Autoria e evidência cruzada
+
+RF010: implementação de José, commits `74f297b`, `921d5de`, `b1d176a`, `fe915e3`; seis novos testes preparados para Lucas com apoio de ferramenta. RF016: modelo `AnonymousSubmissionAudit` e captura de metadados de Alisson, commit `e2889d1`; Victor implementou o fluxo anterior de postagem anônima. Lucas apoiou integração, schema e specs, sem autoria do modelo de captura. O teste cruzado proposto verifica esse núcleo do colega, com as contribuições anteriores explicitadas.
+
+Evidência de execução local assistida, commit dos novos testes `b810fce`: **6 examples, 0 failures**, seed **36050**; RuboCop do novo spec sem infrações. Conjunto: **10 examples, 0 failures**, seed **12345** (6 novos + 4 existentes, sem atribuir autoria dos quatro a Lucas). Testes manuais cruzados permanecem pendentes. Nenhuma evidência antiga de RF013 é usada como resultado de RF010; sem percentual global de cobertura.
+
+## Vídeo individual — 120 segundos
+
+| Tempo | Mostrar |
 | --- | --- |
-| Lucas Vitor | Responsável por apresentar e revisar os 11 testes RF013 e o plano RF018 preparados nesta entrega com apoio de ferramenta de programação |
-| Guilherme Santiago | A definir / não confirmado |
-| Jose de Lemos | A definir / não confirmado |
-| Victor Novais | A definir / não confirmado |
-| Alisson Cerqueira | A definir / não confirmado |
+| 0–20 s | Plano único, seção Lucas e critérios RF010/RF016 antes dos casos |
+| 20–50 s | Seis unidades e comando; diferenciar UT04/lacuna e acoplamento a privados |
+| 50–75 s | Saída real 6/6 e conjunto 10/10, seeds e autoria dos quatro existentes |
+| 75–100 s | Casos escritos de ambos os RFs, destacando captura, cifra, acesso administrativo e expectativas RF016 ainda não executadas |
+| 100–120 s | Card #53, implementador/testador, limitações e pendências; entregar o mesmo link do plano da equipe |
 
-Revisor cruzado sugerido: **Victor Novais — A CONFIRMAR**. Sugestão não representa aceite, atribuição confirmada nem revisão realizada. Após confirmação, registrar revisão dos critérios e execução independente, com data, ambiente, comando, saída e divergências no card #53.
-
-## Evidência local — 11/11/2026
-
-Resultados locais de preparação no Dev Container, conforme evidências informadas nesta tarefa; não reexecutados nesta revisão documental:
-
-- Execução anterior, commit `83f3f60`: 11 exemplos de modelo RF013 junto com 5 de serviços e 5 de requisição de denúncias: **21 examples, 0 failures**, seed **64710**.
-- Execução isolada atual, commit `6c1b06f`, com nomes dos exemplos e comentários em português: **11 examples, 0 failures**, seed **8976**. Esse resultado se limita ao spec de modelo; não representa nova execução dos 21 exemplos.
-- Verificação RuboCop anteriormente registrada: `bundle exec rubocop spec/models/content_report_spec.rb`: **1 file inspected, no offenses detected**; não reexecutada nesta revisão.
-- Verificação deliberada de assertividade: `single_target` desabilitado somente em processo temporário; UT03 e UT04 produziram **2 exemplos / 2 falhas**, como esperado. Esses testes detectam a retirada da regra. A execução final voltou a passar com a regra original; o script temporário foi excluído.
-
-Os resultados e o commit estão registrados no card #53. Testes manuais e cruzados permanecem pendentes. O percentual global mostrado pelo SimpleCov ao executar apenas este arquivo não representa a cobertura do RF013.
-
-## Roteiro de vídeo — até 2 minutos
-
-| Tempo | Demonstração |
-| --- | --- |
-| 0:00–0:15 | Identificar Lucas, branch e card #53; delimitar RF013 automatizado e RF018 como plano manual |
-| 0:15–0:45 | Mostrar matriz e spec: alvo único, denunciante, motivo, detalhe e limites |
-| 0:45–1:15 | Mostrar comando e saída real preservada dos testes; distinguir 11 modelos dos 21 exemplos combinados; explicar Rails e DB de teste |
-| 1:15–1:40 | Mostrar os sete cenários do plano RF018, suas pré-condições, entradas e resultados esperados; distinguir plano de execução |
-| 1:40–2:00 | Mostrar participação com apoio de ferramenta, revisão cruzada pendente e restante da tarefa da equipe pendente; indicar plano e card |
-
-Se uma execução ultrapassar o tempo, usar sua saída real previamente capturada e identificada. Não apresentar plano manual como teste realizado.
-
-## Fontes e registro do teste cruzado
-
-Regras e rastreabilidade verificadas em `app/models/content_report.rb`, `app/models/alert.rb`, `app/models/category.rb` e `spec/models/content_report_spec.rb`. Testes complementares existentes em `spec/services/content_reports_spec.rb` e `spec/requests/moderation_request_spec.rb`.
-
-O colega deve comentar no card #53 usando este modelo, preenchido após executar:
-
-```text
-Testador e confirmação de que não implementou o requisito:
-Data, ambiente e commit:
-Casos executados:
-Resultado esperado:
-Resultado observado (passou/falhou/bloqueado):
-Evidência (captura ou saída):
-Sugestões e passos para reproduzir falhas:
-```
+Referências conferidas no código e no histórico Git: `app/services/campus_map/map_data.rb`, `app/controllers/campus_map_controller.rb`, os dois specs do mapa, `app/models/anonymous_submission_audit.rb`, `app/services/alerts/create.rb`, `app/controllers/alerts_controller.rb`, `app/controllers/admin/alerts_controller.rb`, `app/controllers/admin/application_controller.rb`, `app/controllers/concerns/anonymous_publication_protection.rb` e `app/views/admin/alerts/show.html.erb`.
