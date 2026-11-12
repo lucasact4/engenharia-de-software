@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.8
+ARG RUBY_VERSION=3.4.12
 FROM ghcr.io/rails/devcontainer/images/ruby:${RUBY_VERSION}
 
 LABEL MAINTAINER="Diogo Caetano <diogo@proposito.digital>"
