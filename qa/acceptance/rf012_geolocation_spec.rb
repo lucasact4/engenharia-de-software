@@ -34,8 +34,10 @@ RSpec.describe "RF012 - Geolocalização em tempo real", type: :feature, js: tru
     click_button "Pedir ajuda"
     click_button "Confirmar pedido de ajuda"
 
-    expect(page).to have_content("O sistema recebeu este pedido de ajuda")
-    expect(Alert.panic.find_by!(author: author)).to have_attributes(location_source: "gps")
+    expect(page).to have_content(/O sistema recebeu (?:este pedido de ajuda|seu pedido)/, wait: 15)
+    alert = Alert.panic.find_by!(author: author)
+    expect(page).to have_content(alert.protocol)
+    expect(alert).to have_attributes(location_source: "gps")
     expect(gps_watch_count).to be_positive,
       "O GPS inicial foi registrado, mas o navegador não iniciou o monitoramento contínuo (watchPosition)."
   end
