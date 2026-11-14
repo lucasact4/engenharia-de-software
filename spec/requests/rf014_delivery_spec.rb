@@ -43,8 +43,12 @@ RSpec.describe "RF014 delivery", type: :request do
     end.to change { ActionMailer::Base.deliveries.size }.by(1)
     email = ActionMailer::Base.deliveries.last
     expect(email.to).to eq([ user.email_address ])
-    expect(email.body.decoded).to include("/notificacoes")
-    expect(email.body.decoded).not_to include(alert.title, alert.protocol)
+    expect(email.subject).to include("Sua postagem foi atualizada")
+    html = Nokogiri::HTML(email.html_part.body.decoded)
+    expect(html.at_css("a")["href"]).to include("/notificacoes")
+    expect(email.attachments["sgu-logo.png"]).to be_inline
+    expect(email.text_part.body.decoded).to include("/notificacoes")
+    expect(email.text_part.body.decoded).not_to include(alert.title, alert.protocol)
     expect(NotificationDelivery.last.result).to eq("sent")
   end
 

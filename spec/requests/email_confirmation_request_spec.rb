@@ -6,7 +6,12 @@ RSpec.describe "Confirmação de e-mail", type: :request do
   it "sends a link to the registered address and confirms it only after explicit submission" do
     message = NotificationMailer.confirm_email(user).message
     expect(message.to).to eq([user.email_address])
-    url = URI.parse(message.body.decoded.lines.last.strip)
+    url = URI.parse(message.text_part.body.decoded.strip.lines.last)
+
+    html = Nokogiri::HTML(message.html_part.body.decoded)
+    expect(html.css("a").map { |link| link["href"] }).to eq([url.to_s, url.to_s])
+    expect(html.at_css("img")["src"]).to start_with("cid:")
+    expect(message.attachments["sgu-logo.png"]).to be_inline
 
     get url.request_uri
     expect(response).to have_http_status(:ok)
