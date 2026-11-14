@@ -19,7 +19,7 @@ RSpec.describe "Registration and shared themes", type: :feature, js: true do
   it "registers with visible password checks and goes directly to the ordinary portal" do
     visit new_session_path
     click_link "Criar conta"
-    expect(page).to have_content("A confirmação de e-mail ainda não foi implementada")
+    expect(page).to have_content("Confirme seu endereço pelo link enviado após o cadastro.")
     fill_in "Nome", with: "Estudante Demonstração"
     fill_in "E-mail da UFRPE", with: "estudante.demonstracao@ufrpe.br"
     select "Estudante", from: "Você é um…"

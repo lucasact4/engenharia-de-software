@@ -29,26 +29,28 @@ class PublicationsController < PortalController
   private
 
     def filter_feed(scope)
-      scope = scope.left_joins(:alert, :author).left_joins(alert: :category)
+      scope = scope.left_joins(:alert)
 
       keyword = params[:q].to_s.strip
       if keyword.present?
-        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(keyword.downcase)}%"
-        id = keyword.match?(/\A\d+\z/) ? keyword.to_i : -1
-        scope = scope.where(
-          "LOWER(COALESCE(alerts.title, publications.title, '')) LIKE :term OR " \
-          "LOWER(COALESCE(alerts.description, publications.body, '')) LIKE :term OR " \
-          "LOWER(COALESCE(categories.name, '')) LIKE :term OR " \
-          "alerts.protocol = :protocol OR publications.id = :id",
-          term: pattern, protocol: keyword, id: id
-        )
+        scope = scope.preload(alert: :category)
+        matching = scope.filter_decrypted(keyword) do |publication|
+          alert = publication.alert
+          [alert&.title || publication.title, alert&.description || publication.body, alert&.category&.name]
+        end
+        exact = scope.where(alerts: { protocol: keyword })
+        exact = exact.or(scope.where(id: keyword.to_i)) if keyword.match?(/\A\d+\z/)
+        scope = matching.or(exact)
       end
 
       creator = params[:creator].to_s.strip
       if creator.present?
         scope = PublicationPolicy::AuthorIdentityScope.new(Current.user, scope).resolve
-        scope = scope.text_search(creator, "COALESCE(users.display_name, users.username, '')",
-                                  "CASE WHEN users.public_profile THEN users.username ELSE NULL END")
+        authors = User.where(id: scope.reselect("publications.author_id").reorder(nil))
+        matching = authors.search_encrypted(creator, :display_name)
+        public_handles = authors.where(public_profile: true).search_encrypted(creator, :username)
+        unnamed_handles = authors.where(display_name: nil).search_encrypted(creator, :username)
+        scope = scope.where(author_id: matching.or(public_handles).or(unnamed_handles))
       end
 
       category_id = params[:category_id].to_s

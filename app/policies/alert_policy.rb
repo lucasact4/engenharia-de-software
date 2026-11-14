@@ -16,6 +16,18 @@ class AlertPolicy < ApplicationPolicy
     active_user?
   end
 
+  def read_panic_location?
+    record.panic? && show_operational_details?
+  end
+
+  def update_panic_location?
+    record.panic? && author?
+  end
+
+  def stop_panic_location?
+    record.panic? && (author? || active_admin?)
+  end
+
   def create_panic?
     active_user?
   end

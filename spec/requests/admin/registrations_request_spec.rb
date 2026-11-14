@@ -13,7 +13,7 @@ RSpec.describe "Registration review", type: :request do
     expect(response.body).not_to include("pessoa@ufrpe.br")
     get admin_registration_path(registration)
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("Não implementada", "Reprovar cadastro")
+    expect(response.body).to include("Pendente", "Reprovar cadastro")
   end
 
   it "approves pending accounts without granting administration or confirming e-mail" do

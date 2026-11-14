@@ -2,6 +2,8 @@
 
 class Publication < ApplicationRecord
   include TextSearch
+  encrypts :title, :body, :review_reason
+
   attribute :approval_method, :string
   enum :approval_method, { administrator: "administrator", verified_author: "verified_author" }, prefix: :approval, validate: { allow_nil: true }
   has_many_attached :photos

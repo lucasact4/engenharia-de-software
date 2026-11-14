@@ -34,6 +34,8 @@ tables:
       - ''
     - - email_verified_at
       - ''
+    - - email_confirmed_at
+      - ''
     - - registration_reviewed_by_id
       - FK users
     - - verified_at
@@ -145,6 +147,10 @@ tables:
     - - location_accuracy_meters
       - ''
     - - location_captured_at
+      - ''
+    - - panic_latest_position
+      - ''
+    - - panic_tracking_stopped_at
       - ''
     - - share_exact_location
       - ''

@@ -50,28 +50,20 @@ class Admin::UsersController < Admin::BaseController
 
   private
 
-  # Busca parcial por nomes e busca exata por CPF/CNPJ. Os documentos são
-  # deterministicamente criptografados no modelo, portanto não podem participar
-  # de uma comparação SQL com LIKE.
   def apply_term_filter(scope)
     term = params[:term].to_s.strip
     return scope if term.blank?
 
-    pattern = "%#{ActiveRecord::Base.sanitize_sql_like(term.downcase)}%"
-    names = scope.where(
-      "LOWER(CAST(users.display_name AS TEXT)) LIKE :term OR " \
-      "LOWER(CAST(users.business_name AS TEXT)) LIKE :term OR " \
-      "LOWER(CAST(users.mother_name AS TEXT)) LIKE :term OR " \
-      "LOWER(CAST(users.email_address AS TEXT)) LIKE :term OR " \
-      "LOWER(CAST(users.username AS TEXT)) LIKE :term",
-      term: pattern
-    )
-
+    names = scope.search_encrypted(term, :display_name, :business_name, :mother_name, :email_address, :username)
     digits = term.gsub(/\D/, "")
-    return names unless [ 11, 14 ].include?(digits.length)
+    return names unless [11, 14].include?(digits.length)
 
-    documents = scope.where(cpf: digits).or(scope.where(cnpj: digits))
-    names.or(documents)
+    names.or(scope.where(cpf: digits)).or(scope.where(cnpj: digits))
+  end
+
+  def apply_sort(scope)
+    ordered = scope.to_a.sort_by { |user| [user.email_address, user.id] }
+    filter_sort_direction == "desc" ? ordered.reverse : ordered
   end
 
   def default_params_permited

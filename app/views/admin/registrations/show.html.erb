@@ -13,7 +13,7 @@
       <dt>E-mail</dt><dd><%= user.email_address %></dd>
       <dt>Perfil solicitado</dt><dd><%= { "visitor" => "Visitante", "professor" => "Professor", "student" => "Estudante" }.fetch(user.registration_role_code) %></dd>
       <dt>Situação</dt><dd><%= render "status", user: user %></dd>
-      <dt>Confirmação de e-mail</dt><dd>Não implementada — endereço ainda não verificado</dd>
+      <dt>Confirmação de e-mail</dt><dd><%= @registration.email_confirmed_at? ? "Confirmado" : "Pendente" %></dd>
       <dt>Criado em</dt><dd><%= sgu_time(user.created_at) %></dd>
       <dt>Última revisão</dt><dd><%= user.registration_reviewed_at ? sgu_time(user.registration_reviewed_at) : "Ainda não revisado" %></dd>
       <dt>Responsável</dt><dd><%= user.registration_reviewed_by&.display_name.presence || (user.registration_reviewed_at ? "Aprovação automática nesta fase" : "—") %></dd>

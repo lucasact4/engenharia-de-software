@@ -15,6 +15,8 @@ class Comment < ApplicationRecord
 
   normalizes :body, with: ->(body) { body.strip }
 
+  encrypts :body, :removal_reason
+
   validates :body, presence: true, length: { in: BODY_LENGTH }
   validates :removal_reason, presence: true, if: :removed?
   validates :removed_by, presence: true, if: :removed?

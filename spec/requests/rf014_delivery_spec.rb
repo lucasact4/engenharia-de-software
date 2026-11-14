@@ -1,7 +1,9 @@
 require "rails_helper"
 
 RSpec.describe "RF014 delivery", type: :request do
-  let(:user) { create(:user) }
+  let(:user) do
+    create(:user).tap { |person| person.update!(email_confirmed_at: Time.current) }
+  end
   let(:admin) { create(:user, :admin) }
   let(:alert) { create(:alert, author: user) }
   let(:vapid) do

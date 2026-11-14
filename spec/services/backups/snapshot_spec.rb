@@ -55,17 +55,52 @@ RSpec.describe Backups::Snapshot do
       expect(Digest::SHA256.file(result.join(relative)).hexdigest).to eq(checksum)
     end
     restored = @root.join("restored")
-    FileUtils.cp_r(result.join("storage"), restored)
+    Backups::Restore.new(snapshot: result, destination: restored).call
     @databases.each do |_name, path|
-      SQLite3::Database.open(restored.join(path.basename).to_s) do |database|
+      SQLite3::Database.open(restored.join("storage", path.basename).to_s) do |database|
         expect(database.execute("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
         expect(database.get_first_value("SELECT value FROM sample")).to eq("recoverable")
       end
     end
-    expect(restored.join(upload.relative_path_from(@uploads)).binread).to eq("original image")
+    expect(restored.join("storage", upload.relative_path_from(@uploads)).binread).to eq("original image")
     expect(backup).to be_healthy
-    expect(File.stat(result.join("manifest.json")).mode & 0o777).to eq(0o600)
+    expect(File.stat(result.join("manifest.json")).mode & 0o777).to eq(0o600) unless Gem.win_platform?
     expect(@destination.glob(".partial-*")).to be_empty
+  end
+
+  it "copies encrypted uploads without decrypting the snapshot file" do
+    require "active_storage/service/encrypted_disk_service"
+    upload = add_upload
+    service = ActiveStorage::Service::EncryptedDiskService.new(root: @uploads)
+    allow(ActiveStorage::Blob.services).to receive(:fetch).with("test").and_return(service)
+    checksum = Base64.strict_encode64(Digest::MD5.digest("original image"))
+    service.migrate_file(upload.basename.to_s, checksum: checksum)
+
+    result = backup.call
+    sealed_upload = result.join("storage", upload.relative_path_from(@uploads))
+    expect(sealed_upload.binread).not_to eq(upload.binread)
+    expect(sealed_upload.binread).not_to include("original image")
+
+    restored = Backups::Restore.new(snapshot: result, destination: @root.join("restored")).call
+    restored_service = ActiveStorage::Service::EncryptedDiskService.new(root: restored.join("storage"))
+    expect(restored_service.download(upload.basename.to_s)).to eq("original image")
+  end
+
+  it "removes panic positions from recovery snapshots while preserving the live database" do
+    database = @connections.fetch("primary")
+    database.execute("CREATE TABLE alerts (id INTEGER, kind TEXT, latitude TEXT, longitude TEXT, location_accuracy_meters TEXT,
+      location_captured_at TEXT, location_description TEXT, location_id INTEGER, location_unavailable_reason TEXT,
+      panic_latest_position TEXT, location_source TEXT, panic_tracking_stopped_at TEXT, updated_at TEXT)")
+    database.execute("INSERT INTO alerts (id, kind, latitude, longitude, panic_latest_position, location_source, updated_at)
+      VALUES (1, 'panic', 'initial', 'initial', 'live', 'gps', '2026-11-14'), (2, 'occurrence', 'ordinary', 'ordinary', NULL, 'gps', '2026-11-14')")
+
+    result = backup.call
+    restored = Backups::Restore.new(snapshot: result, destination: @root.join("restored")).call
+    SQLite3::Database.open(restored.join("storage", @databases.fetch("primary").basename).to_s) do |recovery|
+      expect(recovery.execute("SELECT latitude, longitude, panic_latest_position, location_source FROM alerts ORDER BY id"))
+        .to eq([[nil, nil, nil, "unavailable"], ["ordinary", "ordinary", nil, "gps"]])
+    end
+    expect(database.get_first_value("SELECT latitude FROM alerts WHERE id = 1")).to eq("initial")
   end
 
   it "runs once per fixed 48-hour UTC period, across month boundaries and restarts" do
@@ -139,6 +174,8 @@ RSpec.describe Backups::Snapshot do
 
   it "refuses a destination inside the live storage tree, including a symlink" do
     expect { backup(destination: @uploads.join("backups")).call }.to raise_error(ArgumentError, /outside storage/)
+    skip "Windows sem permissão para criar links simbólicos" if Gem.win_platform?
+
     File.symlink(@uploads, @root.join("storage-link"))
     expect { backup(destination: @root.join("storage-link", "backups")).call }.to raise_error(ArgumentError, /outside storage/)
   end

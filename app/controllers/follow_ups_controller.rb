@@ -13,7 +13,7 @@ class FollowUpsController < PortalController
     alerts = SubscribedAlertsQuery.new(user)
     @alerts = alerts.call.includes(:category).recent_first.limit(50)
     @unavailable_alerts = alerts.unavailable_count
-    @people = FollowedProfilesQuery.new(user).call.order(:display_name, :username).limit(100)
+    @people = FollowedProfilesQuery.new(user).call.to_a.sort_by { |person| [person.display_name.to_s, person.username.to_s] }.first(100)
   end
 
   def prune

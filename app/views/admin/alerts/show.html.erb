@@ -21,6 +21,8 @@
     <% end %>
   <% end %>
 
+  <%= render "shared/alerts/panic_tracking", alert: @alert %>
+
   <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
     <%= render "shared/alerts/detail", detail: @detail, removable_photos: policy(@alert).remove_photo?, return_to: admin_alert_path(@alert) %>
     <%= render "shared/alerts/handling_panel", alert: @alert, options: @options, assignees: @assignees, submitted: @submitted || {},

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :session, only: %i[create destroy], path: "entrar"
   get "entrar", to: "sessions#new", as: :new_session
   get "criar-conta", to: "registrations#new", as: :new_registration
+  resource :email_confirmation, path: "confirmar-email", only: %i[show create update]
   post "criar-conta", to: "registrations#create", as: :registration
   resources :passwords, param: :token
   root "home#index"
@@ -36,6 +37,9 @@ Rails.application.routes.draw do
 
   get "panico", to: "panic_alerts#new", as: :new_panic
   post "panico", to: "panic_alerts#create", as: :panic
+  get "panico/:id/localizacao", to: "panic_locations#show", as: :panic_location
+  patch "panico/:id/localizacao", to: "panic_locations#update"
+  delete "panico/:id/localizacao", to: "panic_locations#destroy"
 
   namespace :handling, path: "atendimento" do
     resources :alerts, path: "", only: %i[index show] do
