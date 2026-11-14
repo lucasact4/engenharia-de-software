@@ -51,6 +51,10 @@ class PublicationPolicy < ApplicationPolicy
     active_admin?
   end
 
+  def delete_own?
+    active_user? && record.occurrence? && record.author_id == user.id && !record.withdrawn?
+  end
+
   def destroy?
     active_admin? && !record.withdrawn?
   end

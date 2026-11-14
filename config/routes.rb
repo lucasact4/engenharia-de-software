@@ -52,7 +52,7 @@ Rails.application.routes.draw do
   end
 
   # Mural de ocorrências e comunicados, com interações compartilhadas.
-  resources :publications, path: "mural", only: %i[index show] do
+  resources :publications, path: "mural", only: %i[index show destroy] do
     { like: "curtida", bookmark: "salvo", subscription: "acompanhamento" }.each do |kind, path|
       resource kind, only: %i[create destroy], controller: "publication_interactions", path: path,
                      as: "#{kind}_interaction", defaults: { kind: kind }

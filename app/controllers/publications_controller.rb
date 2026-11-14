@@ -26,6 +26,22 @@ class PublicationsController < PortalController
     load_comments
   end
 
+  def destroy
+    publication = Current.user.authored_publications.find(params[:id])
+    authorize publication, :delete_own?
+    challenge = Rails.application.message_verifier(:publication_deletion).verified(
+      params[:challenge].to_s, purpose: :delete_own_publication
+    )
+    if challenge != [Current.user.id, publication.id, params[:confirmation].to_s.strip.downcase]
+      return redirect_to alert_path(publication.alert_id), alert: "Digite a palavra exibida para apagar a postagem.",
+                         status: :see_other
+    end
+
+    Publications::Delete.call(actor: Current.user, publication: publication, by_author: true,
+                              reason: "Removida pelo autor")
+    redirect_to alert_path(publication.alert_id), notice: "Postagem removida do mural.", status: :see_other
+  end
+
   private
 
     def filter_feed(scope)
