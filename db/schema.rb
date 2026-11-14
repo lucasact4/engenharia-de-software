@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_120400) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -120,7 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120400) do
     t.check_constraint "lock_version >= 0", name: "alerts_lock_version"
     t.check_constraint "priority IS NULL OR priority IN ('low', 'normal', 'high', 'urgent')", name: "alerts_priority"
     t.check_constraint "publication_blocked IN (0, 1)", name: "alerts_publication_blocked_boolean"
-    t.check_constraint "reported_severity IS NULL OR reported_severity IN ('low', 'moderate', 'high', 'critical')", name: "alerts_reported_severity"
+    t.check_constraint "reported_severity IS NULL OR reported_severity IN ('low', 'moderate', 'high', 'critical', 'unsure')", name: "alerts_reported_severity"
     t.check_constraint "requested_visibility IN ('internal', 'restricted', 'public_external')", name: "alerts_requested_visibility"
     t.check_constraint "resolved_at IS NULL OR status IN ('resolved', 'closed')", name: "alerts_resolved_at_status"
     t.check_constraint "status <> 'closed' OR (closed_at IS NOT NULL AND closure_reason IS NOT NULL)", name: "alerts_closed_fields"

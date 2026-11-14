@@ -31,7 +31,8 @@ class PublicationPolicy < ApplicationPolicy
 
   def review?
     active_admin? && !record.withdrawn? && !record.moderation_blocked? &&
-      (!record.occurrence? || (record.alert.requested_public_external? && !record.alert.publication_blocked?))
+      (!record.occurrence? || ((record.alert.requested_public_external? ||
+        (record.alert.anonymous_public? && record.alert.requested_internal?)) && !record.alert.publication_blocked?))
   end
 
   def approve_for_campus_map?

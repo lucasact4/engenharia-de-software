@@ -57,6 +57,7 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     choose "Informar o local", allow_label_click: true
     fill_in "Descrição do local", with: "Corredor do bloco de aulas"
     select "Todos (pública)", from: "Quem pode ver"
+    choose "Não sei avaliar", allow_label_click: true
     install_test_widget
 
     check "Ocultar minha identidade no mural"
@@ -74,7 +75,10 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     expect(alert).to have_attributes(author: author, anonymous_public: true)
     expect(alert.anonymous_submission_audit).to be_present
     publication = alert.publication
-    expect(publication).to be_public_external
+    expect(publication).to be_review_pending
+    Publications::Review.call(actor: create(:user, :admin), publication: publication, decision: "approve",
+                              reviewed_content_version: publication.content_version)
+    expect(publication.reload).to be_public_external
     Capybara.reset_sessions!
     visit publication_path(publication)
     expect(page).to have_content("Pessoa anônima")
@@ -89,7 +93,7 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     expect(page).to have_no_css("article.social-post", text: alert.title)
   end
 
-  it "conceals an unverified author's identity from internal readers while external approval is pending" do
+  it "keeps posts out of the mural for ordinary readers until approval" do
     result = Alerts::CreateOccurrence.call(actor: author,
       attributes: occurrence_attributes(category: category, requested_visibility: "public_external", anonymous_public: true),
       request_audit: { ip_address: "192.0.2.1", user_agent: "RF005-test", submitted_at: Time.current })
@@ -97,9 +101,7 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     expect(post).to have_attributes(visibility: "internal", review_status: "pending")
 
     sign_in_via_ui create(:user)
-    visit publication_path(post)
-    expect(page).to have_content("Pessoa anônima")
-    expect(page).to have_no_content(author.display_name)
+    expect(PublicationPolicy::FeedScope.new(create(:user), Publication.all).resolve).not_to include(post)
     visit publications_path
     fill_in "Criador", with: author.username
     find('button[aria-label="Buscar"]').click

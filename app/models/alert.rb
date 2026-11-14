@@ -51,7 +51,7 @@ class Alert < ApplicationRecord
        { internal: "internal", restricted: "restricted", public_external: "public_external" },
        prefix: :requested, validate: true
   enum :visibility, { internal: "internal", restricted: "restricted" }, prefix: :visibility, validate: true
-  enum :reported_severity, SEVERITIES, prefix: :reported, validate: { allow_nil: true }
+  enum :reported_severity, SEVERITIES.merge(unsure: "unsure"), prefix: :reported, validate: { allow_nil: true }
   enum :assessed_severity, SEVERITIES, prefix: :assessed, validate: { allow_nil: true }
   enum :priority, { low: "low", normal: "normal", high: "high", urgent: "urgent" },
        prefix: :priority, validate: { allow_nil: true }
@@ -99,6 +99,7 @@ class Alert < ApplicationRecord
     validates :title, presence: true, length: { in: TITLE_LENGTH }
     validates :description, presence: true, length: { in: DESCRIPTION_LENGTH }
     validates :category, presence: true
+    validates :reported_severity, presence: true, if: -> { occurrence? && (new_record? || will_save_change_to_reported_severity?) }
   end
 
   validate :occurrence_location_available
