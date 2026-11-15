@@ -1,6 +1,6 @@
 # Histórico imutável pela API da aplicação, com campos limitados para evitar dados sensíveis.
 class AuditEvent < ApplicationRecord
-  SUBJECT_TYPES = %w[Alert Publication Comment ContentReport User].freeze
+  SUBJECT_TYPES = %w[Alert Publication Comment ContentReport User Category Location].freeze
 
   ALLOWED_CHANGES = {
     "Alert" => %w[status priority assessed_severity assigned_to_id visibility requested_visibility publication_blocked
@@ -9,7 +9,9 @@ class AuditEvent < ApplicationRecord
                         expires_at comments_enabled published_at withdrawn_at source_changed_at approval_method moderation_blocked],
     "Comment" => %w[removed_at removed_by_id],
     "ContentReport" => %w[state],
-    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id verified_at verified_by_id]
+    "User" => %w[deleted_at registration_status registration_reviewed_at registration_reviewed_by_id verified_at verified_by_id],
+    "Category" => %w[code name description position requires_details active],
+    "Location" => %w[code name description position reference_latitude reference_longitude boundary active]
   }.freeze
 
   METADATA_KEYS = %w[kind fields role_code decision target_type source reopening system_reason
@@ -22,6 +24,7 @@ class AuditEvent < ApplicationRecord
   validates :action, presence: true, length: { in: 3..80 }
   validates :subject_type, inclusion: { in: SUBJECT_TYPES }
   validates :reason, length: { maximum: 1000 }
+  validates :ip_address, length: { maximum: 45 }, allow_nil: true
   validates :actor, presence: true, unless: -> { action.to_s.start_with?("system.") }
 
   before_update { raise ActiveRecord::ReadOnlyRecord, "audit_events é append-only" }
@@ -33,7 +36,7 @@ class AuditEvent < ApplicationRecord
     persisted? || super
   end
 
-  def self.record!(actor:, action:, subject:, changes: {}, reason: nil, metadata: {})
+  def self.record!(actor:, action:, subject:, changes: {}, reason: nil, metadata: {}, ip_address: nil)
     allowed = ALLOWED_CHANGES.fetch(subject.class.name, [])
     create!(
       actor: actor,
@@ -41,7 +44,8 @@ class AuditEvent < ApplicationRecord
       subject: subject,
       reason: reason.to_s.strip.presence&.truncate(1000),
       changeset: changes.to_h.stringify_keys.slice(*allowed).transform_values { |pair| Array(pair).map { |v| scalar(v) } },
-      metadata: metadata.to_h.stringify_keys.slice(*METADATA_KEYS).transform_values { |value| sanitize_value(value) }
+      metadata: metadata.to_h.stringify_keys.slice(*METADATA_KEYS).transform_values { |value| sanitize_value(value) },
+      ip_address: ip_address.presence || (actor&.admin? ? Current.request_ip : nil)
     )
   end
 

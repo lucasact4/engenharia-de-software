@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // conteúdo com a mesma chave; um GPS que chegue depois não altera o pedido já congelado.
 // Sem JavaScript, o formulário é enviado normalmente com a chave gerada no servidor.
 const STORAGE_KEY = "sgu.panic.pending"
-const GPS_WAIT_MS = 6000
+const GPS_WAIT_MS = 2000
 
 export default class extends Controller {
   static targets = ["form", "latitude", "longitude", "accuracy", "capturedAt", "reason", "useGps",

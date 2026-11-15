@@ -44,6 +44,8 @@ class User < ApplicationRecord
   has_many :publication_bookmarks, dependent: :destroy
   has_many :publication_subscriptions, dependent: :destroy
   has_many :alert_subscriptions, dependent: :destroy
+  has_many :security_push_subscriptions, dependent: :destroy
+  has_one :security_presence, dependent: :destroy
   has_many :active_follows, class_name: "UserFollow", foreign_key: :follower_id, inverse_of: :follower,
            dependent: :destroy
   has_many :passive_follows, class_name: "UserFollow", foreign_key: :followed_id, inverse_of: :followed,

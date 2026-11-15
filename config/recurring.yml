@@ -1,4 +1,8 @@
 production:
+  security_presence_cleanup:
+    class: SecurityPresenceCleanupJob
+    queue: maintenance
+    schedule: "* * * * * UTC"
   storage_backup:
     class: StorageBackupJob
     queue: backups

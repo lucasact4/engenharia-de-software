@@ -22,6 +22,10 @@ module Alerts
         attributes.merge(kind: kind, requested_visibility: "restricted", visibility: "restricted")
       end
 
+      def after_persist(alert)
+        PanicDispatchJob.set(priority: -100).perform_later(alert.id)
+      end
+
       def inferred_location_source(attributes)
         if attributes[:latitude].present? || attributes[:longitude].present?
           "gps"

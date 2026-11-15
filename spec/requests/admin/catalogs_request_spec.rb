@@ -7,15 +7,23 @@ RSpec.describe "Admin catalogs", type: :request do
 
   describe "categories" do
     it "creates, searches, sorts and edits" do
-      post admin_categories_path, params: { category: { code: "acessibilidade", name: "Acessibilidade", position: 5, active: "1" } }
+      post admin_categories_path, params: { category: { code: "acessibilidade", name: "Acessibilidade", position: 5, active: "1" } },
+                                    headers: { "REMOTE_ADDR" => "198.51.100.17" }
       category = Category.find_by!(code: "acessibilidade")
       expect(response).to redirect_to(admin_categories_path(locale: I18n.locale))
+      created_event = AuditEvent.for_subject(category).sole
+      expect(created_event).to have_attributes(actor: admin, action: "category.created", ip_address: "198.51.100.17")
+      expect(created_event.changeset).to include("name" => [ nil, "Acessibilidade" ])
 
       get admin_categories_path(term: "acess", sort_column: "name", sort_direction: "asc")
       expect(response.body).to include("Acessibilidade")
 
-      patch admin_category_path(category), params: { category: { name: "Acessibilidade e rotas" } }
+      patch admin_category_path(category), params: { category: { name: "Acessibilidade e rotas" } },
+                                           headers: { "REMOTE_ADDR" => "198.51.100.18" }
       expect(category.reload.name).to eq("Acessibilidade e rotas")
+      updated_event = AuditEvent.for_subject(category).order(:created_at, :id).last
+      expect(updated_event).to have_attributes(actor: admin, action: "category.updated", ip_address: "198.51.100.18")
+      expect(updated_event.changeset).to eq("name" => [ "Acessibilidade", "Acessibilidade e rotas" ])
     end
 
     it "shows validation errors" do
@@ -30,6 +38,9 @@ RSpec.describe "Admin catalogs", type: :request do
 
       patch deactivate_admin_category_path(category)
       expect(category.reload).not_to be_active
+      expect(AuditEvent.for_subject(category).last).to have_attributes(
+        action: "category.deactivated", changeset: { "active" => [ true, false ] }, ip_address: "127.0.0.1"
+      )
       expect(Category.exists?(category.id)).to be(true)
 
       expect(alert.reload).to be_valid
@@ -45,6 +56,9 @@ RSpec.describe "Admin catalogs", type: :request do
 
       patch activate_admin_category_path(category)
       expect(category.reload).to be_active
+      expect(AuditEvent.for_subject(category).last).to have_attributes(
+        action: "category.activated", changeset: { "active" => [ false, true ] }
+      )
     end
 
     it "locks the code and the details rule once the category is used" do
@@ -79,7 +93,16 @@ RSpec.describe "Admin catalogs", type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
 
       post admin_locations_path, params: { location: { code: "local_teste", name: "Local de teste", reference_latitude: "-8.01", reference_longitude: "-34.95" } }
-      expect(Location.find_by!(code: "local_teste").reference_longitude).to eq(BigDecimal("-34.95"))
+      location = Location.find_by!(code: "local_teste")
+      expect(location.reference_longitude).to eq(BigDecimal("-34.95"))
+      event = AuditEvent.for_subject(location).sole
+      expect(event).to have_attributes(actor: admin, action: "location.created", ip_address: "127.0.0.1")
+      expect(event.changeset).to include("reference_latitude" => [ nil, "-8.01" ], "reference_longitude" => [ nil, "-34.95" ])
+
+      patch admin_location_path(location), params: { location: { name: "Local de teste revisado" } }
+      update_event = AuditEvent.for_subject(location).order(:created_at, :id).last
+      expect(update_event).to have_attributes(action: "location.updated", actor: admin)
+      expect(update_event.changeset).to eq("name" => [ "Local de teste", "Local de teste revisado" ])
     end
 
     it "lets administrators add a mapped building outline" do
@@ -92,6 +115,7 @@ RSpec.describe "Admin catalogs", type: :request do
       location = Location.find_by!(code: "predio_teste")
       expect(response).to redirect_to(admin_locations_path(locale: I18n.locale))
       expect(location.boundary).to eq(JSON.parse(boundary))
+      expect(AuditEvent.for_subject(location).sole.changeset.fetch("boundary").map { |digest| digest&.length }).to eq([ nil, 64 ])
     end
   end
 

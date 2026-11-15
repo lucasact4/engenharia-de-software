@@ -34,7 +34,7 @@ class Admin::BaseController < Admin::ApplicationController
     authorize @instance
 
     respond_to do |format|
-      if @instance.save
+      if persist_catalog_change("created") { @instance.save }
         format.html { redirect_to self.send(redirect_to_index), flash: { success: translate_flash("success") } }
         format.json { render :show, status: :created, location: @instance }
       else
@@ -46,7 +46,7 @@ class Admin::BaseController < Admin::ApplicationController
 
   def update
     respond_to do |format|
-      if @instance.update(instance_params)
+      if persist_catalog_change("updated") { @instance.update(instance_params) }
         format.html { redirect_to self.send(redirect_to_index), flash: { success: translate_flash("success") } }
         format.json { render :show, status: :ok, location: @instance }
       else
@@ -77,6 +77,37 @@ class Admin::BaseController < Admin::ApplicationController
     def set_instance_and_authorize
       @instance = @model.find(params.expect(:id))
       authorize @instance
+    end
+
+    def persist_catalog_change(action)
+      return yield unless audit_catalog_instance?
+
+      @instance.class.transaction do
+        saved = yield
+        record_catalog_audit!(action) if saved && @instance.saved_changes.present?
+        saved
+      end
+    end
+
+    def audit_catalog_instance?
+      @instance.is_a?(Category) || @instance.is_a?(Location)
+    end
+
+    def record_catalog_audit!(action)
+      changes = @instance.saved_changes.slice(*AuditEvent::ALLOWED_CHANGES.fetch(@instance.class.name))
+      if @instance.is_a?(Location) && changes.key?("boundary")
+        changes["boundary"] = changes["boundary"].map do |value|
+          value.nil? ? nil : Digest::SHA256.hexdigest(value.to_json)
+        end
+      end
+
+      AuditEvent.record!(
+        actor: Current.user,
+        action: "#{@instance.model_name.element}.#{action}",
+        subject: @instance,
+        changes: changes,
+        metadata: { fields: changes.keys }
+      )
     end
 
     def redirect_to_index

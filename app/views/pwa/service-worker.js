@@ -1,26 +1,20 @@
-// Add a service worker for processing Web Push notifications:
-//
-// self.addEventListener("push", async (event) => {
-//   const { title, options } = await event.data.json()
-//   event.waitUntil(self.registration.showNotification(title, options))
-// })
-//
-// self.addEventListener("notificationclick", function(event) {
-//   event.notification.close()
-//   event.waitUntil(
-//     clients.matchAll({ type: "window" }).then((clientList) => {
-//       for (let i = 0; i < clientList.length; i++) {
-//         let client = clientList[i]
-//         let clientPath = (new URL(client.url)).pathname
-//
-//         if (clientPath == event.notification.data.path && "focus" in client) {
-//           return client.focus()
-//         }
-//       }
-//
-//       if (clients.openWindow) {
-//         return clients.openWindow(event.notification.data.path)
-//       }
-//     })
-//   )
-// })
+self.addEventListener("push", (event) => {
+  if (!event.data) return
+  const payload = event.data.json()
+  event.waitUntil(self.registration.showNotification(payload.title, {
+    body: payload.body,
+    icon: payload.icon || "/icon.png",
+    tag: payload.tag || "sgu-emergency",
+    requireInteraction: true,
+    data: payload.data || {}
+  }))
+})
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const path = event.notification.data.path || "/painel"
+  event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+    const existing = windows.find((client) => new URL(client.url).pathname === path)
+    return existing ? existing.focus() : clients.openWindow(path)
+  }))
+})

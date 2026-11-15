@@ -27,7 +27,26 @@ RSpec.describe AuditEvent do
   it "requires an actor except for identified technical events and recognized subject types" do
     expect { described_class.record!(actor: nil, action: "alert.assessed", subject: alert) }.to raise_error(ActiveRecord::RecordInvalid)
     expect(described_class.record!(actor: nil, action: "system.bootstrap", subject: alert)).to be_persisted
-    expect { described_class.record!(actor: admin, action: "category.updated", subject: create(:category)) }.to raise_error(ActiveRecord::RecordInvalid)
+    expect {
+      described_class.record!(actor: admin, action: "session.updated", subject: admin.sessions.create!)
+    }.to raise_error(ActiveRecord::RecordInvalid)
+  end
+
+  it "allows audit events for category and location catalog changes and records an administrator IP" do
+    category = create(:category)
+    location = create(:location)
+
+    category_event = described_class.record!(
+      actor: admin, action: "category.updated", subject: category,
+      changes: { name: %w[Infraestrutura Acessibilidade] }, ip_address: "198.51.100.17"
+    )
+    location_event = described_class.record!(
+      actor: admin, action: "location.updated", subject: location,
+      changes: { name: %w[Campus Prédio] }
+    )
+
+    expect(category_event).to have_attributes(ip_address: "198.51.100.17", changeset: { "name" => %w[Infraestrutura Acessibilidade] })
+    expect(location_event).to have_attributes(subject: location, changeset: { "name" => %w[Campus Prédio] })
   end
 
   it "is written in the same transaction as the change" do

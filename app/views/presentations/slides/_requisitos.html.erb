@@ -65,7 +65,7 @@
       <%= presentation_link("Card ##{card[:numero]} — #{card[:titulo]}", card[:url], class: "apr-card-link") %>
     <% end %>
     <%= presentation_slide_ref "conflitos" do %>
-      · <%= r[:conflitos].size %> conflitos em aberto — <a class="apr-more" href="#s-conflitos">ver apêndice</a>
+      · <%= r[:conflitos].count { |conflict| conflict[:estado] == "aguardando_decisao" } %> conflitos em aberto — <a class="apr-more" href="#s-conflitos">ver apêndice</a>
     <% end %>
   <% end %>
 <% end %>

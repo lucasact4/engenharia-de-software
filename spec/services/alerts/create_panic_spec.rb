@@ -17,8 +17,10 @@ RSpec.describe Alerts::CreatePanic do
     expect(alert.photos).not_to be_attached
   end
 
-  it "does not record human acknowledgement, dispatch or fictitious handling" do
-    alert = described_class.call(actor: author, client_request_id: key).alert
+  it "queues an emergency dispatch without recording human acknowledgement" do
+    expect { described_class.call(actor: author, client_request_id: key) }
+      .to have_enqueued_job(PanicDispatchJob)
+    alert = Alert.panic.last
 
     expect(Alert.column_names.grep(/acknowledg|dispatch/)).to be_empty
     expect(alert.status_changed_at).to be_nil

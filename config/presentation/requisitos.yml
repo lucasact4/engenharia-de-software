@@ -92,6 +92,17 @@ requisitos_refinados:
       - "A origem manual exige local cadastrado ou descrição com pelo menos 3 caracteres e não grava coordenadas."
       - "Um pedido de pânico pode ser registrado sem coordenadas quando a localização está indisponível, com o motivo informado."
     estado: implementado
+  - id: "RF011"
+    tipo: funcional
+    titulo: "Acionar o botão de pânico"
+    descricao: "A pessoa autenticada confirma um pedido de ajuda, compartilha GPS quando disponível e aciona rapidamente a equipe administrativa e de segurança por canais de emergência."
+    criterios_aceite:
+      - "O pedido exige autenticação e confirmação explícita, permanece restrito e pode ser registrado mesmo sem GPS."
+      - "Quando a pessoa compartilha a localização, o alerta inclui as coordenadas e a precisão informada pelo navegador; se a localização estiver indisponível, o envio não fica aguardando indefinidamente."
+      - "Com GPS do pedido e presenças recentes disponíveis, o sistema seleciona até três agentes de segurança mais próximos e inclui os administradores ativos; sem essas posições, notifica todos os destinatários elegíveis."
+      - "O sistema enfileira e-mail e push de emergência em prioridade alta; a confirmação de recebimento técnico não afirma que uma pessoa já viu o pedido."
+    estado: parcial
+    nota: "A equipe decidiu manter a seleção por proximidade para agilizar a resposta. A entrega externa depende das credenciais SMTP/VAPID e ainda precisa de validação em dispositivos e caixas postais reais."
   - id: "RF017"
     tipo: funcional
     titulo: "Classificar severidade separadamente da prioridade"
@@ -109,8 +120,8 @@ conflitos:
   - id: "RF005"
     tema: "Postagem e autenticação"
     anterior: "Permite postagem sem login."
-    proposta: "Exigir autenticação para registrar ocorrências."
-    estado: aguardando_decisao
+    proposta: "Conta ativa obrigatória para postar; a identidade pode ser ocultada publicamente com CAPTCHA e aprovação administrativa."
+    estado: implementado
   - id: "RF007"
     tema: "Foto da ocorrência"
     anterior: "Foto opcional."

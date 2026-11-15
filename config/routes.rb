@@ -25,6 +25,13 @@ Rails.application.routes.draw do
   get "panico", to: "panic_alerts#new", as: :new_panic
   post "panico", to: "panic_alerts#create", as: :panic
 
+  namespace :security, path: "seguranca" do
+    resource :presence, only: %i[create destroy], controller: "presence"
+    resource :push_subscription, only: %i[create destroy], controller: "push_subscriptions"
+  end
+
+  get "service-worker.js", to: "pwa#service_worker", as: :service_worker
+
   namespace :handling, path: "atendimento" do
     resources :alerts, path: "", only: %i[index show] do
       member do
