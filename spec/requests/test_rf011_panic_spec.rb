@@ -48,7 +48,7 @@ RSpec.describe "RF011 — Botão do pânico", type: :request do
     expect(Notification.visible_to(officer).where(alert: alert, kind: "panic")).to exist
   end
 
-  it "RF011-04 prioriza a proximidade na seleção de destinatários da segurança" do
+  it "RF011-04 avisa toda a equipe de segurança, independentemente da proximidade" do
     close = create(:user)
     far = create(:user)
     grant_role(close, :security)
@@ -64,7 +64,7 @@ RSpec.describe "RF011 — Botão do pânico", type: :request do
     ).alert
 
     security_recipients = Notification.where(alert: alert, kind: "panic", user: [ close, far ]).pluck(:user_id)
-    expect(security_recipients).to contain_exactly(close.id),
-      "O destinatário próximo deveria ser selecionado sem notificar o distante. Próximo notificado: #{security_recipients.include?(close.id)}. Distante notificado: #{security_recipients.include?(far.id)}."
+    expect(security_recipients).to contain_exactly(close.id, far.id),
+      "Todos os agentes de segurança deveriam ser avisados. Próximo notificado: #{security_recipients.include?(close.id)}. Distante notificado: #{security_recipients.include?(far.id)}."
   end
 end
