@@ -20,7 +20,7 @@ RSpec.describe CampusMap::MapData do
       location_description: "Corredor da biblioteca", latitude: nil, longitude: nil)
     map = described_class.new(viewer: nil).call
 
-    expect(map[:text_locations]).to eq([{ id: publication.id, title: alert.title, description: "Corredor da biblioteca" }])
+    expect(map[:text_locations]).to eq([ { id: publication.id, title: alert.title, description: "Corredor da biblioteca" } ])
     expect(map[:reports]).to be_empty
   end
 

@@ -8,7 +8,7 @@ class PublicProfilesController < PortalController
     authorize User, :index?, policy_class: PublicProfilePolicy
     scope = policy_scope(User, policy_scope_class: PublicProfilePolicy::Scope)
     scope = scope.search_encrypted(params[:q], :display_name, :username)
-    people = scope.to_a.sort_by { |user| [user.display_name || user.username.to_s, user.id] }
+    people = scope.to_a.sort_by { |user| [ user.display_name || user.username.to_s, user.id ] }
     @pagy, @people = pagy(:offset, people, limit: 24)
   end
 
@@ -23,7 +23,7 @@ class PublicProfilesController < PortalController
   def followers
     @person = find_person
     authorize @person, :show?, policy_class: PublicProfilePolicy
-    followers = PublicFollowersQuery.new(@person).call.to_a.sort_by { |user| [user.display_name.to_s, user.id] }
+    followers = PublicFollowersQuery.new(@person).call.to_a.sort_by { |user| [ user.display_name.to_s, user.id ] }
     @pagy, @followers = pagy(:offset, followers, limit: 30)
     @followers_count = PublicFollowersQuery.new(@person).count
   end

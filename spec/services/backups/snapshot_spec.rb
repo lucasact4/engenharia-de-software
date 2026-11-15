@@ -98,7 +98,7 @@ RSpec.describe Backups::Snapshot do
     restored = Backups::Restore.new(snapshot: result, destination: @root.join("restored")).call
     SQLite3::Database.open(restored.join("storage", @databases.fetch("primary").basename).to_s) do |recovery|
       expect(recovery.execute("SELECT latitude, longitude, panic_latest_position, location_source FROM alerts ORDER BY id"))
-        .to eq([[nil, nil, nil, "unavailable"], ["ordinary", "ordinary", nil, "gps"]])
+        .to eq([ [ nil, nil, nil, "unavailable" ], [ "ordinary", "ordinary", nil, "gps" ] ])
     end
     expect(database.get_first_value("SELECT latitude FROM alerts WHERE id = 1")).to eq("initial")
   end

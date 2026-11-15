@@ -16,7 +16,7 @@ RSpec.describe "Localização contínua do pânico", type: :request do
     expect(panic.reload.latitude).to eq(-8)
   end
 
-  [:author, :admin].each do |actor|
+  [ :author, :admin ].each do |actor|
     it "allows the #{actor} to end tracking and records who did it" do
       user = public_send(actor)
       sign_in(user)

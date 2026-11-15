@@ -32,7 +32,7 @@ class PublicationsController < PortalController
     challenge = Rails.application.message_verifier(:publication_deletion).verified(
       params[:challenge].to_s, purpose: :delete_own_publication
     )
-    if challenge != [Current.user.id, publication.id, params[:confirmation].to_s.strip.downcase]
+    if challenge != [ Current.user.id, publication.id, params[:confirmation].to_s.strip.downcase ]
       return redirect_to alert_path(publication.alert_id), alert: "Digite a palavra exibida para apagar a postagem.",
                          status: :see_other
     end
@@ -52,7 +52,7 @@ class PublicationsController < PortalController
         scope = scope.preload(alert: :category)
         matching = scope.filter_decrypted(keyword) do |publication|
           alert = publication.alert
-          [alert&.title || publication.title, alert&.description || publication.body, alert&.category&.name]
+          [ alert&.title || publication.title, alert&.description || publication.body, alert&.category&.name ]
         end
         exact = scope.where(alerts: { protocol: keyword })
         exact = exact.or(scope.where(id: keyword.to_i)) if keyword.match?(/\A\d+\z/)

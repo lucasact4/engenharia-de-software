@@ -24,7 +24,7 @@ class User < ApplicationRecord
   belongs_to :notification_location, class_name: "Location", optional: true
 
   generates_token_for :email_confirmation, expires_in: 24.hours do
-    Digest::SHA256.hexdigest([email_address, email_confirmed_at&.iso8601].to_json)
+    Digest::SHA256.hexdigest([ email_address, email_confirmed_at&.iso8601 ].to_json)
   end
   before_save { self.email_confirmed_at = nil if will_save_change_to_email_address? }
 

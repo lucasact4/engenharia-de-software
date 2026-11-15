@@ -17,6 +17,5 @@ module TextSearch
       end
       where(primary_key => ids)
     end
-
   end
 end

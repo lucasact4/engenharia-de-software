@@ -7,14 +7,14 @@ RSpec.describe DeliverNotificationsJob do
     confirmed = create(:user)
     confirmed.update!(email_confirmed_at: Time.current)
     unconfirmed = create(:user)
-    [confirmed, unconfirmed].each do |user|
+    [ confirmed, unconfirmed ].each do |user|
       NotificationPreference.create!(user: user, email_enabled: true)
       alert = create(:alert, author: user)
       Alerts::Transition.call(actor: admin, alert: alert, to: "triaging")
     end
 
     expect { described_class.perform_now }.to change { ActionMailer::Base.deliveries.size }.by(1)
-    expect(ActionMailer::Base.deliveries.last.to).to eq([confirmed.email_address])
+    expect(ActionMailer::Base.deliveries.last.to).to eq([ confirmed.email_address ])
     expect(NotificationDelivery.where(result: "skipped").count).to eq(1)
   end
 end

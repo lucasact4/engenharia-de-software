@@ -56,13 +56,13 @@ class Admin::UsersController < Admin::BaseController
 
     names = scope.search_encrypted(term, :display_name, :business_name, :mother_name, :email_address, :username)
     digits = term.gsub(/\D/, "")
-    return names unless [11, 14].include?(digits.length)
+    return names unless [ 11, 14 ].include?(digits.length)
 
     names.or(scope.where(cpf: digits)).or(scope.where(cnpj: digits))
   end
 
   def apply_sort(scope)
-    ordered = scope.to_a.sort_by { |user| [user.email_address, user.id] }
+    ordered = scope.to_a.sort_by { |user| [ user.email_address, user.id ] }
     filter_sort_direction == "desc" ? ordered.reverse : ordered
   end
 
