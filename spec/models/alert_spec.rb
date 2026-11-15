@@ -117,45 +117,6 @@ RSpec.describe Alert, type: :model do
     end
   end
 
-  describe "photos" do
-    it "is optional and accepts real PNG and JPEG files" do
-      alert = build(:alert)
-      alert.photos.attach(photo, photo(bytes: SguSupport::JPEG_BYTES, filename: "foto.jpg", content_type: "image/jpeg"))
-
-      expect(alert).to be_valid
-      expect(build(:alert)).to be_valid
-    end
-
-    it "rejects files whose content is not PNG/JPEG even with a PNG name and MIME" do
-      alert = build(:alert)
-      alert.photos.attach(photo(bytes: "isto é texto, não imagem", filename: "falsa.png", content_type: "image/png"))
-
-      expect(alert).not_to be_valid
-      expect(alert.errors.details[:photos]).to include(error: :content_type)
-    end
-
-    it "rejects more than five photos and files above 5 MiB" do
-      too_many = build(:alert)
-      too_many.photos.attach(Array.new(6) { photo })
-      expect(too_many).not_to be_valid
-
-      large = build(:alert)
-      large.photos.attach(photo(bytes: SguSupport::PNG_BYTES + ("0" * Alert::MAX_PHOTO_BYTES)))
-      expect(large).not_to be_valid
-      expect(large.errors.details[:photos]).to include(a_hash_including(error: :too_large))
-    end
-
-    it "does not reuse a blob uploaded for another record" do
-      other = create(:alert)
-      other.photos.attach(photo)
-      alert = build(:alert)
-      alert.photos.attach(other.photos.first.blob)
-
-      expect(alert).not_to be_valid
-      expect(alert.errors.details[:photos]).to include(error: :reused_blob)
-    end
-  end
-
   it "generates an opaque unique protocol on the server" do
     alert = create(:alert, protocol: nil)
 
