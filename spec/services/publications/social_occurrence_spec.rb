@@ -7,7 +7,7 @@ RSpec.describe "Occurrence posts and verification" do
 
   def occurrence(visibility = "internal")
     Alerts::CreateOccurrence.call(actor: student, attributes: { description: "A iluminação da biblioteca está apagada.", category_id: category.id,
-      location_source: "manual", location_description: "Biblioteca, térreo", requested_visibility: visibility }, client_request_id: SecureRandom.uuid).alert
+      location_source: "manual", location_description: "Biblioteca, térreo", reported_severity: "unsure", requested_visibility: visibility }, client_request_id: SecureRandom.uuid).alert
   end
 
   def review(post, decision, reason: nil)

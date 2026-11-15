@@ -24,6 +24,7 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
     fill_in "Título", with: "Poste apagado perto da guarita"
     fill_in "Descrição", with: "O poste ao lado da guarita está apagado há duas noites."
     select "Iluminação", from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
     expect(page).to have_no_field("Detalhamento da categoria")
 
     choose "Usar GPS", allow_label_click: true
@@ -81,6 +82,7 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
     fill_in "Título", with: "Bebedouro sem funcionar"
     fill_in "Descrição", with: "Bebedouro do térreo sem funcionar desde segunda."
     select "Iluminação", from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
     click_button "Publicar ocorrência"
 
     expect(page).to have_content("Ocorrência registrada")
