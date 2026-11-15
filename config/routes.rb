@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   mount RailsIcons::Engine, at: "/rails_icons"
   resource :session, only: %i[create destroy], path: "entrar"
   get "entrar", to: "sessions#new", as: :new_session
+  post "entrar/google", to: "google_sessions#create", as: :google_sign_in
+  get "entrar/google/retorno", to: "google_sessions#callback", as: :google_sign_in_callback
+  post "perfil/google", to: "google_sessions#connect", as: :google_connection
+  delete "perfil/google", to: "google_sessions#destroy"
   get "criar-conta", to: "registrations#new", as: :new_registration
   resource :email_confirmation, path: "confirmar-email", only: %i[show create update]
   post "criar-conta", to: "registrations#create", as: :registration

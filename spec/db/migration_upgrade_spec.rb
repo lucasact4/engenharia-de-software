@@ -120,7 +120,7 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     strip_version = ->(text) { text.sub(/define\(version: [\d_]+\)/, "") }
     expect(strip_version.call(dir.join("rolled_back.rb").read)).to eq(strip_version.call(file_fixture("schema_before_card6.txt").read))
 
-    # Na versão atual, contas e sessões ficam criptografadas e o rollback é recusado.
+    # Na versão atual, contas e sessões ficam criptografadas.
     rails("db:migrate", schema: dir.join("after.rb"))
     expect(normalize_schema(dir.join("after.rb").read)).to eq(normalize_schema(Rails.root.join("db/schema.rb").read))
     expect(query("SELECT email_address FROM users").flatten).to all(start_with("{"))
@@ -132,7 +132,9 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=#{before_encryption}", chdir: Rails.root.to_s)
     expect(status).not_to be_success
     expect(output).to include("IrreversibleMigration")
-    expect(query("SELECT max(version) FROM schema_migrations")).to eq([ [ Dir[Rails.root.join("db/migrate/*.rb")].map { |file| File.basename(file).to_i }.max.to_s ] ])
+    # A migração reversível do Google é desfeita antes de atingir a barreira.
+    expect(query("SELECT name FROM pragma_table_info('users') WHERE name = 'google_subject'")).to be_empty
+    expect(query("SELECT email_address FROM users").flatten).to all(start_with("{"))
   end
   it "refuses a rollback with descriptive locations before changing the database" do
     rails("db:migrate", "VERSION=#{before_encryption}", schema: dir.join("current.rb"))

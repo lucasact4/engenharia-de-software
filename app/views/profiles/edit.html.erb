@@ -7,6 +7,26 @@
   <% else %>
     <%= button_to "Reenviar confirmação de e-mail", email_confirmation_path, class: "sgu-btn sgu-btn-secondary" %>
   <% end %>
+  <% if @user.google_subject? || GoogleSignIn.configured? %>
+    <section class="sgu-card space-y-3 p-5 sm:p-6">
+      <h2 class="sgu-section-title"><%= t("authentication.google.profile_title") %></h2>
+      <% if @user.google_subject? %>
+        <p><%= t("authentication.google.connected") %></p>
+        <%= button_to t("authentication.google.disconnect"), google_connection_path, method: :delete,
+                      class: "sgu-btn sgu-btn-secondary" %>
+      <% else %>
+        <p><%= t("authentication.google.link_instructions") %></p>
+        <%= form_with url: google_connection_path, class: "space-y-3", data: { turbo: false } do |form| %>
+          <div>
+            <%= form.label :password, t("authentication.google.current_password"), for: "google_current_password", class: "sgu-label" %>
+            <%= form.password_field :password, id: "google_current_password", autocomplete: "current-password",
+                                    required: true, maxlength: 72, class: "sgu-input" %>
+          </div>
+          <%= form.submit t("authentication.google.connect"), class: "sgu-btn sgu-btn-secondary" %>
+        <% end %>
+      <% end %>
+    </section>
+  <% end %>
   <%= form_with model: @user, scope: :user, url: profile_path, method: :patch, class: "sgu-card space-y-4 p-5 sm:p-6", html: { novalidate: true } do |f| %>
     <% if @user.errors.any? %>
       <div class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink" role="alert">Revise os campos destacados.</div>

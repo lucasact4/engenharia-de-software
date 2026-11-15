@@ -75,7 +75,7 @@ class User < ApplicationRecord
   normalizes :bio, with: ->(bio) { bio.strip.presence }
 
   # Documentos são determinísticos para permitir busca exata sem persistir o valor aberto.
-  encrypts :cpf, :cnpj, :phone, :email_address, :username, deterministic: true
+  encrypts :cpf, :cnpj, :phone, :email_address, :username, :google_subject, deterministic: true
   encrypts :display_name, :mother_name, :business_name, :bio, :registration_review_reason
 
   validates :email_address, presence: true, uniqueness: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -469,10 +469,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
     t.datetime "email_notifications_consented_at"
     t.integer "notification_location_id"
     t.datetime "email_confirmed_at"
+    t.text "google_subject"
     t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
     t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["google_subject"], name: "index_users_on_google_subject", unique: true
     t.index ["notification_location_id"], name: "index_users_on_notification_location_id"
     t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
