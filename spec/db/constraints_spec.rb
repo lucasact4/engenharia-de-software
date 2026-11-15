@@ -24,10 +24,9 @@ RSpec.describe "Database constraints" do
       expect { alert.update_columns(requested_visibility: "public_external") }.to violation
     end
 
-    it "rejects invalid coordinates and incomplete pairs" do
-      expect { alert.update_columns(latitude: 95) }.to violation
+    # Faixas de coordenadas são validadas no modelo: o banco guarda os valores criptografados.
+    it "rejects incomplete coordinate pairs" do
       expect { alert.update_columns(longitude: nil) }.to violation
-      expect { alert.update_columns(location_accuracy_meters: -3) }.to violation
     end
 
     it "keeps panic restricted and with a client key" do
@@ -126,23 +125,19 @@ RSpec.describe "Database constraints" do
       expect { ContentReport.new(reporter: user, reason: "privacy", publication: publication).save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
 
-    it "rejects blank comments and self parent" do
+    it "rejects a comment that is its own parent" do
       comment = create(:comment, publication: publication)
 
-      expect { comment.update_columns(body: "   ") }.to violation
       expect { comment.update_columns(parent_id: comment.id) }.to violation
     end
   end
 
   describe "roles and users" do
-    it "keeps role grants unique and usernames lowercase" do
+    it "keeps role grants unique" do
       role = create(:role)
       UserRole.create!(user: user, role: role)
 
       expect { UserRole.new(user: user, role: role).save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
-      expect {
-        ActiveRecord::Base.connection.execute("UPDATE users SET username = 'MAIUSCULO' WHERE id = #{user.id}")
-      }.to violation
     end
   end
 

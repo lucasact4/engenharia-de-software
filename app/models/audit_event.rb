@@ -21,6 +21,8 @@ class AuditEvent < ApplicationRecord
   belongs_to :actor, class_name: "User", optional: true
   belongs_to :subject, polymorphic: true
 
+  encrypts :reason
+
   validates :action, presence: true, length: { in: 3..80 }
   validates :subject_type, inclusion: { in: SUBJECT_TYPES }
   validates :reason, length: { maximum: 1000 }

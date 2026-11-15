@@ -15,6 +15,15 @@ RSpec.describe CampusMap::MapData do
     [ alert, publication ]
   end
 
+  it "lists text-only places for approved posts without creating markers" do
+    alert, publication = publish_occurrence(location: nil, location_source: "manual",
+      location_description: "Corredor da biblioteca", latitude: nil, longitude: nil)
+    map = described_class.new(viewer: nil).call
+
+    expect(map[:text_locations]).to eq([ { id: publication.id, title: alert.title, description: "Corredor da biblioteca" } ])
+    expect(map[:reports]).to be_empty
+  end
+
   it "plots matched reports at the building location unless the author shared the exact point" do
     _alert, publication = publish_occurrence
 

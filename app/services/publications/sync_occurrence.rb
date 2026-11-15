@@ -29,6 +29,8 @@ module Publications
         end
         if @alert.publication_blocked? || @alert.requested_restricted? || publication.moderation_blocked?
           publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current, visibility: "internal")
+        elsif @alert.anonymous_public?
+          review_anonymous(publication)
         else
           publication.assign_attributes(state: "published", published_at: publication.published_at || Time.current, withdrawn_at: nil)
           decide_visibility(publication)
@@ -44,6 +46,16 @@ module Publications
     end
 
     private
+
+      def review_anonymous(publication)
+        audience = @alert.requested_visibility
+        return if !@content_changed && publication.published? && publication.visibility == audience &&
+          publication.approval_administrator? && publication.approved_for_current_content?
+
+        publication.assign_attributes(state: "draft", visibility: "internal", withdrawn_at: nil,
+                                      review_status: "pending", approval_method: nil, reviewed_content_version: nil,
+                                      reviewed_at: nil, reviewed_by: nil, review_reason: nil)
+      end
 
       def decide_visibility(publication)
         return if @alert.requested_public_external? && !@content_changed && !@request_external && publication.public_external? && publication.approved_for_current_content?

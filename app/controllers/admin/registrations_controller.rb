@@ -7,7 +7,7 @@ class Admin::RegistrationsController < Admin::ApplicationController
     authorize User, :index?, policy_class: RegistrationReviewPolicy
     scope = policy_scope(User, policy_scope_class: RegistrationReviewPolicy::Scope)
     scope = scope.where(registration_status: params[:status]) if User.registration_statuses.key?(params[:status].to_s)
-    scope = scope.text_search(params[:q], "users.display_name", "users.email_address")
+    scope = scope.search_encrypted(params[:q], :display_name, :email_address)
     @pagy, @registrations = pagy(scope.includes(:registration_reviewed_by).order(created_at: :desc, id: :desc), limit: 20)
   end
 

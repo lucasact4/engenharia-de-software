@@ -27,6 +27,7 @@ RSpec.describe "Student posts and public approval", type: :feature, js: true do
     choose "Informar o local", allow_label_click: true
     fill_in "Descrição", with: text
     select "Infraestrutura", from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
     fill_in "Descrição do local", with: "Entrada da biblioteca (demonstração)"
     select "Todos (pública)", from: "Quem pode ver"
     if photos
@@ -119,7 +120,7 @@ RSpec.describe "Student posts and public approval", type: :feature, js: true do
     Capybara.reset_sessions!
     sign_in_via_ui student
     fill_post("Acesso à biblioteca normalizado após a manutenção.")
-    expect(page).to have_content("Você pode publicar publicamente sem aprovação.")
+    expect(page).to have_content("Relatos identificados podem ir direto ao mural público.")
     click_button "Publicar ocorrência"
     expect(page).to have_content("Ocorrência registrada")
     post = Alert.last.publication

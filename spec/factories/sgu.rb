@@ -29,6 +29,7 @@ FactoryBot.define do
   factory :alert do
     association :author, factory: :user
     kind { "occurrence" }
+    reported_severity { "unsure" }
     title { "Lâmpada queimada no corredor" }
     description { "A iluminação do corredor está apagada desde ontem à noite." }
     category
@@ -50,6 +51,7 @@ FactoryBot.define do
 
     trait :panic do
       kind { "panic" }
+      reported_severity { nil }
       title { nil }
       description { nil }
       category { nil }

@@ -7,8 +7,9 @@ class PublicProfilesController < PortalController
   def index
     authorize User, :index?, policy_class: PublicProfilePolicy
     scope = policy_scope(User, policy_scope_class: PublicProfilePolicy::Scope)
-    scope = scope.text_search(params[:q], "users.display_name", "users.username")
-    @pagy, @people = pagy(scope.order(Arel.sql("COALESCE(users.display_name, users.username)"), :id), limit: 24)
+    scope = scope.search_encrypted(params[:q], :display_name, :username)
+    people = scope.to_a.sort_by { |user| [ user.display_name || user.username.to_s, user.id ] }
+    @pagy, @people = pagy(:offset, people, limit: 24)
   end
 
   def show
@@ -22,7 +23,8 @@ class PublicProfilesController < PortalController
   def followers
     @person = find_person
     authorize @person, :show?, policy_class: PublicProfilePolicy
-    @pagy, @followers = pagy(PublicFollowersQuery.new(@person).call.order(:display_name, :id), limit: 30)
+    followers = PublicFollowersQuery.new(@person).call.to_a.sort_by { |user| [ user.display_name.to_s, user.id ] }
+    @pagy, @followers = pagy(:offset, followers, limit: 30)
     @followers_count = PublicFollowersQuery.new(@person).count
   end
 

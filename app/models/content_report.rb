@@ -17,6 +17,8 @@ class ContentReport < ApplicationRecord
 
   normalizes :details, with: ->(details) { details.strip.presence }
 
+  encrypts :details
+
   validates :details, length: { maximum: DETAILS_MAX }
   validates :details, presence: true, if: :reason_other?
   validates :publication_id, uniqueness: { scope: :reporter_id }, allow_nil: true

@@ -15,6 +15,7 @@ RSpec.describe "Occurrence composer controls", type: :feature, js: true do
     fill_in "Título", with: "Poste apagado na biblioteca"
     fill_in "Descrição", with: "O poste da entrada da biblioteca está apagado há duas noites."
     select "Infraestrutura", from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
   end
 
   def capture(name, mobile: false, light: false)

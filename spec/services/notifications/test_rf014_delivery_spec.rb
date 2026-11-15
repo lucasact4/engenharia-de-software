@@ -8,6 +8,7 @@ RSpec.describe "RF014 — Notificações de postagens", type: :model do
   def configure_external_channels
     allow(Notifications::ChannelConfig).to receive(:email_available?).and_return(true)
     allow(Notifications::ChannelConfig).to receive(:push_available?).and_return(true)
+    author.update!(email_confirmed_at: Time.current)
     NotificationPreference.create!(user: author, email_enabled: true)
     PushSubscription.register!(
       session: author.sessions.create!,

@@ -2,6 +2,9 @@
   <summary class="cursor-pointer font-semibold">Preferências de entrega</summary>
   <%= form_with model: @preference, url: preferences_notifications_path, method: :patch, class: "mt-4 space-y-3" do |form| %>
     <% if Notifications::ChannelConfig.email_available? %>
+      <% unless Current.user.email_confirmed_at? %>
+        <p>Confirme seu endereço no <%= link_to "perfil", edit_profile_path %> para receber e-mails.</p>
+      <% end %>
       <label class="flex items-center gap-2"><%= form.check_box :email_enabled %> Receber atualizações e alertas próximos por e-mail</label>
     <% end %>
     <div>

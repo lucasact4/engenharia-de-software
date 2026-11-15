@@ -20,7 +20,7 @@ RSpec.describe "Institutional registration", type: :request do
     end
     get new_registration_path
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("confirmação de e-mail ainda não foi implementada", "aprovados automaticamente")
+    expect(response.body).to include("Confirme seu endereço pelo link enviado após o cadastro.", "aprovados automaticamente")
   end
 
   it "creates a private ordinary account with only the chosen role, audits and starts a session" do
