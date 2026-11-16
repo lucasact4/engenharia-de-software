@@ -10,7 +10,7 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
   def submit_anonymous_occurrence(token)
     post alerts_path, params: {
       client_request_id: SecureRandom.uuid,
-      cf_turnstile_response: token,
+      "cf-turnstile-response" => token,
       alert: {
         title: "Lâmpada queimada no bloco",
         description: "Corredor do primeiro andar sem iluminação desde ontem.",
@@ -21,6 +21,7 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
         location_accuracy_meters: "12",
         location_captured_at: 1.minute.ago.iso8601,
         requested_visibility: "public_external",
+        reported_severity: "unsure",
         anonymous_public: "1"
       }
     }
@@ -44,7 +45,11 @@ RSpec.describe "Anonymous public occurrence identity", type: :request do
     alert = Alert.last
     expect(alert.author).to eq(author)
     expect(alert).to be_anonymous_public
-    expect(alert.publication).to be_public_external
+    expect(alert.publication).to be_review_pending
+    expect(PublicationPolicy::FeedScope.new(nil, Publication.all).resolve).not_to include(alert.publication)
+    Publications::Review.call(actor: admin, publication: alert.publication, decision: "approve",
+                              reviewed_content_version: alert.publication.content_version)
+    expect(alert.publication.reload).to be_public_external
 
     public_card = PublicationProjection.new(alert.publication, viewer: nil).as_json
     expect(public_card[:author]).to include(display_name: "Pessoa anônima", public_profile: false, id: nil, verified: false)

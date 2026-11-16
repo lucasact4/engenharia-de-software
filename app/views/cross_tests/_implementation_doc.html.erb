@@ -1,0 +1,4 @@
+<%# PDF de requisitos e implementação (requisitos.yml → documento_implementacao), servido de public/docs. locals: doc %>
+<% if doc.present? && doc[:url].present? %>
+  <%= link_to doc[:url], target: "_blank", rel: "noopener" do %><%= doc[:titulo] %> (PDF, <%= doc[:data] %>)<% end %>
+<% end %>

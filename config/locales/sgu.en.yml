@@ -80,6 +80,8 @@ en:
         internal: { label: "Internal", description: "Visible to authenticated people." }
         restricted: { label: "Restricted", description: "Visible to the author and the responsible team." }
       severity:
+        unsure:
+          label: "Not sure"
         low: { label: "Low", description: "Small, localized impact without a material safety risk or major disruption." }
         moderate: { label: "Moderate", description: "Affects the use of a space or service without immediate danger." }
         high: { label: "High", description: "Major disruption or significant risk to people, accessibility, or property." }

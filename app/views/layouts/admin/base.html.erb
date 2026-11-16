@@ -2,7 +2,8 @@
 <html lang="pt-BR" data-theme="dark">
   <%= render 'layouts/admin/head' %>
 
-  <body class="bg-surface-muted">
+  <body class="bg-surface-muted" data-controller="notifications" data-notifications-url-value="<%= notifications_path(format: :json) %>">
+    <%= render "notifications/popup" %>
     <div id="admin-shell" v-cloak class="min-h-dvh bg-surface-muted">
       <%= render 'layouts/admin/navbar' %>
       <%= render 'layouts/admin/sidebar', menu: @menu %>

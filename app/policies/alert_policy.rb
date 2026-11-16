@@ -16,6 +16,18 @@ class AlertPolicy < ApplicationPolicy
     active_user?
   end
 
+  def read_panic_location?
+    record.panic? && show_operational_details?
+  end
+
+  def update_panic_location?
+    record.panic? && author?
+  end
+
+  def stop_panic_location?
+    record.panic? && (author? || active_admin?)
+  end
+
   def create_panic?
     active_user?
   end
@@ -105,7 +117,10 @@ class AlertPolicy < ApplicationPolicy
       return scope.all if active_admin?
 
       relation = scope.where(author_id: user.id)
-        .or(scope.where(kind: "occurrence", visibility: "internal"))
+        .or(scope.where(kind: "occurrence", visibility: "internal", anonymous_public: false)
+                  .or(scope.where(kind: "occurrence", visibility: "internal", anonymous_public: true,
+                                  id: Publication.occurrence.published.where(review_status: "approved", approval_method: "administrator", moderation_blocked: false)
+                                    .where("reviewed_content_version = content_version").select(:alert_id))))
       relation = relation.or(scope.where(kind: "occurrence")) if role?(:coordination)
       relation = relation.or(scope.where(kind: "panic")).or(scope.where(assigned_to_id: user.id)) if role?(:security)
       relation

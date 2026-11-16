@@ -6,6 +6,7 @@ RSpec.describe "Card #6 migrations on a legacy database" do
   let(:dir) { Rails.root.join("tmp/migration_spec_#{SecureRandom.hex(4)}") }
   let(:db_path) { dir.join("legacy.sqlite3") }
   let(:env) { { "RAILS_ENV" => "test", "DATABASE_URL" => "sqlite3:#{db_path}", "SCHEMA" => dir.join("schema.rb").to_s } }
+  let(:before_encryption) { "20261107120000" }
 
   before { FileUtils.mkdir_p(dir) }
   after { FileUtils.rm_rf(dir) }
@@ -33,10 +34,11 @@ RSpec.describe "Card #6 migrations on a legacy database" do
   it "recovers previous administrative restrictions without undoing a later release" do
     rails("db:migrate", "VERSION=20261001120700", schema: dir.join("before_block.rb"))
     rails("runner", <<~RUBY)
-      author = User.create!(email_address: "historico@example.test", password: "senha-ficticia")
-      admin = User.create!(email_address: "admin@example.test", password: "senha-ficticia", admin: true)
+      ActiveRecord::Encryption.without_encryption do
+      author, admin = User.insert_all!([ { email_address: "historico@example.test", password_digest: "digest", admin: false },
+                                         { email_address: "admin@example.test", password_digest: "digest", admin: true } ], returning: %w[id]).rows.flatten.map { |id| User.find(id) }
       attributes = { kind: "occurrence", author: author, title: "Ocorrência histórica", description: "Texto válido da ocorrência histórica.",
-                     category: Category.first, location_source: "gps", latitude: -8, longitude: -34,
+                     category: Category.first, location_source: "gps", latitude: -8, longitude: -34, reported_severity: "low",
                      requested_visibility: "public_external", visibility: "restricted" }
       blocked = Alert.create!(attributes)
       released = Alert.create!(attributes)
@@ -47,7 +49,8 @@ RSpec.describe "Card #6 migrations on a legacy database" do
         review_status: "approved", content_version: 1, reviewed_content_version: 1,
         reviewed_by_id: admin.id, reviewed_at: Time.current, published_at: Time.current
       }], returning: %w[id]).rows.first.first
-      Comment.create!(publication_id: publication_id, author: author, body: "Comentário histórico")
+      # Fixture histórica anterior à caixa de notificações, sem callbacks da aplicação atual.
+      Comment.insert_all!([{ publication_id: publication_id, author_id: author.id, body: "Comentário histórico" }])
       PublicationLike.insert_all!([{ publication_id: publication_id, user_id: author.id }])
       legacy_events = [
         *[blocked, released].map do |alert|
@@ -58,9 +61,11 @@ RSpec.describe "Card #6 migrations on a legacy database" do
           reason: "Revisado", changeset: {}, metadata: {}, created_at: Time.current }
       ]
       AuditEvent.insert_all!(legacy_events)
+      end
     RUBY
 
-    rails("db:migrate", schema: dir.join("after_block.rb"))
+    # A criptografia de dados pessoais é irreversível; o teste de ida e volta para antes dela.
+    rails("db:migrate", "VERSION=#{before_encryption}", schema: dir.join("after_block.rb"))
     expect(query("SELECT publication_blocked FROM alerts ORDER BY id")).to eq([ [ 1 ], [ 0 ], [ 0 ] ])
     expect(query("SELECT state FROM publications")).to eq([ [ "withdrawn" ] ])
     expect(query("SELECT title, body FROM publications")).to eq([ [ nil, nil ] ])
@@ -99,7 +104,8 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     before_users = query(snapshot)
     before_sessions = query("SELECT * FROM sessions")
 
-    rails("db:migrate", schema: dir.join("after.rb"))
+    # Ida e volta até a última versão antes da criptografia, que é irreversível.
+    rails("db:migrate", "VERSION=#{before_encryption}", schema: dir.join("before_encryption.rb"))
 
     expect(query(snapshot)).to eq(before_users)
     expect(query("SELECT * FROM sessions")).to eq(before_sessions)
@@ -111,7 +117,6 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("SELECT count(*) FROM categories")).to eq([ [ 7 ] ])
     expect(query("SELECT count(*) FROM alerts")).to eq([ [ 0 ] ])
     expect(query("PRAGMA foreign_key_check")).to be_empty
-    expect(normalize_schema(dir.join("after.rb").read)).to eq(normalize_schema(Rails.root.join("db/schema.rb").read))
 
     rails("db:migrate", "VERSION=20260914150000", schema: dir.join("rolled_back.rb"))
     tables = query("SELECT name FROM sqlite_master WHERE type = 'table'").flatten
@@ -119,13 +124,33 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query(snapshot)).to eq(before_users)
     strip_version = ->(text) { text.sub(/define\(version: [\d_]+\)/, "") }
     expect(strip_version.call(dir.join("rolled_back.rb").read)).to eq(strip_version.call(file_fixture("schema_before_card6.txt").read))
+
+    # Na versão atual, contas e sessões ficam criptografadas e o rollback é recusado.
+    rails("db:migrate", schema: dir.join("after.rb"))
+    expect(normalize_schema(dir.join("after.rb").read)).to eq(normalize_schema(Rails.root.join("db/schema.rb").read))
+    expect(query("SELECT email_address FROM users").flatten).to all(start_with("{"))
+    plain = "SELECT id, password_digest, admin, deleted_at, created_at, updated_at FROM users ORDER BY id"
+    expect(query(plain)).to eq(before_users.map { |row| row.values_at(0, 2, 3, 4, 5, 6) })
+    decrypted = rails("runner", "print User.order(:id).pluck(:email_address).join(','), ';', Session.pluck(:ip_address, :user_agent).flatten.join(',')")
+    expect(decrypted.strip.lines.last).to eq("#{before_users.map(&:second).join(',')};127.0.0.1,Teste")
+
+    output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=#{before_encryption}", chdir: Rails.root.to_s)
+    expect(status).not_to be_success
+    expect(output).to include("IrreversibleMigration")
+    expect(query("SELECT max(version) FROM schema_migrations")).to eq([ [ Dir[Rails.root.join("db/migrate/*.rb")].map { |file| File.basename(file).to_i }.max.to_s ] ])
   end
   it "refuses a rollback with descriptive locations before changing the database" do
-    rails("db:migrate", schema: dir.join("current.rb"))
+    rails("db:migrate", "VERSION=#{before_encryption}", schema: dir.join("current.rb"))
     rails("runner", <<~RUBY)
-      user = User.create!(email_address: "rollback@example.test", password: "senha-ficticia")
-      Alerts::CreateOccurrence.call(actor: user, attributes: { description: "Relato de teste para o rollback seguro.", category_id: Category.where(requires_details: false).first.id,
-        location_source: "manual", location_description: "Biblioteca, térreo", requested_visibility: "internal" })
+      ActiveRecord::Encryption.without_encryption do
+        user = User.find(User.insert_all!([ { email_address: "rollback@example.test", password_digest: "digest" } ], returning: %w[id]).rows.first.first)
+        alert = Alert.create!(author: user, kind: "occurrence", title: "Relato para rollback", description: "Relato de teste para o rollback seguro.",
+          category: Category.where(requires_details: false).first, location_source: "manual", location_description: "Biblioteca, térreo",
+          reported_severity: "low", requested_visibility: "internal", visibility: "internal")
+        Publication.insert_all!([{ alert_id: alert.id, author_id: user.id, kind: "occurrence", visibility: "internal",
+                                   state: "published", review_status: "not_submitted", content_version: 1, comments_enabled: true,
+                                   published_at: Time.current, created_at: Time.current, updated_at: Time.current }])
+      end
     RUBY
     output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=20261003100100", chdir: Rails.root.to_s)
     expect(status).not_to be_success
@@ -136,12 +161,14 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     expect(query("PRAGMA integrity_check")).to eq([ [ "ok" ] ])
   end
   it "refuses map rollback before changing the schema or losing photo order" do
-    rails("db:migrate")
+    rails("db:migrate", "VERSION=#{before_encryption}")
     rails("runner", <<~RUBY)
-      author = User.create!(email_address: "mapa@example.test", password: "senha-ficticia")
-      Alert.create!(author: author, kind: "occurrence", title: "Ponto no mapa", description: "Local escolhido manualmente no mapa.",
-                    category: Category.first, location_source: "map", latitude: -8, longitude: -34,
-                    requested_visibility: "restricted", visibility: "restricted")
+      ActiveRecord::Encryption.without_encryption do
+        author = User.find(User.insert_all!([ { email_address: "mapa@example.test", password_digest: "digest" } ], returning: %w[id]).rows.first.first)
+        Alert.create!(author: author, kind: "occurrence", title: "Ponto no mapa", description: "Local escolhido manualmente no mapa.",
+                      category: Category.first, location_source: "map", latitude: -8, longitude: -34, reported_severity: "low",
+                      requested_visibility: "restricted", visibility: "restricted")
+      end
     RUBY
     output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=20261003120000", chdir: Rails.root.to_s)
     expect(status).not_to be_success

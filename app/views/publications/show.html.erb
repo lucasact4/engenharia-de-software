@@ -4,6 +4,8 @@
 
   <%= render "publications/card", card: @card, full: true %>
 
+  <%= render "publications/delete_own", publication: @publication %>
+
   <section id="comentarios" class="space-y-4" aria-labelledby="comments_title">
     <h2 id="comments_title" class="sgu-section-title"><%= pluralize(@card[:comments_count], "comentário", plural: "comentários") %></h2>
 

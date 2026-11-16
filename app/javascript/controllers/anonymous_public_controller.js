@@ -7,11 +7,11 @@ export default class extends Controller {
   connect() {
     this.widgetId = null
     this.loading = null
-    if (this.checkboxTarget.checked) this.enableChallenge()
+    if (this.checkboxTarget.checked && this.hasChallengeTarget) this.enableChallenge()
   }
 
   disconnect() {
-    if (this.widgetId && window.turnstile) window.turnstile.remove(this.widgetId)
+    if (this.widgetId !== null && window.turnstile) window.turnstile.remove(this.widgetId)
   }
 
   toggle() {
@@ -23,7 +23,7 @@ export default class extends Controller {
     this.challengeTarget.hidden = true
 
     this.statusTarget.textContent = ""
-    if (this.widgetId && window.turnstile) {
+    if (this.widgetId !== null && window.turnstile) {
       window.turnstile.remove(this.widgetId)
       this.widgetId = null
       this.widgetTarget.replaceChildren()
@@ -36,11 +36,12 @@ export default class extends Controller {
 
     try {
       await this.loadTurnstile()
-      if (!this.checkboxTarget.checked || this.widgetId) return
+      if (!this.element.isConnected || !this.checkboxTarget.checked || this.widgetId !== null) return
 
       this.widgetId = window.turnstile.render(this.widgetTarget, {
         sitekey: this.siteKeyValue,
         action: "anonymous_occurrence",
+        "response-field-name": "cf-turnstile-response",
         callback: () => {
           this.statusTarget.textContent = "Desafio confirmado."
         },

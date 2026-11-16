@@ -6,7 +6,8 @@ RSpec.describe PanicDispatchJob, type: :job do
     alert = create(:alert, :panic, location_source: "gps", latitude: -8.0, longitude: -34.9)
     SecurityPresence.create!(user: responder, latitude: -8.0001, longitude: -34.9, reported_at: Time.current)
     subscription = responder.security_push_subscriptions.create!(
-      endpoint: "https://push.example.test/device", p256dh: "p256dh", auth: "auth"
+      endpoint: "https://fcm.googleapis.com/fcm/send/device", p256dh: Base64.urlsafe_encode64("\x04" + "\0" * 64, padding: false),
+      auth: Base64.urlsafe_encode64("\0" * 16, padding: false)
     )
 
     expect {
@@ -21,7 +22,8 @@ RSpec.describe PanicDispatchJob, type: :job do
     alert = create(:alert, :panic, location_source: "gps", latitude: -8.0, longitude: -34.9)
     SecurityPresence.create!(user: responder, latitude: -8.0001, longitude: -34.9, reported_at: Time.current)
     subscription = admin.security_push_subscriptions.create!(
-      endpoint: "https://push.example.test/admin", p256dh: "p256dh", auth: "auth"
+      endpoint: "https://fcm.googleapis.com/fcm/send/admin", p256dh: Base64.urlsafe_encode64("\x04" + "\0" * 64, padding: false),
+      auth: Base64.urlsafe_encode64("\0" * 16, padding: false)
     )
 
     expect {

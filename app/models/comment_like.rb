@@ -1,4 +1,5 @@
 class CommentLike < ApplicationRecord
+  after_create { Notifications::Events.liked(self) }
   belongs_to :user
   belongs_to :comment
 

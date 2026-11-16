@@ -6,7 +6,7 @@
           aria-expanded="false"
           aria-label="Idioma">
     <span class="flag-icon <%= get_locale_flag_icon(locale) %>"></span>
-    <span><%= get_language_name locale %></span>
+    <span class="hidden sm:inline"><%= get_language_name locale %></span>
     <%= icon("chevron-down", class: "size-4 text-muted") %>
   </button>
 

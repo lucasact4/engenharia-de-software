@@ -12,11 +12,12 @@ class RegistrationsController < ApplicationController
   def create
     @registration = Registration.new(registration_params)
     user = Users::Register.call(registration: @registration)
+    NotificationMailer.confirm_email(user).deliver_later if Notifications::ChannelConfig.email_available?
     if user.active?
       start_new_session_for(user)
-      redirect_to panel_path, notice: "Conta criada e liberada nesta fase de desenvolvimento. A confirmação de e-mail ainda não está disponível."
+      redirect_to panel_path, notice: "Conta criada e liberada nesta fase de desenvolvimento."
     else
-      redirect_to new_session_path, notice: "Cadastro recebido. Aguarde a aprovação da administração para entrar. A confirmação de e-mail ainda não está disponível."
+      redirect_to new_session_path, notice: "Cadastro recebido. Aguarde a aprovação da administração para entrar."
     end
   rescue ActiveModel::ValidationError
     render_invalid

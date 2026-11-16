@@ -15,7 +15,7 @@ gem "discard", "2.0.0"
 # Agnostic pagination in plain ruby. It does it all. Better. [https://github.com/ddnexus/pagy]
 gem "pagy", "43.8.1"
 # Rails default GEMS
-gem "rails", "8.1.4"
+gem "rails", "8.1.4.1"
 # Keep the YAML parser on the Ruby 3.4-compatible release line.
 gem "psych", "5.5.0"
 # Ruby on Rails [https://rubyonrails.org/]
@@ -76,6 +76,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "letter_opener", "1.10.0"
   # Applications GEMS
   # Rails Base GEMS
   # Rails default GEMS
@@ -94,7 +95,7 @@ group :test do
   # SimpleCov is a code coverage analysis tool for Ruby. [https://github.com/simplecov-ruby/simplecov]
   gem "simplecov", "1.3.2"
   # rspec-rails integrates the Rails testing helpers into RSpec. [https://github.com/rspec/rspec-rails]
-  gem "rspec-rails", "8.0.4"
+  gem "rspec-rails", "8.0.5"
   # Simple one-liner tests for common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers", "8.0.1"
   # A set of RSpec matchers for testing Pundit policies. [https://github.com/pundit-community/pundit-matchers]

@@ -33,7 +33,7 @@
     data-controller="security-readiness"
     data-security-readiness-presence-url-value="<%= security_presence_path %>"
     data-security-readiness-push-url-value="<%= security_push_subscription_path %>"
-    data-security-readiness-vapid-public-key-value="<%= ENV.values_at('VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT').all?(&:present?) ? ENV['VAPID_PUBLIC_KEY'] : '' %>">
+    data-security-readiness-vapid-public-key-value="<%= Notifications::ChannelConfig.push_available? ? Notifications::ChannelConfig.vapid[:public_key] : '' %>">
     <h2 id="security_readiness_title" class="sgu-section-title">Receber alertas de emergência</h2>
     <p class="mt-2 text-sm text-muted">Ative as notificações neste dispositivo para receber alertas de emergência.</p>
     <div class="mt-4 flex flex-wrap gap-2">

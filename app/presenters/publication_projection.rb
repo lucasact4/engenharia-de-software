@@ -65,6 +65,8 @@ class PublicationProjection
       author: @publication.occurrence? ? author_identity : { display_name: I18n.t("sgu.public_identity.editorial"), public_profile: false, id: nil, verified: false },
       photos: @publication.ordered_feed_photos.map { |photo| { id: photo.id } },
       location: shared_exact_location,
+      location_description: @publication.alert&.location_manual? && @publication.alert.location_id.nil? ?
+        @publication.alert.location_description : nil,
       own_review: own_review,
       likes_count: likes_count,
       comments_count: comments_count,
@@ -83,7 +85,7 @@ class PublicationProjection
     end
 
     def anonymous_public_to_viewer?
-      return false unless @publication.public_external? && @publication.alert&.anonymous_public?
+      return false unless @publication.alert&.anonymous_public?
       return true unless @viewer&.active?
       return false if @publication.author_id == @viewer.id
 

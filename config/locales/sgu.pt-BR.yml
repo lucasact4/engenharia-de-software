@@ -162,6 +162,8 @@ pt-br:
         internal: { label: "Interna", description: "Visível para pessoas autenticadas." }
         restricted: { label: "Restrita", description: "Visível para o autor e a equipe responsável." }
       severity:
+        unsure:
+          label: "Não sei avaliar"
         low: { label: "Leve", description: "Impacto localizado e pequeno, sem risco relevante à segurança ou interrupção importante." }
         moderate: { label: "Moderada", description: "Afeta o uso de um espaço ou serviço, sem perigo imediato." }
         high: { label: "Alta", description: "Interrupção importante ou risco significativo para pessoas, acessibilidade ou patrimônio." }

@@ -6,6 +6,7 @@
 class Admin::AlertsController < Admin::ApplicationController
   include ErrorResponses
   include AlertFormParams
+  include AnonymousPublicationProtection
   include AlertHandlingActions
   include AlertQueueFilters
 
@@ -18,7 +19,7 @@ class Admin::AlertsController < Admin::ApplicationController
     @filter_options = queue_filter_options
     @assignees = User.active.where(admin: true)
       .or(User.active.where(id: UserRole.joins(:role).where(roles: { code: %w[coordination security] }).select(:user_id)))
-      .order(:email_address)
+      .to_a.sort_by(&:email_address)
   end
 
   def show
@@ -49,8 +50,19 @@ class Admin::AlertsController < Admin::ApplicationController
   def create
     authorize Alert, :create_occurrence?
     @client_request_id = params[:client_request_id].to_s
-    result = Alerts::CreateOccurrence.call(actor: Current.user, attributes: occurrence_params, photos: uploaded_photos,
-                                           client_request_id: @client_request_id)
+    attributes = occurrence_params
+    unless anonymous_publication_verified?(attributes)
+      @alert = Alert.new(attributes.merge(kind: "occurrence"))
+      @alert.errors.add(:base, turnstile_error_message)
+      @photos_dropped = uploaded_photos.any?
+      @options = AlertOptionsPresenter.new(actor: Current.user)
+      return render :new, status: :unprocessable_entity
+    end
+    result = Alerts::CreateOccurrence.call(
+      actor: Current.user, attributes: attributes, photos: uploaded_photos,
+      client_request_id: @client_request_id,
+      request_audit: { ip_address: request.remote_ip, user_agent: request.user_agent, submitted_at: Time.current }
+    )
     redirect_to admin_alert_path(result.alert), status: :see_other,
                 flash: { success: "Ocorrência registrada com o protocolo #{result.alert.protocol}." }
   rescue ActiveRecord::RecordInvalid, Alerts::Create::IdempotencyConflict => error
@@ -118,6 +130,7 @@ class Admin::AlertsController < Admin::ApplicationController
       @options = AlertOptionsPresenter.new(actor: Current.user, alert: @alert)
       @assignees = EligibleAssigneesQuery.new(@alert).call
       @publication = @alert.publication
+      @anonymous_submission_audit = @alert.anonymous_submission_audit if @alert.anonymous_public?
       @publishable = @alert.occurrence? && @publication.nil? &&
         (Publication.compatible_sources_for("internal").or(Publication.compatible_sources_for("public_external"))).exists?(@alert.id)
       render :show, status: status

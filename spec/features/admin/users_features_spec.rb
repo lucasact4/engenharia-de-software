@@ -74,6 +74,7 @@ describe "integration teste for user", type: :feature do
       find("button[type='submit']").click
     end
 
+    expect(page).to have_current_path(admin_users_path(term: visible_user.email_address))
     expect(page).to have_css("table tbody tr", text: visible_user.email_address)
     expect(page).to have_no_css("table tbody tr", text: hidden_user.email_address)
   end

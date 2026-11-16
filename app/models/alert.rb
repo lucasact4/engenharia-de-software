@@ -2,6 +2,15 @@
 class Alert < ApplicationRecord
   include TextSearch
   attribute :location_description, :string
+  attribute :latitude, :decimal, precision: 10, scale: 7
+  attribute :longitude, :decimal, precision: 10, scale: 7
+  attribute :location_accuracy_meters, :decimal, precision: 10, scale: 2
+  attribute :location_captured_at, :datetime
+  serialize :panic_latest_position, coder: JSON
+  encrypts :title, :description, :category_other_description, :closure_notes
+  encrypts :latitude, :longitude, :location_accuracy_meters, :location_captured_at,
+           :location_description, :panic_latest_position
+
   attribute :photo_order, :json, default: -> { [] }
   attribute :anonymous_public, :boolean, default: false
   TITLE_LENGTH = 5..160
@@ -42,7 +51,7 @@ class Alert < ApplicationRecord
        { internal: "internal", restricted: "restricted", public_external: "public_external" },
        prefix: :requested, validate: true
   enum :visibility, { internal: "internal", restricted: "restricted" }, prefix: :visibility, validate: true
-  enum :reported_severity, SEVERITIES, prefix: :reported, validate: { allow_nil: true }
+  enum :reported_severity, SEVERITIES.merge(unsure: "unsure"), prefix: :reported, validate: { allow_nil: true }
   enum :assessed_severity, SEVERITIES, prefix: :assessed, validate: { allow_nil: true }
   enum :priority, { low: "low", normal: "normal", high: "high", urgent: "urgent" },
        prefix: :priority, validate: { allow_nil: true }
@@ -66,9 +75,13 @@ class Alert < ApplicationRecord
   has_many :duplicates, class_name: "Alert", foreign_key: :duplicate_of_id, inverse_of: :duplicate_of,
            dependent: :restrict_with_exception
   has_many :alert_subscriptions, dependent: :destroy
+  has_one :anonymous_submission_audit, dependent: :restrict_with_exception
   has_many_attached :photos
 
   before_validation :assign_protocol, on: :create
+  before_validation :end_panic_tracking, if: -> { panic? && will_save_change_to_status? && (resolved? || closed?) }
+  after_create { Notifications::Events.alert_created(self) }
+  after_update { Notifications::Events.alert_updated(self) }
 
   validates :protocol, presence: true, uniqueness: true
   validates :title, length: { maximum: TITLE_LENGTH.max }
@@ -85,6 +98,7 @@ class Alert < ApplicationRecord
     validates :title, presence: true, length: { in: TITLE_LENGTH }
     validates :description, presence: true, length: { in: DESCRIPTION_LENGTH }
     validates :category, presence: true
+    validates :reported_severity, presence: true, if: -> { occurrence? && (new_record? || will_save_change_to_reported_severity?) }
   end
 
   validate :occurrence_location_available
@@ -92,6 +106,7 @@ class Alert < ApplicationRecord
   validate :active_catalog_entries
   validate :location_consistency
   validate :exact_location_sharing_requires_coordinates
+  validate :raw_coordinates_are_numeric
   validate :gps_capture_time
   validate :visibility_consistency
   validate :anonymous_public_is_occurrence
@@ -104,6 +119,31 @@ class Alert < ApplicationRecord
   validate :photo_order_format
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
+
+  def panic_tracking_stopped?
+    panic_tracking_stopped_at? || !location_gps? || closed? || resolved?
+  end
+
+  def end_panic_tracking
+    self.panic_tracking_stopped_at ||= Time.current
+    self.panic_latest_position = nil
+    self.latitude = self.longitude = self.location_accuracy_meters = self.location_captured_at = nil
+    self.location_id = self.location_description = self.location_unavailable_reason = nil
+    self.location_source = "unavailable"
+  end
+
+  def latest_panic_position
+    panic_latest_position
+  rescue ActiveRecord::Encryption::Errors::Decryption, JSON::ParserError
+    nil
+  end
+
+  def initial_gps_position
+    return unless location_gps? && latitude && longitude
+
+    { latitude: latitude.to_f, longitude: longitude.to_f,
+      captured_at: ((location_captured_at || created_at).to_f * 1000).to_i }
+  end
 
   def ordered_photos
     positions = Array(photo_order).each_with_index.to_h
@@ -184,8 +224,20 @@ class Alert < ApplicationRecord
       errors.add(:share_exact_location, :requires_coordinates)
     end
 
+    # Validar a entrada antes da conversão decimal, que pode transformar texto inválido em zero.
+    def raw_coordinates_are_numeric
+      %i[latitude longitude location_accuracy_meters].each do |field|
+        next unless public_send(:"#{field}_came_from_user?")
+
+        value = public_send(:"#{field}_before_type_cast")
+        next if value.blank? || Float(value, exception: false)&.finite?
+
+        errors.add(field, :not_a_number)
+      end
+    end
+
     def gps_capture_time
-      raw = location_captured_at_before_type_cast
+      raw = location_captured_at_before_type_cast if location_captured_at_came_from_user?
       if raw.present? && location_captured_at.nil?
         errors.add(:location_captured_at, :invalid)
         return

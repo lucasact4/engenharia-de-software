@@ -33,11 +33,17 @@ module CampusMap
         .where(alert_id: filtered_occurrences.select(:id))
         .includes(alert: [ :location, :category ]).order(published_at: :desc, id: :desc).limit(500)
 
+      text_locations = posts.filter_map do |post|
+        alert = post.alert
+        next unless alert.location_manual? && alert.location_id.nil? && alert.location_description.present?
+
+        { id: post.id, title: alert.title, description: alert.location_description }
+      end
       reports = posts.filter_map { |post| report_marker(post, locations, official_buildings) }
       spots = reports.group_by { |report| report.fetch(:spot_key) }.map do |spot_key, publications|
         spot_marker(spot_key, publications)
       end
-      { center: CENTER, locations: polygons, official_buildings: official_buildings, reports: reports, spots: spots }
+      { center: CENTER, locations: polygons, official_buildings: official_buildings, reports: reports, spots: spots, text_locations: text_locations }
     end
 
     private

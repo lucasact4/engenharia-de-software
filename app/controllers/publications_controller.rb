@@ -26,33 +26,47 @@ class PublicationsController < PortalController
     load_comments
   end
 
+  def destroy
+    publication = Current.user.authored_publications.find(params[:id])
+    authorize publication, :delete_own?
+    challenge = Rails.application.message_verifier(:publication_deletion).verified(
+      params[:challenge].to_s, purpose: :delete_own_publication
+    )
+    if challenge != [ Current.user.id, publication.id, params[:confirmation].to_s.strip.downcase ]
+      return redirect_to alert_path(publication.alert_id), alert: "Digite a palavra exibida para apagar a postagem.",
+                         status: :see_other
+    end
+
+    Publications::Delete.call(actor: Current.user, publication: publication, by_author: true,
+                              reason: "Removida pelo autor")
+    redirect_to alert_path(publication.alert_id), notice: "Postagem removida do mural.", status: :see_other
+  end
+
   private
 
     def filter_feed(scope)
-      scope = scope.left_joins(:alert, :author).left_joins(alert: :category)
+      scope = scope.left_joins(:alert)
 
       keyword = params[:q].to_s.strip
       if keyword.present?
-        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(keyword.downcase)}%"
-        id = keyword.match?(/\A\d+\z/) ? keyword.to_i : -1
-        scope = scope.where(
-          "LOWER(COALESCE(alerts.title, publications.title, '')) LIKE :term OR " \
-          "LOWER(COALESCE(alerts.description, publications.body, '')) LIKE :term OR " \
-          "LOWER(COALESCE(categories.name, '')) LIKE :term OR " \
-          "alerts.protocol = :protocol OR publications.id = :id",
-          term: pattern, protocol: keyword, id: id
-        )
+        scope = scope.preload(alert: :category)
+        matching = scope.filter_decrypted(keyword) do |publication|
+          alert = publication.alert
+          [ alert&.title || publication.title, alert&.description || publication.body, alert&.category&.name ]
+        end
+        exact = scope.where(alerts: { protocol: keyword })
+        exact = exact.or(scope.where(id: keyword.to_i)) if keyword.match?(/\A\d+\z/)
+        scope = matching.or(exact)
       end
 
       creator = params[:creator].to_s.strip
       if creator.present?
-        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(creator.downcase)}%"
-        scope = scope.where(
-          "LOWER(COALESCE(users.display_name, '')) LIKE :creator OR " \
-          "LOWER(COALESCE(users.business_name, '')) LIKE :creator OR " \
-          "LOWER(COALESCE(users.username, '')) LIKE :creator",
-          creator: pattern
-        )
+        scope = PublicationPolicy::AuthorIdentityScope.new(Current.user, scope).resolve
+        authors = User.where(id: scope.reselect("publications.author_id").reorder(nil))
+        matching = authors.search_encrypted(creator, :display_name)
+        public_handles = authors.where(public_profile: true).search_encrypted(creator, :username)
+        unnamed_handles = authors.where(display_name: nil).search_encrypted(creator, :username)
+        scope = scope.where(author_id: matching.or(public_handles).or(unnamed_handles))
       end
 
       category_id = params[:category_id].to_s

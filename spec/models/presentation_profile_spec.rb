@@ -93,7 +93,7 @@ RSpec.describe PresentationProfile do
 
       expect(second).to be_active
       expect(first.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa requisitos arquitetura casos-de-uso gestao proximos-passos retrospectiva encerramento])
-      expect(second.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report encerramento])
+      expect(second.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa conceito-visual funcionalidades retrospectiva modelo-conceitual reunioes evolucao proximos-passos status-report testes-cruzados plano-de-teste encerramento])
       expect(second.selection(presentation).over_limit?).to be(false)
     end
 

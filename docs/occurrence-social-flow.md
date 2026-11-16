@@ -29,6 +29,16 @@ The rejection reason is available to the author in their occurrence detail and t
 
 An administrator can also remove a post for moderation with a reason. Editing, requesting external visibility, or receiving a badge does not clear either an alert disclosure restriction or a publication moderation block. Removing a post preserves the record and its interaction/history IDs.
 
+## RF005: authenticated submission and concealed attribution
+
+The current MVP requires an active signed-in account to submit an occurrence. The implementation choice for the RF005 work associated with Trello card #28 is authenticated submission with optional concealed attribution, not accountless submission. No guest-submission endpoint is introduced. Resolving the earlier accountless-submission wording through a different product scope requires an explicit later decision; this implementation does not record institutional approval of that requirements conflict.
+
+When `anonymous_public` is selected, ordinary mural readers receive a neutral author identity in both internal and external audiences, including the internal post while external approval is pending. Public-profile opt-in and verification never override concealment. The responsible account remains linked to the occurrence, and the author or authorized operational handlers can identify it when `AlertPolicy` permits. RF016 IP/User-Agent/timestamp evidence remains protected in the administrative audit and is never included in mural or map data.
+
+Creator search uses only the identity visible to the requester: the displayed name or public username. It does not match hidden business names, usernames or private-profile identifiers that are not displayed to that reader, or a concealed account's real identity for ordinary readers. Operational access to the account remains separate from feed access and keeps the existing authorization policy.
+
+Concealed-author creation requires the standard `cf-turnstile-response` token, validated on the server for the expected hostname and `anonymous_occurrence` action. Missing, invalid, or unconfigured protection rejects the submission; the underscore field name is not accepted as an alias. See [Turnstile setup and regression coverage](turnstile.md). Browser coverage uses the actual form with a simulated provider, not live CAPTCHA solving.
+
 ## RF008: author completion and earlier occurrences
 
 The occurrence author can mark their own active occurrence as resolved through `PATCH /alertas/:id/concluir` (`complete_alert_path`). The dedicated action requires `lock_version`; an outdated version returns HTTP 409 while the occurrence still requires completion. It sets `status = resolved`, `resolved_at`, and `status_changed_at`, and records `alert.status_changed` with audit metadata `source = author_completion`. Repeating completion of an already resolved occurrence succeeds without another state change or audit event. Panic alerts, closed occurrences, and other people's records cannot be completed through this action.
@@ -53,7 +63,7 @@ Granting or removing the badge affects later requests and edits. It does not aut
 
 The internal and external board use the same card: author header, primary image, social actions, then the title and description. Multiple images have a carousel; its `ResizeObserver` keeps the selected photo aligned when the viewport changes. An occurrence title identical to its description is hidden from the visible caption to avoid repeating legacy derived content. The composer requires title, description, category, and location. Perceived severity is visible as selectable cards, with a separate “I cannot assess” choice; it remains distinct from the handling team's priority. Photos are optional. Structured tooltips explain categories and location without replacing visible labels and work by keyboard. The tooltip remains open while the pointer moves over its text; the trigger reports its expanded state and Esc dismisses it.
 
-Internal posts can show the active author's display identity to the signed-in community. External identity remains opt-in: `PublicIdentity` reveals a profile link and username only for an active account with `public_profile = true`; otherwise it uses a neutral identity. Email addresses are never a display-name fallback. A verification badge does not enable a public profile on behalf of its owner.
+For occurrences without concealed attribution, internal posts can show the active author's display identity to the signed-in community. External identity remains opt-in: `PublicIdentity` reveals a profile link and username only for an active account with `public_profile = true`; otherwise it uses a neutral identity. `anonymous_public` takes precedence for ordinary readers in either audience, as described in the RF005 scope above. Email addresses are never a display-name fallback. A verification badge does not enable a public profile on behalf of its owner.
 
 The owner can upload or replace a PNG/JPEG profile photo in `/perfil`, up to 5 MiB. The server verifies the file signature and rejects reused blobs or signed-blob identifiers instead of accepting another person's stored file. `User.avatar` uses the existing Active Storage tables; no separate avatar table or additional migration is required. Administrators cannot replace another person's avatar through profile updates.
 
@@ -128,6 +138,7 @@ Migration `20261003180000_add_occurrence_photo_order_and_map_location.rb` adds `
 | Approve/reject, stale version protection | `app/services/publications/review.rb`, `app/controllers/admin/publications_controller.rb` |
 | Verification and authorization | `app/services/users/change_verification.rb`, `app/policies/user_verification_policy.rb` |
 | Public projection and identity | `app/presenters/publication_projection.rb`, `public_identity.rb` |
+| Concealed-author CAPTCHA and creator-search boundaries | `app/controllers/concerns/anonymous_publication_protection.rb`, `app/services/turnstile_verifier.rb`, `app/policies/publication_policy.rb`, `app/controllers/publications_controller.rb` |
 | Protected feed/profile media | `app/controllers/publication_media_controller.rb`, `profile_photos_controller.rb` |
 | Profile photo ownership and upload validation | `app/models/user.rb`, `app/services/users/update_profile.rb` |
 | Photo selection/order/removal and content version synchronization | `app/services/alerts/photo_selection.rb`, `update_content.rb`, `remove_photo.rb` |

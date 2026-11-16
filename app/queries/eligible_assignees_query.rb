@@ -10,6 +10,6 @@ class EligibleAssigneesQuery
     with_role = UserRole.joins(:role).where(roles: { code: codes, active: true }).select(:user_id)
 
     User.active.where(admin: true).or(User.active.where(id: with_role))
-      .order(Arel.sql("COALESCE(users.display_name, users.email_address)"))
+      .to_a.sort_by { |user| user.display_name || user.email_address }
   end
 end

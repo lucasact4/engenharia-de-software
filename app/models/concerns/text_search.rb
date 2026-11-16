@@ -1,17 +1,21 @@
-# Busca textual simples para SQLite. LOWER() e LIKE do SQLite só ignoram caixa em ASCII
-# ("Árvore" não casa com "árvore"), por isso o termo é testado em algumas variantes de caixa.
 module TextSearch
   extend ActiveSupport::Concern
 
   class_methods do
-    def text_search(term, *columns)
-      term = term.to_s.strip.first(100)
-      return all if term.blank?
+    # A busca parcial lê somente registros no escopo autorizado, em lotes.
+    def search_encrypted(term, *fields)
+      filter_decrypted(term, *fields) { |record| fields.map { |field| record.public_send(field) } }
+    end
 
-      variants = [ term, term.downcase, term.upcase, term.capitalize ].uniq
-      clauses = columns.product(variants).map { |column, _| "#{column} LIKE ? ESCAPE '\\'" }
-      values = columns.product(variants).map { |_, variant| "%#{sanitize_sql_like(variant)}%" }
-      where(clauses.join(" OR "), *values)
+    def filter_decrypted(term, *fields)
+      term = term.to_s.strip.first(100).downcase
+      return all if term.empty?
+
+      records = fields.empty? ? all : select(arel_table[primary_key], *fields.map { |field| arel_table[field] })
+      ids = records.find_each.filter_map do |record|
+        record.id if yield(record).compact.any? { |value| value.to_s.downcase.include?(term) }
+      end
+      where(primary_key => ids)
     end
   end
 end

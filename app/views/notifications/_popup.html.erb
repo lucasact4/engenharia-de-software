@@ -1,0 +1,4 @@
+<% urgent = notification_feed.unread.where(kind: "panic").order(:created_at, :id).first %>
+<aside class="notification-urgent" data-notifications-target="urgent" data-urgent-id="<%= urgent&.id %>" aria-live="assertive" aria-relevant="additions" <%= 'hidden' unless urgent %>>
+  <%= render "notifications/urgent", notification: urgent if urgent %>
+</aside>

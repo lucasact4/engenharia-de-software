@@ -34,6 +34,8 @@ tables:
       - ''
     - - email_verified_at
       - ''
+    - - email_confirmed_at
+      - ''
     - - registration_reviewed_by_id
       - FK users
     - - verified_at
@@ -52,6 +54,16 @@ tables:
       - UQ
     - - phone
       - UQ
+    - - email_notifications_enabled
+      - ''
+    - - nearby_alerts_email_enabled
+      - ''
+    - - nearby_alerts_radius_km
+      - ''
+    - - email_notifications_consented_at
+      - ''
+    - - notification_location_id
+      - FK locations
   user_roles:
     columns:
     - - id
@@ -137,6 +149,10 @@ tables:
     - - location_accuracy_meters
       - ''
     - - location_captured_at
+      - ''
+    - - panic_latest_position
+      - ''
+    - - panic_tracking_stopped_at
       - ''
     - - share_exact_location
       - ''
@@ -334,6 +350,8 @@ tables:
       - ''
     - - resolution_notes
       - ''
+    - - notification_version
+      - ''
     - - created_at
       - ''
     - - updated_at
@@ -516,7 +534,153 @@ tables:
       - ""
     - - updated_at
       - ""
+  notifications:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - event_key
+      - UQ* user_id
+    - - kind
+      - ''
+    - - message
+      - ''
+    - - alert_id
+      - FK alerts
+    - - publication_id
+      - FK publications
+    - - comment_id
+      - FK comments
+    - - content_report_id
+      - FK content_reports
+    - - read_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  notification_preferences:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - location_id
+      - FK locations
+    - - email_enabled
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  push_subscriptions:
+    columns:
+    - - id
+      - PK
+    - - session_id
+      - FK sessions
+    - - endpoint_digest
+      - UQ
+    - - endpoint
+      - ''
+    - - p256dh
+      - ''
+    - - auth
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  notification_deliveries:
+    columns:
+    - - id
+      - PK
+    - - notification_id
+      - FK notifications
+    - - push_subscription_id
+      - FK push_subscriptions
+    - - channel
+      - ''
+    - - attempts
+      - ''
+    - - available_at
+      - ''
+    - - finished_at
+      - ''
+    - - result
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  anonymous_submission_audits:
+    columns:
+    - - id
+      - PK
+    - - alert_id
+      - FK·UQ alerts
+    - - ip_address_ciphertext
+      - ''
+    - - user_agent_ciphertext
+      - ''
+    - - submitted_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
 foreign_keys:
+- source: notification_preferences
+  target: users
+  column: user_id
+  required: true
+  unique: true
+- source: notification_preferences
+  target: locations
+  column: location_id
+  required: false
+  unique: false
+- source: push_subscriptions
+  target: sessions
+  column: session_id
+  required: true
+  unique: false
+- source: notification_deliveries
+  target: notifications
+  column: notification_id
+  required: true
+  unique: true
+- source: notification_deliveries
+  target: push_subscriptions
+  column: push_subscription_id
+  required: false
+  unique: false
+- source: notifications
+  target: users
+  column: user_id
+  required: true
+  unique: false
+- source: notifications
+  target: alerts
+  column: alert_id
+  required: false
+  unique: false
+- source: notifications
+  target: publications
+  column: publication_id
+  required: false
+  unique: false
+- source: notifications
+  target: comments
+  column: comment_id
+  required: false
+  unique: false
+- source: notifications
+  target: content_reports
+  column: content_report_id
+  required: false
+  unique: false
 - source: users
   target: users
   column: registration_reviewed_by_id
@@ -722,6 +886,16 @@ foreign_keys:
   column: verified_by_id
   required: false
   unique: false
+- source: users
+  target: locations
+  column: notification_location_id
+  required: false
+  unique: false
+- source: anonymous_submission_audits
+  target: alerts
+  column: alert_id
+  required: true
+  unique: true
 diagrams:
   core:
     title: DER físico — núcleo do SGU
@@ -881,11 +1055,13 @@ diagrams:
       split: 2
     - id: audit_subject
       title: Registros auditados
-      x: 30
-      "y": 334
-      width: 480
+      x: 525
+      "y": 200
+      width: 255
       lines:
-      - Alert · Publication · Comment · ContentReport · User · Category · Location
+      - Alert · Publication · Comment
+      - ContentReport · User
+      - Category · Location
       variant: reference
     relations:
     - source: audit_events
@@ -900,7 +1076,7 @@ diagrams:
     description: Todas as colunas e relações sociais. Referências a users e alerts
       não repetem suas colunas.
     width: 1080
-    height: 820
+    height: 1200
     nodes:
     - table: publications
       x: 30
@@ -948,6 +1124,11 @@ diagrams:
       "y": 640
       width: 240
       split: 1
+    - table: notifications
+      x: 550
+      "y": 640
+      width: 500
+      split: 2
     - table: users
       reference: true
       x: 30
@@ -958,12 +1139,36 @@ diagrams:
       x: 810
       "y": 20
       width: 240
+    - table: notification_preferences
+      x: 30
+      "y": 850
+      width: 310
+    - table: notification_deliveries
+      x: 370
+      "y": 850
+      width: 335
+    - table: push_subscriptions
+      x: 735
+      "y": 850
+      width: 315
+    - table: locations
+      reference: true
+      x: 30
+      "y": 1080
+      width: 310
+    - table: sessions
+      reference: true
+      x: 735
+      "y": 1080
+      width: 315
   infrastructure:
     title: Infraestrutura e autenticação
-    description: Anexos e variantes referenciam blobs; sessões e resposta de emergência
-      referenciam usuários. Presença guarda localização de plantão por até cinco minutos;
-      assinaturas armazenam endpoints Web Push. Fotos usam vínculo polimórfico com alertas,
-      publicações e usuários. presentation_profiles guarda a seleção de slides, sem chave estrangeira.
+    description: Anexos e variantes referenciam blobs; sessões referenciam usuários.
+      Fotos usam vínculo polimórfico com alertas, publicações e usuários. presentation_profiles
+      guarda só a seleção de slides da apresentação, sem chave estrangeira.
+      anonymous_submission_audits guarda IP e user agent cifrados de relatos anônimos.
+      Presenças guardam localização de plantão por até cinco minutos; assinaturas de segurança
+      armazenam endpoints Web Push e a resposta de emergência referencia o usuário responsável.
     width: 1080
     height: 760
     nodes:
@@ -1008,6 +1213,12 @@ diagrams:
       "y": 560
       width: 260
       split: 2
+      variant: infra
+    - table: anonymous_submission_audits
+      x: 350
+      "y": 560
+      width: 340
+      split: 1
       variant: infra
     - table: users
       reference: true

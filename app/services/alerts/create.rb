@@ -13,11 +13,12 @@ module Alerts
 
     attr_reader :actor
 
-    def initialize(actor:, attributes: {}, photos: [], client_request_id: nil)
+    def initialize(actor:, attributes: {}, photos: [], client_request_id: nil, request_audit: nil)
       @actor = actor
       @attributes = attributes.to_h.symbolize_keys.slice(*self.class::PERMITTED)
       @photos = Array(photos).compact_blank
       @client_request_id = client_request_id.to_s.strip.downcase.presence
+      @request_audit = request_audit
     end
 
     def call
@@ -33,6 +34,7 @@ module Alerts
         attempts += 1
         alert = build_alert(digest)
         persist!(alert)
+        after_create(alert)
         Result.new(alert: alert, created: true)
       rescue ActiveRecord::RecordNotUnique
         existing = find_existing
@@ -56,7 +58,14 @@ module Alerts
 
       def persist!(alert)
         Alert.transaction do
+          if alert.anonymous_public? && @request_audit.blank?
+            alert.errors.add(:base, "os metadados da submissão anônima não foram capturados")
+            raise ActiveRecord::RecordInvalid, alert
+          end
           alert.save!
+          if alert.anonymous_public?
+            AnonymousSubmissionAudit.record!(alert: alert, **@request_audit)
+          end
           AuditEvent.record!(
             actor: actor, action: "alert.created", subject: alert,
             metadata: { kind: alert.kind, photos_count: @photos.size }
@@ -66,6 +75,8 @@ module Alerts
       end
 
       def after_persist(_alert); end
+
+      def after_create(_alert); end
 
       def find_existing
         return if @client_request_id.nil?

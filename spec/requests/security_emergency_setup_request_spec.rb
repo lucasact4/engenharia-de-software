@@ -28,7 +28,10 @@ RSpec.describe "Security emergency setup", type: :request do
   it "stores a valid push subscription only for an active security account" do
     sign_in(security)
     post security_push_subscription_path, params: {
-      subscription: { endpoint: "https://push.example.test/token", keys: { p256dh: "public", auth: "secret" } }
+      subscription: { endpoint: "https://fcm.googleapis.com/fcm/send/token", keys: {
+        p256dh: Base64.urlsafe_encode64("\x04" + "\0" * 64, padding: false),
+        auth: Base64.urlsafe_encode64("\0" * 16, padding: false)
+      } }
     }, as: :json
 
     expect(response).to have_http_status(:created)
@@ -40,7 +43,10 @@ RSpec.describe "Security emergency setup", type: :request do
     sign_in(admin)
 
     post security_push_subscription_path, params: {
-      subscription: { endpoint: "https://push.example.test/admin-token", keys: { p256dh: "public", auth: "secret" } }
+      subscription: { endpoint: "https://fcm.googleapis.com/fcm/send/admin-token", keys: {
+        p256dh: Base64.urlsafe_encode64("\x04" + "\0" * 64, padding: false),
+        auth: Base64.urlsafe_encode64("\0" * 16, padding: false)
+      } }
     }, as: :json
 
     expect(response).to have_http_status(:created)
@@ -55,7 +61,7 @@ RSpec.describe "Security emergency setup", type: :request do
     get panel_path
     expect(response.body).to include("Ativar push de emergência", "Compartilhar localização durante o plantão")
 
-    get service_worker_path
+    get pwa_service_worker_path
     expect(response).to have_http_status(:ok), response.body[/<h1.*?<\/h1>/m]
     expect(response.headers["Service-Worker-Allowed"]).to eq("/")
     expect(response.body).to include('addEventListener("push"')
@@ -69,7 +75,7 @@ RSpec.describe "Security emergency setup", type: :request do
     expect(response.body).to include("Ativar push de emergência")
     expect(response.body).not_to include("Compartilhar localização durante o plantão")
 
-    get service_worker_path
+    get pwa_service_worker_path
     expect(response).to have_http_status(:ok), response.body[/<h1.*?<\/h1>/m]
     expect(response.headers["Service-Worker-Allowed"]).to eq("/")
     expect(response.body).to include('addEventListener("push"')

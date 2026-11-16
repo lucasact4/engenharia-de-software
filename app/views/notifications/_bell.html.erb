@@ -1,0 +1,15 @@
+<details class="notification-bell" data-notifications-target="menu" data-action="mouseenter->notifications#hover mouseleave->notifications#leave keydown.esc->notifications#close">
+  <summary class="sgu-btn sgu-btn-sm sgu-btn-secondary" aria-label="Notificações" data-action="click->notifications#toggle" data-notifications-target="trigger" aria-expanded="false" aria-controls="notification-preview">
+    <%= sgu_icon("bell") %>
+    <span class="notification-count" data-notifications-target="count" aria-live="polite"><%= notification_feed.unread.count %></span>
+  </summary>
+  <section id="notification-preview" class="notification-preview" aria-label="Notificações recentes">
+    <div class="flex items-center justify-between gap-3 border-b border-line p-3">
+      <strong>Notificações</strong>
+      <button type="button" class="sgu-btn sgu-btn-sm sgu-btn-secondary" data-action="notifications#close" aria-label="Fechar notificações">Fechar</button>
+    </div>
+    <p class="px-3 pt-2 text-xs text-muted" data-notifications-target="status" aria-live="polite"></p>
+    <div data-notifications-target="list"><%= render "notifications/list", notifications: notification_feed.prioritized.limit(10) %></div>
+    <%= link_to "Ver todas as notificações", notifications_path, class: "block border-t border-line p-3 font-semibold text-brand-link" %>
+  </section>
+</details>

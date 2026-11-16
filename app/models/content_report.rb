@@ -1,6 +1,8 @@
 # Denúncia de uma Publication ou de um Comment (exatamente um alvo).
 class ContentReport < ApplicationRecord
   DETAILS_MAX = 2000
+  before_save :advance_notification_version
+  after_save { Notifications::Events.report_saved(self) }
 
   enum :reason,
        { spam: "spam", harassment: "harassment", misinformation: "misinformation",
@@ -14,6 +16,8 @@ class ContentReport < ApplicationRecord
   belongs_to :reviewed_by, class_name: "User", optional: true
 
   normalizes :details, with: ->(details) { details.strip.presence }
+
+  encrypts :details
 
   validates :details, length: { maximum: DETAILS_MAX }
   validates :details, presence: true, if: :reason_other?
@@ -32,6 +36,10 @@ class ContentReport < ApplicationRecord
   end
 
   private
+
+    def advance_notification_version
+      self.notification_version += 1 if new_record? || will_save_change_to_state?
+    end
 
     def single_target
       return if publication_id.present? ^ comment_id.present?

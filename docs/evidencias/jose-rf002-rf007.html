@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SGU | Testes de José de Lemos — RF007 e RF002</title>
+  <style>
+    *{box-sizing:border-box}
+    @page{size:A4 portrait;margin:12mm}
+    body{margin:0;background:#f1f3f9;color:#182136;font:13px/1.48 Arial,Helvetica,sans-serif}
+    main{max-width:1000px;margin:auto;padding:28px 20px 44px}
+    header{background:#19294f;border-radius:16px;color:#fff;padding:26px 30px}
+    header p{margin:0;color:#dce7fb}
+    h1{font-size:36px;letter-spacing:-.04em;line-height:1.08;margin:9px 0 10px}
+    .counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+    .counts div,section{background:#fff;border:1px solid #dce2ef;border-radius:12px;padding:15px 17px}
+    .counts strong{display:block;font-size:28px;line-height:1.15}
+    .passed{color:#0e5d42}
+    .section-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    h2{font-size:19px;line-height:1.2;margin:0}
+    h3{font-size:13px;margin:13px 0 5px}
+    section{margin-bottom:12px;break-inside:avoid}
+    section p{margin:8px 0}
+    .meta{font-size:11px;color:#4d5b73}
+    .table-scroll{overflow:auto}
+    table{width:100%;border-collapse:collapse;text-align:left;font-size:11px}
+    td,th{padding:8px 7px;border-bottom:1px solid #dce2ef;vertical-align:top}
+    tbody tr:last-child td{border:0}
+    td:first-child{white-space:nowrap;width:75px}
+    td:last-child{width:76px;white-space:nowrap}
+    .status{font-weight:700;color:#0e5d42}
+    code{font-family:Consolas,"Courier New",monospace;font-size:10px;color:#304779}
+    pre{background:#19294f;color:#edf3ff;padding:11px;border-radius:7px;white-space:pre-wrap;overflow-wrap:anywhere;font:10px/1.45 Consolas,"Courier New",monospace;margin:7px 0}
+    footer{color:#66738a;font-size:10px;text-align:center;padding:4px}
+    @media print{
+      body{background:#fff;font-size:11px}
+      main{max-width:none;padding:0}
+      header{border-radius:0;padding:20px 23px}
+      h1{font-size:30px}
+      .counts{margin:9px 0}
+      .counts div,section{padding:11px 13px}
+      section{margin-bottom:9px}
+      .table-scroll{overflow:visible}
+      table{font-size:10px}
+      td,th{padding:6px}
+      a{color:inherit;text-decoration:none}
+      *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p>SGU · UFRPE · José de Lemos · 11/11/2026</p>
+    <h1>Testes da RF007 e RF002</h1>
+    <p>Fotos na postagem e pesquisa de pessoas</p>
+  </header>
+
+  <div class="counts" aria-label="Resumo da execução">
+    <div><strong>8</strong>Casos executados</div>
+    <div><strong class="passed">8</strong>Passaram</div>
+    <div><strong class="passed">0</strong>Falharam</div>
+  </div>
+
+  <section>
+    <div class="section-title"><h2>RF007 — Fotos na postagem</h2><strong class="passed">4/4 passaram</strong></div>
+    <p>Permite até cinco fotos opcionais por postagem, em PNG ou JPEG, com tamanho máximo de 5 MB por arquivo. Os testes exercitam as validações do modelo.</p>
+    <p class="meta"><strong>Participação:</strong> José de Lemos (autor dos casos de teste desta entrega). <strong>Arquivo:</strong> <code>spec/models/alert_photos_spec.rb</code></p>
+    <div class="table-scroll"><table><thead><tr><th scope="col">Caso</th><th scope="col">Cenário</th><th scope="col">Resultado observado</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>RF007-01</code></td><td>A postagem sem fotos é válida e aceita imagens PNG e JPEG válidas.</td><td>Validação aprovada sem anexo e com os dois formatos aceitos.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF007-02</code></td><td>Rejeitar arquivo que não é imagem, mesmo com extensão e MIME declarados como PNG.</td><td>A validação identificou conteúdo incompatível.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF007-03</code></td><td>Aplicar o limite de cinco fotos e 5 MB por arquivo.</td><td>Seis anexos e arquivo acima do limite foram rejeitados.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF007-04</code></td><td>Impedir reutilização em outra postagem de um arquivo já anexado.</td><td>O modelo rejeitou o blob pertencente a outro relato.</td><td class="status">Passou</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Comando de execução</h3>
+    <pre>bundle exec rspec spec/models/alert_photos_spec.rb</pre>
+  </section>
+
+  <section>
+    <div class="section-title"><h2>RF002 — Pesquisar pessoas</h2><strong class="passed">4/4 passaram</strong></div>
+    <p>Permite pesquisar pessoas por nome, razão social, nome da mãe, e-mail e CPF/CNPJ. Os documentos são pesquisados por correspondência exata após a remoção da formatação.</p>
+    <p class="meta"><strong>Participação:</strong> José de Lemos (autor dos casos de teste desta entrega). <strong>Arquivo:</strong> <code>spec/controllers/admin/users_search_spec.rb</code></p>
+    <div class="table-scroll"><table><thead><tr><th scope="col">Caso</th><th scope="col">Cenário</th><th scope="col">Resultado observado</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>RF002-01</code></td><td>Localizar por nome, razão social, nome da mãe ou e-mail.</td><td>Os quatro campos retornaram a pessoa correspondente.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF002-02</code></td><td>Fazer busca parcial por nome sem diferenciar maiúsculas e minúsculas.</td><td>O trecho do nome encontrou a pessoa.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF002-03</code></td><td>Pesquisar CPF e CNPJ exatos com pontuação.</td><td>Os dois documentos formatados localizaram as pessoas corretas.</td><td class="status">Passou</td></tr>
+        <tr><td><code>RF002-04</code></td><td>Não localizar documento por um trecho numérico parcial.</td><td>A busca parcial não retornou a pessoa associada ao CPF.</td><td class="status">Passou</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Comando de execução</h3>
+    <pre>bundle exec rspec spec/controllers/admin/users_search_spec.rb</pre>
+  </section>
+
+  <section>
+    <h2>Resumo da execução RSpec</h2>
+    <pre>RF007: 4 examples, 0 failures
+RF002: 4 examples, 0 failures
+Total: 8 examples, 0 failures</pre>
+    <p class="meta">A execução foi realizada separadamente para cada arquivo de teste no ambiente do projeto.</p>
+  </section>
+  <footer>SGU · UFRPE · Registro dos testes automatizados por requisito</footer>
+</main>
+</body>
+</html>

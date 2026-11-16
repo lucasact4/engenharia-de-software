@@ -4,17 +4,20 @@
     <%= render "shared/theme_head" %>
     <title><%= content_for(:title) || "SGU UFRPE" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% if controller_name == "notifications" %><meta name="turbo-cache-control" content="no-cache"><% end %>
     <meta name="description" content="SGU UFRPE: registro e acompanhamento de ocorrências e mural de comunicados do campus.">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= favicon_link_tag "favicon.png" %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(locale: nil) %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-dvh bg-canvas text-ink antialiased">
+  <body class="min-h-dvh bg-canvas text-ink antialiased" <%= tag.attributes(data: { controller: "notifications", notifications_url_value: notifications_path(format: :json) }) if Current.user %>>
     <a href="#conteudo" class="sr-only z-[60] rounded-lg bg-surface px-4 py-2 font-semibold focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Pular para o conteúdo</a>
     <%= render "layouts/portal/header" %>
+    <%= render "notifications/popup" if Current.user %>
 
     <main id="conteudo" class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <%= render "layouts/portal/flash" %>

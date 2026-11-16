@@ -39,10 +39,15 @@ module Backups
       state = status
       state["completed_at"].present? && state["last_failure_at"].nil? &&
         Time.iso8601(state.fetch("completed_at")) >= @now - PERIOD &&
-        @destination.join(state.fetch("backup"), "manifest.json").file?
+        encrypted_snapshot?(@destination.join(state.fetch("backup")))
     end
 
     private
+
+      def encrypted_snapshot?(snapshot)
+        manifest = snapshot.join("manifest.json")
+        manifest.file? && JSON.parse(manifest.read)["format"] == "sgu-encrypted-v1"
+      end
 
       def configured_databases
         ActiveRecord::Base.configurations.configs_for(env_name: Rails.env).to_h do |config|
@@ -77,9 +82,13 @@ module Backups
         staging = @destination.join(".partial-#{name}")
         FileUtils.mkdir_p(staging.join("storage"), mode: 0o700)
         database_files = copy_databases(staging)
+        purge_panic_locations(staging.join(database_files.fetch("primary")))
         copy_uploads(staging, database_files.fetch("primary"))
+        payload = Payload.new
+        payload_files(staging).each { |path| payload.seal(path, "#{name}/#{path.relative_path_from(staging)}") }
         manifest = {
-          environment: Rails.env, started_at: @now.iso8601, period_start: period_start.iso8601,
+          format: "sgu-encrypted-v1", snapshot: name, environment: Rails.env,
+          started_at: @now.iso8601, period_start: period_start.iso8601,
           databases: database_files, files: payload_checksums(staging)
         }
         write_json(staging.join("manifest.json"), manifest)
@@ -157,15 +166,41 @@ module Backups
             FileUtils.mkdir_p(target.dirname, mode: 0o700)
             FileUtils.copy_file(source, target)
             File.chmod(0o600, target)
-            unless Base64.strict_encode64(Digest::MD5.file(target).digest) == checksum
+            if service.respond_to?(:verify_snapshot_file)
+              service.verify_snapshot_file(target, key, checksum: checksum)
+            elsif Base64.strict_encode64(Digest::MD5.file(target).digest) != checksum
               raise IOError, "Upload checksum mismatch"
             end
           end
         end
       end
 
+      def purge_panic_locations(path)
+        SQLite3::Database.open(path.to_s) do |database|
+          alert_columns = database.table_info("alerts").map { |column| column.fetch("name") }
+          next if alert_columns.empty?
+
+          tracking = alert_columns.include?("panic_tracking_stopped_at") ?
+            ", panic_latest_position = NULL, panic_tracking_stopped_at = COALESCE(panic_tracking_stopped_at, updated_at)" : ""
+          database.execute("PRAGMA secure_delete = ON")
+          database.execute(<<~SQL)
+            UPDATE alerts
+            SET latitude = NULL, longitude = NULL, location_accuracy_meters = NULL,
+                location_captured_at = NULL, location_description = NULL, location_id = NULL,
+                location_unavailable_reason = NULL, location_source = 'unavailable'#{tracking}
+            WHERE kind = 'panic'
+          SQL
+          database.execute("VACUUM")
+          database.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        end
+      end
+
+      def payload_files(staging)
+        staging.glob("storage/**/*").select(&:file?)
+      end
+
       def payload_checksums(staging)
-        staging.glob("storage/**/*").select(&:file?).to_h do |file|
+        payload_files(staging).to_h do |file|
           [ file.relative_path_from(staging).to_s, Digest::SHA256.file(file).hexdigest ]
         end
       end

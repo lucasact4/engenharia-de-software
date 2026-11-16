@@ -26,6 +26,7 @@ profiles = [
       evolucao evolucao.linha-do-tempo evolucao.observacoes
       proximos-passos proximos-passos.marco proximos-passos.passos
       status-report status-report.aprendizados status-report.registro
+      testes-cruzados plano-de-teste
       encerramento.links
     ]
   }

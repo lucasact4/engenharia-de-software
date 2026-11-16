@@ -6,13 +6,13 @@ RSpec.describe PanicPushJob, type: :job do
     alert = create(:alert, :panic, location_source: "gps", latitude: -8.0, longitude: -34.9)
     SecurityPresence.create!(user: responder, latitude: -8.0, longitude: -34.9, reported_at: Time.current)
     subscription = responder.security_push_subscriptions.create!(
-      endpoint: "https://push.example.test/device", p256dh: "p256dh", auth: "auth"
+      endpoint: "https://fcm.googleapis.com/fcm/send/device", p256dh: Base64.urlsafe_encode64("\x04" + "\0" * 64, padding: false),
+      auth: Base64.urlsafe_encode64("\0" * 16, padding: false)
     )
-    allow(ENV).to receive(:values_at).with("VAPID_PUBLIC_KEY", "VAPID_PRIVATE_KEY", "VAPID_SUBJECT").and_return(%w[public private mailto:sgu@example.test])
-    allow(ENV).to receive(:fetch).and_call_original
-    allow(ENV).to receive(:fetch).with("VAPID_PUBLIC_KEY").and_return("public")
-    allow(ENV).to receive(:fetch).with("VAPID_PRIVATE_KEY").and_return("private")
-    allow(ENV).to receive(:fetch).with("VAPID_SUBJECT").and_return("mailto:sgu@example.test")
+    allow(Notifications::ChannelConfig).to receive_messages(
+      push_available?: true,
+      vapid: { public_key: "public", private_key: "private", subject: "mailto:sgu@example.test" }
+    )
 
     expect(WebPush).to receive(:payload_send).with(hash_including(
       endpoint: subscription.endpoint, urgency: "high", ttl: 60,

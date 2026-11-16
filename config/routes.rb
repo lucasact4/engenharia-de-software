@@ -3,15 +3,28 @@ Rails.application.routes.draw do
   resource :session, only: %i[create destroy], path: "entrar"
   get "entrar", to: "sessions#new", as: :new_session
   get "criar-conta", to: "registrations#new", as: :new_registration
+  resource :email_confirmation, path: "confirmar-email", only: %i[show create update]
   post "criar-conta", to: "registrations#create", as: :registration
   resources :passwords, param: :token
   root "home#index"
   get "apresentacao", to: "presentations#show", as: :presentation
   post "apresentacao/pdf", to: "presentations#pdf", as: :presentation_pdf
+  get "apresentacao/testes-cruzados", to: "cross_tests#show", as: :cross_tests
+  get "apresentacao/plano-de-teste", to: "cross_tests#plan", as: :test_plan
+  get "apresentacao/plano-de-teste/pdf", to: "cross_tests#plan_pdf", as: :test_plan_pdf
   get "mural/mapa", to: "campus_map#index", as: :campus_map
 
   # Área autenticada de pessoas usuárias e equipes (portal).
   resource :panel, only: :show, path: "painel", controller: "panel"
+  resources :notifications, path: "notificacoes", only: :index do
+    patch :read, on: :member, path: "leitura"
+    patch :read_all, on: :collection, path: "ler-todas"
+    patch :preferences, on: :collection, path: "preferencias"
+    post :subscribe_push, on: :collection, path: "push"
+    delete :unsubscribe_push, on: :collection, path: "push"
+  end
+  get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
+  get "manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
 
   resources :alerts, path: "alertas", only: %i[index show new create edit update] do
     patch :audience, on: :member, path: "audiencia"
@@ -24,13 +37,14 @@ Rails.application.routes.draw do
 
   get "panico", to: "panic_alerts#new", as: :new_panic
   post "panico", to: "panic_alerts#create", as: :panic
+  get "panico/:id/localizacao", to: "panic_locations#show", as: :panic_location
+  patch "panico/:id/localizacao", to: "panic_locations#update"
+  delete "panico/:id/localizacao", to: "panic_locations#destroy"
 
   namespace :security, path: "seguranca" do
     resource :presence, only: %i[create destroy], controller: "presence"
     resource :push_subscription, only: %i[create destroy], controller: "push_subscriptions"
   end
-
-  get "service-worker.js", to: "pwa#service_worker", as: :service_worker
 
   namespace :handling, path: "atendimento" do
     resources :alerts, path: "", only: %i[index show] do
@@ -43,7 +57,7 @@ Rails.application.routes.draw do
   end
 
   # Mural de ocorrências e comunicados, com interações compartilhadas.
-  resources :publications, path: "mural", only: %i[index show] do
+  resources :publications, path: "mural", only: %i[index show destroy] do
     { like: "curtida", bookmark: "salvo", subscription: "acompanhamento" }.each do |kind, path|
       resource kind, only: %i[create destroy], controller: "publication_interactions", path: path,
                      as: "#{kind}_interaction", defaults: { kind: kind }

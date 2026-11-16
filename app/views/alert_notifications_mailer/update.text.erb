@@ -1,0 +1,5 @@
+O relato <%= @alert.protocol %> teve sua situação atualizada para <%= I18n.t("enums.alert.status.#{@alert.status}.label", default: @alert.status.humanize) %>.
+
+Acesse sua conta para acompanhar: <%= alert_url(@alert) %>
+
+Você recebe esta mensagem porque consentiu com notificações do SGU e acompanha este relato.

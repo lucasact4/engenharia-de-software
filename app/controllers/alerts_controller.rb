@@ -3,6 +3,7 @@
 # O atendimento fica em Handling::AlertsController; a administração, em Admin::AlertsController.
 class AlertsController < PortalController
   include AlertFormParams
+  include AnonymousPublicationProtection
 
   TABS = %w[meus internos acompanhados].freeze
 
@@ -37,15 +38,15 @@ class AlertsController < PortalController
     authorize Alert, :create_occurrence?
     @client_request_id = requested_client_request_id
     attributes = occurrence_params
-    if ActiveModel::Type::Boolean.new.cast(attributes[:anonymous_public]) &&
-        !TurnstileVerifier.verify(params[:cf_turnstile_response], expected_hostname: request.host)
+    unless anonymous_publication_verified?(attributes)
       rebuild_form(nil)
       @alert.errors.add(:base, turnstile_error_message)
       return render :new, status: :unprocessable_entity
     end
 
     result = Alerts::CreateOccurrence.call(
-      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id
+      actor: Current.user, attributes: attributes, photos: uploaded_photos, client_request_id: @client_request_id,
+      request_audit: { ip_address: request.remote_ip, user_agent: request.user_agent, submitted_at: Time.current }
     )
     message = result.created? ? "Ocorrência registrada. Protocolo #{result.alert.protocol}." : "Este envio já tinha sido recebido (protocolo #{result.alert.protocol}); nada foi duplicado."
     redirect_to alert_path(result.alert), notice: message, status: :see_other
@@ -130,17 +131,9 @@ class AlertsController < PortalController
       @post_card = PublicationProjection.collection([ post ], viewer: Current.user).first if post && PublicationPolicy.new(Current.user, post).show?
     end
 
-    def turnstile_error_message
-      if TurnstileVerifier.configured?
-        "Não foi possível confirmar o desafio antirobô. Tente novamente."
-      else
-        "A publicação anônima está indisponível até que a proteção Turnstile seja configurada."
-      end
-    end
-
     def filter(scope)
       scope = scope.where(status: params[:status]) if Alert.statuses.key?(params[:status].to_s)
-      scope.text_search(params[:q], "alerts.protocol", "alerts.title")
+      scope.search_encrypted(params[:q], :protocol, :title)
     end
 
     # Após um conflito 409, só uma escolha explícita ("é uma nova ocorrência") troca a chave;

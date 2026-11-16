@@ -1,0 +1,20 @@
+<% if alert.panic? && (alert.location_gps? || alert.panic_tracking_stopped_at?) && policy(alert).read_panic_location? %>
+  <% stopped = alert.panic_tracking_stopped? %>
+  <section class="sgu-card space-y-3 p-4"
+           data-controller="panic-tracking"
+           data-panic-tracking-url-value="<%= panic_location_path(alert) %>"
+           data-panic-tracking-share-value="<%= policy(alert).update_panic_location? && !stopped && controller_path == "alerts" %>"
+           data-panic-tracking-stopped-value="<%= stopped %>"
+           data-action="turbo:before-cache@document->panic-tracking#disconnect">
+    <h2 class="sgu-section-title">Localização em tempo real</h2>
+    <p data-panic-tracking-target="status" role="status"><%= stopped ? "Acompanhamento encerrado." : "Aguardando atualização do GPS." %></p>
+    <p data-panic-tracking-target="position"></p>
+    <% if policy(alert).update_panic_location? && !stopped && controller_path == "alerts" %>
+      <p>Mantenha esta página aberta para compartilhar sua posição.</p>
+    <% end %>
+    <% if policy(alert).stop_panic_location? && !stopped %>
+      <%= button_to "Encerrar acompanhamento", panic_location_path(alert), method: :delete,
+                    class: "sgu-btn sgu-btn-secondary", form: { data: { panic_tracking_target: "stopForm" } } %>
+    <% end %>
+  </section>
+<% end %>

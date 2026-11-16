@@ -14,7 +14,7 @@ class Admin::BaseController < Admin::ApplicationController
     scope = apply_term_filter(scope)
     scope = apply_sort(scope)
 
-    @pagy, @instances = pagy(scope, limit: 10)
+    @pagy, @instances = pagy(:offset, scope, limit: 10)
     authorize @model
   end
 

@@ -53,7 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.integer "assigned_to_id"
     t.integer "author_id", null: false
     t.integer "category_id"
-    t.string "category_other_description"
+    t.text "category_other_description"
     t.string "client_request_digest"
     t.string "client_request_id"
     t.datetime "closed_at"
@@ -63,15 +63,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.text "description"
     t.integer "duplicate_of_id"
     t.string "kind", null: false
-    t.decimal "latitude", precision: 10, scale: 7
-    t.decimal "location_accuracy_meters", precision: 10, scale: 2
-    t.datetime "location_captured_at"
-    t.string "location_description"
+    t.text "latitude"
+    t.text "location_accuracy_meters"
+    t.text "location_captured_at"
+    t.text "location_description"
     t.integer "location_id"
     t.string "location_source", null: false
     t.string "location_unavailable_reason"
     t.integer "lock_version", default: 0, null: false
-    t.decimal "longitude", precision: 10, scale: 7
+    t.text "longitude"
     t.json "photo_order", default: [], null: false
     t.string "priority"
     t.string "protocol", null: false
@@ -81,12 +81,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.datetime "resolved_at"
     t.string "status", default: "received", null: false
     t.datetime "status_changed_at"
-    t.string "title"
+    t.text "title"
     t.datetime "updated_at", null: false
     t.string "visibility", null: false
     t.boolean "share_exact_location", default: false, null: false
     t.boolean "anonymous_public", default: false, null: false
     t.integer "related_alert_id"
+    t.datetime "panic_tracking_stopped_at"
+    t.text "panic_latest_position"
     t.index ["assigned_to_id"], name: "index_alerts_on_assigned_to_id"
     t.index ["author_id", "client_request_id"], name: "index_alerts_on_author_and_client_request", unique: true, where: "client_request_id IS NOT NULL"
     t.index ["author_id", "created_at"], name: "index_alerts_on_author_id_and_created_at"
@@ -100,37 +102,42 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.check_constraint "(closed_at IS NULL AND closure_reason IS NULL) OR status = 'closed'", name: "alerts_closure_only_when_closed"
     t.check_constraint "(latitude IS NULL AND longitude IS NULL) OR (latitude IS NOT NULL AND longitude IS NOT NULL)", name: "alerts_coordinates_pair"
     t.check_constraint "assessed_severity IS NULL OR assessed_severity IN ('low', 'moderate', 'high', 'critical')", name: "alerts_assessed_severity"
-    t.check_constraint "category_other_description IS NULL OR length(category_other_description) <= 500", name: "alerts_category_other_description_length"
     t.check_constraint "client_request_id IS NULL OR (length(client_request_id) BETWEEN 8 AND 64 AND client_request_digest IS NOT NULL)", name: "alerts_client_request"
     t.check_constraint "closure_reason IS NULL OR closure_reason <> 'duplicate' OR duplicate_of_id IS NOT NULL", name: "alerts_duplicate_target_required"
     t.check_constraint "closure_reason IS NULL OR closure_reason IN ('resolved', 'duplicate', 'invalid', 'out_of_scope', 'other')", name: "alerts_closure_reason"
-    t.check_constraint "description IS NULL OR length(description) <= 5000", name: "alerts_description_length"
     t.check_constraint "duplicate_of_id IS NULL OR (closure_reason = 'duplicate' AND duplicate_of_id <> id)", name: "alerts_duplicate_reference"
-    t.check_constraint "kind <> 'occurrence' OR (title IS NOT NULL AND length(trim(title)) >= 5 AND description IS NOT NULL AND length(trim(description)) >= 10 AND category_id IS NOT NULL AND location_source <> 'unavailable')", name: "alerts_occurrence_required_fields"
+    t.check_constraint "kind <> 'occurrence' OR (title IS NOT NULL AND description IS NOT NULL AND category_id IS NOT NULL AND location_source <> 'unavailable')", name: "alerts_occurrence_required_fields"
     t.check_constraint "kind <> 'panic' OR (requested_visibility = 'restricted' AND visibility = 'restricted' AND client_request_id IS NOT NULL)", name: "alerts_panic_restricted"
     t.check_constraint "kind IN ('occurrence', 'panic')", name: "alerts_kind"
-    t.check_constraint "latitude IS NULL OR (latitude >= -90 AND latitude <= 90)", name: "alerts_latitude_range"
-    t.check_constraint "location_accuracy_meters IS NULL OR (location_accuracy_meters >= 0 AND location_source = 'gps')", name: "alerts_location_accuracy"
+    t.check_constraint "location_accuracy_meters IS NULL OR location_source = 'gps'", name: "alerts_location_accuracy"
     t.check_constraint "location_captured_at IS NULL OR location_source = 'gps'", name: "alerts_location_captured_at"
-    t.check_constraint "location_source <> 'manual' OR (latitude IS NULL AND (location_id IS NOT NULL OR (location_description IS NOT NULL AND length(trim(location_description)) BETWEEN 3 AND 160)))", name: "alerts_manual_location"
+    t.check_constraint "location_source <> 'manual' OR (latitude IS NULL AND (location_id IS NOT NULL OR location_description IS NOT NULL))", name: "alerts_manual_location"
     t.check_constraint "location_source <> 'unavailable' OR (location_id IS NULL AND latitude IS NULL)", name: "alerts_unavailable_location"
     t.check_constraint "location_source IN ('gps', 'map', 'manual', 'unavailable')", name: "alerts_location_source"
     t.check_constraint "location_source NOT IN ('gps', 'map') OR latitude IS NOT NULL", name: "alerts_gps_coordinates"
     t.check_constraint "location_unavailable_reason IS NULL OR location_source = 'unavailable'", name: "alerts_location_unavailable_reason_source"
     t.check_constraint "location_unavailable_reason IS NULL OR location_unavailable_reason IN ('permission_denied', 'position_unavailable', 'timeout', 'not_supported', 'not_shared')", name: "alerts_location_unavailable_reason"
     t.check_constraint "lock_version >= 0", name: "alerts_lock_version"
-    t.check_constraint "longitude IS NULL OR (longitude >= -180 AND longitude <= 180)", name: "alerts_longitude_range"
     t.check_constraint "priority IS NULL OR priority IN ('low', 'normal', 'high', 'urgent')", name: "alerts_priority"
     t.check_constraint "publication_blocked IN (0, 1)", name: "alerts_publication_blocked_boolean"
-    t.check_constraint "reported_severity IS NULL OR reported_severity IN ('low', 'moderate', 'high', 'critical')", name: "alerts_reported_severity"
+    t.check_constraint "reported_severity IS NULL OR reported_severity IN ('low', 'moderate', 'high', 'critical', 'unsure')", name: "alerts_reported_severity"
     t.check_constraint "requested_visibility IN ('internal', 'restricted', 'public_external')", name: "alerts_requested_visibility"
     t.check_constraint "resolved_at IS NULL OR status IN ('resolved', 'closed')", name: "alerts_resolved_at_status"
     t.check_constraint "status <> 'closed' OR (closed_at IS NOT NULL AND closure_reason IS NOT NULL)", name: "alerts_closed_fields"
     t.check_constraint "status <> 'resolved' OR resolved_at IS NOT NULL", name: "alerts_resolved_at"
     t.check_constraint "status IN ('received', 'triaging', 'in_progress', 'awaiting_information', 'resolved', 'closed')", name: "alerts_status"
-    t.check_constraint "title IS NULL OR length(title) <= 160", name: "alerts_title_length"
     t.check_constraint "visibility = 'restricted' OR requested_visibility = 'internal'", name: "alerts_visibility_matches_request"
     t.check_constraint "visibility IN ('internal', 'restricted')", name: "alerts_visibility"
+  end
+
+  create_table "anonymous_submission_audits", force: :cascade do |t|
+    t.integer "alert_id", null: false
+    t.text "ip_address_ciphertext", null: false
+    t.text "user_agent_ciphertext", null: false
+    t.datetime "submitted_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_anonymous_submission_audits_on_alert_id", unique: true
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -148,7 +155,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.index ["subject_type", "subject_id", "created_at"], name: "index_audit_events_on_subject_and_created_at"
     t.check_constraint "actor_id IS NOT NULL OR action LIKE 'system.%'", name: "audit_events_actor_required"
     t.check_constraint "length(action) BETWEEN 3 AND 80", name: "audit_events_action_length"
-    t.check_constraint "reason IS NULL OR length(reason) <= 1000", name: "audit_events_reason_length"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -192,9 +198,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.index ["parent_id", "created_at"], name: "index_comments_on_parent_id_and_created_at"
     t.index ["publication_id", "created_at"], name: "index_comments_on_publication_id_and_created_at"
     t.index ["removed_by_id"], name: "index_comments_on_removed_by_id"
-    t.check_constraint "length(trim(body)) BETWEEN 1 AND 2000", name: "comments_body_length"
     t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "comments_parent_not_self"
-    t.check_constraint "removed_at IS NULL OR (removed_by_id IS NOT NULL AND removal_reason IS NOT NULL AND length(trim(removal_reason)) > 0)", name: "comments_removal_fields"
+    t.check_constraint "removed_at IS NULL OR (removed_by_id IS NOT NULL AND removal_reason IS NOT NULL)", name: "comments_removal_fields"
   end
 
   create_table "content_reports", force: :cascade do |t|
@@ -209,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.integer "reviewed_by_id"
     t.string "state", default: "pending", null: false
     t.datetime "updated_at", null: false
+    t.integer "notification_version", default: 0, null: false
     t.index ["comment_id"], name: "index_content_reports_on_comment_id"
     t.index ["publication_id"], name: "index_content_reports_on_publication_id"
     t.index ["reporter_id", "comment_id"], name: "index_content_reports_unique_comment_target", unique: true, where: "comment_id IS NOT NULL"
@@ -216,8 +222,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.index ["reviewed_by_id"], name: "index_content_reports_on_reviewed_by_id"
     t.index ["state", "created_at"], name: "index_content_reports_on_state_and_created_at"
     t.check_constraint "(publication_id IS NOT NULL AND comment_id IS NULL) OR (publication_id IS NULL AND comment_id IS NOT NULL)", name: "content_reports_single_target"
-    t.check_constraint "details IS NULL OR length(details) <= 2000", name: "content_reports_details_length"
-    t.check_constraint "reason <> 'other' OR (details IS NOT NULL AND length(trim(details)) > 0)", name: "content_reports_other_details"
+    t.check_constraint "reason <> 'other' OR details IS NOT NULL", name: "content_reports_other_details"
     t.check_constraint "reason IN ('spam', 'harassment', 'misinformation', 'privacy', 'inappropriate', 'other')", name: "content_reports_reason"
     t.check_constraint "state = 'pending' OR (reviewed_by_id IS NOT NULL AND reviewed_at IS NOT NULL)", name: "content_reports_review_fields"
     t.check_constraint "state IN ('pending', 'actioned', 'dismissed')", name: "content_reports_state"
@@ -241,6 +246,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.check_constraint "length(name) BETWEEN 1 AND 120", name: "locations_name_length"
     t.check_constraint "reference_latitude IS NULL OR (reference_latitude >= -90 AND reference_latitude <= 90)", name: "locations_reference_latitude_range"
     t.check_constraint "reference_longitude IS NULL OR (reference_longitude >= -180 AND reference_longitude <= 180)", name: "locations_reference_longitude_range"
+  end
+
+  create_table "notification_deliveries", force: :cascade do |t|
+    t.integer "notification_id", null: false
+    t.integer "push_subscription_id"
+    t.string "channel", null: false
+    t.integer "attempts", default: 0, null: false
+    t.datetime "available_at", null: false
+    t.datetime "finished_at"
+    t.string "result"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["finished_at", "available_at"], name: "index_notification_deliveries_on_finished_at_and_available_at"
+    t.index ["notification_id", "push_subscription_id"], name: "index_notification_deliveries_push", unique: true, where: "channel = 'push'"
+    t.index ["notification_id"], name: "index_notification_deliveries_email", unique: true, where: "channel = 'email'"
+    t.index ["notification_id"], name: "index_notification_deliveries_on_notification_id"
+    t.index ["push_subscription_id"], name: "index_notification_deliveries_on_push_subscription_id"
+    t.check_constraint "(channel = 'email' AND push_subscription_id IS NULL) OR (channel = 'push' AND push_subscription_id IS NOT NULL)", name: "notification_deliveries_destination"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "location_id"
+    t.boolean "email_enabled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_notification_preferences_on_location_id"
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "event_key", null: false
+    t.string "kind", null: false
+    t.string "message", null: false
+    t.integer "alert_id"
+    t.integer "publication_id"
+    t.integer "comment_id"
+    t.integer "content_report_id"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_notifications_on_alert_id"
+    t.index ["comment_id"], name: "index_notifications_on_comment_id"
+    t.index ["content_report_id"], name: "index_notifications_on_content_report_id"
+    t.index ["publication_id"], name: "index_notifications_on_publication_id"
+    t.index ["user_id", "event_key"], name: "index_notifications_on_user_id_and_event_key", unique: true
+    t.index ["user_id", "read_at", "created_at"], name: "index_notifications_on_user_id_and_read_at_and_created_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+    t.check_constraint "kind IN ('alert_status', 'publication_status', 'comment', 'like', 'panic', 'content_report', 'publication_pending', 'nearby_alert')", name: "notifications_kind"
   end
 
   create_table "presentation_profiles", force: :cascade do |t|
@@ -302,7 +357,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.integer "reviewed_content_version"
     t.datetime "source_changed_at"
     t.string "state", default: "draft", null: false
-    t.string "title"
+    t.text "title"
     t.datetime "updated_at", null: false
     t.string "visibility", null: false
     t.datetime "withdrawn_at"
@@ -314,19 +369,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.index ["reviewed_by_id"], name: "index_publications_on_reviewed_by_id"
     t.index ["state", "visibility", "published_at"], name: "index_publications_on_state_and_visibility_and_published_at"
     t.check_constraint "(kind = 'occurrence' AND alert_id IS NOT NULL) OR (kind <> 'occurrence' AND alert_id IS NULL)", name: "publications_alert_source"
-    t.check_constraint "(kind = 'occurrence' AND title IS NULL AND body IS NULL) OR (kind <> 'occurrence' AND title IS NOT NULL AND length(trim(title)) BETWEEN 5 AND 160 AND body IS NOT NULL AND length(trim(body)) BETWEEN 10 AND 10000)", name: "publications_canonical_content"
+    t.check_constraint "(kind = 'occurrence' AND title IS NULL AND body IS NULL) OR (kind <> 'occurrence' AND title IS NOT NULL AND body IS NOT NULL)", name: "publications_canonical_content"
     t.check_constraint "approval_method IS NULL OR approval_method IN ('administrator', 'verified_author')", name: "publications_approval_method"
     t.check_constraint "content_version >= 1 AND lock_version >= 0", name: "publications_versions"
     t.check_constraint "expires_at IS NULL OR published_at IS NULL OR expires_at > published_at", name: "publications_expires_after_publication"
     t.check_constraint "kind <> 'notice' OR state <> 'published' OR expires_at IS NOT NULL", name: "publications_notice_expires"
     t.check_constraint "kind IN ('occurrence', 'notice', 'news')", name: "publications_kind"
-    t.check_constraint "review_status <> 'rejected' OR (review_reason IS NOT NULL AND length(trim(review_reason)) > 0)", name: "publications_rejection_reason"
+    t.check_constraint "review_status <> 'rejected' OR review_reason IS NOT NULL", name: "publications_rejection_reason"
     t.check_constraint "review_status IN ('not_submitted', 'pending', 'approved', 'rejected')", name: "publications_review_status"
     t.check_constraint "review_status NOT IN ('approved', 'rejected') OR (reviewed_at IS NOT NULL AND reviewed_content_version IS NOT NULL AND (reviewed_by_id IS NOT NULL OR (review_status = 'approved' AND approval_method = 'verified_author')))", name: "publications_review_fields"
     t.check_constraint "state <> 'published' OR (published_at IS NOT NULL AND ((kind = 'occurrence' AND visibility = 'internal') OR (review_status = 'approved' AND reviewed_content_version = content_version)))", name: "publications_published_requires_approval"
     t.check_constraint "state <> 'withdrawn' OR withdrawn_at IS NOT NULL", name: "publications_withdrawn_at"
     t.check_constraint "state IN ('draft', 'published', 'withdrawn')", name: "publications_state"
     t.check_constraint "visibility IN ('internal', 'public_external')", name: "publications_visibility"
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.integer "session_id", null: false
+    t.string "endpoint_digest", null: false
+    t.text "endpoint", null: false
+    t.text "p256dh", null: false
+    t.text "auth", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint_digest"], name: "index_push_subscriptions_on_endpoint_digest", unique: true
+    t.index ["session_id"], name: "index_push_subscriptions_on_session_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -368,9 +435,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "ip_address"
+    t.text "ip_address"
     t.datetime "updated_at", null: false
-    t.string "user_agent"
+    t.text "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
@@ -401,8 +468,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.text "bio"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
-    t.string "display_name"
-    t.string "email_address", null: false
+    t.text "display_name"
+    t.text "email_address", null: false
     t.datetime "email_verified_at"
     t.string "password_digest", null: false
     t.boolean "public_profile", default: false, null: false
@@ -412,30 +479,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
     t.string "registration_role_code"
     t.string "registration_status", default: "approved", null: false
     t.datetime "updated_at", null: false
-    t.string "username"
+    t.text "username"
     t.datetime "verified_at"
     t.integer "verified_by_id"
-    t.string "business_name"
-    t.string "mother_name"
+    t.text "business_name"
+    t.text "mother_name"
     t.text "cpf"
     t.text "cnpj"
     t.string "person_type", default: "natural", null: false
     t.text "phone"
+    t.boolean "email_notifications_enabled", default: false, null: false
+    t.boolean "nearby_alerts_email_enabled", default: false, null: false
+    t.integer "nearby_alerts_radius_km", default: 5, null: false
+    t.datetime "email_notifications_consented_at"
+    t.integer "notification_location_id"
+    t.datetime "email_confirmed_at"
     t.index ["cnpj"], name: "index_users_on_cnpj", unique: true, where: "cnpj IS NOT NULL"
     t.index ["cpf"], name: "index_users_on_cpf", unique: true, where: "cpf IS NOT NULL"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["notification_location_id"], name: "index_users_on_notification_location_id"
     t.index ["phone"], name: "index_users_on_phone", unique: true, where: "phone IS NOT NULL"
     t.index ["registration_reviewed_by_id"], name: "index_users_on_registration_reviewed_by_id"
     t.index ["registration_status", "created_at"], name: "index_users_on_registration_status_and_created_at"
     t.index ["username"], name: "index_users_on_username", unique: true
     t.index ["verified_by_id"], name: "index_users_on_verified_by_id"
     t.check_constraint "(verified_at IS NULL AND verified_by_id IS NULL) OR (verified_at IS NOT NULL AND verified_by_id IS NOT NULL)", name: "users_verification_pair"
-    t.check_constraint "bio IS NULL OR length(bio) <= 500", name: "users_bio_length"
-    t.check_constraint "display_name IS NULL OR length(display_name) BETWEEN 1 AND 80", name: "users_display_name_length"
+    t.check_constraint "nearby_alerts_radius_km BETWEEN 1 AND 25", name: "users_nearby_alert_radius"
     t.check_constraint "registration_role_code IS NULL OR registration_role_code IN ('visitor', 'professor', 'student')", name: "users_registration_role_valid"
     t.check_constraint "registration_status IN ('pending', 'approved', 'rejected')", name: "users_registration_status_valid"
-    t.check_constraint "username IS NULL OR (length(username) BETWEEN 3 AND 30 AND username = lower(username))", name: "users_username_length_and_case"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -448,6 +520,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
   add_foreign_key "alerts", "locations"
   add_foreign_key "alerts", "users", column: "assigned_to_id"
   add_foreign_key "alerts", "users", column: "author_id"
+  add_foreign_key "anonymous_submission_audits", "alerts"
   add_foreign_key "audit_events", "users", column: "actor_id"
   add_foreign_key "comment_likes", "comments"
   add_foreign_key "comment_likes", "users"
@@ -459,6 +532,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
   add_foreign_key "content_reports", "publications"
   add_foreign_key "content_reports", "users", column: "reporter_id"
   add_foreign_key "content_reports", "users", column: "reviewed_by_id"
+  add_foreign_key "notification_deliveries", "notifications", on_delete: :cascade
+  add_foreign_key "notification_deliveries", "push_subscriptions", on_delete: :cascade
+  add_foreign_key "notification_preferences", "locations", on_delete: :nullify
+  add_foreign_key "notification_preferences", "users", on_delete: :cascade
+  add_foreign_key "notifications", "alerts"
+  add_foreign_key "notifications", "comments"
+  add_foreign_key "notifications", "content_reports"
+  add_foreign_key "notifications", "publications"
+  add_foreign_key "notifications", "users"
   add_foreign_key "publication_bookmarks", "publications"
   add_foreign_key "publication_bookmarks", "users"
   add_foreign_key "publication_likes", "publications"
@@ -469,6 +551,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
   add_foreign_key "publications", "users", column: "author_id"
   add_foreign_key "publications", "users", column: "campus_map_approved_by_id"
   add_foreign_key "publications", "users", column: "reviewed_by_id"
+  add_foreign_key "push_subscriptions", "sessions", on_delete: :cascade
   add_foreign_key "security_presences", "users"
   add_foreign_key "security_push_subscriptions", "users"
   add_foreign_key "sessions", "users"
@@ -477,6 +560,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "user_roles", "users", column: "granted_by_id"
+  add_foreign_key "users", "locations", column: "notification_location_id"
   add_foreign_key "users", "users", column: "registration_reviewed_by_id"
   add_foreign_key "users", "users", column: "verified_by_id"
 end

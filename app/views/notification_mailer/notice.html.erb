@@ -1,0 +1,11 @@
+<div style="background:#f4f6f5;padding:24px 12px;font-family:Arial,sans-serif;color:#192821;">
+  <div style="background:#fff;max-width:480px;margin:0 auto;border:1px solid #e1e7e3;border-radius:12px;padding:28px;">
+    <%= image_tag attachments["sgu-logo.png"].url, alt: "SGU UFRPE", width: 144, style: "display:block;max-width:100%;height:auto;" %>
+    <h1 style="font-size:24px;line-height:1.25;margin:24px 0 12px;"><%= @heading %></h1>
+    <p style="font-size:16px;line-height:1.5;margin:0 0 20px;">Entre na sua conta para ver o aviso na central de notificações do SGU.</p>
+    <%= link_to "Ver notificações", @inbox_url, style: "display:inline-block;background:#176044;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-size:16px;font-weight:bold;" %>
+    <p style="margin:16px 0 0;font-size:12px;line-height:1.5;">
+      <%= link_to @inbox_url, @inbox_url, style: "color:#176044;overflow-wrap:anywhere;word-break:break-all;" %>
+    </p>
+  </div>
+</div>
