@@ -16,7 +16,7 @@ RSpec.describe "Alerts (portal)", type: :request do
       location_accuracy_meters: "12.5",
       location_captured_at: 1.minute.ago.iso8601,
       requested_visibility: "internal",
-      reported_severity: ""
+      reported_severity: "unsure"
     }.merge(overrides)
   end
 
@@ -26,6 +26,15 @@ RSpec.describe "Alerts (portal)", type: :request do
     client_request_id = overrides.delete(:client_request_id) || key
     extra = overrides.delete(:extra) || {}
     post alerts_path, params: { client_request_id: client_request_id, alert: form_params(overrides) }.merge(extra)
+  end
+
+  it "requires an explicit severity selection and accepts Não sei avaliar without a photo" do
+    sign_in(author)
+    expect { create_alert({ reported_severity: "" }, client_request_id: SecureRandom.uuid) }.not_to change(Alert, :count)
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect { create_alert({ reported_severity: "unsure" }, client_request_id: SecureRandom.uuid) }.to change(Alert, :count).by(1)
+    expect(Alert.last.reported_severity).to eq("unsure")
+    expect(Alert.last.photos).not_to be_attached
   end
 
   describe "registration" do
@@ -49,7 +58,7 @@ RSpec.describe "Alerts (portal)", type: :request do
       alert = Alert.last
       expect(response).to redirect_to(alert_path(alert, locale: I18n.locale))
       expect(alert.author).to eq(author)
-      expect(alert).to have_attributes(status: "received", priority: nil, visibility: "internal", reported_severity: nil,
+      expect(alert).to have_attributes(status: "received", priority: nil, visibility: "internal", reported_severity: "unsure",
                                        location_source: "gps", location_id: nil)
       follow_redirect!
       expect(response.body).to include(alert.protocol)

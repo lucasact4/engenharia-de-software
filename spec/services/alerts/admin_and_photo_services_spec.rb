@@ -15,7 +15,7 @@ RSpec.describe "Alert correction and photo removal" do
         title: "Título corrigido", latitude: 1, location_source: "manual", reported_severity: "critical", status: "closed"
       })
 
-      expect(alert.reload).to have_attributes(title: "Título corrigido", location_source: "gps", reported_severity: nil, status: "received")
+      expect(alert.reload).to have_attributes(title: "Título corrigido", location_source: "gps", reported_severity: "unsure", status: "received")
       expect(publication.reload).to have_attributes(review_status: "pending", visibility: "internal", content_version: 2)
       expect(AuditEvent.where(subject: alert, action: "alert.content_corrected").pick(:reason)).to eq("Dado pessoal")
     end

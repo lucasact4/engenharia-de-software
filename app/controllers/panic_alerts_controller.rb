@@ -3,7 +3,7 @@
 # chave e o mesmo conteúdo. Receber o pedido não significa atendimento humano nem socorro acionado.
 class PanicAlertsController < PortalController
   PANIC_FIELDS = %i[description location_id latitude longitude location_accuracy_meters
-                    location_captured_at location_unavailable_reason].freeze
+                    location_captured_at location_unavailable_reason public_warning].freeze
 
   def new
     authorize Alert, :create_panic?

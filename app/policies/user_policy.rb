@@ -24,6 +24,14 @@ class UserPolicy < ApplicationPolicy
     admin?
   end
 
+  def update_security_presence?
+    active_user? && record.id == user.id && role?(:security)
+  end
+
+  def manage_security_push_subscription?
+    active_user? && record.id == user.id && (user.admin? || role?(:security))
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       return scope.none unless active_admin?

@@ -40,7 +40,6 @@ module Alerts
           reason: @reason, metadata: { reopening: reopening }
         )
       end
-      AlertUpdateNotificationJob.perform_later(@alert.id)
       @alert
     rescue ActiveRecord::RecordInvalid
       # Mantém o objeto em memória na situação original; os erros continuam disponíveis.

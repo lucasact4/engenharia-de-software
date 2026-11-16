@@ -1,0 +1,107 @@
+<% content_for :title, "SGU — Demonstração ao vivo" %>
+<% content_for :description, "SGU no computador e no celular, espelhados nos dois sentidos, para a demonstração da entrega final." %>
+
+<div class="apr-mirror <%= 'apr-mirror--embedded' if @embedded %>" data-controller="demo-mirror"
+     data-demo-mirror-start-value="<%= @start %>" data-demo-mirror-embedded-value="<%= @embedded %>">
+  <header class="apr-mirror__bar">
+    <%= link_to presentation_path(locale: nil, anchor: "s-demo"), class: "apr-mirror__back", data: { action: "demo-mirror#back" } do %>
+      <%= render "presentations/shared/icon", name: "chevron-left" %> <%= @embedded ? "Voltar aos slides" : "Apresentação" %>
+    <% end %>
+    <p class="apr-mirror__brand"><%= sgu_brand(:symbol, alt: "", class_name: "apr-mirror__logo") %> <strong>Demo ao vivo</strong></p>
+
+    <nav class="apr-mirror__shortcuts" aria-label="Atalhos da demonstração">
+      <% @shortcuts.each do |label, path| %>
+        <button type="button" class="apr-mirror__shortcut" data-action="demo-mirror#go" data-path="<%= path %>"><%= label %></button>
+      <% end %>
+    </nav>
+
+    <label class="apr-mirror__toggle">
+      <input type="checkbox" checked data-demo-mirror-target="sync" data-action="demo-mirror#toggleSync">
+      <span>Espelhar</span>
+    </label>
+    <button type="button" class="apr-mirror__shortcut apr-mirror__full" data-demo-mirror-target="fullscreen"
+            data-action="demo-mirror#toggleFullscreen" aria-pressed="false" title="Tela cheia (F)">
+      <%= render "presentations/shared/icon", name: "expand" %><span>Tela cheia</span>
+    </button>
+    <% if @embedded %>
+      <button type="button" class="apr-mirror__shortcut apr-mirror__close" data-action="demo-mirror#back" title="Fechar a demonstração e voltar aos slides">
+        <%= render "presentations/shared/icon", name: "x" %><span>Fechar</span>
+      </button>
+    <% end %>
+  </header>
+
+  <div class="apr-mirror__body">
+    <aside class="apr-mirror__guide" aria-label="Roteiro da demonstração">
+      <p class="apr-mirror__guide-title">Roteiro</p>
+      <ol class="apr-mirror__steps" role="list">
+        <% @steps.each_with_index do |passo, index| %>
+          <% popover_id = "apr-demo-passo-#{index + 1}" %>
+          <li>
+            <button type="button" class="apr-mirror__step" popovertarget="<%= popover_id %>"
+                    data-demo-mirror-target="step" data-action="demo-mirror#showStep" data-index="<%= index %>">
+              <span class="apr-mirror__step-num"><%= index + 1 %></span>
+              <span class="apr-mirror__step-text">
+                <span class="apr-mirror__step-title"><%= passo[:titulo] %></span>
+                <span class="apr-mirror__step-time"><%= passo[:tempo] %></span>
+              </span>
+            </button>
+            <div id="<%= popover_id %>" popover class="apr-mirror__pop" data-demo-mirror-target="stepPop">
+              <p class="apr-mirror__pop-meta">
+                <span class="apr-mirror__pop-num"><%= index + 1 %></span>
+                <span class="apr-demo__time"><%= passo[:tempo] %></span>
+                <span class="apr-demo__who"><%= passo[:perfil] %></span>
+                <button type="button" class="apr-mirror__pop-close" popovertarget="<%= popover_id %>" popovertargetaction="hide" aria-label="Fechar passo">×</button>
+              </p>
+              <p class="apr-mirror__pop-title"><%= passo[:titulo] %></p>
+              <p class="apr-mirror__pop-action"><%= passo[:acao] %></p>
+              <% if passo[:onde].present? %>
+                <p class="apr-mirror__pop-where"><%= render "presentations/shared/icon", name: "scan" %> <%= passo[:onde] %></p>
+              <% end %>
+              <% if passo[:passos].present? %>
+                <ol class="apr-mirror__pop-steps" role="list">
+                  <% passo[:passos].each do |instrucao| %><li><%= instrucao %></li><% end %>
+                </ol>
+              <% end %>
+              <% if passo[:destaque].present? %>
+                <p class="apr-mirror__pop-say"><strong>Fale:</strong> <%= passo[:destaque] %></p>
+              <% end %>
+              <p class="apr-demo__codes"><% passo[:codigos].each do |codigo| %><span class="apr-rc__code"><%= codigo %></span><% end %></p>
+              <% if index < @steps.size - 1 %>
+                <button type="button" class="apr-mirror__pop-next" data-action="demo-mirror#nextStep" data-index="<%= index + 1 %>">
+                  Próximo: <%= @steps[index + 1][:titulo] %> →
+                </button>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    </aside>
+
+    <main class="apr-mirror__stage" data-demo-mirror-target="stage">
+      <section class="apr-mirror__desktop" aria-label="SGU no computador">
+        <div class="apr-mirror__chrome" data-demo-mirror-target="desktopBox">
+          <p class="apr-mirror__address">
+            <span class="apr-mirror__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <code data-demo-mirror-target="desktopUrl"><%= request.host %></code>
+          </p>
+          <div class="apr-mirror__viewport apr-mirror__viewport--desktop" data-demo-mirror-target="desktopViewport">
+            <iframe data-demo-mirror-target="desktop" title="SGU no computador" width="1280" height="800" allow="geolocation"></iframe>
+            <span class="apr-mirror__tap" data-demo-mirror-target="desktopTap" aria-hidden="true"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="apr-mirror__mobile" aria-label="SGU no celular">
+        <div class="apr-mirror__device">
+          <div class="apr-mirror__viewport apr-mirror__viewport--phone" data-demo-mirror-target="phoneViewport">
+            <iframe data-demo-mirror-target="phone" title="SGU no celular" width="390" height="844" allow="geolocation"></iframe>
+            <span class="apr-mirror__tap" data-demo-mirror-target="phoneTap" aria-hidden="true"></span>
+          </div>
+        </div>
+        <p class="apr-mirror__caption" data-demo-mirror-target="status">Espelhado: mexa no computador ou no celular</p>
+      </section>
+    </main>
+  </div>
+
+  <noscript><p class="apr-mirror__noscript">O espelho precisa de JavaScript. <%= link_to "Abrir o SGU", root_path(locale: nil) %></p></noscript>
+</div>

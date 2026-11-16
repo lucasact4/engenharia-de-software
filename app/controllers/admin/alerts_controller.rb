@@ -19,7 +19,7 @@ class Admin::AlertsController < Admin::ApplicationController
     @filter_options = queue_filter_options
     @assignees = User.active.where(admin: true)
       .or(User.active.where(id: UserRole.joins(:role).where(roles: { code: %w[coordination security] }).select(:user_id)))
-      .order(:email_address)
+      .to_a.sort_by(&:email_address)
   end
 
   def show

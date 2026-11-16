@@ -133,7 +133,7 @@ class AlertsController < PortalController
 
     def filter(scope)
       scope = scope.where(status: params[:status]) if Alert.statuses.key?(params[:status].to_s)
-      scope.text_search(params[:q], "alerts.protocol", "alerts.title")
+      scope.search_encrypted(params[:q], :protocol, :title)
     end
 
     # Após um conflito 409, só uma escolha explícita ("é uma nova ocorrência") troca a chave;

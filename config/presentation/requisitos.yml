@@ -23,14 +23,19 @@ documento_implementacao:
 
 problema:
   frase: "Situações de infraestrutura, acessibilidade e segurança no campus precisam chegar a quem pode agir — e a comunidade precisa acompanhar o que acontece depois."
+  # frase_curta e os campos "curto" são usados no slide; os textos longos ficam para o modo leitura.
+  frase_curta: "Problemas no campus precisam chegar a quem resolve - e voltar com resposta."
   dores:
     - titulo: "Registro disperso"
+      curto: "Relatos perdidos em grupos e conversas"
       texto: "Sem um canal único, o relato tende a depender de conversas, grupos e contatos pessoais."
     - titulo: "Retorno invisível"
+      curto: "Quem relata não sabe o que aconteceu"
       texto: "Quem comunica um problema precisa saber se ele foi recebido, analisado ou resolvido."
     - titulo: "Alertas sem alcance"
+      curto: "Avisos urgentes não chegam a todos"
       texto: "Avisos de interesse coletivo precisam chegar de forma organizada a toda a comunidade."
-  fonte: "Premissas que orientam o projeto — revisar com o documento de requisitos (#13)."
+  fonte: "Problema descrito no documento de requisitos UFRPE-SGU-REQ."
 
 publico:
   - "Estudantes"
@@ -42,10 +47,13 @@ publico:
 # Fluxo de valor apresentado na landing (app/views/home/index.html.erb).
 fluxo_valor:
   - titulo: "Comunique"
+    curto: "relato em segundos, com foto e local"
     texto: "Registro com categoria, foto e localização aproximada."
   - titulo: "Acompanhe"
+    curto: "status e aviso a cada mudança"
     texto: "Status claro para quem registrou."
   - titulo: "Compartilhe"
+    curto: "mural e mapa para toda a comunidade"
     texto: "Atualizações coletivas no portal público."
 
 # Dimensões independentes de uma ocorrência.
@@ -100,6 +108,17 @@ requisitos_refinados:
       - "A origem manual exige local cadastrado ou descrição com pelo menos 3 caracteres e não grava coordenadas."
       - "Um pedido de pânico pode ser registrado sem coordenadas quando a localização está indisponível, com o motivo informado."
     estado: implementado
+  - id: "RF011"
+    tipo: funcional
+    titulo: "Acionar o botão de pânico"
+    descricao: "A pessoa autenticada confirma um pedido de ajuda, compartilha GPS quando disponível e aciona rapidamente a equipe administrativa e de segurança por canais de emergência."
+    criterios_aceite:
+      - "O pedido exige autenticação e confirmação explícita, permanece restrito e pode ser registrado mesmo sem GPS."
+      - "Quando a pessoa compartilha a localização, o alerta inclui as coordenadas e a precisão informada pelo navegador; se a localização estiver indisponível, o envio não fica aguardando indefinidamente."
+      - "O pedido avisa todos os agentes de segurança ativos e todos os administradores ativos, sem filtro por proximidade; com GPS do pedido e posições recentes, os agentes mais próximos recebem primeiro."
+      - "O sistema enfileira e-mail e push de emergência em prioridade alta; a confirmação de recebimento técnico não afirma que uma pessoa já viu o pedido."
+    estado: parcial
+    nota: "Alteração do requisito (card #23, 15/11/2026): o critério de alertar só os responsáveis próximos foi descartado; todos os agentes de segurança e administradores são avisados. A entrega externa depende das credenciais SMTP/VAPID e ainda precisa de validação em dispositivos e caixas postais reais."
   - id: "RF017"
     tipo: funcional
     titulo: "Classificar severidade separadamente da prioridade"
@@ -117,8 +136,8 @@ conflitos:
   - id: "RF005"
     tema: "Postagem e autenticação"
     anterior: "Permite postagem sem login."
-    proposta: "Exigir autenticação para registrar ocorrências."
-    estado: aguardando_decisao
+    proposta: "Conta ativa obrigatória para postar; a identidade pode ser ocultada publicamente com CAPTCHA e aprovação administrativa."
+    estado: implementado
   - id: "RF007"
     tema: "Foto da ocorrência"
     anterior: "Foto opcional."

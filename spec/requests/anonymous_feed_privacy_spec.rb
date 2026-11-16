@@ -11,7 +11,7 @@ RSpec.describe "RF005/RF006 mural author privacy", type: :request do
     source = create(:alert, author: author, anonymous_public: anonymous,
                             requested_visibility: visibility == "internal" ? "internal" : "public_external",
                             visibility: visibility == "internal" ? "internal" : "restricted", **attributes)
-    create(:publication, :published, kind: "occurrence", alert: source, visibility: visibility)
+    create(:publication, :published, kind: "occurrence", alert: source, visibility: visibility, approval_method: "administrator")
   end
 
   def card_ids
@@ -39,12 +39,13 @@ RSpec.describe "RF005/RF006 mural author privacy", type: :request do
   it "hides identity and creator matches from ordinary readers in pending internal and external posts" do
     hidden = occurrence
     pending = occurrence(visibility: "internal", title: "Relato em aprovação")
-    pending.update!(review_status: "pending", reviewed_content_version: nil)
+    pending.update!(state: "draft", review_status: "pending", approval_method: nil, reviewed_content_version: nil)
     sign_in(reader)
 
+    get publication_path(hidden)
+    expect(response.body).to include("Pessoa anônima")
     [ hidden, pending ].each do |post|
       get publication_path(post)
-      expect(response.body).to include("Pessoa anônima")
       expect(response.body).not_to include(author.display_name, author.username, author.email_address)
     end
     get publications_path(creator: author.display_name)

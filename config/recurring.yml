@@ -4,6 +4,10 @@ development:
     schedule: every 15 seconds
 
 production:
+  security_presence_cleanup:
+    class: SecurityPresenceCleanupJob
+    queue: maintenance
+    schedule: "* * * * * UTC"
   deliver_notifications:
     class: DeliverNotificationsJob
     schedule: every 15 seconds

@@ -39,6 +39,20 @@ The current deployment configuration expects these secrets:
 
 Use encrypted credentials for application secrets that Rails reads. Use environment variables for deployment-provided values and operational configuration. Document every new variable in this file or the project's deployment documentation.
 
+## Google sign-in (RF004)
+
+Create a **Web application** OAuth client in Google Auth Platform. Register the exact callback URL under **Authorized redirect URIs**. Use `http://localhost:3000/entrar/google/retorno` for local development and the corresponding HTTPS URL for a deployed environment.
+
+| Variable | Value |
+| --- | --- |
+| `SGU_GOOGLE_CLIENT_ID` | The web client's OAuth client ID. |
+| `SGU_GOOGLE_CLIENT_SECRET` | The client secret supplied through the server environment or deployment secret manager. |
+| `SGU_GOOGLE_REDIRECT_URI` | The callback URL registered for this environment. |
+
+Run `bin/rails db:migrate` before starting the application with these settings. For a client in testing mode, add the Google accounts that will test the flow to the Google project.
+
+Sign in to an active SGU account, open **Edit profile**, enter the current SGU password and choose **Link Google Account**. The Google Account can use a different email address. Sign out and use **Sign in with Google** to verify that the link opens the same SGU account. Use **Unlink Google Account** on the profile to remove the link. The Google sign-in entry appears once all three settings are valid.
+
 ## Turnstile for anonymous public posts
 
 Set TURNSTILE_SITE_KEY to the public widget key and TURNSTILE_SECRET_KEY to the server-only key. The option to hide an author's public identity stays unavailable until both are configured. Keep the secret in the deployment secret manager; do not commit it. See docs/turnstile.md for the complete setup notes.

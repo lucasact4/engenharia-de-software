@@ -1,0 +1,45 @@
+<% s = presentation.entrega_final[:stack] %>
+<% versions = Presentation.locked_gem_versions %>
+<% total = s[:grupos].sum { |grupo| grupo[:itens].size } %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "qualidade do produto",
+      title: "#{total} tecnologias e ferramentas, #{s[:padroes].size} padrões de projeto e CI em todo PR" %>
+
+<div class="apr-sq">
+  <%= presentation_item slide, "tecnologias", :div, class: "apr-sq__stack" do %>
+    <% s[:grupos].each do |grupo| %>
+      <section class="apr-sq__group" aria-label="<%= grupo[:nome] %>">
+        <h3 class="apr-label"><%= grupo[:nome] %></h3>
+        <ul class="apr-sq__chips" role="list">
+          <% grupo[:itens].each do |item| %>
+            <li class="apr-sq__chip">
+              <% if item[:logo].present? %>
+                <span class="apr-sq__logo <%= 'apr-sq__logo--dark' if item[:fundo] == 'escuro' %>"><%= image_tag item[:logo], alt: "", decoding: "async" %></span>
+              <% end %>
+              <%= item[:nome] %><% if item[:gem] && versions[item[:gem]] %> <code class="apr-sq__version"><%= versions[item[:gem]] %></code><% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  <% end %>
+
+  <%= presentation_item slide, "padroes", :section, class: "apr-sq__patterns", aria: { label: "Padrões de projeto" } do %>
+    <h3 class="apr-label">Padrões de projeto</h3>
+    <ul role="list">
+      <% s[:padroes].each do |padrao| %>
+        <li><strong><%= padrao[:nome] %></strong><span><%= padrao[:texto] %></span></li>
+      <% end %>
+    </ul>
+    <%= presentation_item slide, "ferramentas", :p, class: "apr-sq__ai" do %>
+      <%= render "presentations/shared/icon", name: "code" %><span><%= s[:ia] %></span>
+    <% end %>
+  <% end %>
+</div>
+
+<%= presentation_item slide, "seguranca", :p, class: "apr-sq__security" do %>
+  <span class="apr-label">Segurança</span>
+  <% s[:seguranca].each do |item| %><span class="apr-tag"><%= item %></span><% end %>
+<% end %>
+
+<%= presentation_update_note("entrega_final.yml", "stack (grupos, padrões, uso de IA e segurança); a versão do Rails vem do Gemfile.lock.") %>

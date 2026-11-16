@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-  before_action :set_locale
+  before_action :set_locale, :set_current_request_ip
 
   allow_browser versions: :modern
 
@@ -15,6 +15,10 @@ class ApplicationController < ActionController::Base
 
     def set_locale
       I18n.locale = extract_locale_from_params || I18n.default_locale
+    end
+
+    def set_current_request_ip
+      Current.request_ip = request.remote_ip
     end
 
     def user_not_authorized

@@ -1,3 +1,4 @@
+# O Active Record Encryption do Rails usa chaves derivadas por finalidade.
 # Deriva chaves de propósito específico da chave secreta estável já exigida pelo Rails.
 # Não altere SECRET_KEY_BASE em produção sem planejar a rotação dos dados criptografados.
 secret = Rails.application.secret_key_base

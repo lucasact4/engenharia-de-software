@@ -18,7 +18,7 @@ class Admin::PublicationsController < Admin::ApplicationController
     scope = scope.where(kind: params[:kind]) if Publication.kinds.key?(params[:kind].to_s)
     scope = scope.where(visibility: params[:visibility]) if Publication.visibilities.key?(params[:visibility].to_s)
     scope = scope.occurrence.review_pending if params[:source_review] == "1"
-    scope = scope.left_joins(:alert).text_search(params[:q], "COALESCE(alerts.title, publications.title)")
+    scope = scope.includes(:alert).filter_decrypted(params[:q]) { |publication| [ publication.alert&.title || publication.title ] }
     @pagy, @publications = pagy(scope.includes(:alert).order(updated_at: :desc, id: :desc), limit: 20)
   end
 

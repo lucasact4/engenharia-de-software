@@ -6,6 +6,7 @@
     <p class="mt-2 max-w-2xl text-sm text-muted">Veja publicações aprovadas em prédios e áreas da sede Recife e ocorrências de trânsito fora do campus. Abra um spot para consultar as publicações e o motivo informado.</p>
   </div>
   <%= render "publications/map_tabs", active: :map %>
+  <%= render "publications/public_panic_warnings" %>
 
   <%= form_with url: campus_map_path, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4", aria: { label: "Filtros do mapa de ocorrências" } do %>
     <div>
@@ -64,4 +65,17 @@
       <p class="sgu-empty mt-3">Ainda não há publicações do mural em locais da sede Recife. Os marcadores aparecerão agrupados por prédio ou local quando houver ocorrências aprovadas.</p>
     <% end %>
   </section>
+  <% if @map_data[:text_locations].any? %>
+    <section aria-labelledby="campus_text_locations_title">
+      <h2 id="campus_text_locations_title" class="sgu-section-title">Ocorrências com local descrito</h2>
+      <ul class="mt-3 space-y-3">
+        <% @map_data[:text_locations].each do |entry| %>
+          <li class="sgu-card p-4">
+            <%= link_to entry[:title], publication_path(entry[:id]), class: "sgu-link font-semibold" %>
+            <p class="mt-1 text-sm text-muted"><%= entry[:description] %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 </div>

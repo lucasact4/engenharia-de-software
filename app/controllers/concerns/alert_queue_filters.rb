@@ -34,7 +34,7 @@ module AlertQueueFilters
     end
 
     def filter_term(scope, term)
-      scope.text_search(term, "alerts.protocol", "alerts.title")
+      scope.search_encrypted(term, :protocol, :title)
     end
 
     def filter_status(scope, status, default_open)

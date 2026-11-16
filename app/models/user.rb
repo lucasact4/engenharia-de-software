@@ -23,6 +23,11 @@ class User < ApplicationRecord
   attribute :notification_location_id, :integer
   belongs_to :notification_location, class_name: "Location", optional: true
 
+  generates_token_for :email_confirmation, expires_in: 24.hours do
+    Digest::SHA256.hexdigest([ email_address, email_confirmed_at&.iso8601 ].to_json)
+  end
+  before_save { self.email_confirmed_at = nil if will_save_change_to_email_address? }
+
   before_validation :stamp_email_notification_consent
   validates :nearby_alerts_radius_km, numericality: { only_integer: true, in: 1..25 }
   validate :nearby_notifications_require_consent_and_location
@@ -57,6 +62,8 @@ class User < ApplicationRecord
   has_many :publication_bookmarks, dependent: :destroy
   has_many :publication_subscriptions, dependent: :destroy
   has_many :alert_subscriptions, dependent: :destroy
+  has_many :security_push_subscriptions, dependent: :destroy
+  has_one :security_presence, dependent: :destroy
   has_many :active_follows, class_name: "UserFollow", foreign_key: :follower_id, inverse_of: :follower,
            dependent: :destroy
   has_many :passive_follows, class_name: "UserFollow", foreign_key: :followed_id, inverse_of: :followed,
@@ -70,7 +77,8 @@ class User < ApplicationRecord
   normalizes :bio, with: ->(bio) { bio.strip.presence }
 
   # Documentos são determinísticos para permitir busca exata sem persistir o valor aberto.
-  encrypts :cpf, :cnpj, :phone, deterministic: true
+  encrypts :cpf, :cnpj, :phone, :email_address, :username, :google_subject, deterministic: true
+  encrypts :display_name, :mother_name, :business_name, :bio, :registration_review_reason
 
   validates :email_address, presence: true, uniqueness: true
   validates :registration_role_code, inclusion: { in: REGISTRATION_ROLES }, allow_nil: true

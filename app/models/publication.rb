@@ -2,6 +2,8 @@
 
 class Publication < ApplicationRecord
   include TextSearch
+  encrypts :title, :body, :review_reason
+
   attribute :approval_method, :string
   enum :approval_method, { administrator: "administrator", verified_author: "verified_author" }, prefix: :approval, validate: { allow_nil: true }
   has_many_attached :photos
@@ -128,7 +130,9 @@ class Publication < ApplicationRecord
 
     def publication_consistency
       if published?
-        errors.add(:state, :requires_current_approval) unless (occurrence? && internal?) || approved_for_current_content?
+        anonymous = occurrence? && alert&.anonymous_public?
+        approved = approved_for_current_content? && (!anonymous || approval_administrator?)
+        errors.add(:state, :requires_current_approval) unless approved || (occurrence? && internal? && !anonymous)
         errors.add(:published_at, :blank) if published_at.nil?
         errors.add(:expires_at, :blank) if notice? && expires_at.nil?
       end

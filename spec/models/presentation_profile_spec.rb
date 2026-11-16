@@ -97,13 +97,21 @@ RSpec.describe PresentationProfile do
       expect(second.selection(presentation).over_limit?).to be(false)
     end
 
+    it "creates the final delivery profile in the order of the assignment" do
+      final = described_class.find_by!(delivery: "final")
+
+      expect(final).not_to be_active
+      expect(final.selection(presentation).visible_slides.map(&:id)).to eq(%w[capa problema stack-qualidade requisitos-cards demo validacao encerramento])
+      expect(final.selection(presentation).over_limit?).to be(false)
+    end
+
     it "does not overwrite profiles edited in the admin" do
       described_class.find_by!(delivery: "segunda").update!(selections: { "gestao" => false })
 
       load Rails.root.join("db/seeds/presentation_profiles.rb")
 
       expect(described_class.find_by!(delivery: "segunda").selections).to eq("gestao" => false)
-      expect(described_class.count).to eq(2)
+      expect(described_class.count).to eq(3)
     end
   end
 end

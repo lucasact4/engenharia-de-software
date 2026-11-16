@@ -30,7 +30,7 @@ RSpec.describe "Social occurrence flow and protected media", type: :request do
     sign_in(student)
     expect do
       post alerts_path, params: { client_request_id: SecureRandom.uuid, alert: { description: "Iluminação apagada na entrada da biblioteca.", category_id: category.id,
-        location_source: "manual", location_description: "Biblioteca, entrada", requested_visibility: "internal" } }
+        location_source: "manual", location_description: "Biblioteca, entrada", reported_severity: "unsure", requested_visibility: "internal" } }
     end.to change(Publication, :count).by(1)
     expect(response).to have_http_status(:see_other)
     expect(Alert.last.publication).to have_attributes(state: "published", visibility: "internal", author: student)

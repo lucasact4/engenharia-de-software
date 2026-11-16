@@ -11,6 +11,7 @@ RSpec.describe "RF008 author follow-up journey", type: :feature, js: true do
     fill_in "Título", with: "Calçada precisa de novo acompanhamento"
     fill_in "Descrição", with: "O problema da calçada continua no mesmo local."
     select "Infraestrutura de teste", from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
     select "#{prior.protocol} · #{prior.title}", from: "Relato anterior"
     choose "Informar o local", allow_label_click: true
     fill_in "Descrição do local", with: "Calçada em frente ao bloco de aulas"

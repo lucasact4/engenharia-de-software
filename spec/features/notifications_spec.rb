@@ -24,7 +24,7 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
   it "opens the mini window on hover and keeps unread status until explicitly read" do
     new_comment
     sign_in_via_ui(user)
-    find('summary[aria-label="Notificações"]').hover
+    find('summary[data-notifications-target="trigger"]').hover
     within("#notification-preview") do
       expect(page).to have_content("Um novo comentário")
       expect(page).to have_content("Não lida")
@@ -38,16 +38,16 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
     new_comment
     sign_in_via_ui(user)
     page.current_window.resize_to(390, 844)
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     expect(page).to have_css("#notification-preview", visible: true)
     expect(page.evaluate_script("document.documentElement.scrollWidth <= window.innerWidth")).to be(true)
     page.save_screenshot("/results/notificacoes-mobile.png") if ENV["NOTIFICATION_SCREENSHOTS"]
-    find('summary[aria-label="Notificações"]').send_keys(:escape)
+    find('summary[data-notifications-target="trigger"]').send_keys(:escape)
     expect(page).not_to have_css("#notification-preview", visible: true)
-    find('summary[aria-label="Notificações"]').send_keys(:enter)
+    find('summary[data-notifications-target="trigger"]').send_keys(:enter)
     expect(page).to have_css("#notification-preview", visible: true)
     within("#notification-preview") { click_button "Fechar" }
-    expect(page).to have_css('summary[aria-label="Notificações"]:focus')
+    expect(page).to have_css('summary[data-notifications-target="trigger"]:focus')
     expect(user.notifications.sole.read_at).to be_nil
   ensure
     page.current_window.resize_to(1024, 786)
@@ -88,7 +88,7 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
     sign_in_via_ui(user)
     page.execute_script("window.originalFetch = window.fetch; window.fetch = () => Promise.reject(new TypeError('offline'))")
     new_comment
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     expect(page).to have_content("Sem conexão", wait: 10)
     page.execute_script("window.fetch = window.originalFetch")
     within("#notification-preview") { expect(page).to have_content("Um novo comentário", wait: 10) }
@@ -109,7 +109,7 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
     sign_in_via_ui(user)
     ActionController::Base.allow_forgery_protection = true
     visit panel_path
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     within("#notification-preview") do
       click_button "Marcar como lida"
       expect(page).to have_content("Lida")
@@ -122,11 +122,11 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
   it "restores polling and preview contents after Turbo back navigation" do
     new_comment
     sign_in_via_ui(user)
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     within("#notification-preview") { click_link "Ver todas as notificações" }
     expect(page).to have_content("Suas notificações")
     page.go_back
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     within("#notification-preview") { expect(page).to have_content("Um novo comentário", wait: 10) }
   end
 
@@ -139,7 +139,7 @@ RSpec.describe "Notification delivery", type: :feature, js: true do
       })
     JS
     new_comment
-    find('summary[aria-label="Notificações"]').click
+    find('summary[data-notifications-target="trigger"]').click
     expect(page).to have_content("Sem conexão", wait: 15)
     page.execute_script("window.fetch = window.originalFetch")
     within("#notification-preview") { expect(page).to have_content("Um novo comentário", wait: 15) }

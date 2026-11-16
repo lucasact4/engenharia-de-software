@@ -9,7 +9,7 @@ RSpec.describe PublicationProjection do
     json = described_class.new(publication).as_json
 
     expect(json.keys).to eq(%i[id kind kind_label title body visibility published_at expires_at comments_enabled
-                               editorial_identity author photos location own_review likes_count comments_count viewer_state])
+                               editorial_identity author photos location location_description own_review likes_count comments_count viewer_state])
     expect(json[:body]).to eq(alert.description)
     expect(json[:own_review]).to be_nil
     expect(json[:location]).to be_nil

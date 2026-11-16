@@ -13,7 +13,7 @@ class PublicationSourcesQuery
     compatible = Publication.compatible_sources_for("internal").or(Publication.compatible_sources_for("public_external"))
     relation = AlertPolicy::Scope.new(@viewer, compatible).resolve
       .where.not(id: Publication.where.not(alert_id: nil).select(:alert_id))
-    relation = relation.text_search(@term, "alerts.protocol", "alerts.title")
+    relation = relation.search_encrypted(@term, :protocol, :title)
     relation.recent_first.limit(LIMIT)
   end
 end

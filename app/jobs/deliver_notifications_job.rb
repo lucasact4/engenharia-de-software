@@ -24,7 +24,7 @@ class DeliverNotificationsJob < ApplicationJob
       end
 
       if delivery.channel == "email"
-        return finish(delivery, "skipped") unless Notifications::ChannelConfig.email_available? &&
+        return finish(delivery, "skipped") unless Notifications::ChannelConfig.email_available? && user.email_confirmed_at? &&
           NotificationPreference.exists?(user_id: user.id, email_enabled: true)
 
         NotificationMailer.notice(delivery).deliver_now!

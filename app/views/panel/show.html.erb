@@ -28,6 +28,26 @@
     </dl>
   </section>
 <% end %>
+<% if user.admin? || user.role?(:security) %>
+  <section class="mt-6 sgu-card p-5 sm:p-6" aria-labelledby="security_readiness_title"
+    data-controller="security-readiness"
+    data-security-readiness-presence-url-value="<%= security_presence_path %>"
+    data-security-readiness-push-url-value="<%= security_push_subscription_path %>"
+    data-security-readiness-vapid-public-key-value="<%= Notifications::ChannelConfig.push_available? ? Notifications::ChannelConfig.vapid[:public_key] : '' %>">
+    <h2 id="security_readiness_title" class="sgu-section-title">Receber alertas de emergência</h2>
+    <p class="mt-2 text-sm text-muted">Ative as notificações neste dispositivo para receber alertas de emergência.</p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <button type="button" class="sgu-btn sgu-btn-danger" data-action="security-readiness#enablePush">Ativar push de emergência</button>
+      <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#disablePush">Desativar push neste dispositivo</button>
+      <% if user.role?(:security) %>
+        <p class="w-full text-sm text-muted">Todo pedido de pânico avisa toda a equipe de segurança. Se estiver de serviço, compartilhe sua localização enquanto este painel estiver aberto: quem está mais perto recebe primeiro.</p>
+        <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#startPresence">Compartilhar localização durante o plantão</button>
+        <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#stopPresence">Parar compartilhamento</button>
+      <% end %>
+    </div>
+    <p class="mt-3 text-sm" role="status" aria-live="polite" data-security-readiness-target="status"></p>
+  </section>
+<% end %>
 
 <section class="mt-6 space-y-5" aria-labelledby="panel_feed">
   <div class="flex items-center justify-between gap-2">

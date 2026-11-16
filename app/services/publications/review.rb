@@ -42,6 +42,13 @@ module Publications
         @publication.assign_attributes(visibility: @decision == "approve" ? "public_external" : "internal",
                                       state: "published", published_at: @publication.published_at || Time.current,
                                       withdrawn_at: nil, moderation_blocked: false)
+        if @publication.alert.anonymous_public?
+          if @decision == "approve"
+            @publication.visibility = @publication.alert.requested_visibility
+          else
+            @publication.assign_attributes(state: "draft", published_at: nil)
+          end
+        end
         if @decision == "reject" && @publication.moderation_blocked_in_database
           @publication.assign_attributes(state: "withdrawn", withdrawn_at: Time.current, moderation_blocked: true)
         end
@@ -52,9 +59,6 @@ module Publications
         @publication.save!
         AuditEvent.record!(actor: actor, action: "publication.#{@decision == 'approve' ? 'approved' : 'rejected'}",
                            subject: @publication, changes: changes, reason: @reason)
-      end
-      if @decision == "approve" && @publication.occurrence? && @publication.public_external?
-        NearbyAlertNotificationJob.perform_later(@publication.alert_id)
       end
       @publication
     end

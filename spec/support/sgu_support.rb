@@ -40,6 +40,7 @@ module SguSupport
       location_source: "gps",
       latitude: "-8.0171234",
       longitude: "-34.9501234",
+      reported_severity: "unsure",
       requested_visibility: "internal"
     }.merge(overrides)
   end

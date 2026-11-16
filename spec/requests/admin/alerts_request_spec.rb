@@ -70,7 +70,7 @@ RSpec.describe "Admin alerts", type: :request do
                latitude: "1", longitude: "1", reported_severity: "critical" }
     }
 
-    expect(alert.reload).to have_attributes(title: "Árvore caída (corrigido)", latitude: BigDecimal("-8.0"), reported_severity: nil)
+    expect(alert.reload).to have_attributes(title: "Árvore caída (corrigido)", latitude: BigDecimal("-8.0"), reported_severity: "unsure")
     event = AuditEvent.find_by(subject: alert, action: "alert.content_corrected")
     expect(event.reason).to eq("Remoção de dado pessoal exposto")
   end

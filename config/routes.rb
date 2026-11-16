@@ -2,12 +2,18 @@ Rails.application.routes.draw do
   mount RailsIcons::Engine, at: "/rails_icons"
   resource :session, only: %i[create destroy], path: "entrar"
   get "entrar", to: "sessions#new", as: :new_session
+  post "entrar/google", to: "google_sessions#create", as: :google_sign_in
+  get "entrar/google/retorno", to: "google_sessions#callback", as: :google_sign_in_callback
+  post "perfil/google", to: "google_sessions#connect", as: :google_connection
+  delete "perfil/google", to: "google_sessions#destroy"
   get "criar-conta", to: "registrations#new", as: :new_registration
+  resource :email_confirmation, path: "confirmar-email", only: %i[show create update]
   post "criar-conta", to: "registrations#create", as: :registration
   resources :passwords, param: :token
   root "home#index"
   get "apresentacao", to: "presentations#show", as: :presentation
   post "apresentacao/pdf", to: "presentations#pdf", as: :presentation_pdf
+  get "apresentacao/demo", to: "demo_mirrors#show", as: :demo_mirror
   get "apresentacao/testes-cruzados", to: "cross_tests#show", as: :cross_tests
   get "apresentacao/plano-de-teste", to: "cross_tests#plan", as: :test_plan
   get "apresentacao/plano-de-teste/pdf", to: "cross_tests#plan_pdf", as: :test_plan_pdf
@@ -22,7 +28,7 @@ Rails.application.routes.draw do
     post :subscribe_push, on: :collection, path: "push"
     delete :unsubscribe_push, on: :collection, path: "push"
   end
-  get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+  get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
   get "manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
 
   resources :alerts, path: "alertas", only: %i[index show new create edit update] do
@@ -36,6 +42,14 @@ Rails.application.routes.draw do
 
   get "panico", to: "panic_alerts#new", as: :new_panic
   post "panico", to: "panic_alerts#create", as: :panic
+  get "panico/:id/localizacao", to: "panic_locations#show", as: :panic_location
+  patch "panico/:id/localizacao", to: "panic_locations#update"
+  delete "panico/:id/localizacao", to: "panic_locations#destroy"
+
+  namespace :security, path: "seguranca" do
+    resource :presence, only: %i[create destroy], controller: "presence"
+    resource :push_subscription, only: %i[create destroy], controller: "push_subscriptions"
+  end
 
   namespace :handling, path: "atendimento" do
     resources :alerts, path: "", only: %i[index show] do
@@ -43,12 +57,13 @@ Rails.application.routes.draw do
         patch :assessment, path: "classificacao"
         patch :assignment, path: "responsavel"
         patch :transition, path: "situacao"
+        patch :public_warning, path: "aviso-publico"
       end
     end
   end
 
   # Mural de ocorrências e comunicados, com interações compartilhadas.
-  resources :publications, path: "mural", only: %i[index show] do
+  resources :publications, path: "mural", only: %i[index show destroy] do
     { like: "curtida", bookmark: "salvo", subscription: "acompanhamento" }.each do |kind, path|
       resource kind, only: %i[create destroy], controller: "publication_interactions", path: path,
                      as: "#{kind}_interaction", defaults: { kind: kind }
@@ -133,4 +148,5 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
+  get "saude" => "health#show", as: :health_check
 end

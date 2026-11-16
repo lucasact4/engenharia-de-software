@@ -8,7 +8,7 @@ module RailsBase
   class Application < Rails::Application
     config.load_defaults 8.1
 
-    config.autoload_lib(ignore: %w[assets generators tasks templates])
+    config.autoload_lib(ignore: %w[active_storage assets generators tasks templates])
 
     config.i18n.load_path += Dir[Rails.root.join("my", "locales", "*.{rb,yml}").to_s]
     config.i18n.available_locales = [ :en, "pt-br" ]
