@@ -57,6 +57,7 @@ Rails.application.routes.draw do
         patch :assessment, path: "classificacao"
         patch :assignment, path: "responsavel"
         patch :transition, path: "situacao"
+        patch :public_warning, path: "aviso-publico"
       end
     end
   end
@@ -147,4 +148,5 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
+  get "saude" => "health#show", as: :health_check
 end

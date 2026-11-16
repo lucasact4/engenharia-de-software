@@ -19,6 +19,19 @@ class Handling::AlertsController < PortalController
     render_handling_show(:ok)
   end
 
+  # Tira o pânico público do topo do mural; o pedido continua no atendimento.
+  def public_warning
+    authorize @alert, :withdraw_public_warning?
+    if @alert.public_warning_withdrawn_at.nil?
+      Alert.transaction do
+        @alert.update!(public_warning_withdrawn_at: Time.current, public_warning_withdrawn_by: Current.user)
+        AuditEvent.record!(actor: Current.user, action: "alert.public_warning_withdrawn", subject: @alert,
+                           changes: @alert.saved_changes.slice("public_warning_withdrawn_at"))
+      end
+    end
+    redirect_to handling_alert_path(@alert), notice: "Aviso público retirado do mural. O pedido continua no atendimento.", status: :see_other
+  end
+
   private
 
     def set_alert

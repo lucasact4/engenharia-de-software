@@ -27,7 +27,12 @@ class PanicPushJob < ApplicationJob
       open_timeout: 5,
       read_timeout: 5
     )
-  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
+    PanicDelivery.record!(alert: alert, user: subscription.user, channel: "push")
+  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => error
+    PanicDelivery.record!(alert: alert, user: subscription.user, channel: "push", status: "failed", error: error.class.name.demodulize) if alert && subscription
     subscription&.destroy
+  rescue WebPush::ResponseError => error
+    PanicDelivery.record!(alert: alert, user: subscription.user, channel: "push", status: "failed", error: error.class.name.demodulize)
+    raise
   end
 end

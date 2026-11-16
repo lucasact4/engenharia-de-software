@@ -3,7 +3,7 @@
   <p class="sgu-eyebrow !text-negative-ink">Pedido de ajuda</p>
   <h1 class="sgu-page-title mt-1">Pânico</h1>
   <div class="mt-3 space-y-2 text-ink">
-    <p>Envia um registro <strong>restrito</strong> à equipe de segurança do SGU, com a localização que estiver disponível. Não precisa de título, categoria ou foto.</p>
+    <p>Envia um registro <strong>restrito</strong> à equipe de segurança do SGU, com a localização que estiver disponível. Não precisa de título, categoria ou foto. Se for um risco para outras pessoas, você também pode avisar a comunidade no mural.</p>
     <p class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink"><strong>Importante:</strong> o SGU confirma apenas que o sistema recebeu o pedido. Ele não aciona viaturas, não liga para ninguém e não rastreia sua localização. Em risco imediato, procure ajuda presencial ou os serviços de emergência.</p>
   </div>
 
@@ -27,7 +27,7 @@
     <%= hidden_field_tag "panic[location_unavailable_reason]", "not_shared", id: "panic_unavailable_reason", data: { panic_target: "reason" } %>
 
     <div>
-      <%= label_tag "panic_description", "O que está acontecendo? (opcional)", class: "sgu-label" %>
+      <%= label_tag "panic_description", "O que está acontecendo? (opcional; obrigatório para avisar a comunidade)", class: "sgu-label" %>
       <%= text_area_tag "panic[description]", params.dig(:panic, :description), id: "panic_description", rows: 2, maxlength: Alert::DESCRIPTION_LENGTH.max, class: "sgu-input", placeholder: "Se puder, em poucas palavras." %>
     </div>
 
@@ -38,6 +38,15 @@
         <p class="sgu-hint">Se o GPS estiver disponível, ele é usado no lugar do local escolhido.</p>
       </div>
     <% end %>
+
+    <label class="flex items-start gap-2 rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-ink">
+      <%= check_box_tag "panic[public_warning]", "1", params.dig(:panic, :public_warning) == "1", id: "panic_public_warning",
+            class: "mt-0.5 size-4 accent-negative-solid", aria: { describedby: "panic_public_warning_hint" } %>
+      <span>
+        <strong>Avisar a comunidade no mural (alerta público).</strong>
+        <span id="panic_public_warning_hint" class="block text-muted">Para riscos coletivos, como assalto ou incêndio. O texto acima aparece no topo do mural para todos, <strong>sem o seu nome</strong> e com o local aproximado. A equipe de segurança continua recebendo o pedido e pode retirar o aviso.</span>
+      </span>
+    </label>
 
     <label class="flex items-start gap-2 text-sm text-ink">
       <input type="checkbox" checked class="mt-0.5 size-4 accent-brand-solid" data-panic-target="useGps">

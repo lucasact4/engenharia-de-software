@@ -198,8 +198,8 @@ RSpec.describe "Presentation revision and SGU brand", type: :request do
     it "brands the portal header and the administration sidebar, including the collapsed state" do
       sign_in(create(:user))
       get panel_path
-      expect(document.at_css("header a[aria-label='SGU UFRPE, início'] .sgu-brand--symbol")).to be_present
-      expect(document.at_css("header a[aria-label='SGU UFRPE, início'] .sgu-brand--horizontal")).to be_present
+      expect(document.at_css("header a[title='SGU UFRPE, início'] .sgu-brand--symbol")).to be_present
+      expect(document.at_css("header a[title='SGU UFRPE, início'] .sgu-brand--horizontal")).to be_present
       expect(response.body).to include("Equipe UFRPE de Engenharia de Software")
 
       sign_out

@@ -198,6 +198,12 @@ tables:
       - ''
     - - lock_version
       - ''
+    - - public_warning
+      - ''
+    - - public_warning_withdrawn_at
+      - ''
+    - - public_warning_withdrawn_by_id
+      - FK users
     - - created_at
       - ''
     - - updated_at
@@ -632,7 +638,42 @@ tables:
       - ''
     - - updated_at
       - ''
+  panic_deliveries:
+    columns:
+    - - id
+      - PK
+    - - alert_id
+      - FK alerts
+    - - user_id
+      - FK users
+    - - channel
+      - ''
+    - - status
+      - ''
+    - - latency_ms
+      - ''
+    - - error_message
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
 foreign_keys:
+- source: alerts
+  target: users
+  column: public_warning_withdrawn_by_id
+  required: false
+  unique: false
+- source: panic_deliveries
+  target: alerts
+  column: alert_id
+  required: true
+  unique: false
+- source: panic_deliveries
+  target: users
+  column: user_id
+  required: true
+  unique: false
 - source: notification_preferences
   target: users
   column: user_id

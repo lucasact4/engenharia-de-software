@@ -1,6 +1,6 @@
 <details class="notification-bell" data-notifications-target="menu" data-action="mouseenter->notifications#hover mouseleave->notifications#leave keydown.esc->notifications#close">
-  <summary class="sgu-btn sgu-btn-sm sgu-btn-secondary" aria-label="Notificações" data-action="click->notifications#toggle" data-notifications-target="trigger" aria-expanded="false" aria-controls="notification-preview">
-    <%= sgu_icon("bell") %>
+  <summary class="sgu-btn sgu-btn-sm sgu-btn-secondary" data-action="click->notifications#toggle" data-notifications-target="trigger" aria-expanded="false" aria-controls="notification-preview">
+    <%= sgu_icon("bell") %><span class="sr-only">Notificações não lidas:</span>
     <span class="notification-count" data-notifications-target="count" aria-live="polite"><%= notification_feed.unread.count %></span>
   </summary>
   <section id="notification-preview" class="notification-preview" aria-label="Notificações recentes">

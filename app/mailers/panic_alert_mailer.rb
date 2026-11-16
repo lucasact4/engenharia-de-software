@@ -1,4 +1,7 @@
 class PanicAlertMailer < ApplicationMailer
+  # RNF001: registra quando o e-mail de emergência foi entregue ao serviço de e-mail.
+  after_deliver { PanicDelivery.record!(alert: @alert, user: @recipient, channel: "email") if @alert && @recipient }
+
   def emergency(alert, recipient)
     @alert = alert
     @recipient = recipient

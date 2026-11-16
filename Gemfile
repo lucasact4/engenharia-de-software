@@ -99,6 +99,8 @@ group :test do
   gem "rspec-rails", "8.1.0"
   # Simple one-liner tests for common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers", "8.0.1"
+  # Automated accessibility checks (axe-core) in browser specs [https://github.com/dequelabs/axe-core-gems]
+  gem "axe-core-rspec", "4.14.0"
   # A set of RSpec matchers for testing Pundit policies. [https://github.com/pundit-community/pundit-matchers]
   gem "pundit-matchers", "4.0.0"
   # Adds realtime console.log output to Capybara + Selenium + Chromedriver

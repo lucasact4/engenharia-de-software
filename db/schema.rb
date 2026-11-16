@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -89,14 +89,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
     t.integer "related_alert_id"
     t.datetime "panic_tracking_stopped_at"
     t.text "panic_latest_position"
+    t.boolean "public_warning", default: false, null: false
+    t.datetime "public_warning_withdrawn_at"
+    t.integer "public_warning_withdrawn_by_id"
     t.index ["assigned_to_id"], name: "index_alerts_on_assigned_to_id"
     t.index ["author_id", "client_request_id"], name: "index_alerts_on_author_and_client_request", unique: true, where: "client_request_id IS NOT NULL"
     t.index ["author_id", "created_at"], name: "index_alerts_on_author_id_and_created_at"
     t.index ["category_id"], name: "index_alerts_on_category_id"
     t.index ["duplicate_of_id"], name: "index_alerts_on_duplicate_of_id"
+    t.index ["kind", "public_warning", "created_at"], name: "index_alerts_on_kind_and_public_warning_and_created_at"
     t.index ["kind", "visibility", "status"], name: "index_alerts_on_kind_and_visibility_and_status"
     t.index ["location_id"], name: "index_alerts_on_location_id"
     t.index ["protocol"], name: "index_alerts_on_protocol", unique: true
+    t.index ["public_warning_withdrawn_by_id"], name: "index_alerts_on_public_warning_withdrawn_by_id"
     t.index ["related_alert_id"], name: "index_alerts_on_related_alert_id"
     t.index ["status", "created_at"], name: "index_alerts_on_status_and_created_at"
     t.check_constraint "(closed_at IS NULL AND closure_reason IS NULL) OR status = 'closed'", name: "alerts_closure_only_when_closed"
@@ -296,6 +301,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
     t.index ["user_id", "read_at", "created_at"], name: "index_notifications_on_user_id_and_read_at_and_created_at"
     t.index ["user_id"], name: "index_notifications_on_user_id"
     t.check_constraint "kind IN ('alert_status', 'publication_status', 'comment', 'like', 'panic', 'content_report', 'publication_pending', 'nearby_alert')", name: "notifications_kind"
+  end
+
+  create_table "panic_deliveries", force: :cascade do |t|
+    t.integer "alert_id", null: false
+    t.integer "user_id", null: false
+    t.string "channel", null: false
+    t.string "status", null: false
+    t.integer "latency_ms", null: false
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alert_id", "created_at"], name: "index_panic_deliveries_on_alert_id_and_created_at"
+    t.index ["alert_id"], name: "index_panic_deliveries_on_alert_id"
+    t.index ["user_id"], name: "index_panic_deliveries_on_user_id"
   end
 
   create_table "presentation_profiles", force: :cascade do |t|
@@ -522,6 +541,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
   add_foreign_key "alerts", "locations"
   add_foreign_key "alerts", "users", column: "assigned_to_id"
   add_foreign_key "alerts", "users", column: "author_id"
+  add_foreign_key "alerts", "users", column: "public_warning_withdrawn_by_id"
   add_foreign_key "anonymous_submission_audits", "alerts"
   add_foreign_key "audit_events", "users", column: "actor_id"
   add_foreign_key "comment_likes", "comments"
@@ -543,6 +563,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_170000) do
   add_foreign_key "notifications", "content_reports"
   add_foreign_key "notifications", "publications"
   add_foreign_key "notifications", "users"
+  add_foreign_key "panic_deliveries", "alerts"
+  add_foreign_key "panic_deliveries", "users"
   add_foreign_key "publication_bookmarks", "publications"
   add_foreign_key "publication_bookmarks", "users"
   add_foreign_key "publication_likes", "publications"
