@@ -11,6 +11,11 @@
     </div>
     <%= form.submit "Entrar", class: "sgu-btn sgu-btn-primary h-12 w-full" %>
   <% end %>
+  <% if GoogleSignIn.configured? && !authenticated? %>
+    <%= button_to t("authentication.google.sign_in"), google_sign_in_path,
+                  class: "sgu-btn sgu-btn-secondary mt-4 h-12 w-full",
+                  form: { data: { turbo: false } } %>
+  <% end %>
   <p class="mt-6 text-center text-sm text-muted">Ainda não tem conta? <%= link_to "Criar conta", new_registration_path(locale: nil), class: "sgu-link" %></p>
   <div class="mt-6"><%= render "shared/auth/development_notice" %></div>
 <% end %>

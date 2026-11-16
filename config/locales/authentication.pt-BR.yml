@@ -3,6 +3,22 @@ pt-br:
     sessions:
       invalid_credentials: "Tente outro e-mail ou senha."
       rate_limited: "Tente novamente mais tarde."
+    google:
+      sign_in: "Entrar com Google"
+      profile_title: "Conta Google"
+      link_instructions: "Confirme sua senha do SGU e escolha a conta Google que deseja usar para entrar."
+      current_password: "Senha atual do SGU"
+      connect: "Vincular conta Google"
+      disconnect: "Desvincular conta Google"
+      connected: "Conta Google vinculada."
+      disconnected: "Conta Google desvinculada."
+      invalid_password: "A senha atual do SGU está incorreta."
+      invalid_callback: "A tentativa de entrar com Google expirou ou é inválida. Tente novamente."
+      cancelled: "A autenticação com o Google foi cancelada."
+      unavailable: "A autenticação com o Google está indisponível. Tente novamente mais tarde."
+      invalid_response: "Não foi possível validar a autenticação com o Google."
+      not_linked: "Entre com suas credenciais do SGU e vincule uma conta Google em Editar perfil."
+      link_failed: "Não foi possível vincular esta conta Google. Verifique se ela já está vinculada."
     passwords:
       instructions_sent: "As instru��es de redefini��o de senha foram enviadas, caso exista uma conta com esse e-mail."
       reset_success: "A senha foi redefinida."

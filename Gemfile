@@ -36,6 +36,7 @@ gem "stimulus-rails"
 gem "jbuilder", "2.15.1"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "3.1.22"
+gem "googleauth", "~> 1.17", require: false
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem [https://github.com/tzinfo/tzinfo]
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
