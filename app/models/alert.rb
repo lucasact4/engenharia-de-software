@@ -286,7 +286,8 @@ class Alert < ApplicationRecord
 
     # O aviso público mostra só o texto e um local aproximado; por isso exige uma descrição útil.
     def public_warning_rules
-      return unless public_warning?
+      # Bancos ainda em migração (sem a coluna) não têm aviso público a validar.
+      return unless has_attribute?(:public_warning) && public_warning?
 
       errors.add(:public_warning, "só pode ser usado em pedidos de pânico") unless panic?
       if description.to_s.strip.length < DESCRIPTION_LENGTH.min

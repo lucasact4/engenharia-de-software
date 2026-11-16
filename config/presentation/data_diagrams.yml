@@ -1212,6 +1212,7 @@ diagrams:
       anonymous_submission_audits guarda IP e user agent cifrados de relatos anônimos.
       Presenças guardam localização de plantão por até cinco minutos; assinaturas de segurança
       armazenam endpoints Web Push e a resposta de emergência referencia o usuário responsável.
+      panic_deliveries registra cada push ou e-mail de emergência e o tempo desde o pedido (RNF001).
     width: 1080
     height: 760
     nodes:
@@ -1262,6 +1263,12 @@ diagrams:
       "y": 560
       width: 340
       split: 1
+      variant: infra
+    - table: panic_deliveries
+      x: 760
+      "y": 560
+      width: 290
+      split: 2
       variant: infra
     - table: users
       reference: true
