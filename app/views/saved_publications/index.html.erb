@@ -1,16 +1,23 @@
 <% content_for :title, "Salvos - SGU UFRPE" %>
-<p class="sgu-eyebrow">Lista privada</p>
-<h1 class="sgu-page-title mt-1">Salvos</h1>
-<p class="mt-2 text-muted">Só você vê o que salvou. Se uma publicação sair do ar ou deixar de estar disponível para você, ela some daqui.</p>
-<% if @unavailable.positive? %>
-  <div class="mt-4 flex flex-col gap-2 rounded-xl border border-warning-line bg-warning-soft p-4 text-sm text-warning-ink sm:flex-row sm:items-center sm:justify-between">
-    <p><%= pluralize(@unavailable, "item salvo não está mais disponível", plural: "itens salvos não estão mais disponíveis") %>.</p>
-    <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "salvos"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+<div class="profile-page">
+  <%= back_link profile_path, "seu perfil" %>
+  <%= render "profiles/own_header", user: @user, posts_count: @posts_count, followers_count: @followers_count, following_count: @following_count %>
+  <%= render "profiles/own_tabs", active: :saved %>
+
+  <div class="profile-saved-bar">
+    <h1 class="sr-only">Salvos</h1>
+    <p><%= sgu_icon("lock", "size-4") %> Somente você pode ver o que salvou</p>
+    <%= link_to publications_path, class: "profile-saved-link" do %>Explorar o mural <%= sgu_icon("chevron-right", "size-4") %><% end %>
   </div>
-<% end %>
-<% if @cards.any? %>
-  <div class="mt-5 space-y-4"><% @cards.each do |card| %><%= render "publications/card", card: card %><% end %></div>
-  <%= render "shared/pagination", pagy: @pagy %>
-<% else %>
-  <div class="sgu-empty mt-5"><p class="text-sm text-muted">Nada salvo. Use <strong>Salvar</strong> em uma publicação do <%= link_to "mural", publications_path, class: "sgu-link" %>.</p></div>
-<% end %>
+
+  <% if @unavailable.positive? %>
+    <div class="profile-saved-warning">
+      <p><%= pluralize(@unavailable, "item salvo não está mais disponível", plural: "itens salvos não estão mais disponíveis") %>.</p>
+      <%= button_to "Remover indisponíveis", prune_follow_ups_path(tipo: "salvos"), method: :delete, class: "sgu-btn sgu-btn-sm sgu-btn-secondary" %>
+    </div>
+  <% end %>
+
+  <%= render "profiles/grid", cards: @grid_cards, pagy: @pagy, empty_icon: "bookmark",
+        empty_title: "Salve o que quiser rever",
+        empty_text: "Use Salvar em uma publicação do mural. Se ela sair do ar ou deixar de estar disponível para você, ela some daqui." %>
+</div>

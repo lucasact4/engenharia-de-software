@@ -13,6 +13,7 @@ class PublicationsController < PortalController
     scope = scope.where(kind: params[:kind]) if Publication.kinds.key?(params[:kind].to_s)
     scope = scope.where(visibility: params[:audience]) if Current.user && Publication.visibilities.key?(params[:audience].to_s)
     @categories = Category.active.ordered
+    @selected_category_ids = selected_category_ids
     scope = filter_feed(scope)
     @pagy, records = pagy(scope.order(published_at: :desc, id: :desc), limit: 10)
     @cards = PublicationProjection.collection(records, viewer: Current.user)
@@ -44,6 +45,12 @@ class PublicationsController < PortalController
 
   private
 
+    # Multisseleção (category_ids[]) com compatibilidade para links antigos (category_id).
+    def selected_category_ids
+      ids = Array(params[:category_ids]).push(params[:category_id]).map(&:to_s).grep(/\A\d+\z/).map(&:to_i).uniq
+      ids.empty? ? [] : Category.where(id: ids).ids
+    end
+
     def filter_feed(scope)
       scope = scope.left_joins(:alert)
 
@@ -69,8 +76,7 @@ class PublicationsController < PortalController
         scope = scope.where(author_id: matching.or(public_handles).or(unnamed_handles))
       end
 
-      category_id = params[:category_id].to_s
-      scope = scope.where(alerts: { category_id: category_id }) if category_id.match?(/\A\d+\z/) && Category.exists?(id: category_id)
+      scope = scope.where(alerts: { category_id: @selected_category_ids }) if @selected_category_ids.any?
 
       severity = params[:severity].to_s
       if Alert.reported_severities.key?(severity)

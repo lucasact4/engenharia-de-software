@@ -18,6 +18,7 @@ RSpec.describe "Campus map for the community", type: :feature, js: true do
     expect(page).to have_css("[data-campus-map-target='map'].leaflet-container", wait: 10)
     expect(page).to have_content("1 ocorrência(s) localizada(s)")
     expect(page).not_to have_content(location.name)
+    find("summary", text: "Lista de ocorrências e locais").click
     expect(page).to have_link("Abrir publicação", href: publication_path(publication))
   end
 
@@ -78,6 +79,7 @@ RSpec.describe "Campus map for the community", type: :feature, js: true do
     visit campus_map_path
 
     expect(page).to have_css("[data-campus-map-target='map'].leaflet-container", wait: 10)
+    click_button "Filtrar mapa"
     expect(page).to have_select("category_id")
     expect(page.evaluate_script("document.documentElement.scrollWidth <= window.innerWidth")).to be(true)
   ensure

@@ -1,6 +1,8 @@
 # Edição do próprio perfil (nome, usuário, apresentação e opt-in público) por Users::UpdateProfile.
 # Só esses campos são aceitos: e-mail, senha, admin, papéis e desativação nunca passam por aqui.
 class ProfilesController < PortalController
+  include ProfileGrid
+
   FIELDS = %i[display_name username bio public_profile avatar email_notifications_enabled
               nearby_alerts_email_enabled nearby_alerts_radius_km notification_location_id].freeze
 
@@ -8,8 +10,8 @@ class ProfilesController < PortalController
 
   def show
     authorize @user, :show?, policy_class: ProfilePolicy
-    @followers_count = PublicFollowersQuery.new(@user).count
-    @following_count = FollowedProfilesQuery.new(@user).call.count
+    load_profile_grid(@user)
+    load_own_profile_summary(@user)
   end
 
   def edit

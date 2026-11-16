@@ -1,3 +1,8 @@
+.leaflet-container {
+  /* Keep Leaflet panes and controls inside the map's stacking context. */
+  isolation: isolate;
+}
+
 .leaflet-popup.campus-map-popup .leaflet-popup-content-wrapper,
 .leaflet-popup.campus-map-popup .leaflet-popup-tip {
   background: var(--surface);

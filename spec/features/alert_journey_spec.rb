@@ -42,6 +42,7 @@ RSpec.describe "Occurrence journey", type: :feature, js: true do
 
     Capybara.reset_sessions!
     sign_in_via_ui coordinator
+    find("summary[aria-label='Mais opções']").click
     click_link "Atendimento", match: :first
     click_link "Poste apagado perto da guarita"
     select "Alta", from: "Prioridade do atendimento"

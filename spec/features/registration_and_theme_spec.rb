@@ -42,6 +42,7 @@ RSpec.describe "Registration and shared themes", type: :feature, js: true do
     [ new_session_path, new_registration_path, publications_path, presentation_path ].each do |path|
       visit path
       expect(page.evaluate_script("document.documentElement.dataset.theme")).to eq("light")
+      find("summary[aria-label='Mais opções']").click if path == publications_path
       expect(page).to have_button("Ativar modo escuro")
       expected_ink = path == presentation_path ? "rgb(23, 56, 46)" : "rgb(21, 40, 35)"
       expect(page.evaluate_script("getComputedStyle(document.querySelector('[data-theme-toggle]')).color")).to eq(expected_ink)
@@ -70,7 +71,7 @@ RSpec.describe "Registration and shared themes", type: :feature, js: true do
     overflow = page.evaluate_script("document.documentElement.scrollWidth > window.innerWidth")
     expect(overflow).to be(false)
     visit publications_path
-    find("summary[aria-label='Abrir menu']").click
+    find("summary[aria-label='Mais opções']").click
     expect(page).to have_link("Criar conta", visible: true)
   ensure
     page.driver.browser.manage.window.resize_to(1280, 900)

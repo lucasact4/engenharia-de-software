@@ -1,0 +1,5 @@
+<%# Abas do próprio perfil, como no Instagram. Local: active (:posts ou :saved) %>
+<nav class="profile-tabs" aria-label="Seções do perfil">
+  <%= link_to profile_path, class: "profile-tab", aria: { current: ("page" if active == :posts) }, title: "Publicações" do %><%= sgu_icon("grid-3x3", "size-6") %><span>Publicações</span><% end %>
+  <%= link_to saved_publications_path, class: "profile-tab", aria: { current: ("page" if active == :saved) }, title: "Salvos" do %><%= sgu_icon("bookmark", "size-6") %><span>Salvos</span><% end %>
+</nav>

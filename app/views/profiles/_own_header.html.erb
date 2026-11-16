@@ -1,0 +1,47 @@
+<%# Cabeçalho do próprio perfil. Locais: user, posts_count, followers_count, following_count %>
+<% handle = user.username.presence || account_handle(user) %>
+<% roles = user.roles.active.ordered.map(&:name) %>
+<% roles.unshift("Administração do SGU") if user.admin? %>
+<header class="profile-header">
+  <%= link_to edit_profile_path, class: "profile-avatar-ring", aria: { label: "Trocar foto do perfil" }, title: "Trocar foto" do %>
+    <%= account_avatar(user, "profile-avatar") %>
+  <% end %>
+
+  <section class="profile-summary" aria-labelledby="profile-handle">
+    <div class="profile-title-row">
+      <h1 id="profile-handle"><%= handle %></h1>
+      <% if user.verified? %><%= render "shared/verified_badge" %><% end %>
+      <%= link_to edit_profile_path, class: "profile-icon-button", aria: { label: "Configurações do perfil" }, title: "Configurações do perfil" do %><%= sgu_icon("settings", "size-5") %><% end %>
+    </div>
+    <p class="profile-name"><%= user.display_name.presence || "Adicione seu nome em Editar perfil" %></p>
+
+    <ul class="profile-stats" role="list">
+      <li><strong><%= number_with_delimiter(posts_count) %></strong> <%= posts_count == 1 ? "publicação" : "publicações" %></li>
+      <li>
+        <% if user.public_profile? %>
+          <%= link_to followers_person_path(user) do %><strong><%= number_with_delimiter(followers_count) %></strong> <%= followers_count == 1 ? "seguidor" : "seguidores" %><% end %>
+        <% else %>
+          <span title="Perfil privado: ninguém pode seguir você"><strong>—</strong> seguidores</span>
+        <% end %>
+      </li>
+      <li><%= link_to follow_ups_path(anchor: "followups_people") do %><strong><%= number_with_delimiter(following_count) %></strong> seguindo<% end %></li>
+    </ul>
+
+    <div class="profile-bio">
+      <% if roles.any? %><p class="profile-category"><%= roles.to_sentence %></p><% end %>
+      <% if user.bio.present? %><p class="sgu-prose"><%= user.bio %></p><% else %><p class="profile-bio-empty">Escreva uma apresentação curta em Editar perfil.</p><% end %>
+      <p class="profile-visibility">
+        <% if user.public_profile? %>
+          <%= sgu_icon("globe", "size-4") %> Perfil público · <%= link_to "ver como os outros veem", person_path(user) %>
+        <% else %>
+          <%= sgu_icon("lock", "size-4") %> Perfil privado · seu nome aparece só nas publicações internas
+        <% end %>
+      </p>
+    </div>
+  </section>
+
+  <div class="profile-actions">
+    <%= link_to "Editar perfil", edit_profile_path, class: "profile-action" %>
+    <%= link_to "Minhas ocorrências", alerts_path, class: "profile-action" %>
+  </div>
+</header>

@@ -1,6 +1,6 @@
 <% content_for :title, "Editar comentário - SGU UFRPE" %>
 <div class="mx-auto max-w-2xl space-y-4">
-  <%= link_to publication_path(@comment.publication_id, anchor: "comment_#{@comment.id}"), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar à publicação<% end %>
+  <%= back_link publication_path(@comment.publication_id, anchor: "comment_#{@comment.id}"), "a publicação" %>
   <h1 class="sgu-page-title">Editar comentário</h1>
   <%= form_with url: comment_path(@comment), method: :patch, class: "sgu-card space-y-3 p-5" do %>
     <%= hidden_field_tag :lock_version, @comment.lock_version %>

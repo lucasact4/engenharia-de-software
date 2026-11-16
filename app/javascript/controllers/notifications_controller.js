@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // A caixa de entrada persistida recupera eventos após queda de rede ou navegação Turbo.
 export default class extends Controller {
-  static targets = ["menu", "trigger", "list", "count", "urgent", "status"]
+  static targets = ["menu", "trigger", "list", "count", "urgent", "status", "urgentExpanded", "urgentMinimized", "urgentMinimize"]
   static values = { url: String }
 
   connect() {
@@ -10,6 +10,8 @@ export default class extends Controller {
     this.stopped = false
     this.pinned = false
     this.readRequests = new Set()
+    try { this.minimizedUrgentKey = sessionStorage.getItem("sgu:panic-minimized") || "" } catch { this.minimizedUrgentKey = "" }
+    this.renderUrgentState()
     this.refresh = this.refresh.bind(this)
     this.beforeCache = () => { this.disconnect(); this.clearPrivateContent() }
     this.visibility = () => { if (!document.hidden) this.refresh() }
@@ -48,6 +50,7 @@ export default class extends Controller {
       const data = await response.json()
       if (this.stopped) return
       this.countTarget.textContent = String(data.unread_count)
+      if (this.countTarget.closest(".mural-nav-notifications")) this.countTarget.hidden = data.unread_count === 0
       this.statusTarget.textContent = ""
       // Não remove um botão ou link que esteja com o foco do teclado.
       if (!this.listTarget.contains(document.activeElement) && this.lastList !== data.list_version) {
@@ -59,6 +62,8 @@ export default class extends Controller {
         this.urgentTarget.dataset.urgentId = String(data.urgent_id || "")
       }
       this.urgentTarget.hidden = !data.urgent_id
+      this.urgentTarget.dataset.urgentVersion = String(data.urgent_version || data.urgent_id || "")
+      this.renderUrgentState()
     } catch (error) {
       if (!this.stopped && error.name !== "AbortError") this.statusTarget.textContent = "Sem conexão. Tentaremos atualizar novamente."
     } finally {
@@ -84,6 +89,7 @@ export default class extends Controller {
       if (this.stopped) return
       if (response.redirected || !response.ok) throw new Error("read")
       if (this.urgentTarget.contains(form)) {
+        this.rememberMinimizedUrgent("")
         this.urgentTarget.hidden = true
         this.urgentTarget.innerHTML = ""
         this.urgentTarget.dataset.urgentId = ""
@@ -112,6 +118,41 @@ export default class extends Controller {
   }
 
   hover() { clearTimeout(this.closeTimer); this.open() }
+
+  // Minimizar só muda a apresentação nesta aba. Não confirma a leitura nem o atendimento.
+  minimizeUrgent() {
+    this.rememberMinimizedUrgent(this.urgentKey())
+    this.renderUrgentState()
+    this.urgentMinimizedTarget.focus()
+  }
+
+  restoreUrgent() {
+    this.rememberMinimizedUrgent("")
+    this.renderUrgentState()
+    this.urgentMinimizeTarget.focus()
+  }
+
+  urgentKey() {
+    return `${this.urgentTarget.dataset.urgentId}:${this.urgentTarget.dataset.urgentVersion || this.urgentTarget.dataset.urgentId}`
+  }
+
+  rememberMinimizedUrgent(key) {
+    this.minimizedUrgentKey = key
+    try {
+      if (key) sessionStorage.setItem("sgu:panic-minimized", key)
+      else sessionStorage.removeItem("sgu:panic-minimized")
+    } catch { /* O controle continua funcionando sem armazenamento da aba. */ }
+  }
+
+  renderUrgentState() {
+    if (!this.hasUrgentTarget || !this.hasUrgentExpandedTarget || !this.hasUrgentMinimizedTarget) return
+    // A chegada de outro pânico muda a versão e volta a mostrar o aviso completo.
+    const minimized = Boolean(this.urgentTarget.dataset.urgentId) && this.minimizedUrgentKey === this.urgentKey()
+    this.urgentTarget.classList.toggle("is-minimized", minimized)
+    this.urgentExpandedTarget.hidden = minimized
+    this.urgentMinimizedTarget.hidden = !minimized
+  }
+
   leave() {
     this.closeTimer = setTimeout(() => {
       if (!this.pinned && !this.menuTarget.contains(document.activeElement)) this.close()

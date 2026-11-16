@@ -1,6 +1,6 @@
 <%# Pânicos que o autor pediu para tornar públicos: ficam no topo do mural enquanto estão em aberto
     (até 12 h) e somem quando a equipe retira o aviso ou encerra o pedido. Sem autor e sem GPS exato. %>
-<% warnings = Alert.active_public_warnings.includes(:location).limit(3).to_a %>
+<% warnings = local_assigns.fetch(:warnings) { Alert.active_public_warnings.includes(:location).limit(3).to_a } %>
 <% if warnings.any? %>
   <section class="public-warnings mt-5 space-y-3" aria-labelledby="public-warnings-title">
     <h2 id="public-warnings-title" class="flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-negative-ink">

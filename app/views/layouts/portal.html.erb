@@ -14,21 +14,17 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-dvh bg-canvas text-ink antialiased" <%= tag.attributes(data: { controller: "notifications", notifications_url_value: notifications_path(format: :json) }) if Current.user %>>
+  <% body_data = { controller: [ ("notifications" if Current.user), "mural-shell", "title-tooltip" ].compact.join(" ") } %>
+  <% body_data[:notifications_url_value] = notifications_path(format: :json) if Current.user %>
+  <body class="min-h-dvh bg-canvas text-ink antialiased mural-shell mural-shell--compact" <%= tag.attributes(data: body_data) %>>
     <a href="#conteudo" class="sr-only z-[60] rounded-lg bg-surface px-4 py-2 font-semibold focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Pular para o conteúdo</a>
-    <%= render "layouts/portal/header" %>
+    <%= render "layouts/portal/mural_navigation" %>
     <%= render "notifications/popup" if Current.user %>
 
-    <main id="conteudo" class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <main id="conteudo" class="mural-main">
       <%= render "layouts/portal/flash" %>
-      <%= yield %>
+      <div class="<%= 'portal-page' unless controller_name.in?(%w[publications campus_map]) %>"><%= yield %></div>
     </main>
 
-    <footer class="mt-10 border-t border-line bg-surface">
-      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p><span class="font-semibold text-ink">SGU UFRPE</span> · Equipe UFRPE de Engenharia de Software</p>
-        <p>Registrar uma ocorrência não substitui contato com serviços de emergência.</p>
-      </div>
-    </footer>
   </body>
 </html>

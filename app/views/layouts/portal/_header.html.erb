@@ -1,25 +1,25 @@
 <% user = Current.user %>
-<header class="sticky top-0 z-50 border-b border-line/80 bg-surface/95 backdrop-blur">
-  <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+<header class="portal-header sticky top-0 z-50 border-b border-line/80 bg-surface/95 backdrop-blur">
+  <div class="portal-header-inner mx-auto flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
     <%= link_to (user ? panel_path : root_path(locale: nil)), class: "flex shrink-0 items-center gap-2.5 !text-ink", title: "SGU UFRPE, início" do %>
       <span class="sm:hidden"><%= sgu_brand(:symbol, alt: "SGU", class_name: "h-9") %></span>
       <span class="hidden sm:block"><%= sgu_brand(:horizontal, alt: "SGU", class_name: "h-9") %></span>
       <% unless user %><span class="hidden border-l border-line pl-2.5 text-[0.6rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted xl:block">UFRPE<br>Campus em conexão</span><% end %>
     <% end %>
 
-    <nav class="portal-primary-nav ml-2 hidden flex-1 items-center gap-1 lg:flex" aria-label="Navegação principal">
-      <%= render "layouts/portal/nav_links", user: user %>
+    <nav class="portal-primary-nav ml-2 flex-1 items-center gap-1" aria-label="Navegação principal">
+      <%= render "layouts/portal/nav_links", user: user, compact: true %>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2">
+    <div class="portal-header-actions ml-auto flex items-center gap-2">
       <%= render "shared/theme_toggle" %>
       <% if user %>
         <%= render "notifications/bell" %>
-        <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pânico: pedir ajuda" } do %>
-          <%= sgu_icon("siren") %><span>Pânico</span>
+        <%= link_to new_panic_path, class: "portal-header-panic sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pânico: pedir ajuda" } do %>
+          <%= sgu_icon("siren") %><span class="portal-header-panic-label">Pânico</span>
         <% end %>
 
-        <details class="relative hidden lg:block">
+        <details class="portal-account-menu relative" data-controller="disclosure" data-action="click@window->disclosure#outside keydown.esc->disclosure#close">
           <summary class="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-line bg-surface text-sm font-bold text-brand-link hover:bg-surface-muted sgu-focus-ring" aria-label="Menu da conta">
             <%= initials_for(user.display_name.presence || user.email_address) %>
           </summary>
@@ -35,7 +35,7 @@
         <% end %>
       <% end %>
 
-      <details class="relative lg:hidden">
+      <details class="portal-mobile-menu relative" data-controller="disclosure" data-action="click@window->disclosure#outside keydown.esc->disclosure#close">
         <summary class="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg border border-line bg-surface text-ink sgu-focus-ring" aria-label="Abrir menu">
           <%= sgu_icon("menu", "size-5") %>
         </summary>

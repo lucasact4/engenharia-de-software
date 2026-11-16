@@ -1,6 +1,6 @@
 <% content_for :title, "Comentário não enviado - SGU UFRPE" %>
 <div class="mx-auto max-w-2xl space-y-4">
-  <%= link_to publication_path(@publication, anchor: "comentarios"), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar à publicação<% end %>
+  <%= back_link publication_path(@publication, anchor: "comentarios"), "a publicação" %>
   <h1 class="sgu-page-title">Revise seu <%= @parent_id ? "resposta" : "comentário" %></h1>
   <p class="text-muted">Em “<%= @publication.title %>”. Nada foi publicado ainda.</p>
   <div class="sgu-card p-5">

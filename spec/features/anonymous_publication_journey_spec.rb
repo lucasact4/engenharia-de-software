@@ -86,8 +86,9 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     expect(page).to have_no_link(author.username)
 
     visit publications_path
+    click_button "Pesquisar"
     fill_in "Criador", with: author.display_name
-    find('button[aria-label="Buscar"]').click
+    click_button "Aplicar filtros"
     expect(page).to have_current_path(/creator=/)
     expect(page).to have_content("Nada encontrado com esses filtros.")
     expect(page).to have_no_css("article.social-post", text: alert.title)
@@ -103,8 +104,9 @@ RSpec.describe "Authenticated concealed-identity submission", type: :feature, js
     sign_in_via_ui create(:user)
     expect(PublicationPolicy::FeedScope.new(create(:user), Publication.all).resolve).not_to include(post)
     visit publications_path
+    click_button "Pesquisar"
     fill_in "Criador", with: author.username
-    find('button[aria-label="Buscar"]').click
+    click_button "Aplicar filtros"
     expect(page).to have_current_path(/creator=/)
     expect(page).to have_content("Nada encontrado com esses filtros.")
     expect(page).to have_no_css("article.social-post", text: result.alert.title)

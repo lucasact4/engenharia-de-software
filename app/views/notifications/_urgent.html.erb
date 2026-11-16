@@ -1,5 +1,10 @@
-<section class="notification-urgent-card" role="alertdialog" aria-modal="false" aria-labelledby="panic-notification-title" aria-describedby="panic-notification-description">
-  <h2 id="panic-notification-title" class="text-lg font-bold">Pânico · atenção imediata</h2>
+<section id="panic-notification-panel" class="notification-urgent-card" data-notifications-target="urgentExpanded"
+         role="alertdialog" aria-modal="false" aria-labelledby="panic-notification-title" aria-describedby="panic-notification-description">
+  <div class="notification-urgent-heading">
+    <h2 id="panic-notification-title" class="text-lg font-bold">Pânico · atenção imediata</h2>
+    <button type="button" class="notification-urgent-minimize" data-notifications-target="urgentMinimize" data-action="notifications#minimizeUrgent"
+            aria-label="Minimizar alerta de pânico" aria-controls="panic-notification-panel" aria-expanded="true" title="Minimizar sem reconhecer o alerta"><%= sgu_icon("chevron-down", "size-5") %></button>
+  </div>
   <p id="panic-notification-description" class="my-3"><%= notification.message %></p>
   <p class="mb-3 text-sm">Reconhecer este aviso registra apenas sua leitura; o atendimento deve ser realizado na ocorrência.</p>
   <div class="flex flex-wrap gap-3">
@@ -7,3 +12,9 @@
     <%= button_to "Reconhecer alerta", read_notification_path(notification), method: :patch, class: "sgu-btn sgu-btn-secondary", form: { data: { action: "submit->notifications#read" } } %>
   </div>
 </section>
+<button type="button" class="notification-urgent-compact" data-notifications-target="urgentMinimized" data-action="notifications#restoreUrgent"
+        aria-label="Expandir alerta de pânico pendente" aria-controls="panic-notification-panel" aria-expanded="false" hidden>
+  <span class="notification-urgent-compact-icon"><%= sgu_icon("siren", "size-5") %></span>
+  <span><strong>Alerta de pânico</strong><small>Pendente · toque para expandir</small></span>
+  <%= sgu_icon("chevron-up", "size-5") %>
+</button>
