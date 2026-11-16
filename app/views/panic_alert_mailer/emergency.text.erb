@@ -1,0 +1,13 @@
+EMERGÊNCIA — PEDIDO DE PÂNICO
+
+Um pedido de ajuda foi recebido no SGU UFRPE.
+Protocolo: <%= @alert.protocol %>
+Recebido em: <%= @alert.created_at.in_time_zone("America/Recife").strftime("%d/%m/%Y %H:%M") %>
+<% if @alert.description.present? %>Mensagem: <%= @alert.description %>
+<% end %><% if @alert.latitude.present? && @alert.longitude.present? %>Localização: https://www.google.com/maps/search/?api=1&query=<%= @alert.latitude %>,<%= @alert.longitude %>
+<% elsif @alert.location.present? %>Local: <%= @alert.location.name %>
+<% else %>Localização não informada.
+<% end %>
+Abra o atendimento: <%= @handling_url %>
+
+O recebimento deste e-mail não substitui o protocolo de emergência local.

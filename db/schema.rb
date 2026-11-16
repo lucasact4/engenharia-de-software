@@ -10,26 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_130000) do
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.integer "record_id", null: false
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -40,50 +40,50 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "alert_subscriptions", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.integer "alert_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["alert_id"], name: "index_alert_subscriptions_on_alert_id"
     t.index ["user_id", "alert_id"], name: "index_alert_subscriptions_on_user_id_and_alert_id", unique: true
   end
 
   create_table "alerts", force: :cascade do |t|
+    t.string "assessed_severity"
+    t.integer "assigned_to_id"
     t.integer "author_id", null: false
-    t.string "kind", null: false
-    t.string "protocol", null: false
-    t.text "title"
-    t.text "description"
     t.integer "category_id"
     t.text "category_other_description"
-    t.string "location_source", null: false
-    t.integer "location_id"
+    t.string "client_request_digest"
+    t.string "client_request_id"
+    t.datetime "closed_at"
+    t.text "closure_notes"
+    t.string "closure_reason"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "duplicate_of_id"
+    t.string "kind", null: false
     t.text "latitude"
-    t.text "longitude"
     t.text "location_accuracy_meters"
     t.text "location_captured_at"
+    t.text "location_description"
+    t.integer "location_id"
+    t.string "location_source", null: false
     t.string "location_unavailable_reason"
-    t.string "requested_visibility", null: false
-    t.string "visibility", null: false
-    t.string "reported_severity"
-    t.string "assessed_severity"
+    t.integer "lock_version", default: 0, null: false
+    t.text "longitude"
+    t.json "photo_order", default: [], null: false
     t.string "priority"
+    t.string "protocol", null: false
+    t.boolean "publication_blocked", default: false, null: false
+    t.string "reported_severity"
+    t.string "requested_visibility", null: false
+    t.datetime "resolved_at"
     t.string "status", default: "received", null: false
     t.datetime "status_changed_at"
-    t.integer "assigned_to_id"
-    t.string "closure_reason"
-    t.text "closure_notes"
-    t.integer "duplicate_of_id"
-    t.datetime "resolved_at"
-    t.datetime "closed_at"
-    t.string "client_request_id"
-    t.string "client_request_digest"
-    t.integer "lock_version", default: 0, null: false
-    t.datetime "created_at", null: false
+    t.text "title"
     t.datetime "updated_at", null: false
-    t.boolean "publication_blocked", default: false, null: false
-    t.text "location_description"
-    t.json "photo_order", default: [], null: false
+    t.string "visibility", null: false
     t.boolean "share_exact_location", default: false, null: false
     t.boolean "anonymous_public", default: false, null: false
     t.integer "related_alert_id"
@@ -141,14 +141,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "audit_events", force: :cascade do |t|
-    t.integer "actor_id"
     t.string "action", null: false
-    t.string "subject_type", null: false
-    t.bigint "subject_id", null: false
-    t.text "reason"
+    t.integer "actor_id"
     t.json "changeset", default: {}, null: false
-    t.json "metadata", default: {}, null: false
     t.datetime "created_at", null: false
+    t.json "metadata", default: {}, null: false
+    t.text "reason"
+    t.bigint "subject_id", null: false
+    t.string "subject_type", null: false
+    t.string "ip_address", limit: 45
     t.index ["action", "created_at"], name: "index_audit_events_on_action_and_created_at"
     t.index ["actor_id", "created_at"], name: "index_audit_events_on_actor_id_and_created_at"
     t.index ["subject_type", "subject_id", "created_at"], name: "index_audit_events_on_subject_and_created_at"
@@ -157,13 +158,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "categories", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.text "description"
-    t.boolean "requires_details", default: false, null: false
     t.boolean "active", default: true, null: false
-    t.integer "position", default: 0, null: false
+    t.string "code", null: false
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "requires_details", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["active", "position"], name: "index_categories_on_active_and_position"
     t.index ["code"], name: "index_categories_on_code", unique: true
@@ -172,26 +173,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "comment_likes", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.integer "comment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["comment_id"], name: "index_comment_likes_on_comment_id"
     t.index ["user_id", "comment_id"], name: "index_comment_likes_on_user_id_and_comment_id", unique: true
   end
 
   create_table "comments", force: :cascade do |t|
-    t.integer "publication_id", null: false
     t.integer "author_id", null: false
-    t.integer "parent_id"
     t.text "body", null: false
-    t.datetime "edited_at"
+    t.datetime "created_at", null: false
     t.datetime "deleted_at"
+    t.datetime "edited_at"
+    t.integer "lock_version", default: 0, null: false
+    t.integer "parent_id"
+    t.integer "publication_id", null: false
+    t.text "removal_reason"
     t.datetime "removed_at"
     t.integer "removed_by_id"
-    t.text "removal_reason"
-    t.integer "lock_version", default: 0, null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_comments_on_author_id"
     t.index ["parent_id", "created_at"], name: "index_comments_on_parent_id_and_created_at"
@@ -202,16 +203,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "content_reports", force: :cascade do |t|
-    t.integer "reporter_id", null: false
-    t.integer "publication_id"
     t.integer "comment_id"
-    t.string "reason", null: false
-    t.text "details"
-    t.string "state", default: "pending", null: false
-    t.integer "reviewed_by_id"
-    t.datetime "reviewed_at"
-    t.text "resolution_notes"
     t.datetime "created_at", null: false
+    t.text "details"
+    t.integer "publication_id"
+    t.string "reason", null: false
+    t.integer "reporter_id", null: false
+    t.text "resolution_notes"
+    t.datetime "reviewed_at"
+    t.integer "reviewed_by_id"
+    t.string "state", default: "pending", null: false
     t.datetime "updated_at", null: false
     t.integer "notification_version", default: 0, null: false
     t.index ["comment_id"], name: "index_content_reports_on_comment_id"
@@ -228,14 +229,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "locations", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.text "description"
     t.boolean "active", default: true, null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.decimal "reference_latitude", precision: 10, scale: 7
     t.decimal "reference_longitude", precision: 10, scale: 7
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json "boundary"
     t.index ["active", "position"], name: "index_locations_on_active_and_position"
@@ -298,68 +299,68 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "presentation_profiles", force: :cascade do |t|
-    t.string "name", null: false
-    t.text "description"
-    t.string "delivery", null: false
     t.boolean "active", default: false, null: false
-    t.json "selections", null: false
     t.datetime "created_at", null: false
+    t.string "delivery", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.json "selections", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_presentation_profiles_on_single_active", unique: true, where: "active"
     t.index ["name"], name: "index_presentation_profiles_on_name", unique: true
   end
 
   create_table "publication_bookmarks", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "publication_id", null: false
     t.datetime "created_at", null: false
+    t.integer "publication_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["publication_id"], name: "index_publication_bookmarks_on_publication_id"
     t.index ["user_id", "publication_id"], name: "index_publication_bookmarks_on_user_id_and_publication_id", unique: true
   end
 
   create_table "publication_likes", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "publication_id", null: false
     t.datetime "created_at", null: false
+    t.integer "publication_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["publication_id"], name: "index_publication_likes_on_publication_id"
     t.index ["user_id", "publication_id"], name: "index_publication_likes_on_user_id_and_publication_id", unique: true
   end
 
   create_table "publication_subscriptions", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "publication_id", null: false
     t.datetime "created_at", null: false
+    t.integer "publication_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["publication_id"], name: "index_publication_subscriptions_on_publication_id"
     t.index ["user_id", "publication_id"], name: "index_publication_subscriptions_on_user_id_and_publication_id", unique: true
   end
 
   create_table "publications", force: :cascade do |t|
-    t.integer "author_id", null: false
     t.integer "alert_id"
-    t.string "kind", null: false
-    t.text "title"
-    t.text "body"
-    t.string "visibility", null: false
-    t.string "review_status", default: "not_submitted", null: false
-    t.string "state", default: "draft", null: false
-    t.integer "content_version", default: 1, null: false
-    t.integer "reviewed_content_version"
-    t.integer "reviewed_by_id"
-    t.datetime "reviewed_at"
-    t.text "review_reason"
-    t.datetime "published_at"
-    t.datetime "expires_at"
-    t.datetime "withdrawn_at"
-    t.datetime "source_changed_at"
-    t.boolean "comments_enabled", default: true, null: false
-    t.integer "lock_version", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "approval_method"
+    t.integer "author_id", null: false
+    t.text "body"
+    t.boolean "comments_enabled", default: true, null: false
+    t.integer "content_version", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "kind", null: false
+    t.integer "lock_version", default: 0, null: false
     t.boolean "moderation_blocked", default: false, null: false
+    t.datetime "published_at"
+    t.text "review_reason"
+    t.string "review_status", default: "not_submitted", null: false
+    t.datetime "reviewed_at"
+    t.integer "reviewed_by_id"
+    t.integer "reviewed_content_version"
+    t.datetime "source_changed_at"
+    t.string "state", default: "draft", null: false
+    t.text "title"
+    t.datetime "updated_at", null: false
+    t.string "visibility", null: false
+    t.datetime "withdrawn_at"
     t.datetime "campus_map_approved_at"
     t.integer "campus_map_approved_by_id"
     t.index ["alert_id"], name: "index_publications_on_alert_id", unique: true
@@ -396,31 +397,55 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "roles", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.text "description"
     t.boolean "active", default: true, null: false
-    t.integer "position", default: 0, null: false
+    t.string "code", null: false
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_roles_on_code", unique: true
     t.check_constraint "length(code) BETWEEN 2 AND 40 AND code = lower(code)", name: "roles_code_format"
     t.check_constraint "length(name) BETWEEN 1 AND 80", name: "roles_name_length"
   end
 
-  create_table "sessions", force: :cascade do |t|
+  create_table "security_presences", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.text "ip_address"
-    t.text "user_agent"
+    t.decimal "latitude", precision: 10, scale: 7, null: false
+    t.decimal "longitude", precision: 10, scale: 7, null: false
+    t.datetime "reported_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_security_presences_on_user_id", unique: true
+    t.check_constraint "latitude >= -90 AND latitude <= 90", name: "security_presences_latitude_range"
+    t.check_constraint "longitude >= -180 AND longitude <= 180", name: "security_presences_longitude_range"
+  end
+
+  create_table "security_push_subscriptions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh", null: false
+    t.string "auth", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_security_push_subscriptions_on_endpoint", unique: true
+    t.index ["user_id", "created_at"], name: "index_security_push_subscriptions_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_security_push_subscriptions_on_user_id"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "ip_address"
+    t.datetime "updated_at", null: false
+    t.text "user_agent"
+    t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "user_follows", force: :cascade do |t|
-    t.integer "follower_id", null: false
-    t.integer "followed_id", null: false
     t.datetime "created_at", null: false
+    t.integer "followed_id", null: false
+    t.integer "follower_id", null: false
     t.datetime "updated_at", null: false
     t.index ["followed_id"], name: "index_user_follows_on_followed_id"
     t.index ["follower_id", "followed_id"], name: "index_user_follows_on_follower_id_and_followed_id", unique: true
@@ -428,33 +453,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   end
 
   create_table "user_roles", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "role_id", null: false
-    t.integer "granted_by_id"
     t.datetime "created_at", null: false
+    t.integer "granted_by_id"
+    t.integer "role_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["granted_by_id"], name: "index_user_roles_on_granted_by_id"
     t.index ["role_id"], name: "index_user_roles_on_role_id"
     t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
-    t.text "email_address", null: false
-    t.string "password_digest", null: false
-    t.datetime "deleted_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.boolean "admin", default: false, null: false
-    t.text "display_name"
-    t.text "username"
     t.text "bio"
-    t.boolean "public_profile", default: false, null: false
-    t.string "registration_status", default: "approved", null: false
-    t.string "registration_role_code"
-    t.datetime "registration_reviewed_at"
-    t.text "registration_review_reason"
+    t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.text "display_name"
+    t.text "email_address", null: false
     t.datetime "email_verified_at"
+    t.string "password_digest", null: false
+    t.boolean "public_profile", default: false, null: false
+    t.text "registration_review_reason"
+    t.datetime "registration_reviewed_at"
     t.integer "registration_reviewed_by_id"
+    t.string "registration_role_code"
+    t.string "registration_status", default: "approved", null: false
+    t.datetime "updated_at", null: false
+    t.text "username"
     t.datetime "verified_at"
     t.integer "verified_by_id"
     t.text "business_name"
@@ -527,6 +552,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_120500) do
   add_foreign_key "publications", "users", column: "campus_map_approved_by_id"
   add_foreign_key "publications", "users", column: "reviewed_by_id"
   add_foreign_key "push_subscriptions", "sessions", on_delete: :cascade
+  add_foreign_key "security_presences", "users"
+  add_foreign_key "security_push_subscriptions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "user_follows", "users", column: "followed_id"
   add_foreign_key "user_follows", "users", column: "follower_id"

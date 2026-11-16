@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     post :subscribe_push, on: :collection, path: "push"
     delete :unsubscribe_push, on: :collection, path: "push"
   end
-  get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+  get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
   get "manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
 
   resources :alerts, path: "alertas", only: %i[index show new create edit update] do
@@ -40,6 +40,11 @@ Rails.application.routes.draw do
   get "panico/:id/localizacao", to: "panic_locations#show", as: :panic_location
   patch "panico/:id/localizacao", to: "panic_locations#update"
   delete "panico/:id/localizacao", to: "panic_locations#destroy"
+
+  namespace :security, path: "seguranca" do
+    resource :presence, only: %i[create destroy], controller: "presence"
+    resource :push_subscription, only: %i[create destroy], controller: "push_subscriptions"
+  end
 
   namespace :handling, path: "atendimento" do
     resources :alerts, path: "", only: %i[index show] do
