@@ -32,4 +32,11 @@
   .leaflet-div-icon.campus-map-spot { border: 0; background: transparent; }
   .campus-map-spot span { display: grid; width: 32px; height: 32px; place-items: center; border: 3px solid white; border-radius: 50% 50% 50% 0; background: #0f766e; box-shadow: 0 2px 8px #0007; color: white; transform: rotate(-45deg); }
   .campus-map-spot b { font-size: 11px; transform: rotate(45deg); }
+  /* Pânico público no topo do mural (RF011/RNF001): destaque forte, sem autor nem GPS exato. */
+  .public-warning { @apply flex gap-3 rounded-2xl border-2 border-negative-line bg-negative-soft p-4 shadow-sm; }
+  .public-warning__icon { @apply grid size-11 shrink-0 place-items-center rounded-full bg-negative-solid text-white; }
+  .public-warning__eyebrow { @apply text-xs font-extrabold uppercase tracking-wider text-negative-ink; }
+  .public-warning__text { @apply text-base font-bold leading-snug text-ink; }
+  .public-warning__meta { @apply flex flex-wrap items-center gap-1.5 text-sm text-muted; }
+  .public-warning__advice { @apply text-xs text-negative-ink; }
 }

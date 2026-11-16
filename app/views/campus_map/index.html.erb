@@ -6,6 +6,7 @@
     <p class="mt-2 max-w-2xl text-sm text-muted">Veja publicações aprovadas em prédios e áreas da sede Recife e ocorrências de trânsito fora do campus. Abra um spot para consultar as publicações e o motivo informado.</p>
   </div>
   <%= render "publications/map_tabs", active: :map %>
+  <%= render "publications/public_panic_warnings" %>
 
   <%= form_with url: campus_map_path, method: :get, class: "sgu-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4", aria: { label: "Filtros do mapa de ocorrências" } do %>
     <div>

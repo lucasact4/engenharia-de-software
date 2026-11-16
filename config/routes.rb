@@ -57,6 +57,7 @@ Rails.application.routes.draw do
         patch :assessment, path: "classificacao"
         patch :assignment, path: "responsavel"
         patch :transition, path: "situacao"
+        patch :public_warning, path: "aviso-publico"
       end
     end
   end

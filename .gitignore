@@ -41,3 +41,6 @@
 !/app/assets/builds/.keep
 
 .kamal/secrets.*
+
+# Variáveis locais de desenvolvimento (chaves de push etc.)
+/config/local_env.yml

@@ -107,24 +107,43 @@ module DemoMural
       ] }
   ].freeze
 
+  # Pânicos de exemplo (RF011/RNF001): públicos aparecem no topo do mural; privados só no atendimento.
+  PANICS = [
+    { author: :thiago, building: "Centro de Ensino Agrícola I", public: true, status: "received",
+      description: "Alguém está fazendo assaltos no caminho do Transrural, perto do CEAGRI 2. Dois homens de moto abordando quem passa a pé." },
+    { author: :mariana, building: "OFICINA / GALPÃO DE MECÂNICA", public: true, status: "triaging",
+      description: "Fumaça saindo do Galpão de Mecânica, com cheiro forte de queimado. Afastem-se da área." },
+    { author: :ana, building: "Biblioteca Central", public: false, status: "received",
+      description: "Estou passando mal no 2º andar da Biblioteca Central e preciso de ajuda." },
+    { author: :joao, building: "CASA DO ESTUDANTE", public: false, status: "in_progress",
+      description: "Uma pessoa desconhecida está me seguindo perto da Casa do Estudante." }
+  ].freeze
+
   def run
     admin = User.where(admin: true, deleted_at: nil).order(:id).first or raise "Crie um administrador antes (db:seed)."
-    student = demo_student(admin)
+    @credentials = {}
+    student = demo_account(admin, key: "estudante.demo", name: "Estudante Demo", username: "estudante_demo",
+                           role: "student", color: "#f2bd57", initials: "ED", bio: "Conta de demonstração da entrega final.")
+    demo_account(admin, key: "seguranca.demo", name: "Carlos Andrade", username: "seguranca_demo",
+                 role: "security", color: "#d64550", initials: "CA", bio: "Equipe de segurança (conta de demonstração).")
+    write_credentials
     people = PEOPLE.to_h { |key, attributes| [ key, person(attributes, admin) ] }
     follow_each_other(people.values + [ student ])
 
     results = OCCURRENCES.sort_by { |item| -item[:hours] }.map { |item| occurrence(item, people, student, admin) }.tally
     puts "Mural de demonstração: #{results[:created].to_i} criada(s), #{results[:skipped].to_i} já existiam, #{results[:failed].to_i} com erro."
-    puts "Conta de estudante: veja #{CREDENTIALS_FILE.relative_path_from(Rails.root)}"
+    panics = PANICS.map { |item| panic(item, people, admin) }.tally
+    puts "Pânicos de demonstração: #{panics[:created].to_i} criado(s), #{panics[:skipped].to_i} já existiam, #{panics[:failed].to_i} com erro."
+    puts "Contas de estudante e de segurança: veja #{CREDENTIALS_FILE.relative_path_from(Rails.root)}"
   end
 
   # Contas --------------------------------------------------------------------
 
-  def demo_student(admin)
-    email = "estudante.demo@#{DOMAIN}"
+  def demo_account(admin, key:, name:, username:, role:, color:, initials:, bio:)
+    email = "#{key}@#{DOMAIN}"
     user = User.find_by(email_address: email)
     password = ENV["SGU_DEMO_PASSWORD"].presence
-    password ||= CREDENTIALS_FILE.read[/^senha: (.+)$/, 1] if user && CREDENTIALS_FILE.exist?
+    password ||= saved_password(email) if user
 
     if user.nil? || password.nil? || !user.authenticate(password)
       password ||= "Sgu-#{SecureRandom.alphanumeric(6)}7a!"
@@ -132,23 +151,30 @@ module DemoMural
       user.assign_attributes(password: password, password_confirmation: password)
     end
     user.assign_attributes(
-      display_name: "Estudante Demo", username: "estudante_demo", public_profile: true, deleted_at: nil,
-      bio: "Conta de demonstração da entrega final.", person_type: "natural", registration_status: "approved",
-      registration_role_code: "student", registration_reviewed_at: user.registration_reviewed_at || Time.current,
+      display_name: name, username: username, public_profile: true, deleted_at: nil, bio: bio,
+      person_type: "natural", registration_status: "approved",
+      registration_role_code: (role if User::REGISTRATION_ROLES.include?(role)),
+      registration_reviewed_at: user.registration_reviewed_at || Time.current,
       registration_reviewed_by: user.registration_reviewed_by || admin,
       email_confirmed_at: user.email_confirmed_at || Time.current, email_verified_at: user.email_verified_at || Time.current
     )
     user.save!
-    grant_role(user, "student")
-    attach_avatar(user, "#f2bd57", "ED")
-
-    FileUtils.mkdir_p(CREDENTIALS_FILE.dirname)
-    File.write(CREDENTIALS_FILE, <<~TEXT, perm: 0o600)
-      Conta de estudante para a demonstração (somente development; não versionar).
-      e-mail: #{email}
-      senha: #{password}
-    TEXT
+    grant_role(user, role)
+    attach_avatar(user, color, initials)
+    @credentials[email] = [ name, password ]
     user
+  end
+
+  def saved_password(email)
+    return unless CREDENTIALS_FILE.exist?
+
+    CREDENTIALS_FILE.read[/e-mail: #{Regexp.escape(email)}\nsenha: (.+)$/, 1]
+  end
+
+  def write_credentials
+    FileUtils.mkdir_p(CREDENTIALS_FILE.dirname)
+    body = @credentials.map { |email, (name, password)| "#{name}\ne-mail: #{email}\nsenha: #{password}\n" }.join("\n")
+    File.write(CREDENTIALS_FILE, "Contas de demonstração (somente development; não versionar).\n\n#{body}", perm: 0o600)
   end
 
   def person(attributes, admin)
@@ -240,6 +266,27 @@ module DemoMural
     :created
   rescue StandardError => error
     warn "  ! #{item[:title]}: #{error.class}: #{error.message}"
+    :failed
+  end
+
+  def panic(item, people, admin)
+    author = people.fetch(item[:author])
+    # A descrição é cifrada no banco (RNF004): a comparação é feita já decifrada.
+    return :skipped if Alert.panic.where(author_id: author.id).any? { |existing| existing.description == item[:description] }
+
+    latitude, longitude = building_point(item[:building])
+    attributes = {
+      description: item[:description], location_source: "gps",
+      latitude: latitude.round(7).to_s, longitude: longitude.round(7).to_s,
+      location_accuracy_meters: 15, location_captured_at: 1.minute.ago.iso8601, public_warning: item[:public]
+    }
+    alert = Alerts::CreatePanic.call(actor: author, attributes: attributes, client_request_id: SecureRandom.uuid).alert
+    path = { "received" => [], "triaging" => %w[triaging], "in_progress" => %w[triaging in_progress] }.fetch(item[:status])
+    path.each { |status| Alerts::Transition.call(actor: admin, alert: alert.reload, to: status) }
+    puts "  + pânico #{item[:public] ? 'público' : 'privado'}: #{item[:description].truncate(60)}"
+    :created
+  rescue StandardError => error
+    warn "  ! pânico #{item[:description].truncate(40)}: #{error.class}: #{error.message}"
     :failed
   end
 

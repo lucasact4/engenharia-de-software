@@ -76,6 +76,11 @@ class AlertPolicy < ApplicationPolicy
     active_admin?
   end
 
+  # Retirar do mural um pânico público (falso alarme ou risco já controlado).
+  def withdraw_public_warning?
+    record.panic? && record.public_warning? && (active_admin? || role?(:security))
+  end
+
   def assign?
     return true if active_admin?
 

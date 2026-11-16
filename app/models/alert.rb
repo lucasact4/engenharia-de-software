@@ -23,6 +23,9 @@ class Alert < ApplicationRecord
   MAX_ACCURACY_METERS = 100_000
   CAPTURE_CLOCK_SKEW = 5.minutes
   CAPTURE_MAX_AGE = 24.hours
+  # Pânico público: aviso no topo do mural enquanto está em aberto e dentro desta janela.
+  PUBLIC_WARNING_WINDOW = 12.hours
+  OPEN_STATUSES = %w[received triaging in_progress awaiting_information].freeze
 
   SEVERITIES = { low: "low", moderate: "moderate", high: "high", critical: "critical" }.freeze
 
@@ -70,8 +73,10 @@ class Alert < ApplicationRecord
   belongs_to :assigned_to, class_name: "User", optional: true, inverse_of: :assigned_alerts
   belongs_to :duplicate_of, class_name: "Alert", optional: true
   belongs_to :related_alert, class_name: "Alert", optional: true
+  belongs_to :public_warning_withdrawn_by, class_name: "User", optional: true
 
   has_one :publication, dependent: :restrict_with_exception
+  has_many :panic_deliveries, dependent: :delete_all
   has_many :duplicates, class_name: "Alert", foreign_key: :duplicate_of_id, inverse_of: :duplicate_of,
            dependent: :restrict_with_exception
   has_many :alert_subscriptions, dependent: :destroy
@@ -111,6 +116,7 @@ class Alert < ApplicationRecord
   validate :visibility_consistency
   validate :anonymous_public_is_occurrence
   validate :panic_rules
+  validate :public_warning_rules
   validate :closure_consistency
   validate :duplicate_reference
   validate :related_alert_reference
@@ -119,6 +125,16 @@ class Alert < ApplicationRecord
   validate :photo_order_format
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
+  # Pedidos de pânico públicos em aberto, recentes e não retirados pela equipe (topo do mural).
+  scope :active_public_warnings, -> {
+    panic.where(public_warning: true, public_warning_withdrawn_at: nil, status: OPEN_STATUSES)
+      .where(created_at: PUBLIC_WARNING_WINDOW.ago..).recent_first
+  }
+
+  def public_warning_active?
+    panic? && public_warning? && public_warning_withdrawn_at.nil? && OPEN_STATUSES.include?(status) &&
+      created_at.present? && created_at >= PUBLIC_WARNING_WINDOW.ago
+  end
 
   def panic_tracking_stopped?
     panic_tracking_stopped_at? || !location_gps? || closed? || resolved?
@@ -266,6 +282,16 @@ class Alert < ApplicationRecord
       errors.add(:requested_visibility, :panic_restricted) unless requested_restricted?
       errors.add(:visibility, :panic_restricted) unless visibility_restricted?
       errors.add(:client_request_id, :blank) if client_request_id.blank?
+    end
+
+    # O aviso público mostra só o texto e um local aproximado; por isso exige uma descrição útil.
+    def public_warning_rules
+      return unless public_warning?
+
+      errors.add(:public_warning, "só pode ser usado em pedidos de pânico") unless panic?
+      if description.to_s.strip.length < DESCRIPTION_LENGTH.min
+        errors.add(:description, "precisa explicar o risco em pelo menos #{DESCRIPTION_LENGTH.min} caracteres para avisar a comunidade")
+      end
     end
 
     def closure_consistency

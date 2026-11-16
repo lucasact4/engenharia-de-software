@@ -3,7 +3,7 @@ module Alerts
   class CreatePanic < Create
     PERMITTED = %i[
       title description location_source location_id latitude longitude
-      location_accuracy_meters location_captured_at location_unavailable_reason reported_severity
+      location_accuracy_meters location_captured_at location_unavailable_reason reported_severity public_warning
     ].freeze
 
     private
