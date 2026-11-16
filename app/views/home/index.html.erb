@@ -7,8 +7,8 @@
 <div class="min-h-dvh bg-canvas text-ink">
   <header class="sticky top-0 z-50 border-b border-line/80 bg-surface/90 backdrop-blur">
     <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-      <%= link_to root_path(locale: nil), class: "group flex items-center gap-3 text-ink", aria: { label: "Página inicial do SGU UFRPE" } do %>
-        <%= sgu_brand(:horizontal, alt: "", class_name: "h-10") %>
+      <%= link_to root_path(locale: nil), class: "group flex items-center gap-3 text-ink" do %>
+        <%= sgu_brand(:horizontal, alt: "SGU", class_name: "h-10") %>
         <span class="hidden border-l border-line pl-3 text-[0.65rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted sm:block">UFRPE<br>Campus em conexão</span>
       <% end %>
 
@@ -186,7 +186,7 @@
     <section id="sobre" class="bg-brand-solid py-20 text-on-brand sm:py-24">
       <div class="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
         <div class="max-w-3xl">
-          <p class="text-sm font-bold uppercase tracking-[0.16em] text-accent">Sobre o projeto</p>
+          <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#ffe0a3]">Sobre o projeto</p>
           <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tecnologia a serviço da cidadania acadêmica.</h2>
           <p class="mt-5 text-lg leading-8 text-emerald-50/80">O SGU é uma proposta de gestão urbana colaborativa para conectar estudantes, professores, funcionários, equipes de segurança e visitantes no cuidado diário com a UFRPE.</p>
         </div>

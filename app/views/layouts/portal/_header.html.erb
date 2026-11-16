@@ -1,9 +1,9 @@
 <% user = Current.user %>
 <header class="sticky top-0 z-50 border-b border-line/80 bg-surface/95 backdrop-blur">
   <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-    <%= link_to (user ? panel_path : root_path(locale: nil)), class: "flex shrink-0 items-center gap-2.5 !text-ink", aria: { label: "SGU UFRPE, início" } do %>
-      <span class="sm:hidden"><%= sgu_brand(:symbol, alt: "", class_name: "h-9") %></span>
-      <span class="hidden sm:block"><%= sgu_brand(:horizontal, alt: "", class_name: "h-9") %></span>
+    <%= link_to (user ? panel_path : root_path(locale: nil)), class: "flex shrink-0 items-center gap-2.5 !text-ink", title: "SGU UFRPE, início" do %>
+      <span class="sm:hidden"><%= sgu_brand(:symbol, alt: "SGU", class_name: "h-9") %></span>
+      <span class="hidden sm:block"><%= sgu_brand(:horizontal, alt: "SGU", class_name: "h-9") %></span>
       <% unless user %><span class="hidden border-l border-line pl-2.5 text-[0.6rem] font-semibold uppercase leading-tight tracking-[0.16em] text-muted xl:block">UFRPE<br>Campus em conexão</span><% end %>
     <% end %>
 
@@ -15,7 +15,7 @@
       <%= render "shared/theme_toggle" %>
       <% if user %>
         <%= render "notifications/bell" %>
-        <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pedir ajuda (pânico)" } do %>
+        <%= link_to new_panic_path, class: "sgu-btn sgu-btn-sm sgu-btn-danger", aria: { label: "Pânico: pedir ajuda" } do %>
           <%= sgu_icon("siren") %><span>Pânico</span>
         <% end %>
 

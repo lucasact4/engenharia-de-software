@@ -42,7 +42,7 @@
       <label class="photo-dropzone" for="alert_photos"><%= sgu_icon("image", "size-7") %><span class="font-bold">Adicionar fotos ao relato</span><span class="text-xs text-muted">PNG ou JPEG · até 5 fotos de 5 MB</span></label>
       <%= f.label :photos, "Fotos", class: "sr-only" %>
       <%= f.file_field :photos, multiple: true, include_hidden: false, accept: "image/png,image/jpeg", class: "photo-file-input", data: {action: "change->photo-preview#update", photo_preview_target: "input"} %>
-      <div class="photo-preview photo-editor" data-photo-preview-target="preview" aria-label="Organizar fotos da publicação"></div>
+      <div class="photo-preview photo-editor" data-photo-preview-target="preview" role="group" aria-label="Organizar fotos da publicação"></div>
       <div data-photo-preview-target="fields"></div>
       <p class="composer-hint" data-photo-preview-target="status" role="status" aria-live="polite">Você pode publicar sem fotos. Se adicionar fotos, a primeira será a capa.</p>
       <%= field_errors(alert, :photos) %>
