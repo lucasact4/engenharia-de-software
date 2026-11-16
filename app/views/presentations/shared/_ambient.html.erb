@@ -1,0 +1,16 @@
+<%# Decorative movement only; hidden from assistive technology and PDF export. %>
+<% symbols = {
+  "capa" => %w[code shield git],
+  "problema" => %w[users shield board],
+  "stack-qualidade" => %w[code package git],
+  "requisitos-cards" => %w[shield image check],
+  "demo" => %w[play slides code],
+  "validacao" => %w[check flask shield],
+  "encerramento" => %w[check users git]
+}.fetch(slide.id, %w[code shield package]) %>
+<div class="apr-ambient" aria-hidden="true">
+  <% symbols.each do |symbol| %>
+    <span class="apr-ambient__icon"><%= render "presentations/shared/icon", name: symbol %></span>
+  <% end %>
+  <span class="apr-ambient__orb"></span>
+</div>

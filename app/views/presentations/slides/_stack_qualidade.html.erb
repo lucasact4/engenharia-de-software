@@ -14,7 +14,9 @@
           <% grupo[:itens].each do |item| %>
             <li class="apr-sq__chip">
               <% if item[:logo].present? %>
-                <span class="apr-sq__logo <%= 'apr-sq__logo--dark' if item[:fundo] == 'escuro' %>"><%= image_tag item[:logo], alt: "", decoding: "async" %></span>
+                <span class="apr-sq__logo <%= 'apr-sq__logo--mono' if item[:monocromatico] %>"><%= image_tag item[:logo], alt: "", decoding: "async" %></span>
+              <% else %>
+                <span class="apr-sq__logo apr-sq__symbol"><%= render "presentations/shared/icon", name: item[:simbolo] || "package" %></span>
               <% end %>
               <%= item[:nome] %><% if item[:gem] && versions[item[:gem]] %> <code class="apr-sq__version"><%= versions[item[:gem]] %></code><% end %>
             </li>

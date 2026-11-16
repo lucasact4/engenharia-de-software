@@ -175,7 +175,7 @@ entregas:
         texto: "Principais requisitos (cuidado para não ficar chato) - um slide com imagem de funcionalidade como se fossem card ou algo do tipo."
         slides: [ { id: requisitos-cards, titulo: "Principais requisitos" } ]
         estado: implementado
-        observacao: "Seis cards com capturas reais nos temas claro e escuro."
+        observacao: "Quatro cards, incluindo requisitos não funcionais, resumo do Trello e acesso ao PDF de requisitos."
       - numero: 4
         grupo: item
         texto: "Apresentação do MVP funcional - rodando. Não precisa de print de tela, vá direto para o sistema rodando. Crie um roteiro e siga ele."

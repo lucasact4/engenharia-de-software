@@ -8,6 +8,7 @@
       <%= render "presentations/shared/icon", name: "chevron-left" %> <%= @embedded ? "Voltar aos slides" : "Apresentação" %>
     <% end %>
     <p class="apr-mirror__brand"><%= sgu_brand(:symbol, alt: "", class_name: "apr-mirror__logo") %> <strong>Demo ao vivo</strong></p>
+    <%= render "presentations/shared/timer", minutes: 10 %>
 
     <nav class="apr-mirror__shortcuts" aria-label="Atalhos da demonstração">
       <% @shortcuts.each do |label, path| %>

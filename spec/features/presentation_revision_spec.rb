@@ -34,7 +34,9 @@ RSpec.describe "Presentation revision", type: :feature, js: true do
     end
     page.driver.browser.execute_async_script(<<~JS)
       const done = arguments[arguments.length - 1];
-      Promise.all(document.getAnimations().map(animation => animation.finished.catch(() => {}))).then(done);
+      Promise.all(document.getAnimations()
+        .filter(animation => animation.effect.getComputedTiming().iterations !== Infinity)
+        .map(animation => animation.finished.catch(() => {}))).then(done);
     JS
   end
 

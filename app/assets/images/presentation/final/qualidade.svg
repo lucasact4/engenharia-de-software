@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">Qualidade do SGU: desempenho e acessibilidade</title>
+  <desc id="desc">Medições de 16 de novembro: envio de notificações do navegador aceito em média em 0,50 segundo; mapa em Slow 4G em 2,87 segundos. Verificações WCAG 2.1 AA com axe-core.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#153c36"/><stop offset="1" stop-color="#0d171a"/></linearGradient></defs>
+  <rect width="960" height="420" fill="url(#bg)"/>
+  <g fill="none" stroke="#93dbc4" opacity=".12"><circle cx="855" cy="60" r="120"/><circle cx="855" cy="60" r="170"/><path d="M0 360H960M0 320H960"/></g>
+  <g font-family="system-ui, sans-serif">
+    <circle cx="48" cy="48" r="6" fill="#93dbc4"/><text x="66" y="55" fill="#93dbc4" font-size="20" font-weight="700" letter-spacing="3">QUALIDADE VERIFICADA</text>
+    <text x="36" y="99" fill="#b0c4c1" font-size="20">Medições de 16/11/2026 · médias registradas</text>
+    <g fill="#1d3035" stroke="#37514f"><rect x="36" y="127" width="276" height="230" rx="20"/><rect x="342" y="127" width="276" height="230" rx="20"/><rect x="648" y="127" width="276" height="230" rx="20"/></g>
+    <g fill="none" stroke="#93dbc4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m66 185 16-25v18h16l-16 25v-18z"/><circle cx="388" cy="181" r="19"/><path d="M388 169v13l9 6"/><circle cx="692" cy="162" r="5"/><path d="M674 178h36m-18 0v17m0-7-12 17m12-17 12 17"/></g>
+    <g fill="#edf5f3" font-weight="800" font-size="57"><text x="60" y="275">0,50 s</text><text x="366" y="275">2,87 s</text><text x="672" y="275">AA</text></g>
+    <g fill="#b0c4c1" font-size="21"><text x="60" y="316">Notificação · RNF001</text><text x="366" y="316">Mapa · Slow 4G</text><text x="672" y="316">WCAG 2.1 · axe-core</text></g>
+    <text x="36" y="395" fill="#93dbc4" font-size="20">Dados criptografados · permissões por papel · auditoria · /saude</text>
+  </g>
+</svg>

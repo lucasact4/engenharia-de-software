@@ -76,6 +76,7 @@
                data-appendix="<%= slide.appendix %>"
                data-title="<%= @selection.slide_title(slide) %>"
                <%= "hidden" unless @selection.slide_visible?(slide) %>>
+        <%= render "presentations/shared/ambient", slide: slide unless slide.appendix %>
         <div class="apr-slide__inner">
           <% if slide.appendix %>
             <p class="apr-appendix-return apr-local-only"><a href="#<%= appendix_return.dom_id %>" class="apr-more" data-action="presentation#returnToMain"><%= render "presentations/shared/icon", name: "chevron-left" %> Voltar à apresentação</a></p>
