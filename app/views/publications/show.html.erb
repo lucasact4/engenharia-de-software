@@ -1,6 +1,6 @@
 <% content_for :title, "#{@card[:title]} - SGU UFRPE" %>
-<div class="mx-auto max-w-3xl space-y-6">
-  <%= link_to publications_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Mural<% end %>
+<div class="mural-publication-detail space-y-6">
+  <%= back_link publications_path, "Mural" %>
 
   <%= render "publications/card", card: @card, full: true %>
 
@@ -16,7 +16,13 @@
     <% elsif !@card[:comments_enabled] %>
       <p class="rounded-xl bg-surface-muted p-4 text-sm text-muted">Comentários desativados para esta publicação.</p>
     <% elsif !@permissions.signed_in? %>
-      <p class="rounded-xl bg-surface-muted p-4 text-sm text-muted"><%= link_to "Entre", new_session_path(locale: nil, return_to: publication_path(@card[:id], locale: nil)), class: "sgu-link" %> para comentar.</p>
+      <% login = new_session_path(locale: nil, return_to: publication_path(@card[:id], locale: nil, anchor: "comentarios")) %>
+      <%= link_to login, class: "guest-comment-prompt", rel: "nofollow" do %>
+        <span class="guest-comment-avatar" aria-hidden="true"><%= sgu_icon("user", "size-5") %></span>
+        <span class="guest-comment-input">Adicione um comentário…</span>
+        <span class="guest-comment-cta">Entrar para comentar</span>
+      <% end %>
+      <p class="text-xs text-muted">Ainda não tem conta? <%= link_to "Criar conta", new_registration_path(locale: nil), class: "sgu-link" %></p>
     <% end %>
 
     <% if @comment_roots.any? %>

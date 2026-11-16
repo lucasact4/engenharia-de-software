@@ -20,6 +20,15 @@
               aria: { pressed: comment[:viewer_liked], label: "#{comment[:viewer_liked] ? 'Descurtir' : 'Curtir'} comentário (#{comment[:likes_count]})" } do %>
           <%= sgu_icon("heart", "size-3.5") %><span><%= comment[:likes_count] %></span>
         <% end %>
+      <% elsif !permissions.signed_in? %>
+        <% guest_login = new_session_path(locale: nil, return_to: publication_path(publication_id, locale: nil, anchor: "comment_#{comment[:id]}")) %>
+        <%= link_to guest_login, class: "sgu-btn sgu-btn-sm sgu-btn-ghost", rel: "nofollow", title: "Entre ou crie uma conta para curtir",
+              aria: { label: "Entre ou crie uma conta para curtir este comentário (#{comment[:likes_count]})" } do %>
+          <%= sgu_icon("heart", "size-3.5") %><span><%= comment[:likes_count] %></span>
+        <% end %>
+        <% if comment[:parent_id].nil? %>
+          <%= link_to guest_login, class: "sgu-btn sgu-btn-sm sgu-btn-ghost", rel: "nofollow", title: "Entre ou crie uma conta para responder" do %><%= sgu_icon("reply", "size-3.5") %> Responder<% end %>
+        <% end %>
       <% else %>
         <span class="inline-flex items-center gap-1 text-xs text-muted"><%= sgu_icon("heart", "size-3.5") %> <%= comment[:likes_count] %></span>
       <% end %>

@@ -1,6 +1,6 @@
 <% content_for :title, "Editar perfil - SGU UFRPE" %>
 <div class="mx-auto max-w-3xl space-y-5">
-  <%= link_to profile_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Meu perfil<% end %>
+  <%= back_link profile_path, "Meu perfil" %>
   <h1 class="sgu-page-title">Editar perfil</h1>
   <% if @user.email_confirmed_at? %>
     <p>E-mail confirmado.</p>
@@ -32,6 +32,13 @@
       <div class="rounded-xl border border-negative-line bg-negative-soft p-3 text-sm text-negative-ink" role="alert">Revise os campos destacados.</div>
     <% end %>
     <div>
+      <div class="profile-edit-photo">
+        <%= account_avatar(@user, "profile-edit-avatar") %>
+        <div>
+          <strong><%= @user.username.presence || account_handle(@user) %></strong>
+          <%= f.label :avatar, "Alterar foto", class: "profile-edit-photo-label" %>
+        </div>
+      </div>
       <%= f.label :avatar, "Foto de perfil", class: "sgu-label" %>
       <%= f.file_field :avatar, accept: "image/png,image/jpeg", class: "sgu-input" %>
       <p class="sgu-hint">PNG ou JPEG, até 5 MB. Visível aos outros quando seu perfil for público.</p>

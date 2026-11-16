@@ -12,13 +12,15 @@ class NotificationsController < PortalController
         @nearby_locations = Notifications::Nearby.selectable_locations.order(:name)
       end
       format.json do
-        urgent = feed.unread.where(kind: "panic").order(:created_at, :id).first
+        urgent_notifications = feed.unread.where(kind: "panic")
+        urgent = urgent_notifications.order(:created_at, :id).first
         preview = feed.prioritized.limit(10).to_a
         render json: {
           unread_count: feed.unread.count,
           list_version: Digest::SHA256.hexdigest(preview.map { |notification| [ notification.id, notification.read_at, notification.updated_at ] }.to_json),
           list_html: render_to_string(partial: "notifications/list", formats: [ :html ], locals: { notifications: preview }),
           urgent_id: urgent&.id,
+          urgent_version: urgent ? urgent_notifications.maximum(:id) : nil,
           urgent_html: urgent ? render_to_string(partial: "notifications/urgent", formats: [ :html ], locals: { notification: urgent }) : nil
         }
       end

@@ -1,6 +1,6 @@
 <% content_for :title, "Denúncia - SGU UFRPE" %>
 <div class="mx-auto max-w-2xl space-y-4">
-  <%= link_to content_reports_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Minhas denúncias<% end %>
+  <%= back_link content_reports_path, "Minhas denúncias" %>
   <h1 class="sgu-page-title">Denúncia de <%= @report.comment_id ? "comentário" : "publicação" %></h1>
   <dl class="sgu-card sgu-dl p-5">
     <dt>Situação</dt><dd><%= enum_badge("content_report.state", @report.state_in_database, PortalHelper::REPORT_STATE_BADGES) %></dd>

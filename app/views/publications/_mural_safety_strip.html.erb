@@ -1,0 +1,10 @@
+<% if warnings.any? %>
+  <details class="mural-safety-strip">
+    <summary>
+      <span class="mural-safety-symbol"><%= sgu_icon("siren", "size-5") %></span>
+      <span class="mural-safety-summary"><strong><%= pluralize(warnings.size, "aviso de segurança ativo", plural: "avisos de segurança ativos") %></strong><span><%= warnings.first.description %></span></span>
+      <span class="mural-safety-expand">Ver avisos <%= sgu_icon("chevron-down") %></span>
+    </summary>
+    <div class="mural-safety-expanded"><%= render "publications/public_panic_warnings", warnings: warnings %></div>
+  </details>
+<% end %>

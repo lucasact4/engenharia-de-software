@@ -1,57 +1,53 @@
 <% content_for :title, "Mural - SGU UFRPE" %>
-<div class="social-feed">
-  <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="sgu-page-title">Mural do campus</h1>
-    <% if Current.user %><%= link_to new_alert_path, class: "sgu-btn sgu-btn-primary" do %><%= sgu_icon("plus") %> Publicar<% end %><% end %>
-  </div>
-  <%= render "publications/map_tabs", active: :posts %>
-  <%= render "publications/public_panic_warnings" %>
-  <%= form_with url: publications_path, method: :get, class: "mt-5 space-y-3", data: { turbo_action: "advance" } do %>
-    <div class="flex gap-2">
-      <%= label_tag :q, "Palavras-chave ou ID/protocolo", class: "sr-only" %>
-      <%= search_field_tag :q, params[:q], class: "sgu-input", placeholder: "Palavras-chave ou ID/protocolo" %>
-      <button type="submit" class="sgu-btn sgu-btn-secondary" aria-label="Buscar"><%= sgu_icon("search") %></button>
-    </div>
-    <div class="grid gap-2 sm:grid-cols-3">
-      <div>
-        <%= label_tag :creator, "Criador", class: "sr-only" %>
-        <%= search_field_tag :creator, params[:creator], class: "sgu-input", placeholder: "Criador", aria: { describedby: "creator_privacy_hint" } %>
-      </div>
-      <div>
-        <%= label_tag :category_id, "Categoria", class: "sr-only" %>
-        <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), include_blank: "Todas as categorias", class: "sgu-input" %>
-      </div>
-      <div>
-        <%= label_tag :severity, "Gravidade", class: "sr-only" %>
-        <%= select_tag :severity, options_for_select(Alert.reported_severities.keys.map { |value| [ enum_label("alert.severity", value), value ] }, params[:severity]), include_blank: "Todas as gravidades", class: "sgu-input" %>
-      </div>
-    </div>
-    <%= hidden_field_tag :audience, params[:audience] if params[:audience].present? %>
-    <%= hidden_field_tag :kind, params[:kind] if params[:kind].present? %>
-  <% end %>
-  <p id="creator_privacy_hint" class="mt-2 text-xs text-muted">A busca por criador considera somente a identidade visível para você.</p>
-  <details class="mt-3 text-sm">
-    <summary class="cursor-pointer text-muted">Filtrar publicações</summary>
-    <nav class="mt-3 flex flex-wrap gap-2" aria-label="Tipo de publicação">
-      <% [[nil, "Tudo"], ["occurrence", "Ocorrências"], ["news", "Notícias"], ["notice", "Avisos"]].each do |kind, label| %>
-        <%= link_to label, publications_path(request.query_parameters.except("page", "kind").merge(kind: kind)), class: "sgu-tab", aria: { current: params[:kind].presence == kind ? "page" : nil } %>
+<% warnings = Alert.active_public_warnings.includes(:location).limit(3).to_a %>
+<% selected_ids = @selected_category_ids %>
+<% selected_categories = @categories.select { |category| selected_ids.include?(category.id) } %>
+<% filter_count = %i[q creator severity kind audience].count { |key| params[key].present? } + selected_ids.size %>
+<div class="mural-page">
+  <div class="mural-timeline">
+    <header class="mural-feed-heading">
+      <h1>Mural do campus</h1>
+      <button type="button" class="mural-filter-trigger" data-action="mural-shell#openSearch"><%= sgu_icon("search", "size-4") %><span><%= filter_count.positive? ? "#{filter_count} filtros" : "Pesquisar" %></span></button>
+    </header>
+
+    <nav class="mural-categories" aria-label="Filtrar por categoria (é possível escolher várias)"
+         data-controller="floating-tooltip" data-action="mouseover->floating-tooltip#show focusin->floating-tooltip#show mouseout->floating-tooltip#hide focusout->floating-tooltip#hide">
+      <%= link_to mural_categories_path([]), class: "mural-category #{'is-active' if selected_ids.empty?}",
+            data: { tooltip: selected_ids.empty? ? "Mostrando todas as categorias" : "Limpar categorias e mostrar tudo" },
+            aria: { label: "Tudo: todas as categorias", current: ("page" if selected_ids.empty?) } do %>
+        <span class="mural-category-ring"><span><%= sgu_brand(:symbol, alt: "", class_name: "h-7") %></span></span><span>Tudo</span>
+      <% end %>
+      <% @categories.each do |category| %>
+        <% selected = selected_ids.include?(category.id) %>
+        <%= link_to mural_category_toggle_path(category.id, selected_ids), class: "mural-category #{'is-active' if selected}",
+              data: { tooltip: "#{category.name} · #{selected ? 'clique para remover' : 'clique para adicionar'}" },
+              aria: { label: "#{category.name}: #{selected ? 'selecionada, remover do filtro' : 'adicionar ao filtro'}", pressed: selected } do %>
+          <span class="mural-category-ring"><span><%= mural_category_icon(category) %></span><% if selected %><span class="mural-category-check"><%= sgu_icon("check", "size-3") %></span><% end %></span><span><%= category.name %></span>
+        <% end %>
       <% end %>
     </nav>
-    <% if Current.user %>
-      <nav class="mt-3 flex gap-2" aria-label="Audiência">
-        <% [[nil, "Todas"], ["public_external", "Públicas"], ["internal", "Internas"]].each do |value, label| %>
-          <%= link_to label, publications_path(request.query_parameters.except("audience", "page").merge(audience: value)), class: "sgu-tab", aria: { current: params[:audience].presence == value ? "page" : nil } %>
+    <% if selected_categories.any? %>
+      <div class="mural-category-chips" aria-label="Categorias selecionadas">
+        <span><%= selected_categories.one? ? "Categoria:" : "#{selected_categories.size} categorias:" %></span>
+        <% selected_categories.each do |category| %>
+          <%= link_to mural_category_toggle_path(category.id, selected_ids), class: "mural-category-chip", aria: { label: "Remover #{category.name} do filtro" }, title: "Remover #{category.name}" do %><%= category.name %> <%= sgu_icon("x", "size-3") %><% end %>
         <% end %>
-      </nav>
+        <%= link_to "Limpar", mural_categories_path([]), class: "mural-category-clear" %>
+      </div>
     <% end %>
-  </details>
-  <% unless Current.user %><p class="mt-4 text-sm text-muted"><%= link_to "Entrar", new_session_path(locale: nil, return_to: publications_path(locale: nil)), class: "sgu-link" %> para ver publicações internas e interagir.</p><% end %>
-  <div class="mt-5 space-y-5"><% @cards.each do |card| %><%= render "publications/card", card: card %><% end %></div>
-  <% if @cards.empty? %>
-    <% filters_applied = %i[q creator category_id severity kind].any? { |key| params[key].present? } %>
-    <div class="sgu-empty mt-6"><p><%= filters_applied ? "Nada encontrado com esses filtros." : "Ainda não há publicações." %></p>
-      <% if filters_applied %><%= link_to "Limpar filtros", publications_path, class: "sgu-link" %><% end %>
-    </div>
-  <% end %>
-  <%= render "shared/pagination", pagy: @pagy %>
+
+    <%= render "publications/mural_safety_strip", warnings: warnings %>
+    <% if filter_count.positive? %><p class="mural-filter-summary">Resultados filtrados <%= link_to "Limpar filtros", publications_path %></p><% end %>
+    <% unless Current.user %><p class="mural-guest-note"><%= link_to "Entre", new_session_path(return_to: publications_path) %> para ver publicações internas e interagir.</p><% end %>
+
+    <div class="mural-posts"><% @cards.each do |card| %><%= render "publications/card", card: card %><% end %></div>
+    <% if @cards.empty? %>
+      <div class="sgu-empty"><p><%= filter_count.positive? ? "Nada encontrado com esses filtros." : "Ainda não há publicações." %></p>
+        <% if filter_count.positive? %><%= link_to "Limpar filtros", publications_path, class: "sgu-link" %><% end %>
+      </div>
+    <% end %>
+    <%= render "shared/pagination", pagy: @pagy %>
+  </div>
+  <%= render "publications/mural_context", warnings: warnings %>
 </div>
+<%= render "publications/mural_search" %>

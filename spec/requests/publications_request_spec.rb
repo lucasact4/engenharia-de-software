@@ -18,7 +18,7 @@ RSpec.describe "Mural (publications)", type: :request do
     expect(response.body).not_to include("Comunicado interno")
     expect(response.body).not_to include("Rascunho editorial")
     expect(response.body).not_to include("Aviso vencido")
-    expect(response.body).to include("Entre para interagir")
+    expect(response.body).to include("Entre ou crie uma conta para curtir")
 
     get publication_path(internal)
     expect(response).to have_http_status(:not_found)

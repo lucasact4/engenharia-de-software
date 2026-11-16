@@ -121,6 +121,7 @@ module DemoMural
 
   def run
     admin = User.where(admin: true, deleted_at: nil).order(:id).first or raise "Crie um administrador antes (db:seed)."
+    admin_identity(admin)
     @credentials = {}
     student = demo_account(admin, key: "estudante.demo", name: "Estudante Demo", username: "estudante_demo",
                            role: "student", color: "#f2bd57", initials: "ED", bio: "Conta de demonstração da entrega final.")
@@ -164,6 +165,38 @@ module DemoMural
     @credentials[email] = [ name, password ]
     user
   end
+
+  # Conta administrativa com cara de perfil oficial: nome, @ e o escudo do SGU como foto.
+  def admin_identity(admin)
+    admin.display_name ||= "Administração SGU"
+    admin.username ||= "admin_sgu" unless User.where.not(id: admin.id).exists?(username: "admin_sgu")
+    admin.bio ||= "Conta oficial da equipe que administra o SGU · UFRPE."
+    admin.verified_at ||= Time.current
+    admin.verified_by ||= admin
+    admin.save!
+    return if admin.avatar.attached?
+
+    admin.avatar.attach(io: StringIO.new(render_png(ADMIN_AVATAR_SVG)), filename: "avatar-admin.png", content_type: "image/png")
+  end
+
+  ADMIN_AVATAR_SVG = <<~SVG.freeze
+    <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+      <defs>
+        <radialGradient id="bg" cx="30%" cy="25%" r="90%"><stop offset="0" stop-color="#2f8a76"/><stop offset="1" stop-color="#0f2f2a"/></radialGradient>
+        <clipPath id="shield"><path d="M14 6H86A10 10 0 0 1 96 16V54C96 81 77 98 50 108C23 98 4 81 4 54V16A10 10 0 0 1 14 6Z"/></clipPath>
+      </defs>
+      <rect width="320" height="320" fill="url(#bg)"/>
+      <circle cx="262" cy="58" r="110" fill="#ffffff" opacity="0.07"/>
+      <g transform="translate(70 58) scale(1.8)">
+        <path d="M14 6H86A10 10 0 0 1 96 16V54C96 81 77 98 50 108C23 98 4 81 4 54V16A10 10 0 0 1 14 6Z" fill="#153C36" stroke="#F4F7F5" stroke-width="3"/>
+        <path d="M4 79C18 71 34 67 50 67S82 71 96 79V54 120H4Z" fill="#226A5C" clip-path="url(#shield)"/>
+        <path d="M50 86V50" fill="none" stroke="#F4F7F5" stroke-width="7" stroke-linecap="round"/>
+        <path d="M50 66C46 54 37 47 25 46C27 58 36 66 50 66Z" fill="#F4F7F5"/>
+        <path d="M50 56C55 42 66 34 80 33C78 48 66 56 50 56Z" fill="#F4F7F5"/>
+        <circle cx="50" cy="33" r="6.5" fill="#F2BD57"/>
+      </g>
+    </svg>
+  SVG
 
   def saved_password(email)
     return unless CREDENTIALS_FILE.exist?

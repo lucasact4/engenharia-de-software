@@ -1,5 +1,6 @@
 <% content_for :title, "Pânico - SGU UFRPE" %>
 <div class="mx-auto max-w-2xl" data-controller="panic" data-panic-key-value="<%= @client_request_id %>" data-panic-alerts-url-value="<%= alerts_path %>">
+  <%= back_link publications_path, "o mural" %>
   <p class="sgu-eyebrow !text-negative-ink">Pedido de ajuda</p>
   <h1 class="sgu-page-title mt-1">Pânico</h1>
   <div class="mt-3 space-y-2 text-ink">

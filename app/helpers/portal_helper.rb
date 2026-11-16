@@ -76,14 +76,24 @@ module PortalHelper
     options_for_select(choices, selected.to_s)
   end
 
-  def nav_link(label, path, icon_name, active: current_page?(path))
-    link_to path, class: "sgu-nav-link", aria: { current: (active ? "page" : nil) } do
-      safe_join([ sgu_icon(icon_name), tag.span(label) ])
+  def nav_link(label, path, icon_name, active: current_page?(path), short_label: nil)
+    link_to path, class: "sgu-nav-link", title: (label if short_label),
+                  aria: { current: (active ? "page" : nil), label: (label if short_label) } do
+      safe_join([ sgu_icon(icon_name), tag.span(short_label || label) ])
     end
   end
 
   def handling_queue_available?
     Current.user.present? && AlertPolicy.new(Current.user, Alert).queue?
+  end
+
+  # "Voltar" do topo: volta para a tela anterior do próprio SGU (como no Instagram) e, sem
+  # histórico (link direto, nova aba), cai no destino lógico informado em fallback.
+  def back_link(fallback, destination)
+    link_to fallback, class: "page-back", title: "Voltar (ou ir para #{destination})",
+                      data: { controller: "history-back", action: "history-back#go" } do
+      safe_join([ sgu_icon("arrow-left", "size-5"), tag.span("Voltar") ])
+    end
   end
 
   def initials_for(name)

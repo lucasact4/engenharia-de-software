@@ -1,6 +1,8 @@
-<details class="notification-bell" data-notifications-target="menu" data-action="mouseenter->notifications#hover mouseleave->notifications#leave keydown.esc->notifications#close">
-  <summary class="sgu-btn sgu-btn-sm sgu-btn-secondary" data-action="click->notifications#toggle" data-notifications-target="trigger" aria-expanded="false" aria-controls="notification-preview">
-    <%= sgu_icon("bell") %><span class="sr-only">Notificações não lidas:</span>
+<% navigation = local_assigns[:navigation] %>
+<details class="notification-bell <%= 'mural-nav-notifications' if navigation %>" data-notifications-target="menu" data-action="mouseenter->notifications#hover mouseleave->notifications#leave keydown.esc->notifications#close">
+  <summary class="<%= navigation ? 'mural-nav-link' : 'sgu-btn sgu-btn-sm sgu-btn-secondary' %>" data-action="click->notifications#toggle" data-notifications-target="trigger" aria-expanded="false" aria-controls="notification-preview" <%= tag.attributes(navigation ? { data: { tooltip: "Notificações" } } : { title: "Notificações" }) %>>
+    <%= sgu_icon("bell", navigation ? "size-6" : "size-4") %><span class="sr-only">Notificações não lidas:</span>
+    <% if navigation %><span class="mural-nav-label" aria-hidden="true">Notificações</span><% end %>
     <span class="notification-count" data-notifications-target="count" aria-live="polite"><%= notification_feed.unread.count %></span>
   </summary>
   <section id="notification-preview" class="notification-preview" aria-label="Notificações recentes">

@@ -1,0 +1,49 @@
+<% user = Current.user %>
+<aside class="mural-navigation" aria-label="Navegação do SGU">
+  <%= link_to root_path(locale: nil), class: "mural-brand", title: "Página inicial do SGU", aria: { label: "Página inicial do SGU" } do %>
+    <span class="mural-brand-word"><%= sgu_brand(:horizontal, alt: "SGU", class_name: "h-9") %></span>
+    <span class="mural-brand-symbol"><%= sgu_brand(:symbol, alt: "SGU", class_name: "h-9") %></span>
+  <% end %>
+
+  <nav class="mural-navigation-primary" aria-label="Navegação principal">
+    <%= mural_nav_link "Mural", publications_path, "house", active: controller_name == "publications", css: "mural-nav-home" %>
+    <%= mural_nav_link "Mapa", campus_map_path, "map-pin", active: controller_name == "campus_map", css: "mural-nav-map" %>
+    <%= link_to publications_path(pesquisa: 1, anchor: "mural-search"), class: "mural-nav-link mural-nav-search", aria: { label: "Pesquisar e filtrar" }, data: { action: "mural-shell#openSearch", tooltip: "Pesquisar e filtrar" } do %>
+      <%= sgu_icon("search", "size-6") %><span class="mural-nav-label">Buscar</span>
+    <% end %>
+    <% if user %><%= render "notifications/bell", navigation: true %><% end %>
+    <%= mural_nav_link "Criar publicação", user ? new_alert_path : new_session_path(return_to: new_alert_path), "plus", css: "mural-nav-create", short_label: "Criar", active: controller_path == "alerts" && action_name.in?(%w[new create]) %>
+    <%= mural_nav_link "Acompanhamentos", user ? follow_ups_path : new_session_path(return_to: follow_ups_path), "bell", css: "mural-nav-following", short_label: "Seguindo", active: controller_path == "follow_ups" %>
+    <%= mural_nav_link "Perfil", user ? profile_path : new_session_path(return_to: profile_path), "user", css: "mural-nav-profile", profile: true, active: controller_path.in?(%w[profiles saved_publications]) %>
+  </nav>
+
+  <div class="mural-navigation-bottom">
+    <% if user %>
+      <%= mural_nav_link "Pânico: pedir ajuda", new_panic_path, "siren", css: "mural-nav-panic", short_label: "Pedir ajuda" %>
+    <% end %>
+    <%= mural_nav_link "Página inicial do SGU", root_path(locale: nil), "house", css: "mural-nav-landing", short_label: "Ir para o site" %>
+    <details class="mural-more" data-controller="disclosure" data-action="click@window->disclosure#outside keydown.esc->disclosure#close">
+      <summary class="mural-nav-link" aria-label="Mais opções" data-tooltip="Mais opções"><%= sgu_icon("menu", "size-6") %><span class="mural-nav-label">Mais</span></summary>
+      <div class="mural-more-panel">
+        <p class="mural-more-heading"><%= user ? (user.display_name.presence || "Sua conta") : "SGU · campus em conexão" %></p>
+        <%= nav_link "Página inicial do SGU", root_path(locale: nil), "house", active: false %>
+        <% if user %>
+          <%= nav_link "Painel", panel_path, "layout-dashboard", active: false %>
+          <%= nav_link "Meus alertas", alerts_path, "inbox", active: false %>
+          <% if handling_queue_available? %><%= nav_link "Atendimento", handling_alerts_path, "clipboard-list", active: false %><% end %>
+          <%= nav_link "Salvos", saved_publications_path, "bookmark", active: false %>
+          <%= nav_link "Pessoas", people_path, "users", active: false %>
+          <%= nav_link "Minhas denúncias", content_reports_path, "flag", active: false %>
+          <% if user.admin? %><%= nav_link "Administração", admin_path, "shield", active: false %><% end %>
+        <% else %>
+          <%= nav_link "Entrar", new_session_path(return_to: request.fullpath), "log-in", active: false %>
+          <%= nav_link "Criar conta", new_registration_path(locale: nil), "user", active: false %>
+        <% end %>
+        <div class="mural-theme-option"><span>Aparência</span><%= render "shared/theme_toggle" %></div>
+        <button type="button" class="sgu-nav-link mural-collapse-option" data-action="mural-shell#toggleNavigation"><%= sgu_icon("menu") %><span data-mural-shell-target="compactLabel">Recolher menu</span></button>
+        <% if user %><%= button_to session_path, method: :delete, class: "sgu-nav-link w-full !text-negative-ink" do %><%= sgu_icon("log-out") %><span>Sair</span><% end %><% end %>
+        <p class="mural-more-credit">SGU UFRPE · Equipe UFRPE de Engenharia de Software</p>
+      </div>
+    </details>
+  </div>
+</aside>

@@ -1,0 +1,32 @@
+<aside class="mural-context" aria-label="Informações do campus e da conta">
+  <div class="mural-context-account">
+    <% if Current.user %>
+      <%= link_to profile_path, class: "mural-context-avatar-link", aria: { label: "Abrir meu perfil" } do %><%= account_avatar(Current.user, "mural-context-avatar") %><% end %>
+      <div>
+        <%= link_to profile_path, class: "mural-context-handle" do %><strong><%= Current.user.username.presence || account_handle(Current.user) %></strong><% end %>
+        <span><%= Current.user.display_name.presence || "Complete seu nome no perfil" %></span>
+      </div>
+      <%= link_to "Ver perfil", profile_path %>
+    <% else %>
+      <%= sgu_brand(:symbol, alt: "", class_name: "h-10") %>
+      <div><strong>Seu campus em conexão</strong><span>Entre para participar</span></div>
+      <%= link_to "Entrar", new_session_path(return_to: publications_path) %>
+    <% end %>
+  </div>
+
+  <section class="mural-context-safety" aria-labelledby="mural-context-safety-title">
+    <div class="mural-context-heading"><h2 id="mural-context-safety-title">Segurança no campus</h2><span><%= warnings.size %> <%= warnings.one? ? "ativo" : "ativos" %></span></div>
+    <% if warnings.any? %>
+      <%= render "publications/public_panic_warnings", warnings: warnings %>
+    <% else %>
+      <p class="mural-context-empty"><%= sgu_icon("shield", "size-5") %> Não há avisos públicos ativos.</p>
+    <% end %>
+  </section>
+
+  <div class="mural-context-links">
+    <%= link_to "Sobre o SGU", root_path(locale: nil) %><span>·</span><%= link_to "Mapa do campus", campus_map_path %>
+    <% if Current.user %><span>·</span><%= link_to "Minhas ocorrências", alerts_path %><% end %>
+  </div>
+  <p class="mural-context-note">Registrar uma ocorrência não substitui o contato com os serviços de emergência.</p>
+  <p class="mural-context-credit">© <%= Date.current.year %> SGU · UFRPE<br>Projeto acadêmico · Engenharia de Software</p>
+</aside>

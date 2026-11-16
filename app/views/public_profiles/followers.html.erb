@@ -1,7 +1,7 @@
 <% identity = PublicIdentity.for(@person) %>
 <% content_for :title, "Seguidores de #{identity[:display_name]} - SGU UFRPE" %>
 <div class="mx-auto max-w-3xl space-y-4">
-  <%= link_to person_path(@person), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> <%= identity[:display_name] %><% end %>
+  <%= back_link person_path(@person), identity[:display_name] %>
   <h1 class="sgu-page-title">Seguidores</h1>
   <p class="text-sm text-muted"><%= pluralize(@followers_count, "seguidor", plural: "seguidores") %> no total. A lista mostra apenas quem também tem perfil público.</p>
   <% if @followers.any? %>

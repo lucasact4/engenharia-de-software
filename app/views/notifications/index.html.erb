@@ -1,4 +1,5 @@
 <% content_for :title, "Notificações · SGU" %>
+<%= back_link publications_path, "o mural" %>
 <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
   <h1 class="text-2xl font-bold">Suas notificações</h1>
   <%= button_to "Marcar notificações comuns como lidas", read_all_notifications_path, method: :patch, class: "sgu-btn sgu-btn-secondary" %>

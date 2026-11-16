@@ -1,6 +1,6 @@
 <% content_for :title, "Denunciar - SGU UFRPE" %>
 <div class="mx-auto max-w-2xl space-y-4">
-  <%= link_to publication_path(@target_publication), class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Voltar à publicação<% end %>
+  <%= back_link publication_path(@target_publication), "a publicação" %>
   <h1 class="sgu-page-title">Denunciar <%= @target.is_a?(Comment) ? "comentário" : "publicação" %></h1>
   <p class="text-muted">A administração analisa a denúncia. Seu nome e o motivo não aparecem para outras pessoas. Denunciar de novo o mesmo conteúdo não cria outra denúncia.</p>
   <%= form_with url: (@target.is_a?(Comment) ? comment_content_reports_path(@target) : publication_content_reports_path(@target)), method: :post, class: "sgu-card space-y-4 p-5" do %>

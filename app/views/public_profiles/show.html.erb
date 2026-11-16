@@ -1,24 +1,53 @@
 <% identity = PublicIdentity.for(@person) %>
 <% content_for :title, "#{identity[:display_name]} - SGU UFRPE" %>
-<div class="mx-auto max-w-2xl space-y-5">
-  <%= link_to people_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Pessoas<% end %>
-  <section class="sgu-card p-6 text-center sm:p-8">
-    <span class="mx-auto grid size-16 place-items-center rounded-full bg-brand-solid text-xl font-bold text-on-brand" aria-hidden="true"><% if @person.avatar.attached? %><%= image_tag profile_photo_path(@person), alt: "", class: "size-full rounded-full object-cover" %><% else %><%= initials_for(identity[:display_name]) %><% end %></span>
-    <h1 class="mt-4 text-2xl font-bold text-ink"><%= identity[:display_name] %> <% if @person.verified? %><%= render "shared/verified_badge" %><% end %></h1>
-    <% if identity[:username] %><p class="text-muted">@<%= identity[:username] %></p><% end %>
-    <% if @person.bio.present? %><p class="sgu-prose mx-auto mt-4 max-w-md text-ink"><%= @person.bio %></p><% end %>
-    <p class="mt-4 text-sm text-muted"><%= link_to pluralize(@followers_count, "seguidor", plural: "seguidores"), followers_person_path(@person), class: "sgu-link" %></p>
-    <div class="mt-5">
+<% handle = identity[:username].presence || identity[:display_name] %>
+<div class="profile-page">
+  <%= back_link publications_path, "o mural" %>
+
+  <header class="profile-header">
+    <span class="profile-avatar-ring">
+      <span class="profile-avatar" aria-hidden="true"><% if @person.avatar.attached? %><%= image_tag profile_photo_path(@person), alt: "", class: "size-full rounded-full object-cover" %><% else %><%= initials_for(identity[:display_name]) %><% end %></span>
+    </span>
+
+    <section class="profile-summary" aria-labelledby="profile-handle">
+      <div class="profile-title-row">
+        <h1 id="profile-handle"><%= handle %></h1>
+        <% if @person.verified? %><%= render "shared/verified_badge" %><% end %>
+      </div>
+      <% if identity[:username].present? %><p class="profile-name"><%= identity[:display_name] %></p><% end %>
+
+      <ul class="profile-stats" role="list">
+        <li><strong><%= number_with_delimiter(@posts_count) %></strong> <%= @posts_count == 1 ? "publicação" : "publicações" %></li>
+        <li><%= link_to followers_person_path(@person) do %><strong><%= number_with_delimiter(@followers_count) %></strong> <%= @followers_count == 1 ? "seguidor" : "seguidores" %><% end %></li>
+      </ul>
+
+      <% if @person.bio.present? %><div class="profile-bio"><p class="sgu-prose"><%= @person.bio %></p></div><% end %>
+    </section>
+
+    <div class="profile-actions">
       <% if Current.user.nil? %>
-        <%= link_to "Entre para seguir", new_session_path(locale: nil, return_to: person_path(@person, locale: nil)), class: "sgu-btn sgu-btn-secondary" %>
+        <%= link_to "Entre para seguir", new_session_path(locale: nil, return_to: person_path(@person, locale: nil)), class: "profile-action profile-action--primary" %>
       <% elsif Current.user.id == @person.id %>
-        <%= link_to "Editar meu perfil", edit_profile_path, class: "sgu-btn sgu-btn-secondary" %>
+        <%= link_to "Editar perfil", edit_profile_path, class: "profile-action" %>
+        <%= link_to "Ver meu perfil", profile_path, class: "profile-action" %>
       <% elsif @following %>
-        <%= button_to person_follow_path(@person), method: :delete, class: "sgu-btn sgu-btn-secondary sgu-btn-toggle", aria: { pressed: true } do %><%= sgu_icon("user-minus") %> Seguindo — deixar de seguir<% end %>
+        <%= button_to person_follow_path(@person), method: :delete, class: "profile-action", form_class: "profile-action-form", aria: { pressed: true, label: "Seguindo. Deixar de seguir" } do %>Seguindo <%= sgu_icon("user-minus", "size-4") %><% end %>
       <% elsif @can_follow %>
-        <%= button_to person_follow_path(@person), method: :post, class: "sgu-btn sgu-btn-primary", aria: { pressed: false } do %><%= sgu_icon("user-plus") %> Seguir<% end %>
+        <%= button_to person_follow_path(@person), method: :post, class: "profile-action profile-action--primary", form_class: "profile-action-form", aria: { pressed: false } do %><%= sgu_icon("user-plus", "size-4") %> Seguir<% end %>
+      <% end %>
+      <% if identity[:username].present? %>
+        <%= link_to publications_path(creator: identity[:username]), class: "profile-action", title: "Ver as publicações no mural" do %>Ver no mural<% end %>
       <% end %>
     </div>
-  </section>
-  <p class="text-center text-xs text-muted">Perfis mostram só o que a pessoa escolheu tornar público. Ocorrências são assinadas pelo autor; avisos e notícias, pela equipe do SGU.</p>
+  </header>
+
+  <nav class="profile-tabs" aria-label="Seções do perfil">
+    <span class="profile-tab" aria-current="page"><%= sgu_icon("grid-3x3", "size-6") %><span>Publicações</span></span>
+  </nav>
+
+  <%= render "profiles/grid", cards: @grid_cards, pagy: @pagy,
+        empty_title: "Nenhuma publicação ainda",
+        empty_text: "As ocorrências que #{identity[:display_name]} compartilhar no mural aparecem aqui." %>
+
+  <p class="profile-footnote">Perfis mostram só o que a pessoa escolheu tornar público. Relatos anônimos nunca aparecem aqui; avisos e notícias são assinados pela equipe do SGU.</p>
 </div>

@@ -26,7 +26,7 @@ RSpec.describe "Editorial journey", type: :feature, js: true do
     Capybara.reset_sessions!
     visit publication_path(publication)
     expect(page).to have_content("Restaurante universitário com novo horário")
-    expect(page).to have_link("Entre para interagir")
+    expect(page).to have_link("Entre ou crie uma conta para curtir")
 
     sign_in_via_ui other_reader
     visit publication_path(publication)

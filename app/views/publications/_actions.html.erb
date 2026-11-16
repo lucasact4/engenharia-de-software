@@ -1,14 +1,41 @@
 <% state = card[:viewer_state] %>
-<div id="publication_<%= card[:id] %>_actions" class="social-actions">
-  <% if state %>
-    <% [[ :like, "heart", "Curtir", "Curtido", :liked ], [ :subscription, "bell", "Acompanhar", "Acompanhando", :subscribed ]].each do |kind, glyph, label, selected, key| %>
-      <%= button_to send("publication_#{kind}_interaction_path", card[:id]), method: state[key] ? :delete : :post, class: "social-icon-button", form_class: "inline", aria: { pressed: state[key], label: "#{state[key] ? selected : label}#{kind == :like ? " (#{card[:likes_count]})" : ''}" }, title: state[key] ? selected : label do %><%= sgu_icon(glyph, "size-6") %><% end %>
+<div id="publication_<%= card[:id] %>_actions" class="social-actions" data-controller="post-share"
+     data-post-share-url-value="<%= publication_path(card[:id], locale: nil) %>" data-post-share-title-value="<%= card[:title] %>">
+  <div class="social-actions-row">
+    <% if state %>
+      <%= button_to publication_like_interaction_path(card[:id]), method: state[:liked] ? :delete : :post,
+            class: "social-icon-button social-action-count social-action-like", form_class: "social-action-form",
+            aria: { pressed: state[:liked], label: "#{state[:liked] ? 'Curtido' : 'Curtir'} (#{card[:likes_count]})" },
+            title: pluralize(card[:likes_count], "curtida", plural: "curtidas") do %>
+        <%= sgu_icon("heart", "size-6") %><span aria-hidden="true"><%= number_with_delimiter(card[:likes_count]) %></span>
+      <% end %>
+    <% else %>
+      <%= guest_action_link card, "Entre ou crie uma conta para curtir", "social-action-count social-action-like" do %>
+        <%= sgu_icon("heart", "size-6") %><span aria-hidden="true"><%= number_with_delimiter(card[:likes_count]) %></span>
+      <% end %>
     <% end %>
-  <% else %><%= link_to new_session_path(return_to: publication_path(card[:id])), class: "social-icon-button", aria: { label: "Entrar para curtir" } do %><%= sgu_icon("heart", "size-6") %><% end %><% end %>
-  <%= link_to publication_path(card[:id], anchor: "comentarios"), class: "social-icon-button", aria: { label: "#{card[:comments_count]} comentários" } do %><%= sgu_icon("message-circle", "size-6") %><% end %>
-  <span class="text-xs font-semibold text-muted"><%= pluralize(card[:likes_count], "curtida", plural: "curtidas") %> · <%= pluralize(card[:comments_count], "comentário", plural: "comentários") %></span>
-  <% if state %>
-    <%= button_to publication_bookmark_interaction_path(card[:id]), method: state[:bookmarked] ? :delete : :post, class: "social-icon-button", form_class: "ml-auto", aria: { pressed: state[:bookmarked], label: state[:bookmarked] ? "Salvo" : "Salvar" }, title: "Guardar em sua lista privada" do %><%= sgu_icon("bookmark", "size-6") %><% end %>
-    <% if local_assigns[:show_report] %><%= link_to new_publication_content_report_path(card[:id]), class: "social-icon-button", aria: { label: "Denunciar publicação" }, title: "Denunciar" do %><%= sgu_icon("flag") %><% end %><% end %>
-  <% else %><%= link_to "Entre para interagir", new_session_path(return_to: publication_path(card[:id])), class: "sgu-link ml-auto text-xs" %><% end %>
+    <% if state %>
+      <%= link_to publication_path(card[:id], anchor: "comentarios"), class: "social-icon-button social-action-count",
+            aria: { label: pluralize(card[:comments_count], "comentário", plural: "comentários") }, title: "Ver comentários" do %>
+        <%= sgu_icon("message-circle", "size-6") %><span aria-hidden="true"><%= number_with_delimiter(card[:comments_count]) %></span>
+      <% end %>
+    <% else %>
+      <%= guest_action_link card, "Entre ou crie uma conta para comentar", "social-action-count", anchor: "comentarios" do %>
+        <%= sgu_icon("message-circle", "size-6") %><span aria-hidden="true"><%= number_with_delimiter(card[:comments_count]) %></span>
+      <% end %>
+    <% end %>
+    <button type="button" class="social-icon-button" data-action="post-share#share" aria-label="Compartilhar publicação" title="Compartilhar publicação"><%= sgu_icon("send", "size-6") %></button>
+    <% if state %>
+      <%= button_to publication_subscription_interaction_path(card[:id]), method: state[:subscribed] ? :delete : :post,
+            class: "social-icon-button", form_class: "social-action-form", aria: { pressed: state[:subscribed], label: state[:subscribed] ? "Acompanhando" : "Acompanhar" },
+            title: state[:subscribed] ? "Deixar de receber avisos desta publicação" : "Receber avisos desta publicação" do %><%= sgu_icon("bell", "size-6") %><% end %>
+      <%= button_to publication_bookmark_interaction_path(card[:id]), method: state[:bookmarked] ? :delete : :post,
+            class: "social-icon-button", form_class: "social-action-form social-action-save", aria: { pressed: state[:bookmarked], label: state[:bookmarked] ? "Salvo" : "Salvar" },
+            title: "Guardar em sua lista privada" do %><%= sgu_icon("bookmark", "size-6") %><% end %>
+    <% else %>
+      <%= guest_action_link card, "Entre ou crie uma conta para receber avisos desta publicação" do %><%= sgu_icon("bell", "size-6") %><% end %>
+      <%= guest_action_link card, "Entre ou crie uma conta para salvar", "social-action-save" do %><%= sgu_icon("bookmark", "size-6") %><% end %>
+    <% end %>
+  </div>
+  <p class="social-share-status" data-post-share-target="status" role="status"></p>
 </div>

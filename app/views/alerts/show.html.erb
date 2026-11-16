@@ -1,6 +1,6 @@
 <% content_for :title, "#{@alert.protocol} - SGU UFRPE" %>
 <div class="mx-auto max-w-4xl space-y-5">
-  <%= link_to alerts_path, class: "inline-flex items-center gap-1 text-sm font-semibold !text-muted hover:!text-brand-link" do %><%= sgu_icon("chevron-left") %> Alertas<% end %>
+  <%= back_link alerts_path, "Minhas ocorrências" %>
 
   <%= render "shared/alerts/header", detail: @detail, social: @post_card.present? do %>
     <% if policy(@alert).update_content? %>

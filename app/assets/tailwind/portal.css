@@ -1,4 +1,23 @@
 /* Componentes do portal e das telas de domínio (SGU). Usados no portal e no admin. */
+.portal-header-inner { max-width: 80rem; }
+.portal-header-actions { flex-shrink: 0; }
+.portal-primary-nav, .portal-account-menu { display: none; }
+.portal-mobile-menu { display: block; }
+.portal-mobile-menu > div { max-height: calc(100dvh - 5rem); overflow-y: auto; }
+.portal-header .sgu-nav-link { white-space: nowrap; }
+.portal-primary-nav .sgu-nav-link { flex-shrink: 0; padding-inline: .65rem; gap: .4rem; font-size: .8125rem; }
+@media (min-width: 1200px) {
+  .portal-primary-nav { display: flex; min-width: 0; }
+  .portal-account-menu { display: block; }
+  .portal-mobile-menu { display: none; }
+}
+@media (max-width: 399px) {
+  .portal-header-inner { gap: .5rem; padding-inline: .75rem; }
+  .portal-header-actions { gap: .375rem; }
+  .portal-header-panic-label { display: none; }
+  .portal-header .portal-header-panic { width: 2.5rem; height: 2.5rem; padding: .5rem; }
+}
+
 @layer components {
   .sgu-btn {
     @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60;

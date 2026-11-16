@@ -2,6 +2,8 @@
 # seguidores públicos; e-mail, papéis, alertas, salvos e atividade privada nunca aparecem.
 # Perfil privado, desativado ou inexistente responde 404.
 class PublicProfilesController < PortalController
+  include ProfileGrid
+
   allow_unauthenticated_access only: %i[index show followers]
 
   def index
@@ -18,6 +20,7 @@ class PublicProfilesController < PortalController
     @followers_count = PublicFollowersQuery.new(@person).count
     @following = Current.user && UserFollow.exists?(follower_id: Current.user.id, followed_id: @person.id)
     @can_follow = Current.user && FollowPolicy.new(Current.user, @person).follow?
+    load_profile_grid(@person)
   end
 
   def followers
