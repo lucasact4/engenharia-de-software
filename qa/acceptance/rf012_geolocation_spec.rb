@@ -38,6 +38,19 @@ RSpec.describe "RF012 - Geolocalização em tempo real", type: :feature, js: tru
     alert = Alert.panic.find_by!(author: author)
     expect(page).to have_content(alert.protocol)
     expect(alert).to have_attributes(location_source: "gps")
+
+    # O monitoramento contínuo começa na página do pedido, que abre depois da confirmação.
+    expect(page).to have_content("Localização em tempo real")
+    expect(page).to have_content("Mantenha esta página aberta para compartilhar sua posição.")
+    mock_gps
+    page.execute_script(<<~JS)
+      const tracking = document.querySelector('[data-controller~="panic-tracking"]');
+      tracking.removeAttribute("data-controller");
+      setTimeout(() => tracking.setAttribute("data-controller", "panic-tracking"), 50);
+    JS
+    page.document.synchronize(5) do
+      raise Capybara::ExpectationNotMet, "watchPosition não foi chamado" unless gps_watch_count.positive?
+    end
     expect(gps_watch_count).to be_positive,
       "O GPS inicial foi registrado, mas o navegador não iniciou o monitoramento contínuo (watchPosition)."
   end
@@ -75,6 +88,7 @@ RSpec.describe "RF012 - Geolocalização em tempo real", type: :feature, js: tru
     fill_in "Título", with: "Poste apagado perto da guarita"
     fill_in "Descrição", with: "O poste ao lado da guarita está apagado há duas noites."
     select category.name, from: "Categoria"
+    choose "Não sei avaliar", allow_label_click: true
     choose "Usar GPS", allow_label_click: true
     click_button "Usar minha localização"
     expect(page).to have_content("Localização capturada")
@@ -82,7 +96,7 @@ RSpec.describe "RF012 - Geolocalização em tempo real", type: :feature, js: tru
     click_button "Publicar ocorrência"
 
     expect(page).to have_content("Ocorrência registrada")
-    alert = Alert.find_by!(author: author, title: "Poste apagado perto da guarita")
+    alert = Alert.occurrence.where(author: author).sole # título cifrado (RNF004): busca pelo autor
     expect(alert.latitude).to be_within(0.000001).of(-8.0171234)
     expect(alert.longitude).to be_within(0.000001).of(-34.9501234)
     expect(gps_watch_count).to eq(0)
