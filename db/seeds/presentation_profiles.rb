@@ -29,6 +29,18 @@ profiles = [
       testes-cruzados plano-de-teste
       encerramento.links
     ]
+  },
+  {
+    name: "Entrega final", delivery: "final",
+    description: "Problema, stack e qualidade, requisitos em cards, demo ao vivo e validação, em até 10 minutos.",
+    enabled: %w[
+      problema problema.dores problema.publico problema.proposta
+      stack-qualidade stack-qualidade.tecnologias stack-qualidade.padroes stack-qualidade.ferramentas stack-qualidade.seguranca
+      requisitos-cards requisitos-cards.cards
+      demo demo.roteiro demo.acesso
+      validacao validacao.automatizada validacao.por-requisito validacao.cruzados
+      encerramento.links
+    ]
   }
 ]
 profiles.each do |attributes|

@@ -35,7 +35,7 @@ slides:
   - id: problema
     tema: escuro
     titulo: "Problema e proposta"
-    tempo: 35
+    tempo: 45
     padrao: false
     responsavel:
     conteudos:
@@ -190,6 +190,45 @@ slides:
     conteudos:
       - { id: marco, titulo: "Marco demonstrável", padrao: true }
       - { id: passos, titulo: "Lista de próximos passos", padrao: true }
+
+  - id: stack-qualidade
+    titulo: "Tecnologias, padrões e ferramentas"
+    tempo: 60
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: tecnologias, titulo: "Tecnologias", padrao: true }
+      - { id: padroes, titulo: "Padrões de projeto", padrao: true }
+      - { id: ferramentas, titulo: "Ferramentas de qualidade", padrao: true }
+      - { id: seguranca, titulo: "Segurança e dados", padrao: true }
+
+  - id: requisitos-cards
+    titulo: "Principais requisitos"
+    tempo: 60
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: cards, titulo: "Cards com captura de cada funcionalidade", padrao: true }
+
+  - id: demo
+    titulo: "MVP rodando: roteiro da demonstração"
+    tempo: 300
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: roteiro, titulo: "Passos da demonstração", padrao: true }
+      - { id: acesso, titulo: "Endereço e QR Code do MVP", padrao: true }
+      - { id: preparacao, titulo: "Checklist antes de começar", padrao: false }
+
+  - id: validacao
+    titulo: "Como validamos o MVP"
+    tempo: 75
+    padrao: false
+    responsavel:
+    conteudos:
+      - { id: automatizada, titulo: "Testes automatizados e CI", padrao: true }
+      - { id: por-requisito, titulo: "Casos de aceite por requisito", padrao: true }
+      - { id: cruzados, titulo: "Teste exploratório cruzado", padrao: true }
 
   - id: testes-cruzados
     titulo: "Recomendações para os testes cruzados"

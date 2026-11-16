@@ -150,3 +150,41 @@ entregas:
         slides: [ { id: roteiro } ]
         estado: parcial
         observacao: "Estimativa calculada a partir dos slides selecionados; ensaio cronometrado pendente."
+
+  - id: final
+    titulo: "Entrega Final do Projeto (Segunda VA)"
+    rotulo: "Entrega final"
+    prazo: "16/11/2026, às 18h"
+    data_apresentacao: "16/11/2026"
+    duracao_maxima_minutos: 10
+    exigencias:
+      - numero: 1
+        grupo: item
+        texto: "Lembrete do problema que está sendo resolvido e valor pretendido."
+        slides: [ { id: problema, titulo: "O problema e o valor pretendido" } ]
+        estado: implementado
+        observacao: "Problema, público e proposta de valor de requisitos.yml."
+      - numero: 2
+        grupo: item
+        texto: "Muito brevemente, em 1 slide, apontar tecnologias, padrões de projeto e ferramentas adotados (pensando em qualidade do produto sendo entregue)."
+        slides: [ { id: stack-qualidade, titulo: "Tecnologias, padrões e ferramentas" } ]
+        estado: implementado
+        observacao: "Stack, padrões e ferramentas de qualidade em entrega_final.yml; versões lidas do Gemfile.lock."
+      - numero: 3
+        grupo: item
+        texto: "Principais requisitos (cuidado para não ficar chato) - um slide com imagem de funcionalidade como se fossem card ou algo do tipo."
+        slides: [ { id: requisitos-cards, titulo: "Principais requisitos" } ]
+        estado: implementado
+        observacao: "Seis cards com capturas reais nos temas claro e escuro."
+      - numero: 4
+        grupo: item
+        texto: "Apresentação do MVP funcional - rodando. Não precisa de print de tela, vá direto para o sistema rodando. Crie um roteiro e siga ele."
+        slides: [ { id: demo, titulo: "MVP rodando: roteiro da demonstração" } ]
+        estado: implementado
+        observacao: "Roteiro de cerca de 5 minutos com perfis e requisitos de cada passo."
+      - numero: 5
+        grupo: item
+        texto: "Apontar como validou o MVP (teste de validação)."
+        slides: [ { id: validacao, titulo: "Como validamos o MVP" } ]
+        estado: parcial
+        observacao: "Testes automatizados, casos de aceite por requisito e teste exploratório cruzado. Registrar os resultados do teste cruzado quando houver."

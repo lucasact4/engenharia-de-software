@@ -1,0 +1,271 @@
+# Entrega final (Segunda VA): slides stack-qualidade, requisitos-cards, demo e validacao.
+# Guia de manutenção: config/presentation/LEIAME.md
+# Imagens relativas a app/assets/images. Capturas reais do ambiente de desenvolvimento em 15/11/2026.
+
+stack:
+  # Cada grupo vira um bloco de chips. logo: arquivo em app/assets/images; gem: mostra a versão do Gemfile.lock.
+  grupos:
+    - nome: "Back-end"
+      itens:
+        - { nome: "Ruby 3.4", logo: "presentation/logos/ruby.svg" }
+        - { nome: "Rails", gem: "rails", logo: "presentation/logos/rubyonrails.svg" }
+        - { nome: "Puma + Thruster" }
+        - { nome: "Solid Queue · Cache · Cable" }
+        - { nome: "Active Storage + libvips" }
+        - { nome: "Web Push (PWA)" }
+    - nome: "Front-end"
+      itens:
+        - { nome: "Turbo", logo: "presentation/logos/turbo.svg", fundo: escuro }
+        - { nome: "Stimulus", logo: "presentation/logos/stimulus.svg", fundo: escuro }
+        - { nome: "Tailwind CSS", logo: "presentation/logos/tailwindcss.svg" }
+        - { nome: "Importmap" }
+        - { nome: "Leaflet + OpenStreetMap" }
+    - nome: "Dados e acesso"
+      itens:
+        - { nome: "SQLite", logo: "presentation/logos/sqlite.svg" }
+        - { nome: "Pundit (papéis)" }
+        - { nome: "bcrypt" }
+        - { nome: "Criptografia Active Record" }
+    - nome: "Qualidade"
+      itens:
+        - { nome: "RSpec" }
+        - { nome: "Capybara + Selenium" }
+        - { nome: "SimpleCov" }
+        - { nome: "RuboCop", logo: "presentation/logos/rubocop.svg" }
+        - { nome: "Brakeman" }
+        - { nome: "Sentry" }
+    - nome: "CI e ambiente"
+      itens:
+        - { nome: "GitHub Actions (CI)", logo: "presentation/logos/githubactions.svg" }
+        - { nome: "Dependabot" }
+        - { nome: "Docker + Dev Container" }
+        - { nome: "Cloudflare Tunnel" }
+    - nome: "Gestão e IA"
+      itens:
+        - { nome: "GitHub + Pull Requests" }
+        - { nome: "Trello (Kanban)" }
+        - { nome: "Google Docs" }
+        - { nome: "Codex" }
+        - { nome: "Claude Code" }
+
+  padroes:
+    - { nome: "MVC", texto: "models, views e controllers do Rails" }
+    - { nome: "Service Objects", texto: "regras de negócio em app/services" }
+    - { nome: "Policies", texto: "permissões por papel (Pundit)" }
+    - { nome: "Query Objects", texto: "consultas reutilizáveis" }
+    - { nome: "Presenters", texto: "o que cada pessoa pode ver" }
+    - { nome: "Máquina de estados", texto: "status com histórico" }
+    - { nome: "Outbox + jobs", texto: "avisos entregues em segundo plano" }
+
+  # Como a equipe usa as ferramentas de IA (aparece abaixo dos padrões).
+  ia: "Codex e Claude Code geram e revisam código; tudo entra por PR com CI verde."
+
+  seguranca:
+    - "Senhas com bcrypt"
+    - "Dados pessoais criptografados"
+    - "Permissões por papel"
+    - "Auditoria das ações de admin"
+    - "Backup criptografado"
+    - "Análise Brakeman em todo PR"
+
+requisitos:
+  - titulo: "Registrar ocorrência"
+    codigos: ["RF005", "RF007", "RF009", "RF017", "RF018"]
+    texto: "Categoria, gravidade, local por GPS, mapa ou lista e até 5 fotos. A identidade pode ficar oculta no mural."
+    imagem: "presentation/final/registrar.png"
+    claro: "presentation/final/registrar-claro.png"
+    alt: "Formulário Publicar ocorrência com título e descrição."
+  - titulo: "Acompanhar o atendimento"
+    codigos: ["RF008", "RF014", "RF019"]
+    texto: "Protocolo, status de Recebida a Resolvida e aviso no sino a cada mudança."
+    imagem: "presentation/final/acompanhar.png"
+    claro: "presentation/final/acompanhar-claro.png"
+    alt: "Página Minha ocorrência com protocolo, opção de concluir e visibilidade da publicação."
+  - titulo: "Mural do campus"
+    codigos: ["RF006", "RF013"]
+    texto: "Busca por palavra, protocolo, categoria e gravidade. Curtir, comentar, seguir e denunciar."
+    imagem: "presentation/final/mural.png"
+    claro: "presentation/final/mural-claro.png"
+    alt: "Mural do campus com busca, filtros e uma publicação."
+  - titulo: "Mapa de ocorrências"
+    codigos: ["RF010"]
+    texto: "Publicações aprovadas no mapa da UFRPE, sem expor o ponto exato de relatos restritos."
+    imagem: "presentation/final/mapa.png"
+    claro: "presentation/final/mapa-claro.png"
+    alt: "Mapa da UFRPE Sede Recife com filtros e um marcador de ocorrência."
+  - titulo: "Botão de pânico"
+    codigos: ["RF011", "RF012"]
+    texto: "Confirmação explícita, GPS em até 2 segundos e alerta restrito à equipe de segurança."
+    imagem: "presentation/final/panico.png"
+    claro: "presentation/final/panico-claro.png"
+    alt: "Página de pedido de ajuda com aviso e botão Pedir ajuda."
+  - titulo: "Atendimento e moderação"
+    codigos: ["RF015", "RF016", "RNF005"]
+    texto: "Fila da equipe com filtros, prioridade, aprovação de publicações e auditoria."
+    imagem: "presentation/final/atendimento.png"
+    claro: "presentation/final/atendimento-claro.png"
+    alt: "Fila de atendimento da equipe com filtros e ocorrências em aberto."
+
+# Roteiro da demonstração ao vivo. A apresentação toda tem 10 minutos; a demo usa cerca de 5.
+# A demo roda em /apresentacao/demo: o SGU no computador e no celular, espelhados nos dois sentidos.
+# Cada passo: titulo (faixa lateral), acao (slide), onde, passos (mini popup) e destaque (o que falar).
+demo:
+  url: "https://sgu.lucasact4.com.br/"
+  rotulo: "sgu.lucasact4.com.br"
+  qr_code: "presentation/acesso/mvp-qr.png"
+  duracao: "≈ 5 min"
+  passos:
+    - tempo: "0:00"
+      titulo: "Mural e mapa"
+      perfil: "Visitante"
+      acao: "Mural, busca e mapa do campus, no computador e no celular ao mesmo tempo."
+      codigos: ["RF006", "RF010"]
+      onde: "Espelho (computador + celular)"
+      passos:
+        - "Clique em Mural na barra de atalhos: os dois aparelhos abrem o Mural do campus."
+        - "Em Palavras-chave ou ID/protocolo, digite “energia” e tecle Enter: a lista filtra na hora."
+        - "Troque Todas as categorias e Todas as gravidades para mostrar os filtros combinados."
+        - "Role a lista no computador: o celular rola junto. Abra uma publicação e mostre fotos, curtidas e comentários."
+        - "Clique na aba Mapa da UFRPE · Sede Recife e depois em um pino: aparecem as ocorrências daquele prédio."
+      destaque: "Sem login, o visitante vê apenas o que foi aprovado para o público."
+    - tempo: "0:50"
+      titulo: "Registrar ocorrência"
+      perfil: "Estudante"
+      acao: "Registra uma ocorrência com categoria, gravidade, local e foto."
+      codigos: ["RF005", "RF007", "RF009", "RF017"]
+      onde: "Espelho, logado como estudante"
+      passos:
+        - "Clique em Registrar na barra de atalhos (ou Registrar ocorrência no menu)."
+        - "Preencha Título e Descrição no computador: o celular mostra o mesmo texto."
+        - "Em Categoria e gravidade, escolha a categoria e a gravidade percebida (existe Não sei avaliar)."
+        - "Informe o local: GPS, um ponto no mapa ou um local descrito."
+        - "Em Fotos, anexe uma imagem PNG ou JPEG (até 5 fotos de 5 MB cada)."
+        - "Em Quem pode ver, escolha Todos (pública) e clique em Publicar ocorrência."
+        - "Mostre o protocolo SGU-… e a página da ocorrência criada."
+      destaque: "O envio não se repete no outro aparelho: ele só abre a página de resultado."
+    - tempo: "2:00"
+      titulo: "Triagem da equipe"
+      perfil: "Equipe · outra janela"
+      acao: "Define a prioridade, o responsável e muda a situação para Em triagem."
+      codigos: ["RF015", "RF019"]
+      onde: "Janela anônima, logado como admin"
+      passos:
+        - "Abra Atendimento: a Fila de atendimento mostra o que está em aberto."
+        - "Busque pelo protocolo ou título e abra a ocorrência recém-criada."
+        - "Em Classificação, escolha Severidade avaliada e Prioridade do atendimento e clique em Salvar classificação."
+        - "Em Responsável, escolha a pessoa e clique em Atualizar responsável."
+        - "Em Nova situação, escolha Em triagem e clique em Atualizar situação."
+        - "Role até Histórico: cada mudança aparece com quem fez e quando."
+      destaque: "A gravidade do autor e a avaliada pela equipe ficam separadas; a prioridade ordena a fila."
+    - tempo: "2:50"
+      titulo: "Aviso e status"
+      perfil: "Estudante"
+      acao: "Vê o aviso no sino e o novo status no acompanhamento."
+      codigos: ["RF008", "RF014"]
+      onde: "Espelho, logado como estudante"
+      passos:
+        - "Volte ao espelho: o sino no topo mostra um aviso novo."
+        - "Clique no sino e abra o aviso da mudança de situação."
+        - "Clique em Acompanhar na barra: a ocorrência aparece com a situação Em triagem."
+        - "Mostre que o autor acompanha o andamento, mas não vê as notas internas da equipe."
+        - "Opcional: em Concluir minha ocorrência, clique em Marcar como resolvida."
+      destaque: "Cada mudança gera um único aviso, sem duplicar quando a equipe edita o texto."
+    - tempo: "3:30"
+      titulo: "Botão de pânico"
+      perfil: "Estudante → Segurança"
+      acao: "Aciona o pânico; o pedido chega restrito à equipe de segurança."
+      codigos: ["RF011", "RF012"]
+      onde: "Espelho e depois a janela da equipe"
+      passos:
+        - "Clique em Pânico (botão vermelho no topo ou na barra de atalhos)."
+        - "Em O que está acontecendo?, escreva algo curto (é opcional)."
+        - "Deixe marcado o envio da localização inicial do GPS."
+        - "Clique em Pedir ajuda e depois em Confirmar pedido de ajuda."
+        - "Mostre o protocolo e a tela de acompanhamento do pedido."
+        - "Na janela da equipe, abra Atendimento: o Pedido de ajuda (pânico) aparece na fila."
+      destaque: "O pânico nunca vai para o mural: só segurança e administração veem o pedido."
+    - tempo: "4:20"
+      titulo: "Aprovar e auditar"
+      perfil: "Admin"
+      acao: "Aprova a publicação no mural e mostra a trilha de auditoria."
+      codigos: ["RF015", "RNF005"]
+      onde: "Janela anônima, logado como admin"
+      passos:
+        - "No admin, abra Publicações → Ocorrências pendentes."
+        - "Abra a publicação do estudante, confira o texto e as fotos e clique em Aprovar."
+        - "Volte ao espelho e clique em Mural: a publicação aparece para todos."
+        - "No admin, abra Ocorrências, entre na ocorrência e role até Histórico."
+        - "Mostre que cada ação registra quem fez, o que mudou e quando."
+      destaque: "Toda ação administrativa fica na trilha de auditoria, que não pode ser apagada."
+  preparacao:
+    - "Abrir /apresentacao/demo logado como estudante."
+    - "Equipe/admin logado em uma janela anônima."
+    - "Foto de exemplo no computador e dados fictícios."
+    - "Sem internet: rodar local com bin/dev em localhost:3000."
+
+validacao:
+  # Números da execução completa da suíte (atualize após cada rodada).
+  automatizada:
+    exemplos: 964
+    falhas: 0
+    navegador: 82
+    data: "16/11/2026"
+    cobertura: "95,8%"
+  ci:
+    - "RuboCop"
+    - "Brakeman"
+    - "Auditoria de JS"
+    - "RSpec"
+  # Trecho real de um spec e a saída real do terminal (rspec --format documentation).
+  codigo:
+    caminho: "spec/services/notifications/test_rf014_delivery_spec.rb"
+    autor: "Alisson Cerqueira"
+    linhas: |
+      it "RF014-03 não notifica o autor de uma ocorrência anônima" do
+        configure_external_channels
+        alert.update!(anonymous_public: true)
+
+        expect do
+          Alerts::Transition.call(actor: admin, alert: alert, to: "triaging")
+        end.not_to change(NotificationDelivery, :count)
+
+        expect(Notification.where(user: author, alert: alert)).to be_empty
+      end
+    comando: "bundle exec rspec spec/services/notifications/test_rf014_delivery_spec.rb --format documentation"
+    saida:
+      - "RF014 — Notificações de postagens"
+      - "  RF014-02 mantém um único aviso ao editar o texto e reprocessar a mesma situação"
+      - "  RF014-04 notifica a pessoa com local de referência próximo e exclui a distante"
+      - "  RF014-03 não notifica o autor de uma ocorrência anônima"
+      - "  RF014-01 encaminha uma mudança de situação para e-mail e push habilitados"
+    tempo: "Finished in 0.79801 seconds (files took 5.63 seconds to load)"
+    resumo: "4 examples, 0 failures"
+  # Cada integrante ficou responsável pelos casos de aceite de dois requisitos (docs/plano-testes-equipe.md).
+  por_requisito:
+    - pessoa: "José de Lemos"
+      codigos: ["RF002", "RF007"]
+    - pessoa: "Lucas Vitor"
+      codigos: ["RF010", "RF016"]
+    - pessoa: "Alisson Cerqueira"
+      codigos: ["RF011", "RF014"]
+    - pessoa: "Guilherme Santiago"
+      codigos: ["RF012", "RF015"]
+    - pessoa: "Victor Novais"
+      codigos: ["RF001", "RF005"]
+  # Relatório "Teste cruzados" da equipe EcoFlux (PDF recebido em 09/11/2026).
+  cruzados:
+    equipe: "EcoFlux"
+    pessoas: "Hildemario Castro, Flávia Borges e Marcos Vinicius"
+    data: "09/11/2026"
+    missoes:
+      - { id: "M1", titulo: "Criar conta e entrar" }
+      - { id: "M2", titulo: "Registrar ocorrência" }
+      - { id: "M3", titulo: "Encontrar ocorrências" }
+      - { id: "M4", titulo: "Acompanhar ocorrência" }
+      - { id: "M5", titulo: "Interagir e ser notificado" }
+    resultado: "Todos os requisitos testados passaram nos critérios de aceite. Nenhum defeito encontrado."
+    observacao: "Botões de interação funcionam; poderiam ter mais destaque."
+    sugestoes:
+      - { titulo: "Alerta automático de ocorrência crítica", texto: "Avisar usuários e visitantes quando houver um registro crítico." }
+      - { titulo: "Relatórios de histórico", texto: "Ocorrências por categoria e por departamento." }
+    sugestoes_destino: "Entraram no documento como requisitos Desejáveis."

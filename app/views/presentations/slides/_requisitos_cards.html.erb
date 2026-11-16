@@ -1,0 +1,29 @@
+<% cards = presentation.entrega_final[:requisitos] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "o que o SGU faz",
+      title: "Relatar, acompanhar e resolver: o ciclo completo em seis funcionalidades" %>
+
+<%= presentation_item slide, "cards", :ul, class: "apr-rc", role: "list" do %>
+  <% cards.each do |card| %>
+    <% variants = [ { theme: "dark", image: card[:imagem] }, ({ theme: "light", image: card[:claro] } if card[:claro].present?) ].compact %>
+    <% variants = [ variants.first.merge(theme: "any") ] if variants.one? %>
+    <li class="apr-rc__card">
+      <button type="button" class="apr-rc__shot" data-action="presentation#zoom"
+              data-zoom-src="<%= image_path(variants.first[:image]) %>"
+              aria-label="Ampliar captura: <%= card[:titulo] %>">
+        <% variants.each do |variant| %>
+          <%= image_tag variant[:image], alt: card[:alt], decoding: "async",
+                class: [ "apr-rc__img", ("apr-theme-only--#{variant[:theme]}" unless variant[:theme] == "any") ],
+                data: { zoom_src: image_path(variant[:image]), theme: variant[:theme] } %>
+        <% end %>
+      </button>
+      <div class="apr-rc__body">
+        <p class="apr-rc__codes"><% card[:codigos].each do |codigo| %><span class="apr-rc__code"><%= codigo %></span><% end %></p>
+        <h3 class="apr-rc__title"><%= card[:titulo] %></h3>
+        <p class="apr-rc__text"><%= card[:texto] %></p>
+      </div>
+    </li>
+  <% end %>
+<% end %>
+
+<%= presentation_update_note("entrega_final.yml", "requisitos (cards); capturas em app/assets/images/presentation/final/.") %>
