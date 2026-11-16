@@ -13,7 +13,7 @@ gem "pundit", "2.5.2"
 # Soft deletes for ActiveRecord done right. [https://github.com/jhawthorn/discard]
 gem "discard", "2.0.0"
 # Agnostic pagination in plain ruby. It does it all. Better. [https://github.com/ddnexus/pagy]
-gem "pagy", "43.8.1"
+gem "pagy", "43.8.2"
 # Rails default GEMS
 gem "rails", "8.1.4.1"
 # Keep the YAML parser on the Ruby 3.4-compatible release line.
@@ -23,7 +23,7 @@ gem "propshaft", "1.3.2"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", "2.10.2"
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "8.0.2"
+gem "puma", "8.0.3"
 # Render presentation PDFs with Chromium, also outside the test environment.
 gem "selenium-webdriver", "4.52.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -96,7 +96,7 @@ group :test do
   # SimpleCov is a code coverage analysis tool for Ruby. [https://github.com/simplecov-ruby/simplecov]
   gem "simplecov", "1.3.2"
   # rspec-rails integrates the Rails testing helpers into RSpec. [https://github.com/rspec/rspec-rails]
-  gem "rspec-rails", "8.0.5"
+  gem "rspec-rails", "8.1.0"
   # Simple one-liner tests for common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers", "8.0.1"
   # A set of RSpec matchers for testing Pundit policies. [https://github.com/pundit-community/pundit-matchers]
