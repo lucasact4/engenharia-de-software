@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   root "home#index"
   get "apresentacao", to: "presentations#show", as: :presentation
   post "apresentacao/pdf", to: "presentations#pdf", as: :presentation_pdf
+  get "apresentacao/demo", to: "demo_mirrors#show", as: :demo_mirror
   get "apresentacao/testes-cruzados", to: "cross_tests#show", as: :cross_tests
   get "apresentacao/plano-de-teste", to: "cross_tests#plan", as: :test_plan
   get "apresentacao/plano-de-teste/pdf", to: "cross_tests#plan_pdf", as: :test_plan_pdf

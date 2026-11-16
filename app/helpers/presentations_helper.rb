@@ -1,3 +1,5 @@
+require "strscan"
+
 module PresentationsHelper
   def presentation_diagram(key)
     @presentation_diagrams ||= PresentationDiagram.load_all
@@ -136,6 +138,31 @@ end
         items: slide.items.map { |item| { key: item.key, title: item.title, default: item.default, parent: item.parent_key } }
       }
     end
+  end
+
+  RUBY_TOKENS = [
+    [ /#[^\n]*/, "com" ],
+    [ /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/, "str" ],
+    [ /:[a-z_]\w*[?!]?|\b[a-z_]\w*:(?!:)/, "sym" ],
+    [ /\b(?:do|end|if|else|unless|def|return|true|false|nil|it|describe|context|let|expect|to|not_to|be|eq)\b/, "key" ],
+    [ /\b[A-Z]\w*/, "const" ],
+    [ /\d+(?:\.\d+)?/, "num" ],
+    [ /[a-z_]\w*[?!]?/, "id" ]
+  ].freeze
+
+  # Realce mínimo de Ruby para trechos de código exibidos na apresentação (sem dependência externa).
+  def presentation_ruby_highlight(code)
+    scanner = StringScanner.new(code.to_s)
+    parts = []
+    until scanner.eos?
+      token = RUBY_TOKENS.find { |pattern, _| scanner.check(pattern) && scanner.match?(pattern).positive? }
+      if token
+        parts << tag.span(scanner.scan(token.first), class: "apr-code-#{token.last}")
+      else
+        parts << scanner.getch
+      end
+    end
+    safe_join(parts)
   end
 
   private

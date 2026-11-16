@@ -1,0 +1,105 @@
+<%# Ilustração do slide "problema": relato no celular, mapa do campus Dois Irmãos e equipe resolvendo. Cores vêm dos tokens da apresentação. %>
+<svg class="apr-ill" viewBox="0 0 640 560" role="img" aria-labelledby="apr-ill-title">
+  <title id="apr-ill-title">Mapa ilustrado do campus Dois Irmãos da UFRPE com pontos de ocorrência, um celular mostrando um relato em análise e a equipe de atendimento recebendo o aviso.</title>
+  <defs>
+    <clipPath id="apr-ill-clip"><rect width="640" height="560" rx="28"/></clipPath>
+    <path id="apr-ill-pin" d="M0 0 C-12 -15 -18 -24 -18 -33 A18 18 0 1 1 18 -33 C18 -24 12 -15 0 0Z"/>
+  </defs>
+
+  <g clip-path="url(#apr-ill-clip)">
+    <rect class="apr-ill__panel" width="640" height="560"/>
+
+    <%# Açude de Dois Irmãos, áreas verdes e ruas %>
+    <path class="apr-ill__water" d="M430 0 H640 V200 C590 228 515 214 475 176 C432 136 412 60 430 0Z"/>
+    <text class="apr-ill__note" x="512" y="96">Açude</text>
+    <text class="apr-ill__note" x="496" y="114">Dois Irmãos</text>
+    <ellipse class="apr-ill__green" cx="600" cy="330" rx="48" ry="28"/>
+    <ellipse class="apr-ill__green" cx="372" cy="60" rx="52" ry="22"/>
+    <ellipse class="apr-ill__green" cx="590" cy="540" rx="80" ry="40"/>
+    <ellipse class="apr-ill__green" cx="455" cy="330" rx="26" ry="18"/>
+
+    <path class="apr-ill__road" d="M-10 470 C140 430 250 404 340 398 S520 366 650 300"/>
+    <path class="apr-ill__road-line" d="M-10 470 C140 430 250 404 340 398 S520 366 650 300"/>
+    <path class="apr-ill__street" d="M120 92 V392 M120 240 H420 M300 92 V398 M120 92 H420 M420 92 V330"/>
+
+    <%# Prédios do campus %>
+    <rect class="apr-ill__bldg" x="138" y="108" width="62" height="40" rx="6"/>
+    <rect class="apr-ill__bldg" x="214" y="108" width="72" height="40" rx="6"/>
+    <rect class="apr-ill__bldg" x="316" y="108" width="88" height="40" rx="6"/>
+    <rect class="apr-ill__bldg apr-ill__bldg--main" x="138" y="162" width="148" height="62" rx="8"/>
+    <rect class="apr-ill__bldg" x="316" y="162" width="88" height="62" rx="6"/>
+    <rect class="apr-ill__bldg" x="138" y="256" width="62" height="54" rx="6"/>
+    <rect class="apr-ill__bldg" x="214" y="256" width="72" height="54" rx="6"/>
+    <rect class="apr-ill__bldg" x="316" y="256" width="88" height="56" rx="6"/>
+
+    <%# Ocorrências no mapa %>
+    <g transform="translate(250 176)">
+      <use href="#apr-ill-pin" class="apr-ill__pin apr-ill__pin--gold"/>
+      <path class="apr-ill__glyph" d="M3 -45 L-6 -31 H0 L-3 -21 L7 -36 H1Z"/>
+    </g>
+    <g transform="translate(362 264)">
+      <use href="#apr-ill-pin" class="apr-ill__pin"/>
+      <rect class="apr-ill__glyph" x="-2.5" y="-45" width="5" height="14" rx="2"/>
+      <circle class="apr-ill__glyph" cx="0" cy="-25" r="3"/>
+    </g>
+    <g transform="translate(170 268)">
+      <circle class="apr-ill__pulse" cx="0" cy="-2" r="14"/>
+      <circle class="apr-ill__pulse apr-ill__pulse--late" cx="0" cy="-2" r="14"/>
+      <use href="#apr-ill-pin" class="apr-ill__pin apr-ill__pin--red"/>
+      <path class="apr-ill__glyph" d="M-7 -28 A7 7 0 0 1 7 -28 V-26 H-7Z M-9 -25 H9 V-23 H-9Z"/>
+    </g>
+
+    <%# Etiqueta do local %>
+    <rect class="apr-ill__chip" x="22" y="22" width="268" height="40" rx="20"/>
+    <circle class="apr-ill__dot" cx="44" cy="42" r="6"/>
+    <text class="apr-ill__chip-text" x="58" y="48">UFRPE · Campus Dois Irmãos</text>
+
+    <%# Fluxos: relato → mural e relato → equipe %>
+    <path class="apr-ill__flow" d="M236 336 C320 300 372 268 438 254"/>
+    <path class="apr-ill__flow" d="M236 420 C320 450 380 452 462 446"/>
+
+    <%# Mural %>
+    <rect class="apr-ill__bubble" x="438" y="232" width="168" height="44" rx="22"/>
+    <rect class="apr-ill__icon" x="456" y="245" width="8" height="8" rx="2"/>
+    <rect class="apr-ill__icon" x="467" y="245" width="8" height="8" rx="2"/>
+    <rect class="apr-ill__icon" x="456" y="256" width="8" height="8" rx="2"/>
+    <rect class="apr-ill__icon" x="467" y="256" width="8" height="8" rx="2"/>
+    <text class="apr-ill__bubble-text" x="486" y="260">Mural do campus</text>
+
+    <%# Equipe de atendimento %>
+    <circle class="apr-ill__team" cx="514" cy="446" r="50"/>
+    <path class="apr-ill__team-shield" d="M514 414 L540 424 V446 C540 464 528 476 514 482 C500 476 488 464 488 446 V424Z"/>
+    <path class="apr-ill__team-check" d="M502 447 L511 456 L528 437"/>
+    <text class="apr-ill__label" x="514" y="522" text-anchor="middle">Equipe resolve</text>
+
+    <%# Celular com o relato %>
+    <g transform="translate(40 292) rotate(-7)">
+      <rect class="apr-ill__phone" width="176" height="252" rx="26"/>
+      <rect class="apr-ill__screen" x="9" y="10" width="158" height="232" rx="19"/>
+      <rect class="apr-ill__shield" x="22" y="22" width="14" height="16" rx="4"/>
+      <text class="apr-ill__brand" x="42" y="36">SGU</text>
+      <rect class="apr-ill__card" x="19" y="50" width="138" height="122" rx="12"/>
+      <rect class="apr-ill__photo" x="27" y="58" width="122" height="44" rx="7"/>
+      <path class="apr-ill__photo-art" d="M31 98 L56 76 L72 90 L90 78 L145 98Z"/>
+      <text class="apr-ill__card-title" x="27" y="120">Falta de energia</text>
+      <text class="apr-ill__card-sub" x="27" y="135">CEAGRI · Infraestrutura</text>
+      <rect class="apr-ill__status" x="27" y="144" width="74" height="18" rx="9"/>
+      <text class="apr-ill__status-text" x="36" y="157">Em análise</text>
+      <path class="apr-ill__track" d="M36 196 H140"/>
+      <path class="apr-ill__track apr-ill__track--done" d="M36 196 H88"/>
+      <circle class="apr-ill__step apr-ill__step--done" cx="36" cy="196" r="7"/>
+      <circle class="apr-ill__step apr-ill__step--done" cx="88" cy="196" r="7"/>
+      <circle class="apr-ill__step" cx="140" cy="196" r="7"/>
+      <text class="apr-ill__step-text" x="22" y="220">Recebida</text>
+      <text class="apr-ill__step-text" x="72" y="220">Análise</text>
+      <text class="apr-ill__step-text" x="118" y="220">Resolvida</text>
+    </g>
+
+    <%# Notificação %>
+    <g transform="translate(196 290)">
+      <rect class="apr-ill__bubble apr-ill__bubble--gold" width="176" height="40" rx="20"/>
+      <path class="apr-ill__bell" d="M22 27 V19 A8 8 0 0 1 38 19 V27 L41 30 H19Z M27 32 A3 3 0 0 0 33 32Z"/>
+      <text class="apr-ill__notify-text" x="50" y="25">Status atualizado</text>
+    </g>
+  </g>
+</svg>

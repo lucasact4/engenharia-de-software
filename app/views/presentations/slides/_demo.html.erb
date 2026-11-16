@@ -1,0 +1,52 @@
+<% d = presentation.entrega_final[:demo] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "demonstração ao vivo · #{d[:duracao]}",
+      title: "Direto no sistema, seguindo este roteiro" %>
+
+<div class="apr-demo apr-fit">
+  <%= presentation_item slide, "roteiro", :ol, class: "apr-demo__steps", role: "list" do %>
+    <% d[:passos].each_with_index do |passo, index| %>
+      <li class="apr-demo__step">
+        <span class="apr-demo__num" aria-hidden="true"><%= index + 1 %></span>
+        <div class="apr-demo__body">
+          <p class="apr-demo__meta">
+            <span class="apr-demo__time"><%= passo[:tempo] %></span>
+            <span class="apr-demo__who"><%= passo[:perfil] %></span>
+          </p>
+          <p class="apr-demo__action"><%= passo[:acao] %></p>
+        </div>
+        <p class="apr-demo__codes"><% passo[:codigos].each do |codigo| %><span class="apr-rc__code"><%= codigo %></span><% end %></p>
+      </li>
+    <% end %>
+  <% end %>
+
+  <%= presentation_group slide, %w[acesso preparacao], class: "apr-demo__side" do %>
+    <%= presentation_item slide, "acesso", class: "apr-demo__access" do %>
+      <% if presentation_asset?(d[:qr_code]) %>
+        <%= image_tag d[:qr_code], class: "apr-demo__qr", alt: "QR Code para abrir #{d[:rotulo]}" %>
+      <% end %>
+      <%= link_to d[:rotulo], d[:url], class: "apr-xts__url", target: "_blank", rel: "noopener noreferrer" %>
+      <div class="apr-demo__launch apr-local-only" data-controller="demo-overlay">
+        <%= link_to demo_mirror_path(locale: nil), class: "apr-demo__mirror", data: { action: "demo-overlay#open" } do %>
+          <%= render "presentations/shared/icon", name: "play" %> Abrir demo com celular espelhado
+        <% end %>
+        <dialog class="apr-demo-overlay" data-demo-overlay-target="dialog" aria-label="Demonstração ao vivo">
+          <iframe data-demo-overlay-target="frame" title="Demonstração ao vivo do SGU" allow="geolocation; fullscreen"></iframe>
+        </dialog>
+      </div>
+      <%= link_to "Abrir em outra aba", demo_mirror_path(locale: nil), class: "apr-more apr-local-only", target: "_blank", rel: "noopener" %>
+      <p class="apr-demo__hint">Sistema rodando de verdade: o celular ao lado repete cada passo do computador.</p>
+    <% end %>
+
+    <%= presentation_item slide, "preparacao", class: "apr-demo__prep" do %>
+      <h3 class="apr-label">Antes de começar</h3>
+      <ul role="list">
+        <% d[:preparacao].each do |item| %>
+          <li><%= render "presentations/shared/icon", name: "check" %> <span><%= item %></span></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>
+
+<%= presentation_update_note("entrega_final.yml", "demo (passos, perfis, requisitos e checklist).") %>

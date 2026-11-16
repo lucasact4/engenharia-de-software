@@ -6,7 +6,7 @@ class Presentation
   CONTENT_DIR = Rails.root.join("config/presentation")
   SECTIONS = %w[
     entrega roteiro requisitos evolucao conceito_visual funcionalidades
-    diagramas tecnologias gestao retrospectiva planejamento
+    diagramas tecnologias gestao retrospectiva planejamento entrega_final
   ].freeze
 
   # Sempre visíveis, em qualquer perfil e no ajuste temporário.
@@ -25,7 +25,8 @@ class Presentation
     "tecnologias" => %w[stack mudancas],
     "gestao" => %w[cards ambientes praticas reunioes],
     "retrospectiva" => %w[],
-    "planejamento" => %w[marco proximos_passos riscos dependencias]
+    "planejamento" => %w[marco proximos_passos riscos dependencias],
+    "entrega_final" => %w[stack requisitos demo validacao]
   }.freeze
 
   STATES = {

@@ -1,0 +1,70 @@
+<% v = presentation.entrega_final[:validacao] %>
+<% auto = v[:automatizada] %>
+<% code = v[:codigo] %>
+<% cross = v[:cruzados] %>
+<%= render "presentations/shared/heading", slide: slide,
+      kicker: "teste de validação",
+      title: "Testado por nós, aprovado por quem não construiu" %>
+
+<div class="apr-val">
+  <%= presentation_item slide, "automatizada", :section, class: "apr-val__code", aria: { label: "Testes automatizados" } do %>
+    <div class="apr-ide">
+      <p class="apr-ide__tabs">
+        <span class="apr-ide__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="apr-ide__tab"><%= File.basename(code[:caminho]) %></span>
+        <span class="apr-ide__author">por <%= code[:autor] %></span>
+      </p>
+      <pre class="apr-ide__editor"><code><% code[:linhas].to_s.rstrip.lines.each_with_index do |linha, index| %><span class="apr-ide__ln" aria-hidden="true"><%= index + 1 %></span><%= presentation_ruby_highlight(linha.chomp) %>
+<% end %></code></pre>
+      <div class="apr-ide__terminal" aria-label="Saída do terminal">
+        <p class="apr-ide__panel">TERMINAL</p>
+        <pre><code><span class="apr-ide__prompt">$</span> <%= code[:comando] %>
+<% code[:saida].each_with_index do |linha, index| %><span class="<%= index.zero? ? 'apr-ide__group' : 'apr-ide__pass' %>"><%= linha %></span>
+<% end %>
+<span class="apr-ide__muted"><%= code[:tempo] %></span>
+<span class="apr-ide__ok"><%= code[:resumo] %></span></code></pre>
+      </div>
+    </div>
+
+    <ul class="apr-val__stats" role="list">
+      <li><strong><%= number_with_delimiter(auto[:exemplos], delimiter: ".") %></strong><span>testes · <%= auto[:falhas] %> falhas</span></li>
+      <li><strong><%= auto[:cobertura] %></strong><span>de cobertura</span></li>
+      <li><strong><%= auto[:navegador] %></strong><span>no navegador</span></li>
+      <li><strong>CI</strong><span>em todo PR</span></li>
+    </ul>
+  <% end %>
+
+  <div class="apr-val__side">
+    <%= presentation_item slide, "cruzados", :section, class: "apr-val__cross", aria: { label: "Teste cruzado" } do %>
+      <p class="apr-val__eyebrow">Teste cruzado · Equipe <%= cross[:equipe] %> · <%= cross[:data] %></p>
+      <p class="apr-val__verdict">
+        <span class="apr-val__check" aria-hidden="true"><%= render "presentations/shared/icon", name: "check" %></span>
+        <span><strong><%= cross[:missoes].size %>/<%= cross[:missoes].size %> missões aprovadas</strong> <%= cross[:resultado] %></span>
+      </p>
+      <ul class="apr-val__missions" role="list">
+        <% cross[:missoes].each do |missao| %>
+          <li><span class="apr-rc__code"><%= missao[:id] %></span> <%= missao[:titulo] %> <span class="apr-val__ok">ok</span></li>
+        <% end %>
+      </ul>
+      <p class="apr-source"><%= cross[:pessoas] %>. <%= cross[:observacao] %></p>
+
+      <div class="apr-val__ideas">
+        <p class="apr-val__eyebrow">Sugestões da EcoFlux → novos requisitos</p>
+        <ol role="list">
+          <% cross[:sugestoes].each do |sugestao| %>
+            <li><strong><%= sugestao[:titulo] %></strong><span><%= sugestao[:texto] %></span><span class="apr-tag apr-tag--gold">Desejável</span></li>
+          <% end %>
+        </ol>
+      </div>
+    <% end %>
+
+    <%= presentation_item slide, "por-requisito", :p, class: "apr-val__team" do %>
+      <span class="apr-val__eyebrow">Casos de aceite por integrante</span>
+      <% v[:por_requisito].each do |linha| %>
+        <span class="apr-val__member"><%= linha[:pessoa].split.first %> <% linha[:codigos].each do |codigo| %><span class="apr-rc__code"><%= codigo %></span><% end %></span>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<%= presentation_update_note("entrega_final.yml", "validacao (números da suíte, trecho de código e saída reais, teste cruzado e sugestões).") %>
