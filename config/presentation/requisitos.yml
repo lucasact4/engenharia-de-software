@@ -107,10 +107,10 @@ requisitos_refinados:
     criterios_aceite:
       - "O pedido exige autenticação e confirmação explícita, permanece restrito e pode ser registrado mesmo sem GPS."
       - "Quando a pessoa compartilha a localização, o alerta inclui as coordenadas e a precisão informada pelo navegador; se a localização estiver indisponível, o envio não fica aguardando indefinidamente."
-      - "Com GPS do pedido e presenças recentes disponíveis, o sistema seleciona até três agentes de segurança mais próximos e inclui os administradores ativos; sem essas posições, notifica todos os destinatários elegíveis."
+      - "O pedido avisa todos os agentes de segurança ativos e todos os administradores ativos, sem filtro por proximidade; com GPS do pedido e posições recentes, os agentes mais próximos recebem primeiro."
       - "O sistema enfileira e-mail e push de emergência em prioridade alta; a confirmação de recebimento técnico não afirma que uma pessoa já viu o pedido."
     estado: parcial
-    nota: "A equipe decidiu manter a seleção por proximidade para agilizar a resposta. A entrega externa depende das credenciais SMTP/VAPID e ainda precisa de validação em dispositivos e caixas postais reais."
+    nota: "Alteração do requisito (card #23, 15/11/2026): o critério de alertar só os responsáveis próximos foi descartado; todos os agentes de segurança e administradores são avisados. A entrega externa depende das credenciais SMTP/VAPID e ainda precisa de validação em dispositivos e caixas postais reais."
   - id: "RF017"
     tipo: funcional
     titulo: "Classificar severidade separadamente da prioridade"

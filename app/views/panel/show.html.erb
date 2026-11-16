@@ -40,7 +40,7 @@
       <button type="button" class="sgu-btn sgu-btn-danger" data-action="security-readiness#enablePush">Ativar push de emergência</button>
       <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#disablePush">Desativar push neste dispositivo</button>
       <% if user.role?(:security) %>
-        <p class="w-full text-sm text-muted">Se estiver de serviço, compartilhe sua localização enquanto este painel estiver aberto para priorizar os atendentes próximos.</p>
+        <p class="w-full text-sm text-muted">Todo pedido de pânico avisa toda a equipe de segurança. Se estiver de serviço, compartilhe sua localização enquanto este painel estiver aberto: quem está mais perto recebe primeiro.</p>
         <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#startPresence">Compartilhar localização durante o plantão</button>
         <button type="button" class="sgu-btn sgu-btn-secondary" data-action="security-readiness#stopPresence">Parar compartilhamento</button>
       <% end %>
