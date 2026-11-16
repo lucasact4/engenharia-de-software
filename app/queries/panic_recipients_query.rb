@@ -1,27 +1,19 @@
-# Prioriza até três pessoas de segurança mais próximas com GPS recente; sem coordenadas
-# confiáveis, aciona todos os destinatários elegíveis como contingência.
+# RF011: o pedido de pânico aciona todos os agentes de segurança ativos e todos os administradores.
+# A proximidade não exclui ninguém: com GPS do pedido e posições recentes, só define a ordem de envio
+# (os agentes mais próximos recebem primeiro).
 class PanicRecipientsQuery
-  MAX_NEARBY_RECIPIENTS = 3
-
   def initialize(alert)
     @alert = alert
   end
 
   def call
-    eligible = EligibleAssigneesQuery.new(@alert).call.to_a
+    eligible = EligibleAssigneesQuery.new(@alert).call
     return eligible unless @alert.latitude.present? && @alert.longitude.present?
 
-    presences = SecurityPresence.fresh.includes(:user)
-      .where(user_id: eligible.map(&:id))
-      .select { |presence| presence.user.role?(:security) }
-    return eligible if presences.empty?
-
-    nearby = presences.sort_by do |presence|
-      distance_km(@alert.latitude, @alert.longitude, presence.latitude, presence.longitude)
-    end.first(MAX_NEARBY_RECIPIENTS).map(&:user)
-
-    admins = eligible.select(&:admin?)
-    (nearby + admins).uniq
+    distances = SecurityPresence.fresh.where(user_id: eligible.map(&:id)).to_h do |presence|
+      [ presence.user_id, distance_km(@alert.latitude, @alert.longitude, presence.latitude, presence.longitude) ]
+    end
+    eligible.each_with_index.sort_by { |user, index| [ distances.fetch(user.id, Float::INFINITY), index ] }.map(&:first)
   end
 
   private
