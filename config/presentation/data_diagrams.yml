@@ -36,6 +36,8 @@ tables:
       - ''
     - - email_confirmed_at
       - ''
+    - - google_subject
+      - UQ
     - - registration_reviewed_by_id
       - FK users
     - - verified_at
