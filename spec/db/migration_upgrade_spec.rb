@@ -52,10 +52,15 @@ RSpec.describe "Card #6 migrations on a legacy database" do
       # Fixture histórica anterior à caixa de notificações, sem callbacks da aplicação atual.
       Comment.insert_all!([{ publication_id: publication_id, author_id: author.id, body: "Comentário histórico" }])
       PublicationLike.insert_all!([{ publication_id: publication_id, user_id: author.id }])
-      [blocked, released].each do |alert|
-        AuditEvent.record!(actor: admin, action: "alert.restricted", subject: alert, reason: "Dados pessoais")
-      end
-      AuditEvent.record!(actor: admin, action: "alert.audience_changed", subject: released, reason: "Revisado")
+      legacy_events = [
+        *[blocked, released].map do |alert|
+          { actor_id: admin.id, action: "alert.restricted", subject_type: "Alert", subject_id: alert.id,
+            reason: "Dados pessoais", changeset: {}, metadata: {}, created_at: Time.current }
+        end,
+        { actor_id: admin.id, action: "alert.audience_changed", subject_type: "Alert", subject_id: released.id,
+          reason: "Revisado", changeset: {}, metadata: {}, created_at: Time.current }
+      ]
+      AuditEvent.insert_all!(legacy_events)
       end
     RUBY
 
@@ -141,8 +146,12 @@ RSpec.describe "Card #6 migrations on a legacy database" do
     rails("runner", <<~RUBY)
       ActiveRecord::Encryption.without_encryption do
         user = User.find(User.insert_all!([ { email_address: "rollback@example.test", password_digest: "digest" } ], returning: %w[id]).rows.first.first)
-        Alerts::CreateOccurrence.call(actor: user, attributes: { description: "Relato de teste para o rollback seguro.", category_id: Category.where(requires_details: false).first.id,
-          location_source: "manual", location_description: "Biblioteca, térreo", reported_severity: "low", requested_visibility: "internal" })
+        alert = Alert.create!(author: user, kind: "occurrence", title: "Relato para rollback", description: "Relato de teste para o rollback seguro.",
+          category: Category.where(requires_details: false).first, location_source: "manual", location_description: "Biblioteca, térreo",
+          reported_severity: "low", requested_visibility: "internal", visibility: "internal")
+        Publication.insert_all!([{ alert_id: alert.id, author_id: user.id, kind: "occurrence", visibility: "internal",
+                                   state: "published", review_status: "not_submitted", content_version: 1, comments_enabled: true,
+                                   published_at: Time.current, created_at: Time.current, updated_at: Time.current }])
       end
     RUBY
     output, status = Open3.capture2e(env, "bin/rails", "db:migrate", "VERSION=20261003100100", chdir: Rails.root.to_s)

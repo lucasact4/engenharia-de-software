@@ -1,25 +1,22 @@
-const INBOX_PATH = "/notificacoes"
-
-self.addEventListener("push", event => {
-  let tag = "sgu-notification"
-  try {
-    const message = event.data?.json()
-    if (/^sgu-\d+$/.test(message?.tag)) tag = message.tag
-  } catch {
-    // Um aviso genérico ainda pode ser exibido sem payload válido.
-  }
-  event.waitUntil(self.registration.showNotification("SGU UFRPE", {
-    body: "Você tem uma nova notificação. Entre no SGU para ler.",
-    tag
+self.addEventListener("push", (event) => {
+  if (!event.data) return
+  let payload = {}
+  try { payload = event.data.json() } catch (_error) { /* Mantém aviso genérico. */ }
+  const emergency = typeof payload.title === "string"
+  event.waitUntil(self.registration.showNotification(emergency ? payload.title : "SGU UFRPE", {
+    body: payload.body || "Você tem uma nova notificação. Entre no SGU para ler.",
+    icon: payload.icon || "/icon.png",
+    tag: payload.tag || "sgu-notification",
+    requireInteraction: emergency || payload.requireInteraction === true,
+    data: { ...(payload.data || {}), path: payload.data?.path || "/notificacoes" }
   }))
 })
 
-self.addEventListener("notificationclick", event => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close()
-  event.waitUntil((async () => {
-    const inbox = new URL(INBOX_PATH, self.location.origin).href
-    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true })
-    const current = windows.find(client => client.url === inbox)
-    return current ? current.focus() : self.clients.openWindow(inbox)
-  })())
+  const path = event.notification.data?.path || "/notificacoes"
+  event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+    const existing = windows.find((client) => new URL(client.url).pathname === path)
+    return existing ? existing.focus() : clients.openWindow(path)
+  }))
 })

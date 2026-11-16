@@ -34,10 +34,9 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder", "2.15.1"
-gem "web-push"
-gem "googleauth", "~> 1.17", require: false
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "3.1.22"
+gem "googleauth", "~> 1.17", require: false
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem [https://github.com/tzinfo/tzinfo]
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -45,6 +44,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
+gem "web-push", "3.1.0"
 
 # Reduces boot times through caching; required in config/boot.rb [https://github.com/Shopify/bootsnap]
 gem "bootsnap", "1.26.1", require: false

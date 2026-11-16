@@ -16,7 +16,10 @@ module AdminCatalogActions
     def toggle_active(active)
       @instance = @model.find(params.expect(:id))
       authorize @instance, :update?
-      @instance.update!(active: active)
+      @instance.class.transaction do
+        @instance.update!(active: active)
+        record_catalog_audit!(active ? "activated" : "deactivated") if @instance.saved_changes.present?
+      end
       message = active ? "“#{@instance.name}” está ativo para novas escolhas." :
         "“#{@instance.name}” foi desativado: registros antigos continuam com ele, mas não pode ser escolhido de novo."
       redirect_to send(redirect_to_index), flash: { success: message }, status: :see_other

@@ -69,14 +69,22 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: app_host }
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  # Configure SMTP with environment variables or Rails credentials. Secrets are not stored in git.
+  smtp_credentials = Rails.application.credentials.dig(:smtp) || {}
+  smtp_address = ENV["SMTP_ADDRESS"].presence || smtp_credentials[:address]
+  if smtp_address.present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: smtp_address,
+      port: Integer(ENV.fetch("SMTP_PORT", smtp_credentials[:port] || 587)),
+      domain: ENV["SMTP_DOMAIN"].presence || smtp_credentials[:domain] || app_host,
+      user_name: ENV["SMTP_USERNAME"].presence || smtp_credentials[:user_name],
+      password: ENV["SMTP_PASSWORD"].presence || smtp_credentials[:password],
+      authentication: (ENV["SMTP_AUTHENTICATION"].presence || smtp_credentials[:authentication] || "plain").to_sym,
+      enable_starttls: true
+    }.compact
+    config.action_mailer.raise_delivery_errors = true
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

@@ -76,7 +76,6 @@ class Alert < ApplicationRecord
            dependent: :restrict_with_exception
   has_many :alert_subscriptions, dependent: :destroy
   has_one :anonymous_submission_audit, dependent: :restrict_with_exception
-  has_one :anonymous_submission_audit, dependent: :restrict_with_exception
   has_many_attached :photos
 
   before_validation :assign_protocol, on: :create

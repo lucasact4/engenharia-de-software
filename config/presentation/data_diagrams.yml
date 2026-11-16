@@ -102,6 +102,8 @@ tables:
       - PK
     - - actor_id
       - FK users
+    - - ip_address
+      - IP do ator
     - - action
       - ''
     - - subject_type
@@ -482,6 +484,38 @@ tables:
       - ''
     - - updated_at
       - ''
+  security_presences:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK·UQ users
+    - - latitude
+      - ''
+    - - longitude
+      - ''
+    - - reported_at
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
+  security_push_subscriptions:
+    columns:
+    - - id
+      - PK
+    - - user_id
+      - FK users
+    - - endpoint
+      - UQ
+    - - p256dh
+      - ''
+    - - auth
+      - ''
+    - - created_at
+      - ''
+    - - updated_at
+      - ''
   presentation_profiles:
     columns:
     - - id
@@ -812,6 +846,16 @@ foreign_keys:
   column: user_id
   required: true
   unique: false
+- source: security_presences
+  target: users
+  column: user_id
+  required: true
+  unique: true
+- source: security_push_subscriptions
+  target: users
+  column: user_id
+  required: true
+  unique: false
 - source: user_follows
   target: users
   column: followed_id
@@ -1017,6 +1061,7 @@ diagrams:
       lines:
       - Alert · Publication · Comment
       - ContentReport · User
+      - Category · Location
       variant: reference
     relations:
     - source: audit_events
@@ -1122,8 +1167,10 @@ diagrams:
       Fotos usam vínculo polimórfico com alertas, publicações e usuários. presentation_profiles
       guarda só a seleção de slides da apresentação, sem chave estrangeira.
       anonymous_submission_audits guarda IP e user agent cifrados de relatos anônimos.
+      Presenças guardam localização de plantão por até cinco minutos; assinaturas de segurança
+      armazenam endpoints Web Push e a resposta de emergência referencia o usuário responsável.
     width: 1080
-    height: 590
+    height: 760
     nodes:
     - table: active_storage_blobs
       x: 30
@@ -1149,15 +1196,27 @@ diagrams:
       width: 290
       split: 1
       variant: infra
+    - table: security_presences
+      x: 30
+      "y": 400
+      width: 320
+      split: 2
+      variant: infra
+    - table: security_push_subscriptions
+      x: 365
+      "y": 400
+      width: 360
+      split: 2
+      variant: infra
     - table: presentation_profiles
       x: 30
-      "y": 370
+      "y": 560
       width: 260
-      split: 1
+      split: 2
       variant: infra
     - table: anonymous_submission_audits
       x: 350
-      "y": 330
+      "y": 560
       width: 340
       split: 1
       variant: infra
