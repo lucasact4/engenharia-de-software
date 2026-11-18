@@ -11,11 +11,28 @@ export default class extends Controller {
     this.onVisibility = () => this.tick()
     document.addEventListener("visibilitychange", this.onVisibility)
     this.render()
+    // O contador da demo compartilha o mesmo prazo dos slides, sem reiniciar ao abrir.
+    this.bus = window.parent
+    this.onSync = ({ detail }) => {
+      if (!detail || detail.source === this.element) return
+      if (detail.request) { this.broadcast(); return }
+      clearInterval(this.interval)
+      this.durationValue = detail.duration
+      this.remaining = detail.remaining
+      this.deadline = detail.deadline
+      this.running = detail.running
+      if (this.running) this.interval = setInterval(() => this.tick(), 200)
+      this.tick()
+      this.render()
+    }
+    this.bus.addEventListener("sgu:presentation-timer", this.onSync)
+    this.bus.dispatchEvent(new CustomEvent("sgu:presentation-timer", { detail: { source: this.element, request: true } }))
   }
 
   disconnect() {
     clearInterval(this.interval)
     document.removeEventListener("visibilitychange", this.onVisibility)
+    this.bus.removeEventListener("sgu:presentation-timer", this.onSync)
   }
 
   toggle() {
@@ -31,6 +48,7 @@ export default class extends Controller {
       this.announce("Contador iniciado.")
     }
     this.render()
+    this.broadcast()
   }
 
   tick() {
@@ -43,6 +61,13 @@ export default class extends Controller {
     this.render()
   }
 
+  broadcast() {
+    this.bus.dispatchEvent(new CustomEvent("sgu:presentation-timer", { detail: {
+      source: this.element, duration: this.durationValue, remaining: this.remaining,
+      deadline: this.deadline, running: this.running
+    } }))
+  }
+
   stop() { this.running = false; clearInterval(this.interval) }
 
   reset() {
@@ -50,6 +75,7 @@ export default class extends Controller {
     this.remaining = this.durationValue * 1000
     this.announce("Contador resetado e pausado.")
     this.render()
+    this.broadcast()
   }
 
   edit(event) {

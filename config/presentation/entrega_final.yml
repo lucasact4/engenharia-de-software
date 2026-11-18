@@ -9,44 +9,46 @@ stack:
       itens:
         - { nome: "Ruby 3.4", logo: "presentation/logos/ruby.svg" }
         - { nome: "Rails", gem: "rails", logo: "presentation/logos/rubyonrails.svg" }
-        - { nome: "Puma + Thruster" }
-        - { nome: "Solid Queue · Cache · Cable" }
-        - { nome: "Active Storage + libvips" }
-        - { nome: "Web Push (PWA)" }
+        - { nome: "Puma + Thruster", simbolo: "code" }
+        - { nome: "Solid Queue · Cache · Cable", simbolo: "package" }
+        - { nome: "Active Storage + libvips", simbolo: "image" }
+        - { nome: "Web Push (notificações)", simbolo: "slides" }
     - nome: "Front-end"
       itens:
-        - { nome: "Turbo", logo: "presentation/logos/turbo.svg", fundo: escuro }
-        - { nome: "Stimulus", logo: "presentation/logos/stimulus.svg", fundo: escuro }
+        - { nome: "Turbo", logo: "presentation/logos/turbo.svg", monocromatico: true }
+        - { nome: "Stimulus", logo: "presentation/logos/stimulus.svg", monocromatico: true }
         - { nome: "Tailwind CSS", logo: "presentation/logos/tailwindcss.svg" }
-        - { nome: "Importmap" }
-        - { nome: "Leaflet + OpenStreetMap" }
+        - { nome: "Importmap", simbolo: "package" }
+        - { nome: "Leaflet + OpenStreetMap", logo: "presentation/logos/leaflet.svg" }
     - nome: "Dados e acesso"
       itens:
         - { nome: "SQLite", logo: "presentation/logos/sqlite.svg" }
-        - { nome: "Pundit (papéis)" }
-        - { nome: "bcrypt" }
-        - { nome: "Criptografia Active Record" }
+        - { nome: "Pundit (papéis)", simbolo: "shield" }
+        - { nome: "bcrypt", simbolo: "key" }
+        - { nome: "Criptografia Active Record", simbolo: "key" }
     - nome: "Qualidade"
       itens:
-        - { nome: "RSpec" }
-        - { nome: "Capybara + Selenium" }
-        - { nome: "SimpleCov" }
-        - { nome: "RuboCop", logo: "presentation/logos/rubocop.svg" }
-        - { nome: "Brakeman" }
-        - { nome: "Sentry" }
+        - { nome: "RSpec", simbolo: "flask" }
+        - { nome: "Capybara + Selenium", logo: "presentation/logos/selenium.svg" }
+        - { nome: "SimpleCov", simbolo: "board" }
+        - { nome: "RuboCop", logo: "presentation/logos/rubocop.svg", monocromatico: true }
+        - { nome: "Brakeman", simbolo: "shield" }
+        - { nome: "Sentry", logo: "presentation/logos/sentry.svg" }
+        - { nome: "axe-core · WCAG 2.1 AA", simbolo: "users" }
+        - { nome: "Health check /saude", simbolo: "check" }
     - nome: "CI e ambiente"
       itens:
         - { nome: "GitHub Actions (CI)", logo: "presentation/logos/githubactions.svg" }
-        - { nome: "Dependabot" }
-        - { nome: "Docker + Dev Container" }
-        - { nome: "Cloudflare Tunnel" }
+        - { nome: "Dependabot", logo: "presentation/logos/dependabot.svg" }
+        - { nome: "Docker + Dev Container", logo: "presentation/logos/docker.svg" }
+        - { nome: "Cloudflare Tunnel", logo: "presentation/logos/cloudflare.svg" }
     - nome: "Gestão e IA"
       itens:
-        - { nome: "GitHub + Pull Requests" }
-        - { nome: "Trello (Kanban)" }
-        - { nome: "Google Docs" }
-        - { nome: "Codex" }
-        - { nome: "Claude Code" }
+        - { nome: "GitHub + Pull Requests", logo: "presentation/logos/github.svg", monocromatico: true }
+        - { nome: "Trello (Kanban)", logo: "presentation/logos/trello.svg" }
+        - { nome: "Google Docs", logo: "presentation/logos/googledocs.svg" }
+        - { nome: "Codex", logo: "presentation/logos/openai.svg", monocromatico: true }
+        - { nome: "Claude Code", logo: "presentation/logos/claude.svg" }
 
   padroes:
     - { nome: "MVC", texto: "models, views e controllers do Rails" }
@@ -69,42 +71,33 @@ stack:
     - "Análise Brakeman em todo PR"
 
 requisitos:
-  - titulo: "Registrar ocorrência"
-    codigos: ["RF005", "RF007", "RF009", "RF017", "RF018"]
-    texto: "Categoria, gravidade, local por GPS, mapa ou lista e até 5 fotos. A identidade pode ficar oculta no mural."
+  - titulo: "Registrar e acompanhar"
+    foco: "registro"
+    codigos: ["RF005", "RF007", "RF008", "RF014", "RF017"]
+    texto: "Relato com categoria, gravidade, localização e fotos. Protocolo e avisos acompanham cada mudança."
     imagem: "presentation/final/registrar.png"
     claro: "presentation/final/registrar-claro.png"
     alt: "Formulário Publicar ocorrência com título e descrição."
-  - titulo: "Acompanhar o atendimento"
-    codigos: ["RF008", "RF014", "RF019"]
-    texto: "Protocolo, status de Recebida a Resolvida e aviso no sino a cada mudança."
-    imagem: "presentation/final/acompanhar.png"
-    claro: "presentation/final/acompanhar-claro.png"
-    alt: "Página Minha ocorrência com protocolo, opção de concluir e visibilidade da publicação."
-  - titulo: "Mural do campus"
-    codigos: ["RF006", "RF013"]
-    texto: "Busca por palavra, protocolo, categoria e gravidade. Curtir, comentar, seguir e denunciar."
-    imagem: "presentation/final/mural.png"
-    claro: "presentation/final/mural-claro.png"
-    alt: "Mural do campus com busca, filtros e uma publicação."
-  - titulo: "Mapa de ocorrências"
-    codigos: ["RF010"]
-    texto: "Publicações aprovadas no mapa da UFRPE, sem expor o ponto exato de relatos restritos."
+  - titulo: "Mural e mapa do campus"
+    foco: "mapa"
+    codigos: ["RF006", "RF010", "RF013"]
+    texto: "Busca, filtros e interações no mural. No mapa, só publicações aprovadas, preservando os relatos restritos."
     imagem: "presentation/final/mapa.png"
     claro: "presentation/final/mapa-claro.png"
     alt: "Mapa da UFRPE Sede Recife com filtros e um marcador de ocorrência."
-  - titulo: "Botão de pânico"
-    codigos: ["RF011", "RF012"]
-    texto: "Confirmação explícita, GPS em até 2 segundos e alerta restrito à equipe de segurança."
+  - titulo: "Pânico e atendimento"
+    foco: "panico"
+    codigos: ["RF011", "RF012", "RF015", "RF019"]
+    texto: "Alerta todos os seguranças e admins elegíveis. GPS em tempo real, triagem e histórico do atendimento."
     imagem: "presentation/final/panico.png"
     claro: "presentation/final/panico-claro.png"
     alt: "Página de pedido de ajuda com aviso e botão Pedir ajuda."
-  - titulo: "Atendimento e moderação"
-    codigos: ["RF015", "RF016", "RNF005"]
-    texto: "Fila da equipe com filtros, prioridade, aprovação de publicações e auditoria."
-    imagem: "presentation/final/atendimento.png"
-    claro: "presentation/final/atendimento-claro.png"
-    alt: "Fila de atendimento da equipe com filtros e ocorrências em aberto."
+  - titulo: "Qualidade que dá para medir"
+    foco: "qualidade"
+    codigos: ["RNF001", "RNF002", "RNF004", "RNF008"]
+    texto: "Envio de notificações aceito em 0,50 s; mapa em 2,87 s, na média. Dados criptografados e acessibilidade verificada."
+    imagem: "presentation/final/qualidade.svg"
+    alt: "Indicadores de 16/11: envio de notificações do navegador aceito em média em 0,50 segundo, mapa em Slow 4G em 2,87 segundos e verificações WCAG 2.1 AA com axe-core."
 
 # Roteiro da demonstração ao vivo. A apresentação toda tem 10 minutos; a demo usa cerca de 5.
 # A demo roda em /apresentacao/demo: o SGU no computador e no celular, espelhados nos dois sentidos.
@@ -206,11 +199,11 @@ demo:
 validacao:
   # Números da execução completa da suíte (atualize após cada rodada).
   automatizada:
-    exemplos: 964
+    exemplos: 1014
     falhas: 0
     navegador: 82
     data: "16/11/2026"
-    cobertura: "95,8%"
+    cobertura: "95,9%"
   ci:
     - "RuboCop"
     - "Brakeman"

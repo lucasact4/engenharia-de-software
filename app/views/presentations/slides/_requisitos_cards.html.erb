@@ -1,13 +1,14 @@
 <% cards = presentation.entrega_final[:requisitos] %>
 <%= render "presentations/shared/heading", slide: slide,
       kicker: "o que o SGU faz",
-      title: "Relatar, acompanhar e resolver: o ciclo completo em seis funcionalidades" %>
+      title: "Da ocorrência à solução, com qualidade em cada etapa" %>
 
+<div class="apr-requirements">
 <%= presentation_item slide, "cards", :ul, class: "apr-rc", role: "list" do %>
   <% cards.each do |card| %>
     <% variants = [ { theme: "dark", image: card[:imagem] }, ({ theme: "light", image: card[:claro] } if card[:claro].present?) ].compact %>
     <% variants = [ variants.first.merge(theme: "any") ] if variants.one? %>
-    <li class="apr-rc__card">
+    <li class="apr-rc__card apr-rc__card--<%= card[:foco] %>">
       <button type="button" class="apr-rc__shot" data-action="presentation#zoom"
               data-zoom-src="<%= image_path(variants.first[:image]) %>"
               aria-label="Ampliar captura: <%= card[:titulo] %>">
@@ -26,4 +27,25 @@
   <% end %>
 <% end %>
 
-<%= presentation_update_note("entrega_final.yml", "requisitos (cards); capturas em app/assets/images/presentation/final/.") %>
+  <aside class="apr-req-board" aria-label="Resumo do Trello em 16 de novembro de 2026">
+    <div class="apr-req-board__heading"><%= render "presentations/shared/icon", name: "board" %><span>Do planejamento à entrega</span></div>
+    <p class="apr-req-board__date">Trello · 16/11/2026</p>
+    <dl class="apr-req-board__counts">
+      <div><dt>Em Produção/Pronto</dt><dd>49</dd></div>
+      <div><dt>Informações</dt><dd>5</dd></div>
+      <div><dt>Backlog</dt><dd>4</dd></div>
+    </dl>
+    <div class="apr-req-board__backlog">
+      <span class="apr-tag apr-tag--gold">4 desejáveis · futuro</span>
+      <p><strong>2 ideias da equipe</strong><span>Gamificação e canal de sugestões, fora dos requisitos da entrega.</span></p>
+      <p><strong>2 sugestões da EcoFlux</strong><span>Alertas críticos e relatórios, refinados com apoio de IA.</span></p>
+    </div>
+    <p class="apr-req-board__coverage"><strong>19 RFs + 8 RNFs</strong><span>implementados e documentados</span></p>
+    <%= link_to "/docs/sgu-requisitos-implementacao.pdf", class: "apr-req-board__pdf", target: "_blank", rel: "noopener noreferrer" do %>
+      <%= render "presentations/shared/icon", name: "book" %><span>Ver requisitos em PDF<small>Versão de 16/11 · abre em outra aba</small></span><%= render "presentations/shared/icon", name: "external" %>
+    <% end %>
+    <%= link_to "Abrir quadro no Trello ↗", presentation.entrega.dig(:links, :trello), class: "apr-req-board__link", target: "_blank", rel: "noopener noreferrer" %>
+  </aside>
+</div>
+
+<%= presentation_update_note("entrega_final.yml", "requisitos (cards); resumo do Trello conferido em 16/11/2026.") %>

@@ -1,4 +1,4 @@
-<% timer_minutes = (@selection&.delivery&.dig(:duracao_maxima_minutos) || 7).to_i %>
+<% timer_minutes = local_assigns.fetch(:minutes) { (@selection&.delivery&.dig(:duracao_maxima_minutos) || 7).to_i } %>
 <div class="apr-timer" data-controller="presentation-timer" data-presentation-timer-duration-value="<%= timer_minutes * 60 %>" aria-label="Contador da apresentação">
   <button type="button" class="apr-nav__btn" data-action="presentation-timer#toggle" data-presentation-timer-target="toggle" aria-label="Iniciar contador"><%= render "presentations/shared/icon", name: "play" %></button>
   <button type="button" class="apr-nav__btn" data-action="presentation-timer#reset" aria-label="Resetar contador"><%= render "presentations/shared/icon", name: "rotate" %></button>

@@ -47,13 +47,20 @@ export default class extends Controller {
 
   layout() {
     const stage = this.stageTarget.getBoundingClientRect()
-    const gap = 32
-    const chrome = 40
+    const narrow = stage.width < 760
+    const gap = 12
+    const availableWidth = Math.max(240, stage.width - 12)
+    const availableHeight = Math.max(260, stage.height - 12)
     const phone = SIZES.phone
-    const desktop = SIZES.desktop
-    const phoneScale = Math.min(1, (stage.height - 64) / (phone.height + 24))
-    const phoneWidth = (phone.width + 24) * phoneScale
-    const desktopScale = Math.min(1, (stage.width - phoneWidth - gap) / desktop.width, (stage.height - chrome) / desktop.height)
+    const phoneScale = Math.max(0.2, Math.min(1.15,
+      (availableHeight - 38) / phone.height,
+      availableWidth * (narrow ? 0.38 : 0.31) / (phone.width + 12)))
+    const phoneWidth = phone.width * phoneScale + 12
+    const desktopWidth = Math.max(200, availableWidth - phoneWidth - gap)
+    const desktopScale = Math.max(0.12, Math.min(1.4, desktopWidth / SIZES.desktop.width))
+    // Usa toda a altura disponível, mantendo a largura de desktop e o celular real.
+    const desktop = { width: SIZES.desktop.width, height: Math.max(300, Math.round((availableHeight - 30) / desktopScale)) }
+    this.desktopTarget.height = desktop.height
 
     this.resizeFrame(this.desktopViewportTarget, this.desktopTarget, desktop, desktopScale)
     this.desktopBoxTarget.style.width = `${desktop.width * desktopScale}px`
